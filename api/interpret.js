@@ -57,6 +57,11 @@ COMPILED_KNOWLEDGE.templates['sức khỏe'] = COMPILED_KNOWLEDGE.templates['cô
 COMPILED_KNOWLEDGE.templates['tìm kiếm'] = COMPILED_KNOWLEDGE.templates['công việc'];
 
 const FALLBACK_TEXTS = {
+    'THE_TRI_QUAN_QUY': 'Thế trì Quan Quỷ: Điềm báo người hỏi tâm lý đang lo âu, stress cực lớn hoặc thân thể có bệnh tật âm ỉ chưa giải tỏa được. Trong công việc chủ về gánh vác nhiều trách nhiệm nặng nề.',
+    'THE_TRI_PHU_MAU': 'Thế trì Phụ Mẫu: Bản thân công việc rất vất vả cực nhọc, phải ôm đồm nhiều giấy tờ thủ tục hoặc chịu áp lực lớn từ phía ban lãnh đạo/sếp.',
+    'THE_TRI_HUYNH_DE': 'Thế trì Huynh Đệ: Công việc đang gặp sự cạnh tranh gay gắt từ đồng nghiệp hoặc đối thủ. Mọi mưu cầu tài lộc giai đoạn này đều dễ bị thâm hụt tốn của.',
+    'THE_TRI_THE_TAI': 'Thế trì Thê Tài: Tâm lý hướng về lợi nhuận, tiền bạc hoặc có tin mừng về lương thưởng, thu nhập dự án hanh thông cát khánh.',
+    'THE_TRI_TU_TON': 'Thế trì Tử Tôn: Chủ về bản thân hướng tới sự tự do, chán nản cảnh gông cùm công sở. Đây là kỵ thần của Quan Quỷ nên việc cầu thăng chức lúc này bị cản trở lớn.',
     'QUE_TINH': 'Quẻ tĩnh: Mọi sự bình lặng, lực lượng hai bên ổn định.',
     'QUE_DONG': 'Quẻ động: Sự việc đang có biến chuyển mạnh mẽ.',
     'DUNG_STATUS_VUONG': 'Dụng thần Vượng Tướng: Lực lượng mạnh, triển vọng tốt.',
