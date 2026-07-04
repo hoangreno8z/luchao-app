@@ -1,396 +1,530 @@
 /**
- * Quản Lý Hoạt Động Trang Web - app.js
- * Quản lý trạng thái gieo quẻ 6 lần, hiệu ứng tung xu, xuất ảnh quẻ dịch và hiển thị luận giải.
+ * Quản lý hoạt động chính của ứng dụng - app.js
+ * (Adapted exactly from gieoque.id.vn logic to ensure 100% correctness)
  */
 
-const APP = (function () {
-    // Luồng 6 câu hỏi gieo quẻ tương ứng 6 lần tung xu
-    const QUESTIONS = [
+document.addEventListener('DOMContentLoaded', () => {
+    // -------------------------------------------------------------------------
+    // 1. QUẢN LÝ ĐIỀU KHOẢN VÀ ĐỒNG Ý (DISCLAIMER)
+    // -------------------------------------------------------------------------
+    const disclaimerScreen = document.getElementById('disclaimer-screen');
+    const mainScreen = document.getElementById('main-screen');
+    const disclaimerCheckbox = document.getElementById('disclaimer-checkbox');
+    const proceedBtn = document.getElementById('proceed-btn');
+
+    disclaimerCheckbox.addEventListener('change', () => {
+        proceedBtn.disabled = !disclaimerCheckbox.checked;
+    });
+
+    proceedBtn.addEventListener('click', () => {
+        disclaimerScreen.classList.add('hidden');
+        mainScreen.classList.remove('hidden');
+        initMainFlow();
+    });
+
+    // -------------------------------------------------------------------------
+    // 2. KHỞI TẠO LUỒNG CHÍNH VÀ ĐỒNG HỒ
+    // -------------------------------------------------------------------------
+    let liveClockTimer = null;
+
+    function initMainFlow() {
+        // Cập nhật ngày giờ hiện tại
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('current-date-time').value = now.toISOString().slice(0, 16);
+
+        // Khởi động đồng hồ thời gian thực
+        updateClock();
+        liveClockTimer = setInterval(updateClock, 1000);
+    }
+
+    function updateClock() {
+        const liveClockSpan = document.getElementById('live-clock');
+        if (!liveClockSpan) return;
+        const now = new Date();
+        const p = n => n < 10 ? '0' + n : n;
+        liveClockSpan.innerHTML = `<span class="live-clock-time">${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}</span> (Ngày ${p(now.getDate())}/${p(now.getMonth() + 1)}/${now.getFullYear()})`;
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. LUỒNG CÂU HỎI VÀ GIEO QUẺ
+    // -------------------------------------------------------------------------
+    const questions = [
         "Câu 1: Vấn đề này của bạn hay bạn đang thay mặt người khác để hỏi?",
-        "Câu 2: Bản thân người cần xem là Nam hay Nữ?",
-        "Câu 3: Người cần xem sinh năm bao nhiêu (Dương lịch hoặc Âm lịch)?",
-        "Câu 4: Mô tả sơ lược vấn đề (ví dụ: công việc kinh doanh tháng này thế nào)?",
-        "Câu 5: Bạn đang ở tỉnh/thành phố nào?",
-        "Câu 6: Bạn thật tâm mong muốn điều gì diễn ra tốt đẹp nhất?"
+        "Câu 2: Bạn là Nam hay Nữ?",
+        "Câu 3: Bạn sinh năm bao nhiêu (năm sinh âm/dương lịch)?",
+        "Câu 4: Mô tả sơ lược vấn đề bạn đang quan tâm là gì?",
+        "Câu 5: Hiện tại bạn đang ở tỉnh/thành phố nào?",
+        "Câu 6: Bạn mong muốn thật tâm đạt được điều gì nhất ở vấn đề này?"
     ];
 
-    // Từ điển ý nghĩa cơ bản của 64 quẻ dịch (phục vụ hiển thị luận giải cơ bản)
-    const HEX_MEANINGS = {
-        "Bát Thuần Càn": "Quẻ Càn đại diện cho Trời, sự cương kiện, khởi đầu mạnh mẽ, hanh thông. Lời khuyên: Hãy giữ vững chí hướng chính trực, kiên trì nỗ lực sẽ gặt hái thành công lớn.",
-        "Bát Thuần Khôn": "Quẻ Khôn đại diện cho Đất, sự nhu hòa, tĩnh lặng, bao dung. Lời khuyên: Nên thuận theo tự nhiên, lắng nghe lời khuyên của người đi trước, tránh tranh chấp đi đầu.",
-        "Bát Thuần Khảm": "Quẻ Khảm là Nước, sự hiểm trở, gian nan, cản trở trùng điệp. Lời khuyên: Giữ vững lòng tin, kiên nhẫn vượt qua thử thách, thận trọng trong mọi quyết định tài chính.",
-        "Bát Thuần Ly": "Quẻ Ly là Lửa, sự sáng suốt, rực rỡ, bám víu. Lời khuyên: Hãy hành xử minh bạch, giữ gìn các mối quan hệ xã hội, phát huy trí tuệ để giải quyết khó khăn.",
-        "Bát Thuần Chấn": "Quẻ Chấn là Sấm sét, sự chấn động, lo sợ rồi bình yên. Lời khuyên: Gặp biến cố không nên hoảng loạn, giữ tâm thế bình tĩnh để tìm ra cơ hội trong thử thách.",
-        "Bát Thuần Tốn": "Quẻ Tốn là Gió, sự mềm mại, thâm nhập từ từ, thuận theo. Lời khuyên: Hãy uyển chuyển thích nghi với hoàn cảnh, thuyết phục người khác bằng sự ôn hòa.",
-        "Bát Thuần Cấn": "Quẻ Cấn là Núi, sự ngưng nghỉ, dừng lại đúng lúc. Lời khuyên: Khi gặp trở ngại lớn, việc dừng lại để tĩnh tâm và tích lũy sức mạnh là giải pháp tối ưu nhất.",
-        "Bát Thuần Đoài": "Quẻ Đoài là Đầm nước, sự vui vẻ, hòa nhã, thuyết phục bằng lời nói. Lời khuyên: Cần chú ý lời ăn tiếng nói, mang lại niềm vui cho mọi người sẽ gặp nhiều thuận lợi.",
-        "Thiên Phong Cấu": "Cơ hội gặp gỡ bất ngờ nhưng cần cảnh giác với những cám dỗ hoặc thế lực tiêu cực ngầm bên dưới.",
-        "Thiên Sơn Độn": "Thời điểm nên rút lui, ẩn náu để bảo toàn lực lượng, tránh đối đầu trực diện.",
-        "Thiên Địa Bĩ": "Thời kỳ bế tắc, bất đồng ý kiến, tiểu nhân đắc thế. Cần kiên nhẫn chờ thời.",
-        "Phong Địa Quan": "Nên quan sát kỹ lưỡng, suy ngẫm sâu sắc trước khi đưa ra hành động cụ thể.",
-        "Sơn Địa Bác": "Sự hao mòn, suy sụp từ bên trong. Tránh đầu tư mạo hiểm, giữ gìn sức khỏe.",
-        "Hỏa Địa Tấn": "Sự tiến bộ vượt bậc, thăng tiến nhanh chóng như mặt trời mọc. Rất cát lợi.",
-        "Hỏa Thiên Đại Hữu": "Sự giàu có, sở hữu lớn, hanh thông tuyệt đối nhờ hành xử khiêm tốn.",
-        "Địa Lôi Phục": "Sự phục hồi, quay trở lại của sinh khí tốt đẹp. Cơ hội mới đang dần hé mở.",
-        "Địa Trạch Lâm": "Sự tiếp cận, giám sát, thời cơ đang đến gần. Hãy hành động tích cực.",
-        "Địa Thiên Thái": "Thời kỳ thái bình, hòa hợp, vạn vật sinh sôi nảy nở. Vô cùng cát tường.",
-        "Lôi Thiên Đại Tráng": "Sức mạnh to lớn nhưng cần tránh sự nôn nóng, kiêu ngạo kẻo gặp họa tự mãn.",
-        "Trạch Thiên Quải": "Quyết tâm loại bỏ cái xấu, giải quyết dứt điểm các vướng mắc cũ.",
-        "Thủy Thiên Nhu": "Chờ đợi trong kiên nhẫn và nuôi dưỡng sức mạnh, thời cơ chín muồi sẽ thành công.",
-        "Thủy Địa Tỷ": "Sự gắn kết, hợp tác thân thiện, tìm kiếm đồng minh chí hướng.",
-        "Lôi Thủy Giải": "Giải tỏa căng thẳng, gỡ bỏ nút thắt khó khăn, tha thứ và bước tiếp.",
-        "Lôi Phong Hằng": "Sự bền bỉ, lâu dài, giữ vững nguyên tắc ban đầu trước sóng gió.",
-        "Địa Phong Thăng": "Sự thăng tiến bền vững từ thấp lên cao, được quý nhân nâng đỡ.",
-        "Thủy Phong Tỉnh": "Giếng nước, sự cống hiến bền bỉ, nguồn lực vô tận nhưng cần bảo dưỡng kỹ càng.",
-        "Trạch Phong Đại Quá": "Áp lực quá tải, cột xà bị cong. Cần dũng cảm thay đổi cấu trúc cũ.",
-        "Trạch Lôi Tùy": "Thuận theo xu thế, đi theo người có năng lực, thích nghi linh hoạt.",
-        "Phong Thiên Tiểu Súc": "Tích lũy nhỏ, gió mây kéo đến nhưng chưa mưa. Cần chờ đợi tích lũy thêm.",
-        "Phong Hỏa Gia Nhân": "Tập trung chăm lo gia đình, nội bộ, giữ vững gia đạo hài hòa.",
-        "Phong Lôi Ích": "Sự tăng ích, phát triển, mang lại lợi ích cho cộng đồng sẽ tự đắc lợi.",
-        "Thiên Lôi Vô Vọng": "Hành động chính trực, không mưu cầu tư lợi quá mức sẽ tránh được thiên tai họa vô đơn chí.",
-        "Hỏa Lôi Phệ Hạp": "Cắn đứt cản trở, thực thi pháp luật nghiêm minh để thiết lập trật tự.",
-        "Sơn Lôi Di": "Chăm sóc bản thân, ăn uống lành mạnh và chú ý lời ăn tiếng nói.",
-        "Sơn Phong Cổ": "Chấn chỉnh tệ nạn cũ, cải tổ các mối quan hệ hoặc công việc đã suy thoái.",
-        "Hỏa Sơn Lữ": "Sự lữ hành, bất định, xa nhà. Nên khiêm tốn, tránh gây thù chuốc oán.",
-        "Hỏa Phong Đỉnh": "Thiết lập cái mới vững chắc như vạc ba chân, hợp tác cùng phát triển.",
-        "Hỏa Thủy Vị Tế": "Sự việc chưa hoàn thành xong, cần cẩn trọng ở những bước cuối cùng.",
-        "Sơn Thủy Mông": "Sự non nớt, cần được khai sáng học hỏi, tìm thầy chỉ dạy.",
-        "Phong Thủy Hoán": "Sự tan rã nỗi buồn, giải tỏa bất đồng để hướng tới đại đoàn kết.",
-        "Phong Sơn Tiệm": "Tiến triển tuần tự từng bước vững chắc như chim hồng bay lên núi cao.",
-        "Thiên Thủy Tụng": "Tranh chấp, kiện tụng. Nên tìm phương án hòa giải thay vì cố theo đuổi kiện cáo.",
-        "Thiên Hỏa Đồng Nhân": "Đoàn kết rộng rãi, đồng tâm hiệp lực vượt qua khó khăn chung.",
-        "Thủy Trạch Tiết": "Sự chừng mực, tiết chế chi tiêu và ham muốn để giữ gìn sự cân bằng.",
-        "Thủy Lôi Truân": "Gian nan buổi ban đầu lập nghiệp, cần tìm kiếm sự trợ giúp từ trợ thủ đắc lực.",
-        "Thủy Hỏa Ký Tế": "Mọi việc đã hoàn thành tốt đẹp, nhưng cần đề phòng sự suy thoái sau đỉnh cao.",
-        "Trạch Hỏa Cách": "Cuộc cách mạng cải cách triệt để, đổi mới tư duy và cách làm việc.",
-        "Lôi Hỏa Phong": "Thời kỳ thịnh vượng, phong phú dồi dào nhưng cần giữ tâm sáng suốt đề phòng sa sút.",
-        "Địa Hỏa Minh Di": "Mặt trời lặn dưới đất, bóng tối bao trùm. Nên ẩn giấu tài năng, nhẫn nhịn vượt khó.",
-        "Địa Thủy Sư": "Binh chúng đông đảo, cần người lãnh đạo kỷ luật và chính trực dẫn dắt.",
-        "Sơn Thiên Đại Súc": "Tích lũy tài sản và tri thức lớn, thời cơ thuận lợi để làm việc lớn.",
-        "Sơn Trạch Tổn": "Sự giảm bớt cái tôi, chấp nhận hao tổn nhỏ trước mắt để đổi lấy lợi ích lâu dài.",
-        "Sơn Hỏa Bí": "Trang sức bên ngoài đẹp đẽ nhưng cần chú trọng thực chất bên trong.",
-        "Sơn Phong Cổ": "Cải tổ bộ máy suy thoái, khắc phục sai lầm cũ.",
-        "Sơn Thủy Mông": "Sự u tối, cần kiên nhẫn học hỏi tích lũy kiến thức.",
-        "Sơn Địa Bác": "Sự suy tàn gặm nhấm dần, hãy giữ tĩnh lặng bảo toàn bản thân.",
-        "Địa Trạch Lâm": "Thời cơ chín muồi đang tới gần, hãy chủ động tiếp cận.",
-        "Địa Thiên Thái": "Sự hanh thông, âm dương giao hòa cát tường như ý.",
-        "Địa Sơn Khiêm": "Sự khiêm tốn, nhường nhịn đem lại lợi ích bền vững, được mọi người kính trọng.",
-        "Địa Lôi Phục": "Sự phục hồi trở lại của những điều tốt đẹp sau cơn bão.",
-        "Trạch Thủy Khốn": "Sự khốn cùng, bị bao vây cô lập. Lời khuyên: Giữ vững khí tiết, hạn chế hành động.",
-        "Trạch Địa Tụy": "Sự tụ họp đông vui, quần tụ quần chúng vì mục đích tốt đẹp.",
-        "Trạch Sơn Hàm": "Sự cảm ứng chân thành giữa hai tâm hồn, rất tốt cho tình yêu hôn nhân.",
-        "Thủy Sơn Kiển": "Đường đi hiểm trở khó khăn trước mắt, nên dừng lại tìm lối đi khác an toàn hơn.",
-        "Lôi Sơn Tiểu Quá": "Hành động nhỏ thì cát, việc lớn không nên làm. Cần khiêm tốn, hạ mình.",
-        "Lôi Trạch Quy Muội": "Sự kết hợp vội vã, không đúng trình tự, dễ mang lại kết quả không bền vững."
-    };
+    let currentStep = 0;
+    let userAnswers = [];
+    let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
 
-    let currentStep = 1;
-    let coinCasts = [];
-    let calendarDetails = null;
-    let currentQuestionsData = []; // Lưu câu trả lời của người dùng
+    const questionText = document.getElementById('question-text');
+    const questionInput = document.getElementById('question-input');
+    const questionSubmit = document.getElementById('question-submit');
+    const progressText = document.getElementById('progress-text');
+    const progressFill = document.getElementById('progress-fill');
+    const questionForm = document.getElementById('question-flow-form');
+    const finishContainer = document.getElementById('finish-container');
 
-    function init() {
-        setupEventListeners();
-        updateRealTimeClock();
-        setInterval(updateRealTimeClock, 1000); // Cập nhật đồng hồ mỗi giây
-    }
-
-    function setupEventListeners() {
-        const disclaimerCheckbox = document.getElementById("disclaimer-checkbox");
-        const proceedBtn = document.getElementById("proceed-btn");
-
-        // Bật/tắt nút Tiếp tục ở màn hình điều khoản
-        disclaimerCheckbox.addEventListener("change", function () {
-            proceedBtn.disabled = !this.checked;
-        });
-
-        // Vào web sau khi đồng ý điều khoản
-        proceedBtn.addEventListener("click", function () {
-            document.getElementById("disclaimer-screen").classList.add("hidden");
-            document.getElementById("main-screen").classList.remove("hidden");
-            // Cố định thời gian gieo quẻ ngay tại thời điểm bấm vào web
-            setRealTimeInputs();
-        });
-
-        // Gửi câu trả lời
-        const questionSubmit = document.getElementById("question-submit");
-        const questionInput = document.getElementById("question-input");
-
-        questionSubmit.addEventListener("click", function () {
-            handleQuestionSubmit();
-        });
-
-        questionInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                handleQuestionSubmit();
-            }
-        });
-
-        // Nút hoàn tất kết quả
-        const finishBtn = document.getElementById("finish-btn");
-        finishBtn.addEventListener("click", function () {
-            showHexagramResult();
-        });
-
-        // Nút tải ảnh
-        const downloadBtn = document.getElementById("download-btn");
-        downloadBtn.addEventListener("click", function () {
-            downloadHexagramImage();
-        });
-    }
-
-    // Luôn luôn hiển thị giờ Việt Nam cập nhật liên tục cho người dùng
-    function updateRealTimeClock() {
-        const clockEl = document.getElementById("live-clock");
-        if (clockEl) {
-            const now = new Date();
-            // Định dạng theo chuẩn giờ Việt Nam (GMT+7)
-            const options = {
-                timeZone: 'Asia/Ho_Chi_Minh',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            };
-            const timeStr = now.toLocaleTimeString('vi-VN', options);
-            clockEl.textContent = timeStr;
-        }
-    }
-
-    function setRealTimeInputs() {
-        const dateTimeInput = document.getElementById("current-date-time");
-        const now = new Date();
-        
-        // Định dạng thời gian cục bộ YYYY-MM-DDTHH:mm tương thích với datetime-local
-        const offset = now.getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
-        dateTimeInput.value = localISOTime;
-
-        // Lưu thông tin lịch pháp ngay lúc này
-        updateCalendarDetails();
-    }
-
-    function updateCalendarDetails() {
-        const dateTimeVal = document.getElementById("current-date-time").value;
-        const gDate = new Date(dateTimeVal);
-        calendarDetails = CALENDAR.getCalendarDetails(gDate);
-    }
-
-    // Hàm tạo ngẫu nhiên 3 xu lúc mới vào web
-    function randomizeInitialCoins() {
-        const coins = [
-            document.getElementById("coin-1"),
-            document.getElementById("coin-2"),
-            document.getElementById("coin-3")
-        ];
-
-        coins.forEach(coin => {
-            const isYang = Math.random() < 0.5;
-            setCoinVisual(coin, isYang);
-        });
-    }
-
-    // Đặt mặt hiển thị của đồng xu
-    // Dương (Yang - mặt 2 chữ): Hiển thị 2 chữ trái/phải
-    // Âm (Yin - mặt 1 chữ): Hiển thị 1 chữ ở trên
-    function setCoinVisual(coinEl, isYang) {
-        const charactersContainer = coinEl.querySelector(".coin-characters");
-        if (isYang) {
-            // Dương: 2 chữ (mặt 2 chữ)
-            charactersContainer.innerHTML = `
-                <span class="coin-text ct-left">乾</span>
-                <span class="coin-text ct-right">隆</span>
-            `;
-        } else {
-            // Âm: 1 chữ (mặt 1 chữ)
-            charactersContainer.innerHTML = `
-                <span class="coin-text ct-top">寶</span>
-            `;
-        }
-    }
-
-    // Xử lý khi người dùng nhấn gửi câu trả lời
-    function handleQuestionSubmit() {
-        const questionInput = document.getElementById("question-input");
-        const answerText = questionInput.value.trim();
-
-        if (!answerText) {
-            alert("Vui lòng nhập câu trả lời của bạn!");
+    questionSubmit.addEventListener('click', (e) => {
+        e.preventDefault();
+        const ans = questionInput.value.trim();
+        if (!ans) {
+            alert("Vui lòng nhập câu trả lời của bạn trước khi gieo xu!");
             return;
         }
 
-        // Lưu câu trả lời
-        currentQuestionsData.push({
-            question: QUESTIONS[currentStep - 1],
-            answer: answerText
-        });
+        userAnswers.push(ans);
+        questionInput.value = "";
 
-        // Khóa giao diện nhập để tung xu
-        setFormDisabled(true);
+        // Chạy hiệu ứng tung xu
+        performCoinToss(() => {
+            currentStep++;
+            // Cập nhật thanh tiến trình
+            const percent = (currentStep / 6) * 100;
+            progressFill.style.width = `${percent}%`;
 
-        // Bắt đầu hiệu ứng quay xu
-        const coins = [
-            document.getElementById("coin-1"),
-            document.getElementById("coin-2"),
-            document.getElementById("coin-3")
-        ];
-
-        coins.forEach(coin => coin.classList.add("spinning"));
-
-        // Sinh ngẫu nhiên thời gian quay từ 3s đến 6s
-        const spinDuration = Math.floor(Math.random() * 3000) + 3000;
-
-        // Sinh kết quả quẻ trước
-        let coinYangCount = 0;
-        let coinOutcomes = [];
-        for (let i = 0; i < 3; i++) {
-            const isYang = Math.random() < 0.5;
-            coinOutcomes.push(isYang);
-            if (isYang) coinYangCount++;
-        }
-
-        // Xác định hào dựa trên số xu dương gieo được
-        // 2 dương 1 âm là âm (8)
-        // 2 âm 1 dương là dương (7)
-        // 3 dương là dương động (9)
-        // 3 âm là âm động (6)
-        let haoValue = 7; // Mặc định
-        if (coinYangCount === 3) haoValue = 9; // Lão Dương (Dương động)
-        else if (coinYangCount === 0) haoValue = 6; // Lão Âm (Âm động)
-        else if (coinYangCount === 2) haoValue = 8; // Thiếu Âm (Âm tĩnh)
-        else if (coinYangCount === 1) haoValue = 7; // Thiếu Dương (Dương tĩnh)
-
-        setTimeout(function () {
-            // Dừng quay xu
-            coins.forEach((coin, idx) => {
-                coin.classList.remove("spinning");
-                // Hiển thị mặt xu thực tế
-                setCoinVisual(coin, coinOutcomes[idx]);
-            });
-
-            // Ghi nhận hào
-            coinCasts.push(haoValue);
-
-            // Chuyển sang bước tiếp theo
             if (currentStep < 6) {
-                currentStep++;
-                updateQuestionProgressUI();
-                questionInput.value = "";
-                setFormDisabled(false);
+                progressText.innerText = `Lần gieo: ${currentStep + 1}/6`;
+                questionText.innerText = questions[currentStep];
                 questionInput.focus();
             } else {
-                // Đã gieo xong 6 lần
-                showFinishButtonUI();
+                // Ẩn form nhập và hiện nút hoàn tất
+                questionForm.classList.add('hidden');
+                finishContainer.classList.remove('hidden');
+                progressText.innerText = `Lần gieo: Hoàn tất 6/6`;
+            }
+        });
+    });
+
+    // -------------------------------------------------------------------------
+    // 4. HIỆU ỨNG TUNG XU
+    // -------------------------------------------------------------------------
+    const coins = [
+        document.getElementById('coin-1'),
+        document.getElementById('coin-2'),
+        document.getElementById('coin-3')
+    ];
+
+    function performCoinToss(callback) {
+        // Tắt nút submit
+        questionSubmit.disabled = true;
+
+        // Bắt đầu hiệu ứng quay
+        coins.forEach(coin => {
+            coin.classList.add('spinning');
+        });
+
+        // Thời gian ngẫu nhiên từ 3000ms đến 6000ms
+        const spinTime = Math.floor(Math.random() * 3000) + 3000;
+
+        setTimeout(() => {
+            // Ngừng quay
+            coins.forEach(coin => {
+                coin.classList.remove('spinning');
+            });
+
+            // Tung ngẫu nhiên mặt ngửa (true/dương - 2 chữ) và sấp (false/âm - 1 chữ)
+            // Mặt 2 chữ (mặt Dương) và mặt 1 chữ (mặt Âm)
+            const r1 = Math.random() < 0.5;
+            const r2 = Math.random() < 0.5;
+            const r3 = Math.random() < 0.5;
+
+            const coinResults = [r1, r2, r3];
+            const yangCount = coinResults.filter(r => r).length;
+
+            // Áp dụng quy tắc Lục Hào:
+            // 0 Dương (3 Âm): Âm Động (Lão Âm - X) -> value = 0
+            // 1 Dương (2 Âm): Dương Tĩnh (Thiếu Dương - —) -> value = 1
+            // 2 Dương (1 Âm): Âm Tĩnh (Thiếu Âm - --) -> value = 2
+            // 3 Dương (0 Âm): Dương Động (Lão Dương - O) -> value = 3
+            let lineValue;
+            if (yangCount === 0) {
+                lineValue = 0; // Lão Âm
+            } else if (yangCount === 1) {
+                lineValue = 1; // Thiếu Dương
+            } else if (yangCount === 2) {
+                lineValue = 2; // Thiếu Âm
+            } else {
+                lineValue = 3; // Lão Dương
             }
 
-        }, spinDuration);
+            hexLines.push(lineValue);
+
+            // Cập nhật hiển thị mặt xu trực quan cho người dùng xem
+            coins.forEach((coin, idx) => {
+                const isYang = coinResults[idx];
+                // Mặt Dương (mặt có chữ 寶) hoặc mặt Âm (không chữ)
+                const charEl = coin.querySelector('.coin-characters');
+                if (isYang) {
+                    charEl.style.display = 'block';
+                } else {
+                    charEl.style.display = 'none';
+                }
+            });
+
+            // Kích hoạt lại nút và chạy callback
+            questionSubmit.disabled = false;
+            if (callback) callback();
+
+        }, spinTime);
     }
 
-    function setFormDisabled(disabled) {
-        document.getElementById("question-input").disabled = disabled;
-        document.getElementById("question-submit").disabled = disabled;
-        document.getElementById("current-date-time").disabled = disabled;
-        document.getElementById("topic-select").disabled = disabled;
-        document.getElementById("gender-select").disabled = disabled;
+    // -------------------------------------------------------------------------
+    // 5. HIỂN THỊ KẾT QUẢ VÀ CHỤP CARD
+    // -------------------------------------------------------------------------
+    const finishBtn = document.getElementById('finish-btn');
+    const castingStage = document.getElementById('casting-stage');
+    const resultArea = document.getElementById('result-area');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const hexagramImg = document.getElementById('hexagram-img');
+    const downloadBtn = document.getElementById('download-btn');
+
+    finishBtn.addEventListener('click', () => {
+        // Tắt đếm giờ thực
+        if (liveClockTimer) clearInterval(liveClockTimer);
+
+        loadingOverlay.classList.add('visible');
+
+        const dVal = document.getElementById('current-date-time').value;
+        const calendarData = CALENDAR.calculateCanChi(dVal);
+        const formattedDate = formatDate(dVal);
+
+        // Gọi logic tính quẻ dịch
+        const hexData = ICHING.calculateHexagramData(hexLines, calendarData, "Lục hào", formattedDate);
+
+        // Tạo giao diện trong captureTarget
+        renderCaptureHTML(hexData);
+
+        // Chờ vẽ và lấy ảnh
+        setTimeout(() => {
+            const captureArea = document.getElementById('captureArea');
+            const target = document.getElementById('captureTarget');
+
+            captureArea.style.position = 'fixed';
+            captureArea.style.left = '0';
+            captureArea.style.top = '0';
+            captureArea.style.zIndex = '-1';
+            captureArea.style.opacity = '0.01';
+
+            html2canvas(target, {
+                scale: window.innerWidth < 768 ? 1 : 1.5,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                captureArea.style.position = 'absolute';
+                captureArea.style.left = '-9999px';
+                captureArea.style.opacity = '1';
+
+                const imgData = canvas.toDataURL('image/png');
+                hexagramImg.src = imgData;
+
+                // Cập nhật kết luận giải thích
+                displayInterpretation(hexData);
+
+                // Ẩn khu gieo và hiện khu kết quả
+                castingStage.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                loadingOverlay.classList.remove('visible');
+
+                // Cuộn mượt đến đầu kết quả
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+
+            }).catch(err => {
+                console.error(err);
+                loadingOverlay.classList.remove('visible');
+                alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch!");
+            });
+        }, 300);
+    });
+
+    // Định dạng ngày giờ hiển thị
+    function formatDate(isoStr) {
+        if (!isoStr) return "";
+        const d = new Date(isoStr);
+        const p = n => n < 10 ? '0' + n : n;
+        return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} - ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
 
-    function updateQuestionProgressUI() {
-        const questionTextEl = document.getElementById("question-text");
-        const progressTextEl = document.getElementById("progress-text");
-        const progressFillEl = document.getElementById("progress-fill");
-
-        questionTextEl.textContent = QUESTIONS[currentStep - 1];
-        progressTextEl.textContent = `Lần gieo: ${currentStep}/6`;
-        progressFillEl.style.width = `${((currentStep - 1) / 6) * 100}%`;
+    // -------------------------------------------------------------------------
+    // 6. TẠO HTML ĐỂ CHỤP ẢNH (EXPORT CARD RENDERING)
+    // -------------------------------------------------------------------------
+    function renderHexVisual(lines, isChanged) {
+        const bits = lines.map(v => ICHING.getBit(v, isChanged));
+        let html = '';
+        for (let i = 5; i >= 0; i--) {
+            const isMoving = (lines[i] === 0 || lines[i] === 3);
+            const moveClass = isMoving ? 'moving' : '';
+            html += `<div class="gua-line ${bits[i] === '1' ? 'yang' : 'yin'} ${moveClass}"></div>`;
+        }
+        return `<div class="gua-container">${html}</div>`;
     }
 
-    function showFinishButtonUI() {
-        document.getElementById("question-flow-form").classList.add("hidden");
-        
-        const finishContainer = document.getElementById("finish-container");
-        finishContainer.classList.remove("hidden");
+    function renderCaptureHTML(data) {
+        const {
+            mainName, changedName, palaceName,
+            mainAttr, changedPalaceName, changedAttr,
+            linesData, shensha, dateInfo, methodText, lines
+        } = data;
 
-        const progressFillEl = document.getElementById("progress-fill");
-        progressFillEl.style.width = "100%";
-        document.getElementById("progress-text").textContent = "Gieo xu hoàn tất!";
-    }
+        let rowsHtml = '';
+        // Hiển thị từ hào 6 xuống hào 1
+        for (let i = 5; i >= 0; i--) {
+            const line = linesData[i];
+            const rowClass = line.isMoving ? 'row-moving' : 'row-static';
+            const sym = (line.val === 1) ? '—' : (line.val === 2) ? '--' : (line.val === 3) ? 'O' : 'X';
 
-    function showHexagramResult() {
-        // Cập nhật lại lịch pháp chính xác trước khi dựng quẻ
-        updateCalendarDetails();
+            let marker = '';
+            if (line.isShi) marker = `<span class="marker-the">Thế</span>`;
+            if (line.isYing) marker = `<span class="marker-ung">Ứng</span>`;
 
-        // Xử lý quẻ dịch
-        const quereResult = ICHING.processQuere(coinCasts, calendarDetails);
+            let phucHtml = '-';
+            if (line.phucThan) {
+                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - ${line.phucThan.branch}</span>`;
+            }
 
-        // Vẽ quẻ lên Canvas ẩn
-        const canvas = document.getElementById("hexagram-canvas");
-        RENDERER.drawHexagramCard(canvas, quereResult, calendarDetails);
+            const isTK = line.isTK ? 'K' : '-';
+            const isCTK = line.isCTK ? 'K' : '-';
 
-        // Chuyển canvas thành ảnh PNG để hỗ trợ chạm giữ trên mobile
-        const imgOutput = document.getElementById("hexagram-img");
-        imgOutput.src = canvas.toDataURL("image/png");
-
-        // Ẩn khu vực gieo quẻ, hiện màn hình kết quả
-        document.getElementById("casting-stage").classList.add("hidden");
-        document.getElementById("result-area").classList.remove("hidden");
-
-        // Hiển thị luận giải cơ bản
-        renderBasicInterpretation(quereResult);
-    }
-
-    function renderBasicInterpretation(quereResult) {
-        const mainName = quereResult.main.name;
-        const bienName = quereResult.bien.name;
-        const topic = document.getElementById("topic-select").value;
-
-        const mainMeaning = HEX_MEANINGS[mainName] || "Ý nghĩa quẻ chính đang được biên soạn chi tiết.";
-        const bienMeaning = HEX_MEANINGS[bienName] || "Ý nghĩa quẻ biến đang được biên soạn chi tiết.";
-
-        let topicInterpret = "";
-        if (quereResult.main.isLucXung) {
-            topicInterpret += `<p><strong>Đặc điểm quẻ:</strong> Quẻ chính thuộc quẻ <strong>Lục Xung</strong>. Thể hiện sự việc tiến triển nhanh chóng, biến động mạnh mẽ, dễ có xung đột hoặc thay đổi dứt khoát ngay lập tức.</p>`;
+            rowsHtml += `
+            <tr class="${rowClass}">
+                <td>${sym}</td>
+                <td>${marker}</td>
+                <td>${line.relation}</td>
+                <td>${line.chi}-${line.hanh}</td>
+                <td>${phucHtml}</td>
+                <td>${isTK}</td>
+                <td class="sep-col">${line.changed.relation}</td>
+                <td>${line.changed.branch}-${line.changed.hanh}</td>
+                <td>${line.lucThu}</td>
+                <td>${isCTK}</td>
+                <td>${line.tsNgay}</td>
+                <td>${line.tsThang}</td>
+            </tr>`;
         }
 
-        const bodyEl = document.getElementById("interpretation-body");
-        bodyEl.innerHTML = `
-            <p><strong>Dụng thần chính xác:</strong> Hệ thống tự động xác định chủ đề <strong>${topic}</strong> của bạn.</p>
+        const target = document.getElementById('captureTarget');
+        target.innerHTML = `
+            <div class="info-header">
+                <div class="info-content">
+                    <div class="info-line"><strong>Ngày giờ gieo:</strong> ${data.formattedDate} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Phương pháp:</strong> ${methodText}</div>
+                    <div class="info-line"><strong>Can chi ngày giờ:</strong> ${dateInfo.fullCanChi}</div>
+                    <div class="info-line"><strong>Hào tâm niệm:</strong> ${dateInfo.haoTamText || 'Không'} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
+                    <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>
+                </div>
+            </div>
             
-            <h4>Quẻ Bản Thể: ${mainName} (${quereResult.main.palace} - ${quereResult.main.status})</h4>
-            <p>${mainMeaning}</p>
+            <div class="hex-visual-section">
+                <div class="hex-box">
+                    <div class="hex-title">${mainName}</div>
+                    ${renderHexVisual(lines, false)}
+                    <div class="hex-family">Họ ${palaceName}${mainAttr ? ' - ' + mainAttr : ''}</div>
+                </div>
+                
+                <div class="hex-ngam-indicator">
+                    ${data.ngamResult.length > 0 ? data.ngamResult.map(t => `<span>${t}</span>`).join('') : ''}
+                </div>
+
+                <div class="hex-box">
+                    <div class="hex-title">${changedName}</div>
+                    ${renderHexVisual(lines, true)}
+                    <div class="hex-family">Họ ${changedPalaceName}${changedAttr ? ' - ' + changedAttr : ''}</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hào</th>
+                        <th>T/Ư</th>
+                        <th>Lục Thân</th>
+                        <th>Can Chi</th>
+                        <th>P.Thần</th>
+                        <th>TK</th>
+                        <th class="sep-col">Lục Thân</th>
+                        <th>Can Chi</th>
+                        <th>Lục Thú</th>
+                        <th>TK</th>
+                        <th>TS Ngày</th>
+                        <th>TS Tháng</th>
+                    </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
             
-            <h4>Quẻ Biến Đổi: ${bienName}</h4>
-            <p>${bienMeaning}</p>
+            <div class="shensha-section">
+                <div class="shensha-title">Thần Sát</div>
+                <div class="shensha-grid">
+                    ${(() => {
+                        const movingBranches = linesData.filter(l => l.isMoving).flatMap(l => [l.chi, l.changed.branch]);
+                        return shensha.map(s => {
+                            let parts = s.split('</strong> ');
+                            if (parts.length > 1) {
+                                let values = parts[1];
+                                let hasMoving = false;
+                                movingBranches.forEach(b => {
+                                    if (values.includes(b)) hasMoving = true;
+                                    values = values.split(b).join(`<span style="color: red; font-weight: bold;">${b}</span>`);
+                                });
+                                let title = parts[0];
+                                if (hasMoving) {
+                                    title = title.replace('<strong>', '<strong style="color: red;">');
+                                }
+                                return `<div class="ss-item">${title}</strong> ${values}</div>`;
+                            }
+                            return `<div class="ss-item">${s}</div>`;
+                        }).join('');
+                    })()}
+                </div>
+            </div>
             
-            ${topicInterpret}
-            
-            <h4>Hướng Dẫn Phân Tích:</h4>
-            <p>Thế quẻ đang ngụ tại hào ${quereResult.main.the}, Ứng quẻ tại hào ${quereResult.main.ung}. 
-            Các thông tin chi tiết về Sinh, Khắc, Vượng, Suy theo Nguyệt Lệnh (<strong>${calendarDetails.month.chi} - ${CALENDAR.NGU_HANH[calendarDetails.month.chi]}</strong>) 
-            và Nhật Thần (<strong>${calendarDetails.day.chi} - ${CALENDAR.NGU_HANH[calendarDetails.day.chi]}</strong>) đã được tính toán đầy đủ trong ảnh thẻ quẻ để bạn tiện tham khảo và lưu trữ.</p>
+            <div class="watermark" style="text-align: right; margin-top: 15px; font-size: 14px; font-style: italic; color: #888;">
+                Phần mềm Lục Hào - Triển khai trên Vercel qua GitHub
+            </div>
         `;
     }
 
-    function downloadHexagramImage() {
-        const canvas = document.getElementById("hexagram-canvas");
-        const image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        
-        const link = document.createElement("a");
-        link.download = `que_dich_luc_hao_${calendarDetails.day.can}_${calendarDetails.day.chi}.png`;
-        link.href = image;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    // -------------------------------------------------------------------------
+    // 7. HIỂN THỊ LUẬN GIẢI QUẺ DỊCH
+    // -------------------------------------------------------------------------
+    function displayInterpretation(data) {
+        const body = document.getElementById('interpretation-body');
+        const topic = document.getElementById('topic-select').value;
+        const gender = document.getElementById('gender-select').value;
+
+        body.innerHTML = `<p style="text-align: center; color: var(--gold);">Đang truy vấn dữ liệu luận đoán và chạy mô hình AI...</p>`;
+
+        // Thu thập các câu trả lời khảo sát từ người dùng
+        const userInputs = {
+            who: userAnswers[0] || "",
+            gender: userAnswers[1] || "",
+            birthYear: userAnswers[2] || "",
+            issue: userAnswers[3] || "",
+            city: userAnswers[4] || "",
+            desire: userAnswers[5] || "",
+            question: userAnswers[3] || ""
+        };
+
+        // Gửi yêu cầu POST lấy luận đoán động và AI
+        fetch('/api/interpret', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                hex_id: data.mainID,
+                changed_id: data.changedID,
+                topic: topic,
+                gender: gender,
+                hexData: data,
+                userInputs: userInputs
+            })
+        })
+            .then(res => res.json())
+            .then(resData => {
+                if (!resData.success) {
+                    body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Lỗi hệ thống: ${resData.error || 'Không rõ nguyên nhân'}</p>`;
+                    return;
+                }
+
+                const { main, changed, deity, lines, analysisHtml, catHung, templateContent, aiExplanation } = resData;
+
+                let linesHtml = "";
+                if (data.movingLines.length > 0) {
+                    linesHtml += `<h4>3. Chi Tiết Các Hào Phát Động</h4>`;
+                    data.movingLines.forEach(lineNum => {
+                        const dbLine = lines.find(l => l.line_number === lineNum);
+                        if (dbLine) {
+                            linesHtml += `<p><strong>Hào ${lineNum} Động (${dbLine.relation}):</strong> ${dbLine.meaning_active || 'Đang cập nhật...'}</p>`;
+                        }
+                    });
+                } else {
+                    linesHtml += `<h4>3. Trạng Thái Hào Tĩnh</h4>`;
+                    const shiLineNum = data.linesData.findIndex(l => l.isShi) + 1;
+                    const dbLine = lines.find(l => l.line_number === shiLineNum);
+                    if (dbLine) {
+                        linesHtml += `<p><strong>Hào Thế (Hào ${shiLineNum} - ${dbLine.relation}):</strong> ${dbLine.meaning_static || 'Đang cập nhật...'}</p>`;
+                    }
+                }
+
+                // Cấu hình nhãn Cát Hung trực quan
+                let catHungBadge = "";
+                if (catHung === "CAT") {
+                    catHungBadge = `<span style="background-color: #15803d; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">CÁT (TỐT LÀNH)</span>`;
+                } else if (catHung === "HUNG") {
+                    catHungBadge = `<span style="background-color: #b91c1c; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">HUNG (BẤT LỢI)</span>`;
+                } else {
+                    catHungBadge = `<span style="background-color: #4b5563; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">BÌNH HÒA</span>`;
+                }
+
+                let html = `
+                    <p style="margin-bottom: 15px;"><strong>Người hỏi:</strong> Giới tính ${gender} | <strong>Chủ đề:</strong> Xem về ${topic}.</p>
+                    <p><strong>Dụng Thần Lục Lục Hào:</strong> <strong>${deity.deity}</strong> (Kỵ thần: <em>${deity.kỵ || 'Không'}</em>).</p>
+                    
+                    <div class="result-summary-block" style="background-color: rgba(212,163,89,0.08); border-left: 4px solid var(--gold); padding: 15px; margin: 20px 0; border-radius: 4px;">
+                        <div style="margin-bottom: 8px;"><strong>Kết luận Quẻ Dịch:</strong> ${catHungBadge}</div>
+                        <p style="font-weight: bold; margin-bottom: 5px;">${templateContent?.summary || 'Đang xác định kết luận...'}</p>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">${templateContent?.detail || ''}</p>
+                    </div>
+
+                    <h4>1. Ý Nghĩa Quẻ Dịch Tĩnh</h4>
+                    <p>Quẻ Chủ là <strong>${main.name}</strong> (${main.vietnamese_meaning || ''}) thuộc họ quẻ <strong>${main.palace}</strong>.</p>
+                    <p><em>Giải nghĩa:</em> ${main.overall_meaning || 'Đang cập nhật...'}</p>
+                    <p><em>Ý nghĩa chủ đề [${topic.toUpperCase()}]:</em> ${main.topic_meaning || 'Đang cập nhật...'}</p>
+                    
+                    ${changed ? `
+                    <h4>Quẻ Biến: ${changed.name} (${changed.vietnamese_meaning || ''})</h4>
+                    <p>Quẻ biến biểu thị xu hướng diễn biến tiếp theo của sự việc: <em>${changed.overall_meaning || 'Đang cập nhật...'}</em></p>
+                    ` : ''}
+                    
+                    ${linesHtml}
+
+                    <div class="theory-analysis-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 15px;">
+                        <h3 class="interpretation-title" style="margin-bottom: 12px; font-size: 1.15rem; color: var(--gold);">PHÂN TÍCH KỸ THUẬT (CHU THẦN BÂN)</h3>
+                        ${analysisHtml || '<p>Không có dữ liệu phân tích.</p>'}
+                    </div>
+
+                    ${aiExplanation ? `
+                    <div class="ai-explanation-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; background-color: rgba(212,163,89,0.05); padding: 20px; border-radius: 8px; border: 1px dashed var(--gold);">
+                        <h3 class="interpretation-title" style="margin-top: 0; margin-bottom: 15px; font-size: 1.2rem; color: var(--gold); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">LỜI BÀN CỦA TRỢ LÝ AI CÁ NHÂN HÓA</h3>
+                        <div style="line-height: 1.6; font-size: 0.98rem; white-space: pre-line;">${aiExplanation}</div>
+                    </div>
+                    ` : ''}
+
+                    <div style="font-size: 0.85rem; color: #888; border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 20px; text-align: right;">
+                        Nguồn dữ liệu: Supabase Cloud Database (${resData.source === 'supabase' ? 'Kết nối trực tiếp API' : 'Dữ liệu dự phòng Mock'})
+                    </div>
+                `;
+                body.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Không thể kết nối đến máy chủ API để lấy luận giải!</p>`;
+            });
     }
 
-    return {
-        init,
-        randomizeInitialCoins
-    };
+    // -------------------------------------------------------------------------
+    // 8. TẢI ẢNH VỀ MÁY
+    // -------------------------------------------------------------------------
+    downloadBtn.addEventListener('click', () => {
+        const imgData = hexagramImg.src;
+        if (!imgData) {
+            alert("Không tìm thấy ảnh quẻ dịch!");
+            return;
+        }
 
-})();
-
-// Khởi chạy ứng dụng khi DOM tải xong
-document.addEventListener("DOMContentLoaded", function () {
-    APP.init();
-    APP.randomizeInitialCoins();
+        const link = document.createElement('a');
+        link.download = `que_luc_hao_${new Date().getTime()}.png`;
+        link.href = imgData;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+            document.body.removeChild(link);
+        }, 100);
+    });
 });

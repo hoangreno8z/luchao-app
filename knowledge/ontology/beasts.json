@@ -1,0 +1,26 @@
+{
+  "Thanh Long": {
+    "symbols": ["Noble", "Fortune", "Joy", "Premium", "Mariage"],
+    "vietnamese": "Hỉ khánh, tài lộc vượng cát, cao quý, chuyện vui mừng, hôn nhân"
+  },
+  "Chu Tước": {
+    "symbols": ["Message", "Speech", "Dispute", "Document", "Rumor"],
+    "vietnamese": "Tin tức, văn thư, tranh chấp khẩu thiệt, cãi vã, tin đồn"
+  },
+  "Câu Trần": {
+    "symbols": ["Stagnation", "Land", "Delay", "Old", "Arrest"],
+    "vietnamese": "Trì trệ, đất đai thổ sản, chậm trễ, chuyện cũ, giam giữ"
+  },
+  "Đằng Xà": {
+    "symbols": ["Anxiety", "Mystery", "Fear", "Strange", "Dream"],
+    "vietnamese": "Lo lắng mơ hồ, kỳ quái, giấc mơ, ám ảnh kinh sợ, không rõ ràng"
+  },
+  "Bạch Hổ": {
+    "symbols": ["Accident", "Blood", "Power", "Surgery", "Funeral"],
+    "vietnamese": "Tai nạn, huyết quang, phẫu thuật, bệnh nặng, tang tóc, quyền uy, nóng nảy"
+  },
+  "Huyền Vũ": {
+    "symbols": ["Secret", "Theft", "Lust", "Plan_Dark", "Lie"],
+    "vietnamese": "Âm thầm, trộm cắp, lừa dối, âm mưu, tư thông tình ái ẩn giấu"
+  }
+}

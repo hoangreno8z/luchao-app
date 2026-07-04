@@ -1,0 +1,17 @@
+{
+  "name": "luchao-app",
+  "version": "1.0.0",
+  "description": "Kinh Dich Luc Hao Divination App",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "build": "node compiler/compile.js"
+  },
+  "keywords": [
+    "luc-hao",
+    "iching",
+    "kinh-dich"
+  ],
+  "author": "Antigravity",
+  "license": "ISC"
+}

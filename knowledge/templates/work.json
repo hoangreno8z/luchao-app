@@ -1,0 +1,19 @@
+{
+  "scenarios": {
+    "CAT": {
+      "summary": "Công việc vô cùng hanh thông, cơ hội thăng tiến rộng mở.",
+      "detail": "Quẻ cát tường hiển thị Dụng thần Quan Quỷ vượng tướng và Hào Thế hưng vượng. Bản mệnh có đầy đủ thực lực và được quý nhân nâng đỡ. Đây là thời cơ chín muồi để hành động, chuyển đổi công tác hoặc đảm nhận trọng trách mới.",
+      "advice": "Hãy chủ động nắm bắt cơ hội, khiêm tốn học hỏi và quyết đoán thực thi kế hoạch."
+    },
+    "HUNG": {
+      "summary": "Công việc gặp nhiều trắc trở, áp lực lớn, đề phòng rủi ro.",
+      "detail": "Hệ thống phát hiện Dụng thần bị tổn hại (hồi đầu khắc, tuần không hoặc nguyệt phá) hoặc Hào Thế bị hóa Quỷ. Điềm báo mưu sự bất thành, dễ có sự tranh chấp, hao tài hoặc chịu áp lực nặng nề từ cấp trên.",
+      "advice": "Thời điểm này nên tĩnh không nên động. Hãy tạm dừng các dự án lớn, phòng tránh tiểu nhân gièm pha và tập trung củng cố nội lực."
+    },
+    "BINH": {
+      "summary": "Công việc ở thế tiến thoái lưỡng nan, có cơ hội nhưng bản thân mệt mỏi.",
+      "detail": "Dữ liệu phân tích chỉ ra tình trạng 'Dụng vượng Thế suy'. Cơ hội việc làm hoặc dự án bên ngoài có triển vọng tốt, nhưng bản thân bạn lực lượng chưa đủ hoặc đang chịu nhiều stress, lo lắng nên chưa thể gánh vác trọn vẹn.",
+      "advice": "Cần bồi bổ sức khỏe, phân bổ công việc hợp lý và không nên ôm đồm quá nhiều việc cùng lúc."
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "Phụ Mẫu": {
+    "symbols": ["Support", "Document", "Protection", "Education", "Vehicle", "House", "Authority_Figure"],
+    "vietnamese": "Cha mẹ, trưởng bối, giấy tờ, nhà cửa, hợp đồng, đơn vị công tác"
+  },
+  "Quan Quỷ": {
+    "symbols": ["Career", "Rank", "Power", "Pressure", "Illness", "Danger", "Competitor", "Worry"],
+    "vietnamese": "Công danh, sự nghiệp, chức vụ, chồng/bạn trai (nữ hỏi), bệnh tật, lo âu, tai họa"
+  },
+  "Huynh Đệ": {
+    "symbols": ["Competition", "Sibling", "Friend", "Peer", "Expense", "Obstacle", "Dispute"],
+    "vietnamese": "Anh chị em, bạn bè, đối thủ cạnh tranh, hao tài, cản trở, chia rẽ"
+  },
+  "Thê Tài": {
+    "symbols": ["Money", "Asset", "Relationship_Female", "Subordinate", "Resource"],
+    "vietnamese": "Tiền tài, tài sản, lợi nhuận, vợ/bạn gái (nam hỏi), thuộc hạ, tài nguyên"
+  },
+  "Tử Tôn": {
+    "symbols": ["Relaxation", "Child", "Medicine", "Cure", "Safety", "Happiness", "Anti_Ghost"],
+    "vietnamese": "Con cái, học trò, thú cưng, thuốc men, cát tường, giải lo lắng, khắc chế tai họa"
+  }
+}
