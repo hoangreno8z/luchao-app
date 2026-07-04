@@ -310,7 +310,6 @@ export default async function handler(req, res) {
         }
     });
 
-    });
 
     // 4. Thêm phân tích Phục Thần từ Khối 1
     if (engineResult?.phucThanResult.found) {
