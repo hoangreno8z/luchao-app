@@ -91,7 +91,10 @@ const FALLBACK_TEXTS = {
     'PATTERN_DANG_XA_QUAN_DONG_AP_LUC': 'Tượng pháp thực chiến: Quan Quỷ phát động lâm Đằng Xà chủ về công việc sắp có sự điều chuyển đột ngột tạo áp lực tâm lý cực lớn hoặc hệ thống gặp sự cố bất ngờ.',
     'PATTERN_CHU_TUOC_PHU_DONG_VAN_BAN': 'Tượng pháp thực chiến: Phụ Mẫu lâm Chu Tước phát động chủ về có quyết định hành chính chính thức bằng văn bản hoặc thông báo bổ nhiệm được công bố.',
     'PATTERN_HUYEN_VU_TAI_TK_THAT_THOAT': 'Tượng pháp thực chiến: Thê Tài lâm Huyền Vũ ngộ Tuần Không chủ về rủi ro thất thoát tài chính âm thầm, đối tác mờ ám hoặc có gian lận tiền bạc ngầm.',
-    'PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT': 'Tượng pháp thực chiến: Huynh Đệ phát động lâm Bạch Hổ chủ về đối thủ cạnh tranh quyết liệt nhằm đoạt quyền lợi, hoặc chi phí dự án bị thâm hụt lớn.'
+    'PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT': 'Tượng pháp thực chiến: Huynh Đệ phát động lâm Bạch Hổ chủ về đối thủ cạnh tranh quyết liệt nhằm đoạt quyền lợi, hoặc chi phí dự án bị thâm hụt lớn.',
+    'PATTERN_DICH_MA_DONG_BIEN_DONG': 'Thần sát: Hào động lâm Dịch Mã đại diện cho sự biến động mạnh mẽ về không gian, có điềm báo đi du lịch, đi công tác xa, xuất ngoại hoặc điều chuyển công tác rất nhanh chóng.',
+    'PATTERN_DAO_HOA_DONG_DUYEN_VONG': 'Thần sát: Hào động lâm Đào Hoa là tượng có tin vui lớn về nhân duyên, tình cảm đôi lứa thăng hoa vượng phát hoặc công việc xuất hiện nhiều khách hàng/đối tác mến mộ.',
+    'PATTERN_HOA_CAI_DONG_NGHE_THUAT': 'Thần sát: Hào động lâm Hoa Cái chủ về trí tuệ hanh thông, thích hợp cho việc nghiên cứu học tập chuyên sâu, phát triển kỹ năng nghệ thuật hoặc tôn giáo.'
 };
 
 export default async function handler(req, res) {

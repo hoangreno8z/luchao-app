@@ -208,6 +208,28 @@ export function injectTemporalAxis(linesData, dayChi, monthChi, phucThanResult) 
         // Phát hiện Nguyệt Khắc (Nguyệt lệnh khắc Hào)
         const isNguyetKhac = KHAC_MAP[NGU_HANH_CHI[monthChi]] === line.hanh;
 
+        // --- TÍNH TOÁN THẦN SÁT (CHU THẦN BÂN) ---
+        // 1. Dịch Mã: Thân Tý Thìn -> Dần; Tị Dậu Sửu -> Hợi; Dần Ngọ Tuất -> Thân; Hợi Mão Mùi -> Tị.
+        let isDichMa = false;
+        if (['Thân', 'Tý', 'Thìn'].includes(dayChi) && line.chi === 'Dần') isDichMa = true;
+        if (['Tỵ', 'Dậu', 'Sửu'].includes(dayChi) && line.chi === 'Hợi') isDichMa = true;
+        if (['Dần', 'Ngọ', 'Tuất'].includes(dayChi) && line.chi === 'Thân') isDichMa = true;
+        if (['Hợi', 'Mão', 'Mùi'].includes(dayChi) && line.chi === 'Tỵ') isDichMa = true;
+
+        // 2. Đào Hoa: Thân Tý Thìn -> Dậu; Tị Dậu Sửu -> Ngọ; Dần Ngọ Tuất -> Mão; Hợi Mão Mùi -> Tý.
+        let isDaoHoa = false;
+        if (['Thân', 'Tý', 'Thìn'].includes(dayChi) && line.chi === 'Dậu') isDaoHoa = true;
+        if (['Tỵ', 'Dậu', 'Sửu'].includes(dayChi) && line.chi === 'Ngọ') isDaoHoa = true;
+        if (['Dần', 'Ngọ', 'Tuất'].includes(dayChi) && line.chi === 'Mão') isDaoHoa = true;
+        if (['Hợi', 'Mão', 'Mùi'].includes(dayChi) && line.chi === 'Tý') isDaoHoa = true;
+
+        // 3. Hoa Cái: Thân Tý Thìn -> Thìn; Tị Dậu Sửu -> Sửu; Dần Ngọ Tuất -> Tuất; Hợi Mão Mùi -> Mùi.
+        let isHoaCai = false;
+        if (['Thân', 'Tý', 'Thìn'].includes(dayChi) && line.chi === 'Thìn') isHoaCai = true;
+        if (['Tỵ', 'Dậu', 'Sửu'].includes(dayChi) && line.chi === 'Sửu') isHoaCai = true;
+        if (['Dần', 'Ngọ', 'Tuất'].includes(dayChi) && line.chi === 'Tuất') isHoaCai = true;
+        if (['Hợi', 'Mão', 'Mùi'].includes(dayChi) && line.chi === 'Mùi') isHoaCai = true;
+
         // Hào biến cũng phải qua trục thời gian
         let changedTemporal = null;
         if (line.isMoving && line.changed) {
@@ -252,6 +274,10 @@ export function injectTemporalAxis(linesData, dayChi, monthChi, phucThanResult) 
             isHopMonth,
             isMoDay,
             isMoMonth,
+            // Thần sát
+            isDichMa,
+            isDaoHoa,
+            isHoaCai,
             // Trục thời gian của hào biến
             changedTemporal,
             // Trục thời gian của phục thần (nếu có)
@@ -424,6 +450,18 @@ export function aggregateMicroOverlap(enrichedLines, hexProperties) {
         if (lucThuCode === 'BACH_HO' && lucThanCode === 'HUYNH_DE' && line.isMoving) {
             singleCodes.push('PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT');
         }
+
+        // --- CÁC LUẬT THẦN SÁT MỚI (BÍ KÍP RÚT GỌN) ---
+        if (line.isDichMa && line.isMoving) {
+            singleCodes.push('PATTERN_DICH_MA_DONG_BIEN_DONG');
+        }
+        if (line.isDaoHoa && line.isMoving) {
+            singleCodes.push('PATTERN_DAO_HOA_DONG_DUYEN_VONG');
+        }
+        if (line.isHoaCai && line.isMoving) {
+            singleCodes.push('PATTERN_HOA_CAI_DONG_NGHE_THUAT');
+        }
+
         // Huynh Đệ + Nguyệt Phá + Hào Thế = Bạn bè phản bội, hao tài
         if (lucThanCode === 'HUYNH_DE' && line.isNguyetPha && line.isShi) {
             singleCodes.push('PATTERN_THE_HUYNH_NP_PHAN_BOI');
