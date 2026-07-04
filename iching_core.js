@@ -421,6 +421,8 @@ const ICHING = (function () {
         const shensha = calculateShenSha(cal.ngay.can, cal.ngay.chi, cal.thang.chi);
 
         return {
+            mainID: hexID,
+            changedID: hexIDChanged,
             mainName,
             changedName,
             palaceName,

@@ -396,42 +396,68 @@ document.addEventListener('DOMContentLoaded', () => {
         const topic = document.getElementById('topic-select').value;
         const gender = document.getElementById('gender-select').value;
 
-        // Dụng thần
-        let dungThanText = "";
-        if (topic === "công việc" || topic === "thi cử") dungThanText = "Quan Quỷ (chủ công danh, chức vụ, thi cử)";
-        else if (topic === "tình yêu" || topic === "hôn nhân") {
-            dungThanText = gender === "Nam" ? "Thê Tài (chủ người yêu, vợ)" : "Quan Quỷ (chủ người yêu, chồng)";
-        } else if (topic === "sức khỏe") dungThanText = "Thế Hào (chủ bản thể) và Tử Tôn (chủ thuốc men, cát tường)";
-        else if (topic === "kinh doanh" || topic === "dự án") dungThanText = "Thê Tài (chủ tiền tài, lợi nhuận)";
-        else if (topic === "tìm kiếm") dungThanText = "Thê Tài (chủ đồ vật) hoặc Tử Tôn (chủ thú cưng)";
-        else if (topic === "thai sản") dungThanText = "Tử Tôn (chủ con cái)";
-        else if (topic === "ông bà cha mẹ" || topic === "xem thay mặt người lớn") dungThanText = "Phụ Mẫu (chủ trưởng bối)";
-        else if (topic === "con cháu" || topic === "xem thay mặt con") dungThanText = "Tử Tôn (chủ vãn bối)";
-        else if (topic === "anh em") dungThanText = "Huynh Đệ (chủ huynh đệ tỷ muội)";
-        else if (topic === "xem thay mặt vợ") dungThanText = "Thê Tài";
-        else if (topic === "xem thay mặt chồng") dungThanText = "Quan Quỷ";
-        else dungThanText = "Thế Hào và hào ứng với Lục Thân cụ thể của chủ đề";
+        body.innerHTML = `<p style="text-align: center; color: var(--gold);">Đang truy vấn dữ liệu luận đoán từ cơ sở dữ liệu...</p>`;
 
-        let html = `
-            <p><strong>Người gieo:</strong> Giới tính ${gender} | <strong>Chủ đề hỏi:</strong> Xem về ${topic}.</p>
-            <p><strong>Dụng Thần cần tập trung luận giải:</strong> Hào Lục Thân mang thuộc tính <strong>${dungThanText}</strong>.</p>
-            
-            <h4>1. Tổng Quan Quẻ Dịch</h4>
-            <p>Quẻ Chủ của bạn là <strong>${data.mainName}</strong> thuộc họ quẻ <strong>${data.palaceName}</strong>.</p>
-            ${data.movingLines.length > 0 ? 
-                `<p>Quẻ có các hào động hào <strong>${data.movingLines.join(', ')}</strong> hóa thành Quẻ Biến là <strong>${data.changedName}</strong>.</p>` : 
-                `<p>Đây là một <strong>Quẻ Tĩnh</strong> (không có hào động), mọi sự đang ở trạng thái hiện tại ổn định, chưa có sự thay đổi biến hóa lớn ngay lập tức.</p>`
-            }
-            
-            <h4>2. Trạng Thái Tiết Khí & Cát Hung Cơ Bản</h4>
-            <p>Quẻ dịch được lập vào tiết khí <strong>${data.dateInfo.tietKhi}</strong>. Nhật Thần là <strong>${data.dateInfo.nhatThan}</strong> và Nguyệt Lệnh là <strong>${data.dateInfo.nguyetLenh}</strong>. Đây là hai yếu tố cực kỳ quan trọng làm thước đo sức mạnh sinh khắc cho các hào trong quẻ.</p>
-            <p>Nhật và Nguyệt giúp xác định hào nào vượng tướng (được sinh trợ, mạnh mẽ) hay hào nào suy tuyệt (bị khắc chế, yếu ớt). Bản thân các sao Thần Sát như <strong>Quý Nhân, Lộc Thần, Dịch Mã</strong> cũng sẽ giúp trợ duyên hoặc báo trước điềm động trong công việc/tình cảm.</p>
-            
-            <h4>3. Lời Khuyên Cổ Nhân</h4>
-            <p>Dịch Kinh Lục Hào là công cụ phản ánh ý niệm nội tâm và sự vận hành sinh khắc tại thời điểm gieo. Khi gieo được quẻ này, bạn hãy giữ tâm thanh tịnh, ứng xử ôn hòa, tận lực thực hiện bổn phận của mình. Quẻ cát thì không nên kiêu ngạo lơ là, quẻ hung thì cần đề phòng chuẩn bị, biến nguy thành cơ.</p>
-        `;
+        // Gửi yêu cầu lấy luận đoán từ API Serverless
+        const url = `/api/interpret?hex_id=${data.mainID}&changed_id=${data.changedID}&topic=${encodeURIComponent(topic)}&gender=${encodeURIComponent(gender)}`;
 
-        body.innerHTML = html;
+        fetch(url)
+            .then(res => res.json())
+            .then(resData => {
+                if (!resData.success) {
+                    body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Lỗi hệ thống: ${resData.error || 'Không rõ nguyên nhân'}</p>`;
+                    return;
+                }
+
+                const { main, changed, deity, lines } = resData;
+
+                let linesHtml = "";
+                // Nếu quẻ có hào động
+                if (data.movingLines.length > 0) {
+                    linesHtml += `<h4>3. Chi Tiết Các Hào Phát Động</h4>`;
+                    data.movingLines.forEach(lineNum => {
+                        const dbLine = lines.find(l => l.line_number === lineNum);
+                        if (dbLine) {
+                            linesHtml += `<p><strong>Hào ${lineNum} Động (${dbLine.relation}):</strong> ${dbLine.meaning_active || 'Đang cập nhật...'}</p>`;
+                        }
+                    });
+                } else {
+                    linesHtml += `<h4>3. Trạng Thái Hào Tĩnh</h4>`;
+                    const shiLineNum = data.linesData.findIndex(l => l.isShi) + 1;
+                    const dbLine = lines.find(l => l.line_number === shiLineNum);
+                    if (dbLine) {
+                        linesHtml += `<p><strong>Hào Thế (Hào ${shiLineNum} - ${dbLine.relation}):</strong> ${dbLine.meaning_static || 'Đang cập nhật...'}</p>`;
+                    }
+                }
+
+                let html = `
+                    <p><strong>Người gieo:</strong> Giới tính ${gender} | <strong>Chủ đề hỏi:</strong> Xem về ${topic}.</p>
+                    <p><strong>Dụng Thần Lục Lục Hào:</strong> <strong>${deity.deity}</strong> (Kỵ thần: <em>${deity.kỵ || 'Không'}</em>).</p>
+                    
+                    <h4>1. Tổng Quan Quẻ Dịch</h4>
+                    <p>Quẻ Chủ của bạn là <strong>${main.name}</strong> (${main.vietnamese_meaning || ''}) thuộc họ quẻ <strong>${main.palace}</strong>.</p>
+                    <p><em>Ý nghĩa chung:</em> ${main.overall_meaning || 'Đang cập nhật...'}</p>
+                    
+                    <h4>2. Bình Giải Chủ Đề [${topic.toUpperCase()}]</h4>
+                    <p>${main.topic_meaning || 'Đang cập nhật...'}</p>
+                    
+                    ${changed ? `
+                    <h4>Quẻ Biến: ${changed.name} (${changed.vietnamese_meaning || ''})</h4>
+                    <p>Quẻ biến biểu thị xu hướng diễn biến tiếp theo của sự việc: <em>${changed.overall_meaning || 'Đang cập nhật...'}</em></p>
+                    ` : ''}
+                    
+                    ${linesHtml}
+
+                    <div style="font-size: 0.85rem; color: #888; border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 20px; text-align: right;">
+                        Nguồn dữ liệu bình giải: Supabase Cloud Database (${resData.source === 'supabase' ? 'Kết nối trực tiếp API' : 'Dữ liệu dự phòng Mock'})
+                    </div>
+                `;
+                body.innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Không thể kết nối đến máy chủ API để lấy luận giải!</p>`;
+            });
     }
 
     // -------------------------------------------------------------------------
