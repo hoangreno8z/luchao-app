@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, '..');
 const knowledgeDir = path.join(projectRoot, 'knowledge');
 const generatedDir = path.join(projectRoot, 'generated');
+const publicDir = path.join(projectRoot, 'public');
 
 // Ensure generated folder exists
 if (!fs.existsSync(generatedDir)) {
@@ -41,6 +42,34 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
 
     fs.writeFileSync(path.join(generatedDir, 'compiled_knowledge.js'), outputCode, 'utf8');
     console.log('Successfully compiled knowledge files into generated/compiled_knowledge.js!');
+
+    // HACK: Tự động tạo thư mục public và sao chép các tệp tĩnh sang để Vercel đóng gói thành công
+    if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir);
+    }
+    
+    // Sao chép các tệp giao diện tĩnh
+    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js'];
+    staticFiles.forEach(file => {
+        const src = path.join(projectRoot, file);
+        const dest = path.join(publicDir, file);
+        if (fs.existsSync(src)) {
+            fs.copyFileSync(src, dest);
+            console.log(`Copied ${file} to public/`);
+        }
+    });
+
+    // Sao chép cả thư mục generated sang public
+    const publicGeneratedDir = path.join(publicDir, 'generated');
+    if (!fs.existsSync(publicGeneratedDir)) {
+        fs.mkdirSync(publicGeneratedDir);
+    }
+    fs.copyFileSync(
+        path.join(generatedDir, 'compiled_knowledge.js'),
+        path.join(publicGeneratedDir, 'compiled_knowledge.js')
+    );
+    console.log('Copied generated files to public/generated/');
+
 } catch (err) {
     console.error('Compilation failed:', err);
     process.exit(1);
