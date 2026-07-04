@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Luận Giải Kinh Dịch Lục Hào - Dự Đoán Huyền Học Phương Đông</title>
+    <meta name="description" content="Website gieo quẻ và luận giải Kinh Dịch Lục Hào tự động, áp dụng lịch tiết khí chính xác để xác định Nguyệt Lệnh và Nhật Thần. Tiện lợi, giao diện cao cấp.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Tiêu đề trang -->
+        <header>
+            <h1>DỊCH HỌC LỤC HÀO</h1>
+            <p>Trí Tuệ Huyền Học Phương Đông Cổ Đại</p>
+        </header>
+
+        <!-- MÀN HÌNH 1: BẢNG ĐIỀU KHOẢN VÀ ĐỒNG Ý -->
+        <div id="disclaimer-screen" class="card">
+            <h2 class="disclaimer-title">BẢNG ĐIỀU KHOẢN & KHUYẾN CÁO SỬ DỤNG</h2>
+            <div class="disclaimer-content">
+                <p><strong>Chào mừng bạn đến với hệ thống Luận Giải Kinh Dịch Lục Hào. Trước khi tham gia gieo quẻ, vui lòng đọc kỹ các khuyến cáo dưới đây:</strong></p>
+                <p>1. Không gieo quẻ phục vụ cho các mục đích cờ bạc, cá cược dưới mọi hình thức.</p>
+                <p>2. Không gieo quẻ nhằm mục đích vi phạm pháp luật hoặc xâm phạm quyền lợi hợp pháp của người khác.</p>
+                <p>3. Không hỏi giới tính thai nhi hay các yếu tố liên quan đến tranh chấp chính trị.</p>
+                <p>4. Các kết quả luận giải hoàn toàn dựa trên các công thức nạp giáp, ngũ hành sinh khắc được lưu truyền từ trí tuệ cổ xưa, mang tính chất chiêm nghiệm khách quan và tham khảo.</p>
+                <p>5. Hệ thống giải đoán không thay thế cho các quyết định y tế chuyên nghiệp, quyết định đầu tư tài chính hoặc các quyết định liên quan đến tài sản cá nhân lớn.</p>
+                <p>6. Mọi câu trả lời từ quẻ dịch đều có thể xảy ra sai sót tùy thuộc vào ý niệm lúc gieo, hãy tự kiểm tra và chịu trách nhiệm trước khi đưa ra quyết định thực tế.</p>
+                <p>7. Đảm bảo bạn trên 18 tuổi và có đầy đủ năng lực nhận thức hành vi dân sự trước khi tiếp tục.</p>
+            </div>
+
+            <label class="disclaimer-checkbox-container" id="agree-label">
+                <input type="checkbox" id="disclaimer-checkbox">
+                <span>Tôi đã đọc hết toàn bộ nội dung khuyến cáo trên và đồng ý hoàn toàn với các điều khoản này.</span>
+            </label>
+
+            <button id="proceed-btn" class="btn btn-primary" disabled>Tiếp Tục Vào Gieo Quẻ</button>
+        </div>
+
+        <!-- MÀN HÌNH 2: KHU VỰC GIEO QUẺ CHÍNH (ẨN BAN ĐẦU) -->
+        <div id="main-screen" class="card hidden">
+            <!-- Đồng hồ thời gian thực của hệ thống -->
+            <div class="live-clock-container">
+                <span>Thời gian gieo quẻ hiện tại (Giờ chuẩn Việt Nam GMT+7): <span id="live-clock">--:--:--</span></span>
+            </div>
+
+            <!-- Khởi tạo thiết lập ban đầu -->
+            <div id="casting-stage">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="current-date-time">Ngày Giờ Lập Quẻ</label>
+                        <input type="datetime-local" id="current-date-time" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender-select">Giới Tính Người Xem</label>
+                        <select id="gender-select" class="form-control">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label for="topic-select">Chủ Đề Cần Chiêm Nghiệm (Tự động xác định Dụng Thần)</label>
+                    <select id="topic-select" class="form-control">
+                        <option value="công việc">Công việc & Sự nghiệp</option>
+                        <option value="thi cử">Thi cử & Học hành</option>
+                        <option value="tình yêu">Tình yêu & Gặp gỡ</option>
+                        <option value="hôn nhân">Hôn nhân & Gia đạo</option>
+                        <option value="sức khỏe">Sức khỏe & Tật bệnh</option>
+                        <option value="kinh doanh">Kinh doanh & Buôn bán</option>
+                        <option value="dự án">Dự án & Hợp tác đầu tư</option>
+                        <option value="tìm kiếm">Tìm kiếm (Người, Vật, Thú cưng)</option>
+                        <option value="thai sản">Thai sản & Sinh nở</option>
+                        <option value="ông bà cha mẹ">Ông bà, Cha mẹ (Xem hộ lớn tuổi)</option>
+                        <option value="con cháu">Con cái, Cháu chắt (Xem hộ nhỏ tuổi)</option>
+                        <option value="anh em">Anh chị em ruột thịt</option>
+                        <option value="xem thay mặt vợ">Xem thay mặt Vợ</option>
+                        <option value="xem thay mặt chồng">Xem thay mặt Chồng</option>
+                        <option value="xem thay mặt con">Xem thay mặt Con</option>
+                        <option value="xem thay mặt người lớn">Xem thay mặt Người lớn tuổi</option>
+                    </select>
+                </div>
+
+                <!-- Khu vực 3 Đồng Xu Càn Long Cổ Kính -->
+                <div class="coin-stage">
+                    <div class="coin-wrapper">
+                        <div class="coin" id="coin-1">
+                            <div class="coin-hole"></div>
+                            <div class="coin-characters">
+                                <span class="coin-text ct-top">寶</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="coin-wrapper">
+                        <div class="coin" id="coin-2">
+                            <div class="coin-hole"></div>
+                            <div class="coin-characters">
+                                <span class="coin-text ct-top">寶</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="coin-wrapper">
+                        <div class="coin" id="coin-3">
+                            <div class="coin-hole"></div>
+                            <div class="coin-characters">
+                                <span class="coin-text ct-top">寶</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dòng câu hỏi gieo quẻ theo từng lượt -->
+                <div class="question-container" id="question-flow">
+                    <div class="question-progress">
+                        <span id="progress-text">Lần gieo: 1/6</span>
+                        <span>Đồng xu tự động tung ngẫu nhiên (3s - 6s)</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+                    <div id="question-flow-form">
+                        <div class="question-text" id="question-text">
+                            Câu 1: Vấn đề này của bạn hay bạn đang thay mặt người khác để hỏi?
+                        </div>
+                        <div class="input-row">
+                            <input type="text" id="question-input" class="form-control" placeholder="Nhập câu trả lời của bạn..." autocomplete="off">
+                            <button id="question-submit" class="btn btn-primary" style="width: auto;">Gửi & Tung Xu</button>
+                        </div>
+                    </div>
+
+                    <!-- Nút nhấn hoàn tất sau khi gieo xong 6 lần -->
+                    <div id="finish-container" class="hidden">
+                        <p style="text-align: center; margin-bottom: 20px; color: var(--gold); font-size: 1.1rem; font-weight: bold;">Đã thu thập đủ 6 hào của quẻ dịch!</p>
+                        <button id="finish-btn" class="btn btn-primary">Lập Bản Đồ Quẻ Dịch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÀN HÌNH 3: HIỂN THỊ KẾT QUẢ QUẺ DỊCH -->
+            <div id="result-area" class="hidden">
+                <h3 class="disclaimer-title" style="margin-top: 15px;">KẾT QUẢ LẬP QUẺ LỤC HÀO</h3>
+                
+                <div class="result-stage">
+                    <div class="hexagram-card-wrapper">
+                        <!-- Canvas ẩn phục vụ vẽ đồ họa -->
+                        <canvas id="hexagram-canvas" class="hexagram-canvas-hidden" width="1000" height="1000"></canvas>
+                        <!-- Ảnh PNG hiển thị và cho phép nhấn giữ lưu ảnh trên di động -->
+                        <img id="hexagram-img" class="hexagram-image-output" alt="Thẻ Quẻ Lục Hào Cổ Kính">
+                    </div>
+                    <p class="download-tip">Mẹo: Bạn có thể nhấn nút Tải ảnh dưới đây hoặc chạm và giữ trực tiếp lên hình ảnh quẻ dịch để lưu về điện thoại di động.</p>
+                </div>
+
+                <!-- Bảng Luận Giải Chi Tiết -->
+                <div class="interpretation-panel">
+                    <h3 class="interpretation-title">LUẬN GIẢI QUẺ DỊCH CƠ BẢN</h3>
+                    <div class="interpretation-body" id="interpretation-body">
+                        <!-- Luận giải được chèn tự động bởi JS -->
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button id="download-btn" class="btn btn-primary">Tải Ảnh Quẻ Về Máy</button>
+                    <button onclick="window.location.reload();" class="btn btn-primary" style="background: #2b1f15; border-color: #3d2a19; color: var(--text-light);">Gieo Quẻ Mới</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bản quyền chân trang -->
+        <footer>
+            <p>&copy; 2026 Website Kinh Dịch Lục Hào. Triển khai miễn phí trên Vercel qua GitHub.</p>
+        </footer>
+    </div>
+
+    <!-- Nạp các thư viện logic -->
+    <script src="calendar.js"></script>
+    <script src="iching_core.js"></script>
+    <script src="renderer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
