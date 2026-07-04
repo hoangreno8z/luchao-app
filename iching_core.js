@@ -1,451 +1,460 @@
 /**
- * Logic Kinh Dịch Lục Hào Cốt Lõi - iching_core.js
- * Xử lý các phép tính nạp giáp, họ quẻ, thế ứng, lục thân, phục thần, lục thú, trường sinh và thần sát.
+ * Thư viện logic Kinh Dịch Lục Hào - iching_core.js
+ * (Adapted exactly from gieoque.id.vn logic to ensure 100% correctness)
  */
 
 const ICHING = (function () {
-    // 8 quẻ đơn
-    const TRIGRAM_NAMES_MAP = {
-        "Càn": 1, "Đoài": 2, "Ly": 3, "Chấn": 4, "Tốn": 5, "Khảm": 6, "Cấn": 7, "Khôn": 8
-    };
-    const TRIGRAM_IDS_MAP = {
-        1: { name: "Càn", element: "Kim" },
-        2: { name: "Đoài", element: "Kim" },
-        3: { name: "Ly", element: "Hỏa" },
-        4: { name: "Chấn", element: "Mộc" },
-        5: { name: "Tốn", element: "Mộc" },
-        6: { name: "Khảm", element: "Thủy" },
-        7: { name: "Cấn", element: "Thổ" },
-        8: { name: "Khôn", element: "Thổ" }
+    const NGU_HANH_QUAI = {
+        'Càn': 'Kim', 'Đoài': 'Kim',
+        'Ly': 'Hỏa',
+        'Chấn': 'Mộc', 'Tốn': 'Mộc',
+        'Khảm': 'Thủy',
+        'Cấn': 'Thổ', 'Khôn': 'Thổ'
     };
 
-    // Đường nét hào của 8 quẻ đơn [hào 1, hào 2, hào 3] (dưới lên trên)
-    const TRIGRAM_LINES = {
-        1: [1, 1, 1], // Càn
-        2: [1, 1, 0], // Đoài
-        3: [1, 0, 1], // Ly
-        4: [1, 0, 0], // Chấn
-        5: [0, 1, 1], // Tốn
-        6: [0, 1, 0], // Khảm
-        7: [0, 0, 1], // Cấn
-        8: [0, 0, 0]  // Khôn
+    const QUAI_SO = [
+        { name: 'Khôn', bin: '000', hanh: 'Thổ' },
+        { name: 'Cấn', bin: '001', hanh: 'Thổ' },
+        { name: 'Khảm', bin: '010', hanh: 'Thủy' },
+        { name: 'Tốn', bin: '011', hanh: 'Mộc' },
+        { name: 'Chấn', bin: '100', hanh: 'Mộc' },
+        { name: 'Ly', bin: '101', hanh: 'Hỏa' },
+        { name: 'Đoài', bin: '110', hanh: 'Kim' },
+        { name: 'Càn', bin: '111', hanh: 'Kim' }
+    ];
+
+    const NAP_GIAP = {
+        'Càn': ['Tý', 'Dần', 'Thìn', 'Ngọ', 'Thân', 'Tuất'],
+        'Khảm': ['Dần', 'Thìn', 'Ngọ', 'Thân', 'Tuất', 'Tý'],
+        'Cấn': ['Thìn', 'Ngọ', 'Thân', 'Tuất', 'Tý', 'Dần'],
+        'Chấn': ['Tý', 'Dần', 'Thìn', 'Ngọ', 'Thân', 'Tuất'],
+        'Tốn': ['Sửu', 'Hợi', 'Dậu', 'Mùi', 'Tỵ', 'Mão'],
+        'Ly': ['Mão', 'Sửu', 'Hợi', 'Dậu', 'Mùi', 'Tỵ'],
+        'Khôn': ['Mùi', 'Tỵ', 'Mão', 'Sửu', 'Hợi', 'Dậu'],
+        'Đoài': ['Tỵ', 'Mão', 'Sửu', 'Hợi', 'Dậu', 'Mùi']
     };
 
-    // Bảng Nạp Giáp cho 8 quẻ đơn (từ hào 1 đến hào 6)
-    const TRIGRAM_NAP = {
-        1: { // Càn
-            lower: [{ can: "Giáp", chi: "Tý" }, { can: "Giáp", chi: "Dần" }, { can: "Giáp", chi: "Thìn" }],
-            upper: [{ can: "Nhâm", chi: "Ngọ" }, { can: "Nhâm", chi: "Thân" }, { can: "Nhâm", chi: "Tuất" }]
-        },
-        2: { // Đoài
-            lower: [{ can: "Đinh", chi: "Tỵ" }, { can: "Đinh", chi: "Mão" }, { can: "Đinh", chi: "Sửu" }],
-            upper: [{ can: "Đinh", chi: "Hợi" }, { can: "Đinh", chi: "Dậu" }, { can: "Đinh", chi: "Mùi" }]
-        },
-        3: { // Ly
-            lower: [{ can: "Kỷ", chi: "Mão" }, { can: "Kỷ", chi: "Sửu" }, { can: "Kỷ", chi: "Hợi" }],
-            upper: [{ can: "Kỷ", chi: "Dậu" }, { can: "Kỷ", chi: "Mùi" }, { can: "Kỷ", chi: "Tỵ" }]
-        },
-        4: { // Chấn
-            lower: [{ can: "Canh", chi: "Tý" }, { can: "Canh", chi: "Dần" }, { can: "Canh", chi: "Thìn" }],
-            upper: [{ can: "Canh", chi: "Ngọ" }, { can: "Canh", chi: "Thân" }, { can: "Canh", chi: "Tuất" }]
-        },
-        5: { // Tốn
-            lower: [{ can: "Tân", chi: "Sửu" }, { can: "Tân", chi: "Hợi" }, { can: "Tân", chi: "Dậu" }],
-            upper: [{ can: "Tân", chi: "Mùi" }, { can: "Tân", chi: "Tỵ" }, { can: "Tân", chi: "Mão" }]
-        },
-        6: { // Khảm
-            lower: [{ can: "Mậu", chi: "Dần" }, { can: "Mậu", chi: "Thìn" }, { can: "Mậu", chi: "Ngọ" }],
-            upper: [{ can: "Mậu", chi: "Thân" }, { can: "Mậu", chi: "Tuất" }, { can: "Mậu", chi: "Tý" }]
-        },
-        7: { // Cấn
-            lower: [{ can: "Bính", chi: "Thìn" }, { can: "Bính", chi: "Ngọ" }, { can: "Bính", chi: "Thân" }],
-            upper: [{ can: "Bính", chi: "Tuất" }, { can: "Bính", chi: "Tý" }, { can: "Bính", chi: "Dần" }]
-        },
-        8: { // Khôn
-            lower: [{ can: "Ất", chi: "Mùi" }, { can: "Ất", chi: "Tỵ" }, { can: "Ất", chi: "Mão" }],
-            upper: [{ can: "Quý", chi: "Sửu" }, { can: "Quý", chi: "Hợi" }, { can: "Quý", chi: "Dậu" }]
+    const TEN_QUE = [
+        ['Bát Thuần Khôn', 'Địa Sơn Khiêm', 'Địa Thủy Sư', 'Địa Phong Thăng', 'Địa Lôi Phục', 'Địa Hỏa Minh Di', 'Địa Trạch Lâm', 'Địa Thiên Thái'],
+        ['Sơn Địa Bác', 'Bát Thuần Cấn', 'Sơn Thủy Mông', 'Sơn Phong Cổ', 'Sơn Lôi Di', 'Sơn Hỏa Bí', 'Sơn Trạch Tổn', 'Sơn Thiên Đại Súc'],
+        ['Thủy Địa Tỷ', 'Thủy Sơn Kiển', 'Bát Thuần Khảm', 'Thủy Phong Tỉnh', 'Thủy Lôi Truân', 'Thủy Hỏa Ký Tế', 'Thủy Trạch Tiết', 'Thủy Thiên Nhu'],
+        ['Phong Địa Quan', 'Phong Sơn Tiệm', 'Phong Thủy Hoán', 'Bát Thuần Tốn', 'Phong Lôi Ích', 'Phong Hỏa Gia Nhân', 'Phong Trạch Trung Phu', 'Phong Thiên Tiểu Súc'],
+        ['Lôi Địa Dự', 'Lôi Sơn Tiểu Quá', 'Lôi Thủy Giải', 'Lôi Phong Hằng', 'Bát Thuần Chấn', 'Lôi Hỏa Phong', 'Lôi Trạch Quy Muội', 'Lôi Thiên Đại Tráng'],
+        ['Hỏa Địa Tấn', 'Hỏa Sơn Lữ', 'Hỏa Thủy Vị Tế', 'Hỏa Phong Đỉnh', 'Hỏa Lôi Phệ Hạp', 'Bát Thuần Ly', 'Hỏa Trạch Khuê', 'Hỏa Thiên Đại Hữu'],
+        ['Trạch Địa Tụy', 'Trạch Sơn Hàm', 'Trạch Thủy Khốn', 'Trạch Phong Đại Quá', 'Trạch Lôi Tùy', 'Trạch Hỏa Cách', 'Bát Thuần Đoài', 'Trạch Thiên Quải'],
+        ['Thiên Địa Bĩ', 'Thiên Sơn Độn', 'Thiên Thủy Tụng', 'Thiên Phong Cấu', 'Thiên Lôi Vô Vọng', 'Thiên Hỏa Đồng Nhân', 'Thiên Trạch Lý', 'Bát Thuần Càn']
+    ];
+
+    const LUC_XUNG_LIST = ['Thiên Lôi Vô Vọng', 'Lôi Thiên Đại Tráng'];
+    const LUC_HOP_LIST = [
+        'Thiên Địa Bĩ', 'Địa Thiên Thái',
+        'Thủy Trạch Tiết', 'Trạch Thủy Khốn',
+        'Sơn Hỏa Bí', 'Hỏa Sơn Lữ',
+        'Địa Lôi Phục', 'Lôi Địa Dự'
+    ];
+
+    function getHexAttribute(hexName, type) {
+        if (type === 'Du Hồn') return 'Du Hồn';
+        if (type === 'Quy Hồn') return 'Quy Hồn';
+        if (type === 'Bát Thuần' || LUC_XUNG_LIST.includes(hexName)) return 'Lục Xung';
+        if (LUC_HOP_LIST.includes(hexName)) return 'Lục Hợp';
+        return '';
+    }
+
+    const PHAN_NGAM_PAIRS = {
+        7: 3, 3: 7,  // Càn ↔ Tốn
+        5: 2, 2: 5,  // Ly ↔ Khảm
+        4: 6, 6: 4,  // Chấn ↔ Đoài
+        1: 0, 0: 1   // Cấn ↔ Khôn
+    };
+
+    const PHUC_NGAM_PAIRS = {
+        7: 4, 4: 7   // Càn ↔ Chấn
+    };
+
+    function checkNgam(mainInIdx, mainOutIdx, changedInIdx, changedOutIdx) {
+        let noiResult = '';
+        let ngoaiResult = '';
+
+        if (mainInIdx !== changedInIdx) {
+            if (PHUC_NGAM_PAIRS[mainInIdx] === changedInIdx) noiResult = 'phuc';
+            else if (PHAN_NGAM_PAIRS[mainInIdx] === changedInIdx) noiResult = 'phan';
         }
+
+        if (mainOutIdx !== changedOutIdx) {
+            if (PHUC_NGAM_PAIRS[mainOutIdx] === changedOutIdx) ngoaiResult = 'phuc';
+            else if (PHAN_NGAM_PAIRS[mainOutIdx] === changedOutIdx) ngoaiResult = 'phan';
+        }
+
+        const results = [];
+        if (noiResult && ngoaiResult && noiResult === ngoaiResult) {
+            if (noiResult === 'phan') results.push('Toàn Quẻ Phản Ngâm');
+            else results.push('Toàn Quẻ Phục Ngâm');
+            return results;
+        }
+
+        if (ngoaiResult === 'phan') results.push('Ngoại Quái Phản Ngâm');
+        else if (ngoaiResult === 'phuc') results.push('Ngoại Quái Phục Ngâm');
+
+        if (noiResult === 'phan') results.push('Nội Quái Phản Ngâm');
+        else if (noiResult === 'phuc') results.push('Nội Quái Phục Ngâm');
+
+        return results;
+    }
+
+    const HEX_MAP = {};
+
+    function initHexMap() {
+        const add = (o, i, p, shi, t) => {
+            HEX_MAP[(o << 3) | i] = { p, shi, type: t };
+        };
+        // Càn cung
+        add(7, 7, 7, 6, 'Bát Thuần'); add(7, 3, 7, 1, ''); add(7, 1, 7, 2, ''); add(7, 0, 7, 3, '');
+        add(3, 0, 7, 4, ''); add(1, 0, 7, 5, ''); add(5, 0, 7, 4, 'Du Hồn'); add(5, 7, 7, 3, 'Quy Hồn');
+        // Khảm cung
+        add(2, 2, 2, 6, 'Bát Thuần'); add(2, 6, 2, 1, ''); add(2, 4, 2, 2, ''); add(2, 5, 2, 3, '');
+        add(6, 5, 2, 4, ''); add(4, 5, 2, 5, ''); add(0, 5, 2, 4, 'Du Hồn'); add(0, 2, 2, 3, 'Quy Hồn');
+        // Cấn cung
+        add(1, 1, 1, 6, 'Bát Thuần'); add(1, 5, 1, 1, ''); add(1, 7, 1, 2, ''); add(1, 6, 1, 3, '');
+        add(5, 6, 1, 4, ''); add(7, 6, 1, 5, ''); add(3, 6, 1, 4, 'Du Hồn'); add(3, 1, 1, 3, 'Quy Hồn');
+        // Chấn cung
+        add(4, 4, 4, 6, 'Bát Thuần'); add(4, 0, 4, 1, ''); add(4, 2, 4, 2, ''); add(4, 3, 4, 3, '');
+        add(0, 3, 4, 4, ''); add(2, 3, 4, 5, ''); add(6, 3, 4, 4, 'Du Hồn'); add(6, 4, 4, 3, 'Quy Hồn');
+        // Tốn cung
+        add(3, 3, 3, 6, 'Bát Thuần'); add(3, 7, 3, 1, ''); add(3, 5, 3, 2, ''); add(3, 4, 3, 3, '');
+        add(7, 4, 3, 4, ''); add(5, 4, 3, 5, ''); add(1, 4, 3, 4, 'Du Hồn'); add(1, 3, 3, 3, 'Quy Hồn');
+        // Ly cung
+        add(5, 5, 5, 6, 'Bát Thuần'); add(5, 1, 5, 1, ''); add(5, 3, 5, 2, ''); add(5, 2, 5, 3, '');
+        add(1, 2, 5, 4, ''); add(3, 2, 5, 5, ''); add(7, 2, 5, 4, 'Du Hồn'); add(7, 5, 5, 3, 'Quy Hồn');
+        // Khôn cung
+        add(0, 0, 0, 6, 'Bát Thuần'); add(0, 4, 0, 1, ''); add(0, 6, 0, 2, ''); add(0, 7, 0, 3, '');
+        add(4, 7, 0, 4, ''); add(6, 7, 0, 5, ''); add(2, 7, 0, 4, 'Du Hồn'); add(2, 0, 0, 3, 'Quy Hồn');
+        // Đoài cung
+        add(6, 6, 6, 6, 'Bát Thuần'); add(6, 2, 6, 1, ''); add(6, 0, 6, 2, ''); add(6, 1, 6, 3, '');
+        add(2, 1, 6, 4, ''); add(0, 1, 6, 5, ''); add(4, 1, 6, 4, 'Du Hồn'); add(4, 6, 6, 3, 'Quy Hồn');
+    }
+    initHexMap();
+
+    const LIFE_STAGES = ['T.Sinh', 'M.Dục', 'Q.Đới', 'L.Quan', 'Đ.Vượng', 'Suy', 'Bệnh', 'Tử', 'Mộ', 'Tuyệt', 'Thai', 'Dưỡng'];
+    const LS_START = { 'Hỏa': 2, 'Kim': 5, 'Mộc': 11, 'Thủy': 8, 'Thổ': 8 };
+
+    const LUC_THU = {
+        'Giáp': ['Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ'],
+        'Ất': ['Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ'],
+        'Bính': ['Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ', 'Thanh Long'],
+        'Đinh': ['Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ', 'Thanh Long'],
+        'Mậu': ['Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ', 'Thanh Long', 'Chu Tước'],
+        'Kỷ': ['Đằng Xà', 'Bạch Hổ', 'Huyền Vũ', 'Thanh Long', 'Chu Tước', 'Câu Trần'],
+        'Canh': ['Bạch Hổ', 'Huyền Vũ', 'Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà'],
+        'Tân': ['Bạch Hổ', 'Huyền Vũ', 'Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà'],
+        'Nhâm': ['Huyền Vũ', 'Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ'],
+        'Quý': ['Huyền Vũ', 'Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ'],
     };
 
-    // Tên 64 quẻ (Upper-Lower)
-    const HEX_NAMES = {
-        "1-1": "Bát Thuần Càn", "1-2": "Thiên Trạch Lý", "1-3": "Thiên Hỏa Đồng Nhân", "1-4": "Thiên Lôi Vô Vọng",
-        "1-5": "Thiên Phong Cấu", "1-6": "Thiên Thủy Tụng", "1-7": "Thiên Sơn Độn", "1-8": "Thiên Địa Bĩ",
-        "2-1": "Trạch Thiên Quải", "2-2": "Bát Thuần Đoài", "2-3": "Trạch Hỏa Cách", "2-4": "Trạch Lôi Tùy",
-        "2-5": "Trạch Phong Đại Quá", "2-6": "Trạch Thủy Khốn", "2-7": "Trạch Sơn Hàm", "2-8": "Trạch Địa Tụy",
-        "3-1": "Hỏa Thiên Đại Hữu", "3-2": "Hỏa Trạch Khuê", "3-3": "Bát Thuần Ly", "3-4": "Hỏa Lôi Phệ Hạp",
-        "3-5": "Hỏa Phong Đỉnh", "3-6": "Hỏa Thủy Vị Tế", "3-7": "Hỏa Sơn Lữ", "3-8": "Hỏa Địa Tấn",
-        "4-1": "Lôi Thiên Đại Tráng", "4-2": "Lôi Trạch Quy Muội", "4-3": "Lôi Hỏa Phong", "4-4": "Bát Thuần Chấn",
-        "4-5": "Lôi Phong Hằng", "4-6": "Lôi Thủy Giải", "4-7": "Lôi Sơn Tiểu Quá", "4-8": "Lôi Địa Dự",
-        "5-1": "Phong Thiên Tiểu Súc", "5-2": "Phong Trạch Trung Phu", "5-3": "Phong Hỏa Gia Nhân", "5-4": "Phong Lôi Ích",
-        "5-5": "Bát Thuần Tốn", "5-6": "Phong Thủy Hoán", "5-7": "Phong Sơn Tiệm", "5-8": "Phong Địa Quan",
-        "6-1": "Thủy Thiên Nhu", "6-2": "Thủy Trạch Tiết", "6-3": "Thủy Hỏa Ký Tế", "6-4": "Thủy Lôi Truân",
-        "6-5": "Thủy Phong Tỉnh", "6-6": "Bát Thuần Khảm", "6-7": "Thủy Sơn Kiển", "6-8": "Thủy Địa Tỷ",
-        "7-1": "Sơn Thiên Đại Súc", "7-2": "Sơn Trạch Tổn", "7-3": "Sơn Hỏa Bí", "7-4": "Sơn Lôi Di",
-        "7-5": "Sơn Phong Cổ", "7-6": "Sơn Thủy Mông", "7-7": "Bát Thuần Cấn", "7-8": "Sơn Địa Bác",
-        "8-1": "Địa Thiên Thái", "8-2": "Địa Trạch Lâm", "8-3": "Địa Hỏa Minh Di", "8-4": "Địa Lôi Phục",
-        "8-5": "Địa Phong Thăng", "8-6": "Địa Thủy Sư", "8-7": "Địa Sơn Khiêm", "8-8": "Bát Thuần Khôn"
-    };
+    function getBit(val, changed) {
+        if (!changed) {
+            return (val === 1 || val === 3) ? '1' : '0';
+        }
+        return (val === 0 || val === 1) ? '1' : '0';
+    }
 
-    // Lục thân quan hệ ngũ hành
-    const ELEMENT_RELATIONS = {
-        "Kim": { "Kim": "Huynh đệ", "Thủy": "Tử tôn", "Mộc": "Thê tài", "Hỏa": "Quan quỷ", "Thổ": "Phụ mẫu" },
-        "Mộc": { "Mộc": "Huynh đệ", "Hỏa": "Tử tôn", "Thổ": "Thê tài", "Kim": "Quan quỷ", "Thủy": "Phụ mẫu" },
-        "Thủy": { "Thủy": "Huynh đệ", "Mộc": "Tử tôn", "Hỏa": "Thê tài", "Thổ": "Quan quỷ", "Kim": "Phụ mẫu" },
-        "Hỏa": { "Hỏa": "Huynh đệ", "Thổ": "Tử tôn", "Kim": "Thê tài", "Thủy": "Quan quỷ", "Mộc": "Phụ mẫu" },
-        "Thổ": { "Thổ": "Huynh đệ", "Kim": "Tử tôn", "Thủy": "Thê tài", "Mộc": "Quan quỷ", "Hỏa": "Phụ mẫu" }
-    };
+    function getRelation(el, palaceEl) {
+        const els = ['Kim', 'Thủy', 'Mộc', 'Hỏa', 'Thổ'];
+        const pI = els.indexOf(palaceEl);
+        const lI = els.indexOf(el);
 
-    // Họ (Palace) và vị trí Thế/Ứng, ngũ hành của 64 quẻ
-    let HEXAGRMAN_MAP = {};
+        if (pI === lI) return "Huynh Đệ";
+        if ((pI + 1) % 5 === lI) return "Tử Tôn";
+        if ((lI + 1) % 5 === pI) return "Phụ Mẫu";
+        if ((pI + 2) % 5 === lI) return "Thê Tài";
+        if ((lI + 2) % 5 === pI) return "Quan Quỷ";
+        return "";
+    }
 
-    // Khởi tạo bảng tra cứu 64 quẻ tự động theo quy luật phân họ Lục Hào
-    function initHexagramDatabase() {
-        const palaces = [1, 8, 4, 5, 6, 3, 7, 2]; // Càn, Khôn, Chấn, Tốn, Khảm, Ly, Cấn, Đoài
-        palaces.forEach(P => {
-            const pName = TRIGRAM_IDS_MAP[P].name;
-            const pElement = TRIGRAM_IDS_MAP[P].element;
-            const pLines = TRIGRAM_LINES[P];
-            const oppLines = pLines.map(b => b === 1 ? 0 : 1);
+    function getLifeStage(el, baseChi) {
+        const start = LS_START[el];
+        const current = CALENDAR.CHI.indexOf(baseChi);
+        const diff = (current - start + 12) % 12;
+        return LIFE_STAGES[diff];
+    }
 
-            // Hàm tìm ID quẻ đơn từ mảng hào [h1, h2, h3]
-            const findTrigramId = (lines) => {
-                const key = lines.join("");
-                for (let id in TRIGRAM_LINES) {
-                    if (TRIGRAM_LINES[id].join("") === key) return parseInt(id);
+    function calculateShenSha(dCan, dChi, mChi) {
+        const list = [];
+        const add = (name, val) => {
+            let vStr = val || '';
+            if (Array.isArray(val)) vStr = val.join(', ');
+            if (!vStr) vStr = '-';
+            list.push(`<strong>${name}:</strong> ${vStr}`);
+        };
+
+        const quy = {
+            'Giáp': ['Sửu', 'Mùi'], 'Mậu': ['Sửu', 'Mùi'],
+            'Ất': ['Tý', 'Thân'], 'Kỷ': ['Tý', 'Thân'],
+            'Bính': ['Hợi', 'Dậu'], 'Đinh': ['Hợi', 'Dậu'],
+            'Nhâm': ['Mão', 'Tỵ'], 'Quý': ['Mão', 'Tỵ'],
+            'Canh': ['Sửu', 'Mùi'], 'Tân': ['Ngọ', 'Dần']
+        };
+        add('Quý Nhân', quy[dCan]);
+
+        const loc = { 'Giáp': 'Dần', 'Ất': 'Mão', 'Bính': 'Tỵ', 'Mậu': 'Tỵ', 'Đinh': 'Ngọ', 'Kỷ': 'Ngọ', 'Canh': 'Thân', 'Tân': 'Dậu', 'Nhâm': 'Hợi', 'Quý': 'Tý' };
+        add('Lộc Thần', loc[dCan]);
+
+        const kinh = { 'Giáp': 'Mão', 'Ất': 'Dần', 'Bính': 'Ngọ', 'Mậu': 'Ngọ', 'Đinh': 'Tỵ', 'Kỷ': 'Tỵ', 'Canh': 'Dậu', 'Tân': 'Thân', 'Nhâm': 'Tý', 'Quý': 'Hợi' };
+        add('Dương Nhận', kinh[dCan]);
+
+        const van = { 'Giáp': 'Tỵ', 'Ất': 'Ngọ', 'Bính': 'Thân', 'Mậu': 'Thân', 'Đinh': 'Dậu', 'Kỷ': 'Dậu', 'Canh': 'Hợi', 'Tân': 'Tý', 'Nhâm': 'Dần', 'Quý': 'Mão' };
+        add('Văn Xương', van[dCan]);
+
+        const triadMap = {
+            'Thân': 'Thủy', 'Tý': 'Thủy', 'Thìn': 'Thủy',
+            'Dần': 'Hỏa', 'Ngọ': 'Hỏa', 'Tuất': 'Hỏa',
+            'Tỵ': 'Kim', 'Dậu': 'Kim', 'Sửu': 'Kim',
+            'Hợi': 'Mộc', 'Mão': 'Mộc', 'Mùi': 'Mộc'
+        };
+        const group = triadMap[dChi];
+
+        if (group) {
+            const dm = { 'Thủy': 'Dần', 'Hỏa': 'Thân', 'Kim': 'Hợi', 'Mộc': 'Tỵ' };
+            add('Dịch Mã', dm[group]);
+
+            const dao = { 'Thủy': 'Dậu', 'Hỏa': 'Mão', 'Kim': 'Ngọ', 'Mộc': 'Tý' };
+            add('Đào Hoa', dao[group]);
+
+            const tuong = { 'Thủy': 'Tý', 'Hỏa': 'Ngọ', 'Kim': 'Dậu', 'Mộc': 'Mão' };
+            add('Tướng Tinh', tuong[group]);
+
+            const kiep = { 'Thủy': 'Tỵ', 'Hỏa': 'Hợi', 'Kim': 'Dần', 'Mộc': 'Thân' };
+            add('Kiếp Sát', kiep[group]);
+
+            const hoa = { 'Thủy': 'Thìn', 'Hỏa': 'Tuất', 'Kim': 'Sửu', 'Mộc': 'Mùi' };
+            add('Hoa Cái', hoa[group]);
+
+            const muu = { 'Thủy': 'Tuất', 'Kim': 'Mùi', 'Hỏa': 'Thìn', 'Mộc': 'Sửu' };
+            add('Mưu Tinh', muu[group]);
+
+            const tai = { 'Thủy': 'Ngọ', 'Hỏa': 'Tý', 'Kim': 'Mão', 'Mộc': 'Dậu' };
+            add('Tai Sát', tai[group]);
+
+            const vong = { 'Thủy': 'Hợi', 'Hỏa': 'Tỵ', 'Kim': 'Thân', 'Mộc': 'Dần' };
+            add('Vong Thần', vong[group]);
+        } else {
+            for (let i = 0; i < 8; i++) add('', '');
+        }
+
+        const mIdx = CALENDAR.CHI.indexOf(mChi);
+        if (mIdx !== -1) {
+            const ty = CALENDAR.CHI[(mIdx - 1 + 12) % 12];
+            add('Thiên Y', ty);
+        } else {
+            add('Thiên Y', '-');
+        }
+
+        const muaMap = {
+            'Dần': 'Tuất', 'Mão': 'Tuất', 'Thìn': 'Tuất',
+            'Tỵ': 'Sửu', 'Ngọ': 'Sửu', 'Mùi': 'Sửu',
+            'Thân': 'Thìn', 'Dậu': 'Thìn', 'Tuất': 'Thìn',
+            'Hợi': 'Mùi', 'Tý': 'Mùi', 'Sửu': 'Mùi'
+        };
+        add('Thiên Hỉ', muaMap[mChi]);
+
+        return list;
+    }
+
+    function calculateHexagramData(lines, cal, methodText, formattedDate) {
+        const mBits = lines.map(v => getBit(v, false));
+        const mInBin = mBits.slice(0, 3).join('');
+        const mOutBin = mBits.slice(3, 6).join('');
+        const mInIdx = QUAI_SO.findIndex(q => q.bin === mInBin);
+        const mOutIdx = QUAI_SO.findIndex(q => q.bin === mOutBin);
+
+        const hexID = (mOutIdx << 3) | mInIdx;
+        const info = HEX_MAP[hexID] || { p: 0, shi: 6, type: 'Bát Thuần' };
+        const mainName = TEN_QUE[mOutIdx][mInIdx];
+        const palaceName = QUAI_SO[info.p].name;
+        const palaceEl = NGU_HANH_QUAI[palaceName];
+
+        const mainAttr = getHexAttribute(mainName, info.type);
+
+        const cBits = lines.map(v => getBit(v, true));
+        const cInIdx = QUAI_SO.findIndex(q => q.bin === cBits.slice(0, 3).join(''));
+        const cOutIdx = QUAI_SO.findIndex(q => q.bin === cBits.slice(3, 6).join(''));
+
+        const hexIDChanged = (cOutIdx << 3) | cInIdx;
+        const infoChanged = HEX_MAP[hexIDChanged] || { p: 0, shi: 6, type: '' };
+        const changedName = TEN_QUE[cOutIdx][cInIdx];
+        const changedPalaceName = QUAI_SO[infoChanged.p].name;
+        const changedAttr = getHexAttribute(changedName, infoChanged.type);
+
+        const ngamResult = checkNgam(mInIdx, mOutIdx, cInIdx, cOutIdx);
+        const lucThuList = LUC_THU[cal.ngay.can];
+
+        const presentRelations = new Set();
+        for (let i = 0; i < 6; i++) {
+            const mTriName = (i + 1 <= 3) ? QUAI_SO[mInIdx].name : QUAI_SO[mOutIdx].name;
+            const mBranch = NAP_GIAP[mTriName][i];
+            const mEl = CALENDAR.NGU_HANH_CHI[mBranch];
+            const mRel = getRelation(mEl, palaceEl);
+            presentRelations.add(mRel);
+        }
+
+        const linesData = [];
+        const movingLines = [];
+
+        for (let i = 0; i < 6; i++) {
+            const lineVal = lines[i];
+            const isMoving = (lineVal === 0 || lineVal === 3);
+
+            const mTriName = (i + 1 <= 3) ? QUAI_SO[mInIdx].name : QUAI_SO[mOutIdx].name;
+            const mBranch = NAP_GIAP[mTriName][i];
+            const mEl = CALENDAR.NGU_HANH_CHI[mBranch];
+            const mRel = getRelation(mEl, palaceEl);
+
+            const tsNgay = getLifeStage(mEl, cal.ngay.chi);
+            const tsThang = getLifeStage(mEl, cal.thang.chi);
+
+            const shi = info.shi;
+            const ying = (shi + 3) > 6 ? shi - 3 : shi + 3;
+            const isShi = (shi === i + 1);
+            const isYing = (ying === i + 1);
+
+            let phucThan = null;
+            if (!presentRelations.has("Tử Tôn") || !presentRelations.has("Thê Tài") ||
+                !presentRelations.has("Quan Quỷ") || !presentRelations.has("Phụ Mẫu") ||
+                !presentRelations.has("Huynh Đệ")) {
+                const pureTri = QUAI_SO[info.p].name;
+                const pureBranch = NAP_GIAP[pureTri][i];
+                const pureEl = CALENDAR.NGU_HANH_CHI[pureBranch];
+                const pureRel = getRelation(pureEl, palaceEl);
+                if (!presentRelations.has(pureRel)) {
+                    phucThan = {
+                        rel: pureRel.split(' ')[0],
+                        branch: pureBranch
+                    };
                 }
-                return P;
+            }
+
+            const isTK = cal.tuanKhong.includes(mBranch);
+
+            const cTriName = (i + 1 <= 3) ? QUAI_SO[cInIdx].name : QUAI_SO[cOutIdx].name;
+            const cBranch = NAP_GIAP[cTriName][i];
+            const cEl = CALENDAR.NGU_HANH_CHI[cBranch];
+            const cRel = getRelation(cEl, palaceEl);
+
+            const isCTK = cal.tuanKhong.includes(cBranch);
+
+            linesData.push({
+                val: lineVal,
+                isMoving,
+                relation: mRel,
+                chi: mBranch,
+                hanh: mEl,
+                phucThan,
+                isTK,
+                isShi,
+                isYing,
+                lucThu: lucThuList[i],
+                tsNgay,
+                tsThang,
+                changed: {
+                    relation: cRel,
+                    branch: cBranch,
+                    hanh: cEl
+                },
+                isCTK
+            });
+
+            if (isMoving) {
+                movingLines.push(i + 1);
+            }
+        }
+
+        // TÍNH HÀO TÂM NIỆM
+        let haoTamObj = null;
+        const shiIndex = linesData.findIndex(l => l.isShi);
+        if (shiIndex !== -1) {
+            const shiLine = linesData[shiIndex];
+            
+            const getTangHao = (idx) => {
+                const pureTri = QUAI_SO[info.p].name;
+                const pureBranch = NAP_GIAP[pureTri][idx];
+                const pureEl = CALENDAR.NGU_HANH_CHI[pureBranch];
+                const pureRel = getRelation(pureEl, palaceEl);
+                return { rel: pureRel, branch: pureBranch };
             };
 
-            // 1. Bát Thuần
-            let u1 = P, l1 = P;
-            HEXAGRMAN_MAP[`${u1}-${l1}`] = { palace: pName, palaceElement: pElement, the: 6, ung: 3, status: "Bát Thuần" };
-
-            // 2. Nhất Thế
-            let u2 = P, l2 = findTrigramId([pLines[0] ^ 1, pLines[1], pLines[2]]);
-            HEXAGRMAN_MAP[`${u2}-${l2}`] = { palace: pName, palaceElement: pElement, the: 1, ung: 4, status: "Nhất Thế" };
-
-            // 3. Nhị Thế
-            let u3 = P, l3 = findTrigramId([pLines[0] ^ 1, pLines[1] ^ 1, pLines[2]]);
-            HEXAGRMAN_MAP[`${u3}-${l3}`] = { palace: pName, palaceElement: pElement, the: 2, ung: 5, status: "Nhị Thế" };
-
-            // 4. Tam Thế
-            let u4 = P, l4 = findTrigramId(oppLines);
-            HEXAGRMAN_MAP[`${u4}-${l4}`] = { palace: pName, palaceElement: pElement, the: 3, ung: 6, status: "Tam Thế" };
-
-            // 5. Tứ Thế
-            let u5 = findTrigramId([pLines[0] ^ 1, pLines[1], pLines[2]]), l5 = findTrigramId(oppLines);
-            HEXAGRMAN_MAP[`${u5}-${l5}`] = { palace: pName, palaceElement: pElement, the: 4, ung: 1, status: "Tứ Thế" };
-
-            // 6. Ngũ Thế
-            let u6 = findTrigramId([pLines[0] ^ 1, pLines[1] ^ 1, pLines[2]]), l6 = findTrigramId(oppLines);
-            HEXAGRMAN_MAP[`${u6}-${l6}`] = { palace: pName, palaceElement: pElement, the: 5, ung: 2, status: "Ngũ Thế" };
-
-            // 7. Du Hồn
-            let u7 = findTrigramId([pLines[0], pLines[1] ^ 1, pLines[2]]), l7 = findTrigramId(oppLines);
-            HEXAGRMAN_MAP[`${u7}-${l7}`] = { palace: pName, palaceElement: pElement, the: 4, ung: 1, status: "Du Hồn" };
-
-            // 8. Quy Hồn
-            let u8 = findTrigramId([pLines[0], pLines[1] ^ 1, pLines[2]]), l8 = P;
-            HEXAGRMAN_MAP[`${u8}-${l8}`] = { palace: pName, palaceElement: pElement, the: 3, ung: 6, status: "Quy Hồn" };
-        });
-    }
-
-    initHexagramDatabase();
-
-    // Tìm ID quẻ đơn từ mảng hào 3 đường [bottom, mid, top]
-    function getTrigramIdFromLines(lines3) {
-        const s = lines3.join("");
-        for (let id in TRIGRAM_LINES) {
-            if (TRIGRAM_LINES[id].join("") === s) return parseInt(id);
-        }
-        return 8;
-    }
-
-    // Xây dựng thông tin hào hoàn chỉnh cho quẻ đơn hạ và quẻ đơn thượng
-    function buildHexagramLines(lowerId, upperId, palaceElement) {
-        let lines = [];
-        // Hào 1, 2, 3 (Quẻ hạ)
-        const lowerNap = TRIGRAM_NAP[lowerId].lower;
-        for (let i = 0; i < 3; i++) {
-            const can = lowerNap[i].can;
-            const chi = lowerNap[i].chi;
-            const element = CALENDAR.NGU_HANH[chi];
-            const lucThan = ELEMENT_RELATIONS[palaceElement][element];
-            lines.push({ lineNum: i + 1, can, chi, element, lucThan });
-        }
-        // Hào 4, 5, 6 (Quẻ thượng)
-        const upperNap = TRIGRAM_NAP[upperId].upper;
-        for (let i = 0; i < 3; i++) {
-            const can = upperNap[i].can;
-            const chi = upperNap[i].chi;
-            const element = CALENDAR.NGU_HANH[chi];
-            const lucThan = ELEMENT_RELATIONS[palaceElement][element];
-            lines.push({ lineNum: i + 4, can, chi, element, lucThan });
-        }
-        return lines; // Chỉ số 0 là hào 1, chỉ số 5 là hào 6
-    }
-
-    // Hàm tra cứu Phục Thần của quẻ chính
-    function getPhucThan(palaceName, presentLucThan) {
-        const pId = TRIGRAM_NAMES_MAP[palaceName];
-        const pElement = TRIGRAM_IDS_MAP[pId].element;
-        // Quẻ Bát Thuần mẹ
-        const parentLines = buildHexagramLines(pId, pId, pElement);
-        
-        const allLucThan = ["Huynh đệ", "Tử tôn", "Thê tài", "Quan quỷ", "Phụ mẫu"];
-        const missingLucThan = allLucThan.filter(lt => !presentLucThan.includes(lt));
-
-        let phucThanMap = {}; // index 0..5 -> phục thần
-        missingLucThan.forEach(lt => {
-            const idx = parentLines.findIndex(l => l.lucThan === lt);
-            if (idx !== -1) {
-                phucThanMap[idx] = {
-                    lucThan: lt,
-                    can: parentLines[idx].can,
-                    chi: parentLines[idx].chi,
-                    element: parentLines[idx].element,
-                    napAm: CALENDAR.NAP_AM[`${parentLines[idx].can} ${parentLines[idx].chi}`] || ""
-                };
+            if (!shiLine.isMoving) {
+                if (shiLine.changed.relation !== shiLine.relation) {
+                    haoTamObj = { rel: shiLine.changed.relation, branch: shiLine.changed.branch };
+                }
             }
-        });
-        return phucThanMap;
-    }
 
-    // Xác định Lục Thú dựa vào Can ngày
-    function getLucThu(dayCan) {
-        const animals = ["Thanh Long", "Chu Tước", "Câu Trần", "Đằng Xà", "Bạch Hổ", "Huyền Vũ"];
-        let startIdx = 0;
-        if (dayCan === "Giáp" || dayCan === "Ất") startIdx = 0;
-        else if (dayCan === "Bính" || dayCan === "Đinh") startIdx = 1;
-        else if (dayCan === "Mậu") startIdx = 2;
-        else if (dayCan === "Kỷ") startIdx = 3;
-        else if (dayCan === "Canh" || dayCan === "Tân") startIdx = 4;
-        else if (dayCan === "Nhâm" || dayCan === "Quý") startIdx = 5;
-
-        let result = [];
-        for (let i = 0; i < 6; i++) {
-            result.push(animals[(startIdx + i) % 6]);
-        }
-        return result; // Hào 1 (đầu danh sách) -> Hào 6 (cuối danh sách)
-    }
-
-    // Tính trạng thái 12 Cung Trường Sinh của hào theo ngày/tháng
-    function getTruongSinh(haoNguHanh, targetChi) {
-        const targetChiIdx = CALENDAR.CHI.indexOf(targetChi);
-        const CUNG_SHORT = ["T.Sinh", "M.Dục", "Q.Đới", "L.Quan", "Đ.Vượng", "Suy", "Bệnh", "Tử", "Mộ", "Tuyệt", "Thai", "Dưỡng"];
-
-        let startBranchIdx = 0;
-        if (haoNguHanh === "Mộc") startBranchIdx = CALENDAR.CHI.indexOf("Hợi");
-        else if (haoNguHanh === "Hỏa") startBranchIdx = CALENDAR.CHI.indexOf("Dần");
-        else if (haoNguHanh === "Kim") startBranchIdx = CALENDAR.CHI.indexOf("Tỵ");
-        else if (haoNguHanh === "Thủy" || haoNguHanh === "Thổ") startBranchIdx = CALENDAR.CHI.indexOf("Thân");
-
-        let diff = (targetChiIdx - startBranchIdx + 12) % 12;
-        return CUNG_SHORT[diff];
-    }
-
-    // Tính toán Thần Sát dựa trên ngày gieo, năm gieo, tháng gieo
-    function getShenSha(calDetails) {
-        const canDay = calDetails.day.can;
-        const chiDay = calDetails.day.chi;
-        const chiYear = calDetails.year.chi;
-        const chiMonth = calDetails.month.chi;
-
-        // 1. Quý Nhân
-        const mapQuy = {
-            "Giáp": ["Sửu", "Mùi"], "Mậu": ["Sửu", "Mùi"], "Canh": ["Sửu", "Mùi"],
-            "Ất": ["Tý", "Thân"], "Kỷ": ["Tý", "Thân"],
-            "Bính": ["Hợi", "Dậu"], "Đinh": ["Hợi", "Dậu"],
-            "Nhâm": ["Mão", "Tỵ"], "Quý": ["Mão", "Tỵ"],
-            "Tân": ["Ngọ", "Dần"]
-        };
-        const quyNhan = mapQuy[canDay] || [];
-
-        // 2. Lộc Thần
-        const mapLoc = {
-            "Giáp": "Dần", "Ất": "Mão", "Bính": "Tỵ", "Mậu": "Tỵ",
-            "Đinh": "Ngọ", "Kỷ": "Ngọ", "Canh": "Thân", "Tân": "Dậu",
-            "Nhâm": "Hợi", "Quý": "Tý"
-        };
-        const locThan = mapLoc[canDay] || "";
-
-        // 3. Dương Nhận
-        const mapNhan = {
-            "Giáp": "Mão", "Ất": "Dần", "Bính": "Ngọ", "Mậu": "Ngọ",
-            "Đinh": "Tỵ", "Kỷ": "Tỵ", "Canh": "Dậu", "Tân": "Thân",
-            "Nhâm": "Tý", "Quý": "Hợi"
-        };
-        const duongNhan = mapNhan[canDay] || "";
-
-        // 4. Văn Xương
-        const mapXuong = {
-            "Giáp": "Tỵ", "Ất": "Ngọ", "Bính": "Thân", "Mậu": "Thân",
-            "Đinh": "Dậu", "Kỷ": "Dậu", "Canh": "Hợi", "Tân": "Tý",
-            "Nhâm": "Dần", "Quý": "Mão"
-        };
-        const vanXuong = mapXuong[canDay] || "";
-
-        // Mã hóa tam hợp để tính Dịch Mã, Đào Hoa, v.v.
-        const getGroupIndex = (chi) => {
-            if (["Thân", "Tý", "Thìn"].includes(chi)) return 0;
-            if (["Tỵ", "Dậu", "Sửu"].includes(chi)) return 1;
-            if (["Dần", "Ngọ", "Tuất"].includes(chi)) return 2;
-            if (["Hợi", "Mão", "Mùi"].includes(chi)) return 3;
-            return 0;
-        };
-
-        const gIdx = getGroupIndex(chiDay);
-
-        // 5. Dịch Mã
-        const dichMa = ["Dần", "Hợi", "Thân", "Tỵ"][gIdx];
-
-        // 6. Đào Hoa
-        const daoHoa = ["Dậu", "Ngọ", "Mão", "Tý"][gIdx];
-
-        // 7. Tướng Tinh
-        const tuongTinh = ["Tý", "Dậu", "Ngọ", "Mão"][gIdx];
-
-        // 8. Kiếp Sát
-        const kiepSát = ["Tỵ", "Dần", "Hợi", "Thân"][gIdx];
-
-        // 9. Hoa Cái
-        const hoaCai = ["Thìn", "Sửu", "Tuất", "Mùi"][gIdx];
-
-        // 10. Mưu Tinh
-        const muuTinh = ["Tuất", "Mùi", "Thìn", "Sửu"][gIdx];
-
-        // 11. Tai Sát
-        const taiSat = ["Ngọ", "Mão", "Tý", "Dậu"][gIdx];
-
-        // 12. Vong Thần
-        const vongThan = ["Hợi", "Thân", "Tỵ", "Dần"][gIdx];
-
-        // 13. Thiên Y: Chi tháng lùi 1 vị
-        const mIdx = CALENDAR.CHI.indexOf(chiMonth);
-        const thienY = CALENDAR.CHI[(mIdx - 1 + 12) % 12];
-
-        // 14. Thiên Hỉ: Theo mùa
-        // Xuân (Dần, Mão, Thìn) -> Tuất
-        // Hạ (Tỵ, Ngọ, Mùi) -> Sửu
-        // Thu (Thân, Dậu, Tuất) -> Thìn
-        // Đông (Hợi, Tý, Sửu) -> Mùi
-        let thienHi = "Sửu";
-        if (["Dần", "Mão", "Thìn"].includes(chiMonth)) thienHi = "Tuất";
-        else if (["Tỵ", "Ngọ", "Mùi"].includes(chiMonth)) thienHi = "Sửu";
-        else if (["Thân", "Dậu", "Tuất"].includes(chiMonth)) thienHi = "Thìn";
-        else if (["Hợi", "Tý", "Sửu"].includes(chiMonth)) thienHi = "Mùi";
-
-        return {
-            quyNhan, locThan, duongNhan, vanXuong, dichMa, daoHoa,
-            tuongTinh, kiepSát, hoaCai, muuTinh, taiSat, vongThan,
-            thienY, thienHi
-        };
-    }
-
-    // Xử lý ném 6 lần xu để dựng quẻ chính và biến
-    // coinLines: mảng 6 phần tử từ hào 1 -> hào 6. Mỗi phần tử là số từ 6 đến 9:
-    // 6: Âm động (x, 3 âm), 7: Dương tĩnh (1 dương, 2 âm), 8: Âm tĩnh (1 âm, 2 dương), 9: Dương động (o, 3 dương)
-    function processQuere(coinLines, calDetails) {
-        // Dựng hào quẻ chính (7, 9 -> 1: Dương; 6, 8 -> 0: Âm)
-        let mainTrigramLines = coinLines.map(v => (v % 2 !== 0) ? 1 : 0);
-        let lowerMainLines = mainTrigramLines.slice(0, 3);
-        let upperMainLines = mainTrigramLines.slice(3, 6);
-        let lowerMainId = getTrigramIdFromLines(lowerMainLines);
-        let upperMainId = getTrigramIdFromLines(upperMainLines);
-
-        const mainKey = `${upperMainId}-${lowerMainId}`;
-        const mainHexMap = HEXAGRMAN_MAP[mainKey] || { palace: "Càn", palaceElement: "Kim", the: 6, ung: 3, status: "Bát Thuần" };
-        const mainHexName = HEX_NAMES[mainKey] || "Quẻ Chính";
-
-        // Dựng hào quẻ biến (6 -> 1, 9 -> 0, còn lại giữ nguyên)
-        let bienTrigramLines = coinLines.map(v => {
-            if (v === 6) return 1;
-            if (v === 9) return 0;
-            return (v % 2 !== 0) ? 1 : 0;
-        });
-        let lowerBienLines = bienTrigramLines.slice(0, 3);
-        let upperBienLines = bienTrigramLines.slice(3, 6);
-        let lowerBienId = getTrigramIdFromLines(lowerBienLines);
-        let upperBienId = getTrigramIdFromLines(upperBienLines);
-
-        const bienKey = `${upperBienId}-${lowerBienId}`;
-        // Hào biến lục thân vẫn tính dựa trên ngũ hành họ của quẻ chính!
-        const bienHexMap = HEXAGRMAN_MAP[bienKey] || { palace: "Càn", palaceElement: "Kim", the: 6, ung: 3, status: "Biến" };
-        const bienHexName = HEX_NAMES[bienKey] || "Quẻ Biến";
-
-        // Xây dựng hào quẻ chính chi tiết
-        let mainLinesDetail = buildHexagramLines(lowerMainId, upperMainId, mainHexMap.palaceElement);
-        // Xây dựng hào quẻ biến chi tiết (Dùng họ của Quẻ chính để xác định Lục Thân!)
-        let bienLinesDetail = buildHexagramLines(lowerBienId, upperBienId, mainHexMap.palaceElement);
-
-        // Bổ sung trạng thái Động (o hoặc x)
-        for (let i = 0; i < 6; i++) {
-            mainLinesDetail[i].dongSymbol = (coinLines[i] === 6) ? "X" : (coinLines[i] === 9 ? "O" : "-");
-            mainLinesDetail[i].rawVal = coinLines[i];
-            
-            // Nạp âm hào chính
-            mainLinesDetail[i].napAm = CALENDAR.NAP_AM[`${mainLinesDetail[i].can} ${mainLinesDetail[i].chi}`] || "";
-            // Nạp âm hào biến
-            bienLinesDetail[i].napAm = CALENDAR.NAP_AM[`${bienLinesDetail[i].can} ${bienLinesDetail[i].chi}`] || "";
-
-            // Tuần Không
-            mainLinesDetail[i].isTuanKhong = calDetails.tuanKhong.includes(mainLinesDetail[i].chi);
-            bienLinesDetail[i].isTuanKhong = calDetails.tuanKhong.includes(bienLinesDetail[i].chi);
-
-            // Trường Sinh theo Ngày và Tháng
-            mainLinesDetail[i].tsNgay = getTruongSinh(mainLinesDetail[i].element, calDetails.day.chi);
-            mainLinesDetail[i].tsThang = getTruongSinh(mainLinesDetail[i].element, calDetails.month.chi);
-            bienLinesDetail[i].tsNgay = getTruongSinh(bienLinesDetail[i].element, calDetails.day.chi);
-            bienLinesDetail[i].tsThang = getTruongSinh(bienLinesDetail[i].element, calDetails.month.chi);
+            if (!haoTamObj) {
+                const tangHaoThe = getTangHao(shiIndex);
+                if (tangHaoThe.rel !== shiLine.relation) {
+                    haoTamObj = tangHaoThe;
+                } else {
+                    const hao5 = linesData[4];
+                    if (hao5 && !hao5.isMoving) {
+                        if (hao5.relation !== shiLine.relation) {
+                            haoTamObj = { rel: hao5.relation, branch: hao5.chi };
+                        }
+                    } else if (hao5 && hao5.isMoving) {
+                        const tangHao5 = getTangHao(4);
+                        if (tangHao5.rel !== shiLine.relation) {
+                            haoTamObj = tangHao5;
+                        }
+                    }
+                }
+            }
         }
 
-        // Tính Phục Thần
-        const presentLucThan = mainLinesDetail.map(l => l.lucThan);
-        const phucThanList = getPhucThan(mainHexMap.palace, presentLucThan);
+        let haoTamText = "";
+        if (haoTamObj) {
+            const relMap = {
+                'Tử Tôn': 'Tử', 'Thê Tài': 'Tài', 'Quan Quỷ': 'Quan',
+                'Huynh Đệ': 'Huynh', 'Phụ Mẫu': 'Phụ'
+            };
+            const relShort = relMap[haoTamObj.rel] || haoTamObj.rel;
+            haoTamText = `${relShort} - ${haoTamObj.branch}`;
+        }
 
-        // Lục Thú
-        const lucThuList = getLucThu(calDetails.day.can);
-
-        // Thần Sát
-        const shenSha = getShenSha(calDetails);
-
-        // Kiểm tra Lục Xung / Lục Hợp của quẻ
-        // Chúng ta ghi nhận thêm họ quẻ chính Lục Xung hay không
-        // Các quẻ Lục Xung: 8 quẻ Bát Thuần + Thiên Lôi Vô Vọng + Lôi Thiên Đại Tráng.
-        const lucXungHexKeys = ["1-1", "2-2", "3-3", "4-4", "5-5", "6-6", "7-7", "8-8", "1-4", "4-1"];
-        const isLucXung = lucXungHexKeys.includes(mainKey);
+        const shensha = calculateShenSha(cal.ngay.can, cal.ngay.chi, cal.thang.chi);
 
         return {
-            main: {
-                key: mainKey,
-                name: mainHexName,
-                palace: mainHexMap.palace,
-                palaceElement: mainHexMap.palaceElement,
-                status: mainHexMap.status,
-                the: mainHexMap.the,
-                ung: mainHexMap.ung,
-                lines: mainLinesDetail,
-                isLucXung: isLucXung
-            },
-            bien: {
-                key: bienKey,
-                name: bienHexName,
-                palace: bienHexMap.palace,
-                lines: bienLinesDetail,
-                the: bienHexMap.the,
-                ung: bienHexMap.ung
-            },
-            phucThan: phucThanList,
-            lucThu: lucThuList,
-            shenSha: shenSha
+            mainName,
+            changedName,
+            palaceName,
+            palaceEl,
+            mainAttr,
+            changedPalaceName,
+            changedAttr,
+            info,
+            lines,
+            linesData,
+            shensha,
+            movingLines,
+            ngamResult,
+            formattedDate,
+            methodText,
+            dateInfo: {
+                fullCanChi: `Giờ ${cal.gio.can} ${cal.gio.chi}, Ngày ${cal.ngay.can} ${cal.ngay.chi}`,
+                tietKhi: cal.tietKhi,
+                haoTamText: haoTamText,
+                tuanKhong: cal.tuanKhong.join(', '),
+                nhatThan: `${cal.ngay.chi} - ${cal.ngay.hanh}`,
+                nguyetLenh: `${cal.thang.chi} - ${cal.thang.hanh}`,
+                nhatLenhShort: `${cal.ngay.can} ${cal.ngay.chi}`,
+                nguyetLenhShort: `${cal.thang.can} ${cal.thang.chi}`,
+                shenshaRaw: shensha
+            }
         };
     }
 
     return {
-        processQuere,
-        getTruongSinh,
-        getShenSha,
-        HEX_NAMES
+        QUAI_SO,
+        getBit,
+        calculateHexagramData,
+        calculateShenSha,
+        TEN_QUE
     };
 })();

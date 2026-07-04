@@ -1,202 +1,169 @@
 /**
  * Lịch pháp và Can Chi Lục Hào - calendar.js
- * Tính toán Julian Date, Can Chi ngày/giờ/tháng/năm theo Tiết khí, Tuần Không và Nạp Âm.
+ * (Adapted exactly from gieoque.id.vn logic to ensure 100% correctness)
  */
 
 const CALENDAR = (function () {
-    const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
-    const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-    const NGU_HANH = {
-        "Tý": "Thủy", "Hợi": "Thủy",
-        "Dần": "Mộc", "Mão": "Mộc",
-        "Tỵ": "Hỏa", "Ngọ": "Hỏa",
-        "Thân": "Kim", "Dậu": "Kim",
-        "Sửu": "Thổ", "Thìn": "Thổ", "Mùi": "Thổ", "Tuất": "Thổ"
+    const CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+    const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+    const NGU_HANH_CHI = {
+        'Hợi': 'Thủy', 'Tý': 'Thủy',
+        'Dần': 'Mộc', 'Mão': 'Mộc',
+        'Tỵ': 'Hỏa', 'Ngọ': 'Hỏa',
+        'Thân': 'Kim', 'Dậu': 'Kim',
+        'Thìn': 'Thổ', 'Tuất': 'Thổ', 'Sửu': 'Thổ', 'Mùi': 'Thổ'
     };
 
-    // 24 Tiết Khí
-    const TIET_KHI_NAMES = [
-        "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng",
-        "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ",
-        "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết",
-        "Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập"
-    ];
+    function calculateSolarTermDate(year, termIndex) {
+        const baseDate = new Date(Date.UTC(year, 0, 1));
+        const approxDays = termIndex * 15.218 + 5.5;
+        let jd = (baseDate.getTime() / 86400000) + 2440587.5 + approxDays;
+        let targetLong = (285 + termIndex * 15) % 360;
 
-    // Ngũ hành Nạp Âm cho 60 hoa giáp
-    const NAP_AM = {
-        "Giáp Tý": "Hải Trung Kim", "Ất Sửu": "Hải Trung Kim",
-        "Bính Dần": "Lô Trung Hỏa", "Đinh Mão": "Lô Trung Hỏa",
-        "Mậu Thìn": "Đại Lâm Mộc", "Kỷ Tỵ": "Đại Lâm Mộc",
-        "Canh Ngọ": "Lộ Bàng Thổ", "Tân Mùi": "Lộ Bàng Thổ",
-        "Nhâm Thân": "Kiếm Phong Kim", "Quý Dậu": "Kiếm Phong Kim",
-        "Giáp Tuất": "Sơn Đầu Hỏa", "Ất Hợi": "Sơn Đầu Hỏa",
-        "Bính Tý": "Giản Hạ Thủy", "Đinh Sửu": "Giản Hạ Thủy",
-        "Mậu Dần": "Thành Đầu Thổ", "Kỷ Mão": "Thành Đầu Thổ",
-        "Canh Thìn": "Bạch Lạp Kim", "Tân Tỵ": "Bạch Lạp Kim",
-        "Nhâm Ngọ": "Dương Liễu Mộc", "Quý Mùi": "Dương Liễu Mộc",
-        "Giáp Thân": "Tuyền Trung Thủy", "Ất Dậu": "Tuyền Trung Thủy",
-        "Bính Tuất": "Ốc Thượng Thổ", "Đinh Hợi": "Ốc Thượng Thổ",
-        "Mậu Tý": "Tích Lịch Hỏa", "Kỷ Sửu": "Tích Lịch Hỏa",
-        "Canh Dần": "Tùng Bách Mộc", "Tân Mão": "Tùng Bách Mộc",
-        "Nhâm Thìn": "Trường Lưu Thủy", "Quý Tỵ": "Trường Lưu Thủy",
-        "Giáp Ngọ": "Sa Trung Kim", "Ất Mùi": "Sa Trung Kim",
-        "Bính Thân": "Sơn Hạ Hỏa", "Đinh Dậu": "Sơn Hạ Hỏa",
-        "Mậu Tuất": "Bình Địa Mộc", "Kỷ Hợi": "Bình Địa Mộc",
-        "Canh Tý": "Bích Thượng Thổ", "Tân Sửu": "Bích Thượng Thổ",
-        "Nhâm Dần": "Kim Bạch Kim", "Quý Mão": "Kim Bạch Kim",
-        "Giáp Thìn": "Phúc Đăng Hỏa", "Ất Tỵ": "Phúc Đăng Hỏa",
-        "Bính Ngọ": "Thiên Hà Thủy", "Đinh Mùi": "Thiên Hà Thủy",
-        "Mậu Thân": "Đại Trạch Thổ", "Kỷ Dậu": "Đại Trạch Thổ",
-        "Canh Tuất": "Thoa Xuyến Kim", "Tân Hợi": "Thoa Xuyến Kim",
-        "Nhâm Tý": "Tang Đố Mộc", "Quý Sửu": "Tang Đố Mộc",
-        "Giáp Dần": "Đại Khê Thủy", "Ất Mão": "Đại Khê Thủy",
-        "Bính Thìn": "Sa Trung Thổ", "Đinh Tỵ": "Sa Trung Thổ",
-        "Mậu Ngọ": "Thiên Thượng Hỏa", "Kỷ Mùi": "Thiên Thượng Hỏa",
-        "Canh Thân": "Thạch Lựu Mộc", "Tân Dậu": "Thạch Lựu Mộc",
-        "Nhâm Tuất": "Đại Hải Thủy", "Quý Hợi": "Đại Hải Thủy"
-    };
-
-    // Tính toán Julian Date theo UTC
-    function getJulianDate(dateObj) {
-        let y = dateObj.getUTCFullYear();
-        let m = dateObj.getUTCMonth() + 1;
-        let d = dateObj.getUTCDate() + (dateObj.getUTCHours() + dateObj.getUTCMinutes() / 60 + dateObj.getUTCSeconds() / 3600) / 24;
-
-        if (m <= 2) {
-            y -= 1;
-            m += 12;
+        for (let k = 0; k < 3; k++) {
+            const t = (jd - 2451545.0) / 36525.0;
+            const L0 = 280.46646 + 36000.76983 * t;
+            const M = 357.52911 + 35999.05029 * t;
+            const C = (1.914602 - 0.004817 * t) * Math.sin(M * Math.PI / 180) + (0.019993) * Math.sin(2 * M * Math.PI / 180);
+            let trueLong = (L0 + C) % 360;
+            if (trueLong < 0) trueLong += 360;
+            let error = targetLong - trueLong;
+            if (error > 180) error -= 360;
+            if (error < -180) error += 360;
+            jd += error / 0.9856;
         }
-        let A = Math.floor(y / 100);
-        let B = 2 - A + Math.floor(A / 4);
-        return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+
+        const z = Math.floor(jd + 0.5);
+        const f = jd + 0.5 - z;
+        let alpha = Math.floor((z - 1867216.25) / 36524.25);
+        const a = z + 1 + alpha - Math.floor(alpha / 4);
+        const b = a + 1524;
+        const c = Math.floor((b - 122.1) / 365.25);
+        const d = Math.floor(365.25 * c);
+        const e = Math.floor((b - d) / 30.6001);
+        const day = b - d - Math.floor(30.6001 * e) + f;
+        const month = e < 14 ? e - 1 : e - 13;
+        const yy = month > 2 ? c - 4716 : c - 4715;
+        const totalSec = Math.floor((day - Math.floor(day)) * 86400);
+
+        return new Date(Date.UTC(yy, month - 1, Math.floor(day), Math.floor(totalSec / 3600), Math.floor((totalSec % 3600) / 60)));
     }
 
-    // Tính kinh độ mặt trời (Solar Longitude) để xác định Tiết khí
-    function getSunLongitude(jd) {
-        const D = jd - 2451545.0;
-        let g = (357.529 + 0.98560028 * D) % 360;
-        if (g < 0) g += 360;
-        let q = (280.459 + 0.98564736 * D) % 360;
-        if (q < 0) q += 360;
-        const gRad = g * Math.PI / 180;
-        let L = q + 1.915 * Math.sin(gRad) + 0.020 * Math.sin(2 * gRad);
-        L = L % 360;
-        if (L < 0) L += 360;
-        return L;
-    }
-
-    // Lấy tên Tiết khí hiện tại từ kinh độ mặt trời L
-    function getTietKhiName(L) {
-        // L từ 0 (Xuân Phân), mỗi Tiết cách nhau 15 độ
-        let idx = Math.floor(L / 15);
-        return TIET_KHI_NAMES[idx] || TIET_KHI_NAMES[0];
-    }
-
-    // Xác định tháng tiết khí (0: Dần, 1: Mão, ..., 11: Sửu)
-    function getSolarMonthBranchIdx(L) {
-        // Lập Xuân ở 315 độ, tương ứng đầu tháng Dần
-        let adjusted = (L - 315 + 360) % 360;
-        return Math.floor(adjusted / 30);
-    }
-
-    // Lấy thông tin lịch pháp hoàn chỉnh cho một thời điểm cụ thể
-    function getCalendarDetails(localDate) {
-        // Lấy thông tin giờ địa phương Việt Nam (GMT+7)
-        // Lưu ý: localDate truyền vào là một đối tượng Date biểu thị thời điểm gieo quẻ
-        const jdUTC = getJulianDate(localDate);
-        const L = getSunLongitude(jdUTC);
-
-        const localYear = localDate.getFullYear();
-        const localMonth = localDate.getMonth() + 1;
-        const localDay = localDate.getDate();
-        const localHour = localDate.getHours();
-
-        // 1. Tính toán ngày Can Chi (sử dụng 12h trưa để đảm bảo tính ổn định)
-        const dateNoonUTC = new Date(Date.UTC(localYear, localMonth - 1, localDay, 5, 0, 0)); // 5:00 UTC = 12:00 GMT+7
-        const jdNoon = getJulianDate(dateNoonUTC);
-        const dayIdx = Math.floor(jdNoon + 0.5);
-        const dayCanIdx = (dayIdx + 9) % 10;
-        const dayChiIdx = (dayIdx + 1) % 12;
-
-        const dayCan = CAN[dayCanIdx];
-        const dayChi = CHI[dayChiIdx];
-
-        // 2. Tính toán Tháng tiết khí (Nguyệt Lệnh)
-        const monthChiIdx = (getSolarMonthBranchIdx(L) + 2) % 12; // Dần=2, Mão=3...
-        const monthChi = CHI[monthChiIdx];
-        // Tính Can của Tháng theo "Ngũ Dần Khởi Ca"
-        // Niên can khởi nguyệt can:
-        // Giáp/Kỷ -> Bính Dần (2); Ất/Canh -> Mậu Dần (4); Bính/Tân -> Canh Dần (6); Đinh/Nhâm -> Nhâm Dần (8); Mậu/Quý -> Giáp Dần (0).
-        // Phải biết Can năm của thời điểm Tiết khí này.
-        // Xác định năm Tiết khí: nếu tháng Tiết khí hiện tại là Sửu (11) hoặc Tý (10) và lịch dương là đầu năm, 
-        // hoặc nếu L < 315 (chưa đến Lập Xuân) trong tháng 1, 2 thì năm Tiết khí là localYear - 1.
-        let solarYear = localYear;
-        if (localMonth === 1) {
-            solarYear = localYear - 1;
-        } else if (localMonth === 2 && L < 315) {
-            solarYear = localYear - 1;
+    function getSolarTerm(year) {
+        const termInfo = [];
+        for (let i = 0; i < 24; i++) {
+            termInfo.push(calculateSolarTermDate(year, i));
         }
-        
-        const yearCanIdx = (solarYear - 4) % 10;
-        const yearChiIdx = (solarYear - 4) % 12;
-        const yearCan = CAN[yearCanIdx];
-        const yearChi = CHI[yearChiIdx];
+        return termInfo;
+    }
 
-        // Tìm Can của tháng Dần
-        const startMonthCanIdx = ((yearCanIdx % 5) * 2 + 2) % 10;
-        // Số tháng trôi qua kể từ tháng Dần (Dần=0, Mão=1...)
-        const monthsPassed = (monthChiIdx - 2 + 12) % 12;
-        const monthCanIdx = (startMonthCanIdx + monthsPassed) % 10;
-        const monthCan = CAN[monthCanIdx];
+    function calculateCanChi(dateInput) {
+        let d = new Date(dateInput);
+        if (d.getHours() >= 23) d.setDate(d.getDate() + 1); // Giờ Tý đổi ngày
 
-        // 3. Tính toán Giờ Can Chi
-        // Chi giờ: 23-1h: Tý(0), 1-3h: Sửu(1)...
-        let hourChiIdx = 0;
-        if (localHour >= 23 || localHour < 1) hourChiIdx = 0;
-        else hourChiIdx = Math.floor((localHour - 1) / 2) + 1;
-        const hourChi = CHI[hourChiIdx];
-        // Can giờ tính theo Nhật can:
-        // Giáp/Kỷ -> Giáp Tý (0); Ất/Canh -> Bính Tý (2); Bính/Tân -> Mậu Tý (4); Đinh/Nhâm -> Canh Tý (6); Mậu/Quý -> Nhâm Tý (8).
-        const startHourCanIdx = ((dayCanIdx % 5) * 2) % 10;
-        const hourCanIdx = (startHourCanIdx + hourChiIdx) % 10;
-        const hourCan = CAN[hourCanIdx];
+        const y = d.getFullYear();
+        const a = Math.floor((14 - (d.getMonth() + 1)) / 12);
+        const yJD = d.getFullYear() + 4800 - a;
+        const mJD = (d.getMonth() + 1) + 12 * a - 3;
+        const jd = d.getDate() + Math.floor((153 * mJD + 2) / 5) + 365 * yJD + Math.floor(yJD / 4) - Math.floor(yJD / 100) + Math.floor(yJD / 400) - 32045;
 
-        // 4. Tính toán Tuần Không của ngày
-        // Thống kê Void chi:
-        // diff = (dayChiIdx - dayCanIdx + 12) % 12
-        // Void 1: (diff - 2 + 12) % 12
-        // Void 2: (diff - 1 + 12) % 12
-        const diff = (dayChiIdx - dayCanIdx + 12) % 12;
-        const tk1Idx = (diff - 2 + 12) % 12;
-        const tk2Idx = (diff - 1 + 12) % 12;
-        const tuanKhong = [CHI[tk1Idx], CHI[tk2Idx]];
+        const canNgayIdx = (jd + 9) % 10;
+        const chiNgayIdx = (jd + 1) % 12;
 
-        // 5. Ngũ hành Nạp Âm của ngày và tháng
-        const dayNapAm = NAP_AM[`${dayCan} ${dayChi}`] || "";
-        const monthNapAm = NAP_AM[`${monthCan} ${monthChi}`] || "";
-        const yearNapAm = NAP_AM[`${yearCan} ${yearChi}`] || "";
+        const terms = getSolarTerm(y);
+        const termsPrev = getSolarTerm(y - 1);
+        const lapXuan = terms[2];
+
+        let solarYear = d < lapXuan ? y - 1 : y;
+        let canNamIdx = (solarYear - 4) % 10;
+        if (canNamIdx < 0) canNamIdx += 10;
+        let chiNamIdx = (solarYear - 4) % 12;
+        if (chiNamIdx < 0) chiNamIdx += 12;
+
+        let chiThangIdx = 1;
+        if (d >= termsPrev[22] && d < terms[0]) {
+            chiThangIdx = 0;
+        } else {
+            const checkOrder = [22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0];
+            const mapping = { 2: 2, 4: 3, 6: 4, 8: 5, 10: 6, 12: 7, 14: 8, 16: 9, 18: 10, 20: 11, 22: 0, 0: 1 };
+            for (let tIdx of checkOrder) {
+                if (d >= terms[tIdx]) {
+                    chiThangIdx = mapping[tIdx];
+                    break;
+                }
+            }
+        }
+
+        const canThangIdx = ((canNamIdx * 2 + 2) + (chiThangIdx - 2 + 12)) % 10;
+
+        let h = d.getHours();
+        const chiGioIdx = (h >= 23 || h < 1) ? 0 : Math.floor((h + 1) / 2) % 12;
+        const canGioIdx = (((canNgayIdx % 5) * 2) + chiGioIdx) % 10;
+
+        const diff = (chiNgayIdx - canNgayIdx + 12) % 12;
+        const tk1 = CHI[(diff - 2 + 12) % 12];
+        const tk2 = CHI[(diff - 1 + 12) % 12];
+
+        let dayOfYear = Math.floor((d - new Date(y, 0, 0)) / 86400000);
+        const termNames = ['Tiểu Hàn', 'Đại Hàn', 'Lập Xuân', 'Vũ Thủy', 'Kinh Trập', 'Xuân Phân', 'Thanh Minh', 'Cốc Vũ', 'Lập Hạ', 'Tiểu Mãn', 'Mang Chủng', 'Hạ Chí', 'Tiểu Thử', 'Đại Thử', 'Lập Thu', 'Xử Thử', 'Bạch Lộ', 'Thu Phân', 'Hàn Lộ', 'Sương Giáng', 'Lập Đông', 'Tiểu Tuyết', 'Đại Tuyết', 'Đông Chí'];
+        let tIdx = Math.floor(dayOfYear / 15.22);
+        if (tIdx > 23) tIdx = 23;
+
+        // Bổ sung nạp âm ngày tháng năm
+        const getNapAm = (can, chi) => {
+            const key = `${can} ${chi}`;
+            const map = {
+                "Giáp Tý": "Hải Trung Kim", "Ất Sửu": "Hải Trung Kim",
+                "Bính Dần": "Lô Trung Hỏa", "Đinh Mão": "Lô Trung Hỏa",
+                "Mậu Thìn": "Đại Lâm Mộc", "Kỷ Tỵ": "Đại Lâm Mộc",
+                "Canh Ngọ": "Lộ Bàng Thổ", "Tân Mùi": "Lộ Bàng Thổ",
+                "Nhâm Thân": "Kiếm Phong Kim", "Quý Dậu": "Kiếm Phong Kim",
+                "Giáp Tuất": "Sơn Đầu Hỏa", "Ất Hợi": "Sơn Đầu Hỏa",
+                "Bính Tý": "Giản Hạ Thủy", "Đinh Sửu": "Giản Hạ Thủy",
+                "Mậu Dần": "Thành Đầu Thổ", "Kỷ Mão": "Thành Đầu Thổ",
+                "Canh Thìn": "Bạch Lạp Kim", "Tân Tỵ": "Bạch Lạp Kim",
+                "Nhâm Ngọ": "Dương Liễu Mộc", "Quý Mùi": "Dương Liễu Mộc",
+                "Giáp Thân": "Tuyền Trung Thủy", "Ất Dậu": "Tuyền Trung Thủy",
+                "Bính Tuất": "Ốc Thượng Thổ", "Đinh Hợi": "Ốc Thượng Thổ",
+                "Mậu Tý": "Tích Lịch Hỏa", "Kỷ Sửu": "Tích Lịch Hỏa",
+                "Canh Dần": "Tùng Bách Mộc", "Tân Mão": "Tùng Bách Mộc",
+                "Nhâm Thìn": "Trường Lưu Thủy", "Quý Tỵ": "Trường Lưu Thủy",
+                "Giáp Ngọ": "Sa Trung Kim", "Ất Mùi": "Sa Trung Kim",
+                "Bính Thân": "Sơn Hạ Hỏa", "Đinh Dậu": "Sơn Hạ Hỏa",
+                "Mậu Tuất": "Bình Địa Mộc", "Kỷ Hợi": "Bình Địa Mộc",
+                "Canh Tý": "Bích Thượng Thổ", "Tân Sửu": "Bích Thượng Thổ",
+                "Nhâm Dần": "Kim Bạch Kim", "Quý Mão": "Kim Bạch Kim",
+                "Giáp Thìn": "Phúc Đăng Hỏa", "Ất Tỵ": "Phúc Đăng Hỏa",
+                "Bính Ngọ": "Thiên Hà Thủy", "Đinh Mùi": "Thiên Hà Thủy",
+                "Mậu Thân": "Đại Trạch Thổ", "Kỷ Dậu": "Đại Trạch Thổ",
+                "Canh Tuất": "Thoa Xuyến Kim", "Tân Hợi": "Thoa Xuyến Kim",
+                "Nhâm Tý": "Tang Đố Mộc", "Quý Sửu": "Tang Đố Mộc",
+                "Giáp Dần": "Đại Khê Thủy", "Ất Mão": "Đại Khê Thủy",
+                "Bính Thìn": "Sa Trung Thổ", "Đinh Tỵ": "Sa Trung Thổ",
+                "Mậu Ngọ": "Thiên Thượng Hỏa", "Kỷ Mùi": "Thiên Thượng Hỏa",
+                "Canh Thân": "Thạch Lựu Mộc", "Tân Dậu": "Thạch Lựu Mộc",
+                "Nhâm Tuất": "Đại Hải Thủy", "Quý Hợi": "Đại Hải Thủy"
+            };
+            return map[key] || "";
+        };
 
         return {
-            solarDateStr: localDate.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-            tietKhi: getTietKhiName(L),
-            year: { can: yearCan, chi: yearChi, napAm: yearNapAm },
-            month: { can: monthCan, chi: monthChi, napAm: monthNapAm },
-            day: { can: dayCan, chi: dayChi, napAm: dayNapAm, canIdx: dayCanIdx, chiIdx: dayChiIdx },
-            hour: { can: hourCan, chi: hourChi },
-            tuanKhong: tuanKhong,
-            sunLongitude: L
+            nam: { can: CAN[canNamIdx], chi: CHI[chiNamIdx], napAm: getNapAm(CAN[canNamIdx], CHI[chiNamIdx]) },
+            thang: { can: CAN[canThangIdx], chi: CHI[chiThangIdx], hanh: NGU_HANH_CHI[CHI[chiThangIdx]], napAm: getNapAm(CAN[canThangIdx], CHI[chiThangIdx]) },
+            ngay: { can: CAN[canNgayIdx], chi: CHI[chiNgayIdx], hanh: NGU_HANH_CHI[CHI[chiNgayIdx]], napAm: getNapAm(CAN[canNgayIdx], CHI[chiNgayIdx]) },
+            gio: { can: CAN[canGioIdx], chi: CHI[chiGioIdx] },
+            tuanKhong: [tk1, tk2],
+            tietKhi: termNames[tIdx]
         };
     }
 
     return {
         CAN,
         CHI,
-        NGU_HANH,
-        NAP_AM,
-        getJulianDate,
-        getSunLongitude,
-        getTietKhiName,
-        getSolarMonthBranchIdx,
-        getCalendarDetails
+        NGU_HANH_CHI,
+        calculateCanChi,
+        calculateSolarTermDate,
+        getSolarTerm
     };
 })();

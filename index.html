@@ -6,6 +6,12 @@
     <title>Website Luận Giải Kinh Dịch Lục Hào - Dự Đoán Huyền Học Phương Đông</title>
     <meta name="description" content="Website gieo quẻ và luận giải Kinh Dịch Lục Hào tự động, áp dụng lịch tiết khí chính xác để xác định Nguyệt Lệnh và Nhật Thần. Tiện lợi, giao diện cao cấp.">
     <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas library for screenshotting hexagram card -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -144,8 +150,6 @@
                 
                 <div class="result-stage">
                     <div class="hexagram-card-wrapper">
-                        <!-- Canvas ẩn phục vụ vẽ đồ họa -->
-                        <canvas id="hexagram-canvas" class="hexagram-canvas-hidden" width="1000" height="1000"></canvas>
                         <!-- Ảnh PNG hiển thị và cho phép nhấn giữ lưu ảnh trên di động -->
                         <img id="hexagram-img" class="hexagram-image-output" alt="Thẻ Quẻ Lục Hào Cổ Kính">
                     </div>
@@ -173,10 +177,22 @@
         </footer>
     </div>
 
+    <!-- Hidden Capture Area for html2canvas -->
+    <div id="captureArea">
+        <div id="captureTarget"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Đang tạo ảnh kết quả...</p>
+        </div>
+    </div>
+
     <!-- Nạp các thư viện logic -->
     <script src="calendar.js"></script>
     <script src="iching_core.js"></script>
-    <script src="renderer.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
