@@ -383,8 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             
-            <div class="watermark" style="text-align: right; margin-top: 15px; font-size: 14px; font-style: italic; color: #888;">
-                Phần mềm Lục Hào - Triển khai trên Vercel qua GitHub
+            <div class="watermark" style="text-align: right; margin-top: 15px; font-size: 13px; font-weight: 500; color: #876121; line-height: 1.5; font-family: var(--font-serif);">
+                Liên hệ luận giải:<br>
+                Zalo : 0933116860 (Hoàng)
             </div>
         `;
     }
