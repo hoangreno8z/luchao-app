@@ -370,7 +370,32 @@ export default async function handler(req, res) {
     const geminiKey = process.env.GEMINI_API_KEY;
 
     if (geminiKey && userInputs && hexData && analysisTextsList.length > 0) {
-        try {
+            // --- LOGIC HÓA GIẢI PHONG THỦY VƯƠNG HỔ ỨNG ---
+            let hoaGiaiAdvice = "";
+            if (engineResult && engineResult.targetRelation) {
+                // Lấy Ngũ hành của Dụng thần lâm hào
+                const targetLine = hexData?.linesData?.find(l => l.relation === engineResult.targetRelation);
+                if (targetLine) {
+                    const dungHanh = targetLine.hanh || 'Thủy';
+                    // Xác định Kỵ thần tương ứng
+                    const kyThanMap = { 'Quan Quỷ': 'Tử Tôn', 'Phụ Mẫu': 'Thê Tài', 'Thê Tài': 'Huynh Đệ', 'Tử Tôn': 'Phụ Mẫu', 'Huynh Đệ': 'Quan Quỷ' };
+                    const kyThanRel = kyThanMap[engineResult.targetRelation];
+                    const kyLine = hexData?.linesData?.find(l => l.relation === kyThanRel);
+                    const kyHanh = kyLine?.hanh || 'Thổ';
+
+                    // Tìm luật Hóa Giải
+                    const hoaGiaiList = {
+                        'Thổ_Thủy': 'Sử dụng ngũ hành KIM để thông quan: Đeo trang sức bằng vàng/bạc hình tròn, hoặc đặt vật phẩm bằng đồng ở hướng Tây/Tây Bắc phòng làm việc để hóa giải áp lực từ Kỵ thần Thổ.',
+                        'Kim_Mộc': 'Sử dụng ngũ hành THỦY để thông quan: Đặt một bể cá nhỏ hoặc bình nước sạch ở hướng Bắc phòng làm việc để làm dịu điềm hung hiểm và hóa giải xung đột.',
+                        'Mộc_Thổ': 'Sử dụng ngũ hành HỎA để thông quan: Bật đèn sáng tại phía Nam, tăng cường dùng tông màu đỏ/hồng để chuyển hóa lực cản từ Mộc thành động lực phát triển.',
+                        'Hỏa_Kim': 'Sử dụng ngũ hành THỔ để thông quan: Đặt các vật phẩm bằng gốm sứ, đất nung hoặc thạch anh vàng tại khu vực Đông Bắc/Tây Nam để làm bệ đỡ vững chắc cho công việc.',
+                        'Thủy_Hỏa': 'Sử dụng ngũ hành MỘC để thông quan: Trồng cây cảnh xanh tốt hoặc sử dụng các đồ dùng bằng gỗ tự nhiên ở phía Đông/Đông Nam để hút tà khí và sinh trợ bản mệnh.'
+                    };
+                    const key = `${kyHanh}_${dungHanh}`;
+                    hoaGiaiAdvice = hoaGiaiList[key] || "";
+                }
+            }
+
             const promptData = {
                 user_gender: gender,
                 user_question: userInputs.question || 'Không có câu hỏi cụ thể',
@@ -379,7 +404,7 @@ export default async function handler(req, res) {
                 calculated_canghung: catHung === 'CAT' ? 'Cát' : catHung === 'HUNG' ? 'Hung' : 'Bình hòa',
                 technical_findings: analysisTextsList.join('\n'),
                 topic_meaning: topicMeaning,
-                advice: scenarioText?.advice || ''
+                advice: (scenarioText?.advice || '') + (hoaGiaiAdvice ? `\n\n[Bí quyết Hóa giải phong thủy Vương Hổ Ứng]: ${hoaGiaiAdvice}` : '')
             };
 
             const systemPrompt = `Bạn là biên tập viên Lục Hào chuyên nghiệp. Nhiệm vụ: tổng hợp các đoạn phân tích kỹ thuật thành báo cáo cá nhân hóa mượt mà bằng tiếng Việt.
