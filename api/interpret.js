@@ -101,6 +101,7 @@ export default async function handler(req, res) {
     const supabaseKey = process.env.SUPABASE_KEY;
 
     let dbMainHex = null, dbChangedHex = null, dbLines = [], dbSemanticTexts = [];
+    let dbTuongCoBan = [], dbTuongDaTang = [], dbTuongDongBien = [];
 
     // ===========================================================================
     // BỘ NHÂN 4 KHỐI - PHÂN TÍCH ĐA CHIỀU
@@ -118,28 +119,73 @@ export default async function handler(req, res) {
     }
 
     // ===========================================================================
-    // TRUY XUẤT DATABASE THEO BỘ MÃ HÓA ĐÃ SINH
+    // TRUY XUẤT DATABASE SONG SONG - 6 QUERY ĐỒNG THỜI
     // ===========================================================================
     if (supabaseUrl && supabaseKey) {
         try {
-            const headers = {
+            const H = {
                 'apikey': supabaseKey,
                 'Authorization': `Bearer ${supabaseKey}`,
                 'Content-Type': 'application/json'
             };
+            const G = (url) => fetch(url, { headers: H }).then(r => r.json()).catch(() => []);
+
+            // Chuẩn hóa tên chủ đề sang mã DB
+            const topicCode = {
+                'công việc': 'cong_viec', 'thi cử': 'cong_viec',
+                'tình yêu': 'tinh_yeu',  'hôn nhân': 'tinh_yeu',
+                'sức khỏe': 'suc_khoe',  'kinh doanh': 'kinh_doanh',
+                'dự án': 'kinh_doanh',   'chứng khoán': 'chung_khoan',
+                'bất động sản': 'bat_dong_san'
+            }[topic] || 'cong_viec';
+
             const codeList = generatedCodes.map(c => `"${c}"`).join(',');
 
-            const [mainRes, changedRes, linesRes, semanticRes] = await Promise.all([
-                fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${hex_id}`, { headers }).then(r => r.json()),
-                changed_id ? fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${changed_id}`, { headers }).then(r => r.json()) : Promise.resolve([]),
-                fetch(`${supabaseUrl}/rest/v1/lines?hexagram_id=eq.${hex_id}`, { headers }).then(r => r.json()),
-                codeList ? fetch(`${supabaseUrl}/rest/v1/semantic_texts?code=in.(${codeList})`, { headers }).then(r => r.json()) : Promise.resolve([])
+            // Xây dựng tham số cho tuong_da_tang từ enrichedLines của engine
+            const enriched = engineResult?.enrichedLines || [];
+            const tuongDaTangFilters = enriched.map((line, i) => {
+                const lucThan = encodeLucThan(line.relation);
+                const lucThu = encodeLucThu(line.lucThu);
+                const trangThai = line.isMoving ? 'dong' : line.isTK ? 'tuan_khong' : line.isAmDong ? 'am_dong' : line.isNguyetPha ? 'nguyet_pha' : line.isMoDay || line.isMoMonth ? 'nhap_mo' : 'tinh';
+                return `(hao_vi.eq.${i + 1},luc_than.eq.${lucThan},trang_thai.eq.${trangThai})`;
+            }).filter(Boolean);
+
+            // Xây dựng tham số cho tuong_dong_bien từ energyVectors của engine
+            const vectors = engineResult?.energyVectors || [];
+            const huongBienMap = {
+                'HOI_DAU_KHAC': 'hoi_dau_khac', 'HOI_DAU_SINH': 'hoi_dau_sinh',
+                'HOA_TIEN_THAN': 'hoa_tien', 'HOA_THOAI_THAN': 'hoa_thoai',
+                'BINH_HOA': null
+            };
+
+            const B = `${supabaseUrl}/rest/v1`;
+
+            const [mainRes, changedRes, linesRes, semanticRes, tuongCoBanRes, tuongDaTangRes, tuongDongBienRes] = await Promise.all([
+                // 1. Bảng quẻ chính
+                G(`${B}/hexagrams?id=eq.${hex_id}`),
+                // 2. Bảng quẻ biến
+                changed_id ? G(`${B}/hexagrams?id=eq.${changed_id}`) : Promise.resolve([]),
+                // 3. Bảng hào
+                G(`${B}/lines?hexagram_id=eq.${hex_id}`),
+                // 4. Bảng semantic_texts (mã hóa cũ - giữ lại backward compat)
+                codeList ? G(`${B}/semantic_texts?code=in.(${codeList})`) : Promise.resolve([]),
+                // 5. [MỚI] tuong_co_ban - lấy nghĩa gốc theo chủ đề
+                G(`${B}/tuong_co_ban?chu_de=eq.${topicCode}&select=luc_than,luc_thu,y_nghia`),
+                // 6. [MỚI] tuong_da_tang - tổ hợp đặc hiệu theo hào + trạng thái
+                G(`${B}/tuong_da_tang?chu_de=in.(${topicCode},all)&select=hao_vi,luc_than,luc_thu,trang_thai,mo_ta_tuong`),
+                // 7. [MỚI] tuong_dong_bien - pha động biến
+                vectors.length > 0
+                    ? G(`${B}/tuong_dong_bien?chu_de=in.(${topicCode},all)&select=luc_than_goc,luc_than_bien,huong_bien,mo_ta_bien`)
+                    : Promise.resolve([])
             ]);
 
-            dbMainHex = mainRes?.[0] || null;
-            dbChangedHex = changedRes?.[0] || null;
-            dbLines = linesRes || [];
-            dbSemanticTexts = semanticRes || [];
+            dbMainHex        = mainRes?.[0] || null;
+            dbChangedHex     = changedRes?.[0] || null;
+            dbLines          = linesRes || [];
+            dbSemanticTexts  = semanticRes || [];
+            dbTuongCoBan     = tuongCoBanRes || [];
+            dbTuongDaTang    = tuongDaTangRes || [];
+            dbTuongDongBien  = tuongDongBienRes || [];
         } catch (err) {
             console.error('Supabase query failed:', err.message);
         }
@@ -161,27 +207,109 @@ export default async function handler(req, res) {
     else if (['kinh doanh', 'dự án'].includes(topic)) topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.wealth;
 
     // ===========================================================================
-    // TỔNG HỢP VĂN BẢN PHÂN TÍCH: DB → Fallback → Engine Vectors
+    // TỔNG HỢP VĂN BẢN PHÂN TÍCH: 6 LỚP NGUỒN DỮ LIỆU
+    // Thứ tự ưu tiên: DB semantic → tuong_da_tang → tuong_dong_bien → tuong_co_ban → fallback → engine
     // ===========================================================================
     const analysisTextsList = [];
     const processedCodes = new Set();
 
-    // 1. Ưu tiên văn bản từ Supabase DB (chính xác nhất)
+    // LỚP 1: semantic_texts cũ (backward compat, ưu tiên cao nhất)
     dbSemanticTexts.forEach(row => {
         analysisTextsList.push(`📌 ${row.vietnamese_text}`);
         processedCodes.add(row.code);
     });
 
-    // 2. Bổ sung fallback cho các mã chưa có trong DB
+    // LỚP 2: tuong_da_tang — khớp từng hào theo (hao_vi, luc_than, trang_thai)
+    if (dbTuongDaTang.length > 0 && engineResult?.enrichedLines) {
+        const enriched = engineResult.enrichedLines;
+        enriched.forEach((line, i) => {
+            const lucThan = encodeLucThan(line.relation);
+            const trangThai = line.isMoving ? 'dong'
+                : line.isTK ? 'tuan_khong'
+                : line.isAmDong ? 'am_dong'
+                : line.isNguyetPha ? 'nguyet_pha'
+                : (line.isMoDay || line.isMoMonth) ? 'nhap_mo'
+                : 'tinh';
+            const lucThu = encodeLucThu(line.lucThu);
+            const haoNum = i + 1;
+
+            // Khớp chính xác: hào vi + lục thân + trạng thái
+            const exact = dbTuongDaTang.find(r =>
+                r.hao_vi === haoNum && r.luc_than === lucThan && r.trang_thai === trangThai
+            );
+            if (exact) {
+                analysisTextsList.push(`🎯 Hào ${haoNum} (${line.relation}·${line.lucThu}·${trangThai}): ${exact.mo_ta_tuong}`);
+                return;
+            }
+            // Khớp mở rộng: bỏ qua hao_vi (hao_vi IS NULL = áp dụng mọi hào)
+            const broad = dbTuongDaTang.find(r =>
+                r.hao_vi === null && r.luc_than === lucThan && r.trang_thai === trangThai
+            );
+            if (broad) {
+                analysisTextsList.push(`🎯 Hào ${haoNum} (${line.relation}·${trangThai}): ${broad.mo_ta_tuong}`);
+            }
+        });
+    }
+
+    // LỚP 3: tuong_dong_bien — khớp theo (luc_than_goc, luc_than_bien, huong_bien) của mỗi vec-tơ
+    if (dbTuongDongBien.length > 0 && engineResult?.energyVectors) {
+        const huongBienMap = {
+            'HOI_DAU_KHAC': 'hoi_dau_khac', 'HOI_DAU_SINH': 'hoi_dau_sinh',
+            'HOA_TIEN_THAN': 'hoa_tien', 'HOA_THOAI_THAN': 'hoa_thoai'
+        };
+        engineResult.energyVectors.forEach(v => {
+            const goc  = encodeLucThan(v.relation);
+            const bien = encodeLucThan(v.changedRelation);
+            const huong = huongBienMap[v.vector];
+            if (!huong) return;
+            const match = dbTuongDongBien.find(r =>
+                r.luc_than_goc === goc && r.luc_than_bien === bien && r.huong_bien === huong
+            );
+            if (match) {
+                analysisTextsList.push(`🔄 Hào ${v.lineNum} động biến (${huong}): ${match.mo_ta_bien}`);
+            } else if (v.vectorText) {
+                // fallback sang text engine tính toán nếu DB chưa có
+                analysisTextsList.push(`⚡ Hào ${v.lineNum}: ${v.vectorText}`);
+            }
+        });
+    } else {
+        // Không có DB → dùng văn bản engine tính sẵn
+        engineResult?.vectorTexts.forEach(v => {
+            analysisTextsList.push(`⚡ Hào ${v.lineNum}: ${v.text}`);
+        });
+    }
+
+    // LỚP 4: tuong_co_ban — bổ sung từ vựng nền tảng của hào Dụng Thần và Thế
+    if (dbTuongCoBan.length > 0 && engineResult) {
+        const dungRel  = encodeLucThan(engineResult.targetRelation);
+        const dungBase = dbTuongCoBan.find(r => r.luc_than === dungRel && !r.luc_thu);
+        if (dungBase) {
+            analysisTextsList.push(`📖 Dụng Thần (${engineResult.targetRelation}) trong chủ đề này: ${dungBase.y_nghia}`);
+        }
+        // Lục Thú của Dụng Thần
+        const dungLine = engineResult.enrichedLines?.find(l => l.relation === engineResult.targetRelation);
+        if (dungLine) {
+            const lucThuCode = encodeLucThu(dungLine.lucThu);
+            const thuBase = dbTuongCoBan.find(r => r.luc_thu === lucThuCode && !r.luc_than);
+            if (thuBase) {
+                analysisTextsList.push(`📖 ${dungLine.lucThu} trong chủ đề này: ${thuBase.y_nghia}`);
+            }
+        }
+    }
+
+    // LỚP 5: Phục Thần từ Khối 1
+    if (engineResult?.phucThanResult.found) {
+        const pt = engineResult.phucThanResult;
+        analysisTextsList.push(`🔍 Phục Thần: ${engineResult.targetRelation} đang ẩn dưới Hào ${pt.hostIdx + 1} (${pt.hostLine.relation}), chi ${pt.phucLine.branch}.`);
+    }
+
+    // LỚP 6: Fallback text từ mã engine (các mã chưa match DB)
     generatedCodes.forEach(code => {
         if (!processedCodes.has(code) && FALLBACK_TEXTS[code]) {
             analysisTextsList.push(FALLBACK_TEXTS[code]);
         }
     });
 
-    // 3. Thêm văn bản Véc Tơ Năng Lượng từ Khối 3
-    engineResult?.vectorTexts.forEach(v => {
-        analysisTextsList.push(`⚡ Hào ${v.lineNum}: ${v.text}`);
     });
 
     // 4. Thêm phân tích Phục Thần từ Khối 1
@@ -304,3 +432,39 @@ function getFallbackHex(hex_id) {
     };
     return list[hex_id] || { name: 'Quẻ Số ' + hex_id, palace: 'Chưa rõ', meaning: 'Đang cập nhật...', overall: 'Đang cập nhật...', career: 'Đang cập nhật...', love: 'Đang cập nhật...', wealth: 'Đang cập nhật...', health: 'Đang cập nhật...' };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPER ENCODERS – chuyển tiếng Việt sang mã DB
+// Dùng để khớp dữ liệu với tuong_co_ban / tuong_da_tang / tuong_dong_bien
+// ─────────────────────────────────────────────────────────────────────────────
+function encodeLucThan(rel) {
+    if (!rel) return '';
+    const map = {
+        'Phụ Mẫu':  'phu_mau',
+        'Quan Quỷ': 'quan_quy',
+        'Huynh Đệ': 'huynh_de',
+        'Thê Tài':  'the_tai',
+        'Tử Tôn':   'tu_ton'
+    };
+    for (const [k, v] of Object.entries(map)) {
+        if (rel.includes(k)) return v;
+    }
+    return rel.toLowerCase().replace(/\s+/g, '_');
+}
+
+function encodeLucThu(thu) {
+    if (!thu) return '';
+    const map = {
+        'Thanh Long': 'thanh_long',
+        'Chu Tước':   'chu_tuoc',
+        'Câu Trần':   'cau_tran',
+        'Đằng Xà':    'dang_xa',
+        'Bạch Hổ':    'bach_ho',
+        'Huyền Vũ':   'huyen_vu'
+    };
+    for (const [k, v] of Object.entries(map)) {
+        if (thu.includes(k)) return v;
+    }
+    return thu.toLowerCase().replace(/\s+/g, '_');
+}
+
