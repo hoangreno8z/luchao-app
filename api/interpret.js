@@ -82,7 +82,11 @@ const FALLBACK_TEXTS = {
     'PATTERN_BACH_HO_DONG_TAI_BENH': 'Cảnh báo: Bạch Hổ phát động chủ về tai nạn đột xuất, bệnh phát rất nhanh hoặc có sự xung đột gay gắt trực diện.',
     'PATTERN_THE_DANG_XA_TK_LO_AO': 'Tượng pháp: Thế lâm Đằng Xà ngộ Tuần Không chủ về người hỏi đang lo âu hoang mang mơ hồ, thực chất sự việc không nguy hiểm như bạn nghĩ.',
     'PATTERN_THANH_LONG_TAI_DONG_TIN_VUI': 'Tượng pháp: Thanh Long cùng Thê Tài phát động chủ về có hỉ khánh, tài lộc vượng phát, đón nhận tin vui lớn về tiền bạc hoặc nhân duyên.',
-    'PATTERN_CHU_TUOC_QUAN_DONG_TRANH_CHAP': 'Tượng pháp: Chu Tước cùng Quan Quỷ phát động chủ về có cãi vã, tranh chấp pháp lý hoặc bị tiểu nhân gièm pha gièm pha công danh.'
+    'PATTERN_CHU_TUOC_QUAN_DONG_TRANH_CHAP': 'Tượng pháp: Chu Tước cùng Quan Quỷ phát động chủ về có cãi vã, tranh chấp pháp lý hoặc bị tiểu nhân gièm pha gièm pha công danh.',
+    'PATTERN_DANG_XA_QUAN_DONG_AP_LUC': 'Tượng pháp thực chiến: Quan Quỷ phát động lâm Đằng Xà chủ về công việc sắp có sự điều chuyển đột ngột tạo áp lực tâm lý cực lớn hoặc hệ thống gặp sự cố bất ngờ.',
+    'PATTERN_CHU_TUOC_PHU_DONG_VAN_BAN': 'Tượng pháp thực chiến: Phụ Mẫu lâm Chu Tước phát động chủ về có quyết định hành chính chính thức bằng văn bản hoặc thông báo bổ nhiệm được công bố.',
+    'PATTERN_HUYEN_VU_TAI_TK_THAT_THOAT': 'Tượng pháp thực chiến: Thê Tài lâm Huyền Vũ ngộ Tuần Không chủ về rủi ro thất thoát tài chính âm thầm, đối tác mờ ám hoặc có gian lận tiền bạc ngầm.',
+    'PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT': 'Tượng pháp thực chiến: Huynh Đệ phát động lâm Bạch Hổ chủ về đối thủ cạnh tranh quyết liệt nhằm đoạt quyền lợi, hoặc chi phí dự án bị thâm hụt lớn.'
 };
 
 export default async function handler(req, res) {

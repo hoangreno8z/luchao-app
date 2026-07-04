@@ -400,13 +400,29 @@ export function aggregateMicroOverlap(enrichedLines, hexProperties) {
         if (lucThuCode === 'DANG_XA' && line.isTK && line.isShi) {
             singleCodes.push('PATTERN_THE_DANG_XA_TK_LO_AO');
         }
-        // Thanh Long + Thê Tài + Động = Tin vui về tiền bạc
+        // Thanh Long + Thê Tài + Động = Tài lộc cát khánh
         if (lucThuCode === 'THANH_LONG' && lucThanCode === 'THE_TAI' && line.isMoving) {
             singleCodes.push('PATTERN_THANH_LONG_TAI_DONG_TIN_VUI');
         }
-        // Chu Tước + Quan Quỷ + Động = Tranh chấp công danh, kiện tụng
+        // Chu Tước + Quan Quỷ + Động = Cãi vã tranh chấp
         if (lucThuCode === 'CHU_TUOC' && lucThanCode === 'QUAN_QUY' && line.isMoving) {
             singleCodes.push('PATTERN_CHU_TUOC_QUAN_DONG_TRANH_CHAP');
+        }
+        // Đằng Xà + Quan Quỷ + Động = Thay đổi bất ngờ áp lực lớn
+        if (lucThuCode === 'DANG_XA' && lucThanCode === 'QUAN_QUY' && line.isMoving) {
+            singleCodes.push('PATTERN_DANG_XA_QUAN_DONG_AP_LUC');
+        }
+        // Chu Tước + Phụ Mẫu + Động = Hợp đồng, văn bản bổ nhiệm chính thức
+        if (lucThuCode === 'CHU_TUOC' && lucThanCode === 'PHU_MAU' && line.isMoving) {
+            singleCodes.push('PATTERN_CHU_TUOC_PHU_DONG_VAN_BAN');
+        }
+        // Huyền Vũ + Thê Tài + Tuần Không = Thất thoát tiền bạc mờ ám
+        if (lucThuCode === 'HUYEN_VU' && lucThanCode === 'THE_TAI' && line.isTK) {
+            singleCodes.push('PATTERN_HUYEN_VU_TAI_TK_THAT_THOAT');
+        }
+        // Bạch Hổ + Huynh Đệ + Động = Đối thủ ra đòn tranh đoạt gay gắt
+        if (lucThuCode === 'BACH_HO' && lucThanCode === 'HUYNH_DE' && line.isMoving) {
+            singleCodes.push('PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT');
         }
         // Huynh Đệ + Nguyệt Phá + Hào Thế = Bạn bè phản bội, hao tài
         if (lucThanCode === 'HUYNH_DE' && line.isNguyetPha && line.isShi) {
