@@ -396,12 +396,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const topic = document.getElementById('topic-select').value;
         const gender = document.getElementById('gender-select').value;
 
-        body.innerHTML = `<p style="text-align: center; color: var(--gold);">Đang truy vấn dữ liệu luận đoán từ cơ sở dữ liệu...</p>`;
+        body.innerHTML = `<p style="text-align: center; color: var(--gold);">Đang truy vấn dữ liệu luận đoán và chạy mô hình AI...</p>`;
 
-        // Gửi yêu cầu lấy luận đoán từ API Serverless
-        const url = `/api/interpret?hex_id=${data.mainID}&changed_id=${data.changedID}&topic=${encodeURIComponent(topic)}&gender=${encodeURIComponent(gender)}`;
+        // Thu thập các câu trả lời khảo sát từ người dùng
+        const userInputs = {
+            who: userAnswers[0] || "",
+            gender: userAnswers[1] || "",
+            birthYear: userAnswers[2] || "",
+            issue: userAnswers[3] || "",
+            city: userAnswers[4] || "",
+            desire: userAnswers[5] || "",
+            question: userAnswers[3] || ""
+        };
 
-        fetch(url)
+        // Gửi yêu cầu POST lấy luận đoán động và AI
+        fetch('/api/interpret', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                hex_id: data.mainID,
+                changed_id: data.changedID,
+                topic: topic,
+                gender: gender,
+                hexData: data,
+                userInputs: userInputs
+            })
+        })
             .then(res => res.json())
             .then(resData => {
                 if (!resData.success) {
@@ -409,10 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                const { main, changed, deity, lines } = resData;
+                const { main, changed, deity, lines, analysisHtml, catHung, templateContent, aiExplanation } = resData;
 
                 let linesHtml = "";
-                // Nếu quẻ có hào động
                 if (data.movingLines.length > 0) {
                     linesHtml += `<h4>3. Chi Tiết Các Hào Phát Động</h4>`;
                     data.movingLines.forEach(lineNum => {
@@ -430,16 +451,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // Cấu hình nhãn Cát Hung trực quan
+                let catHungBadge = "";
+                if (catHung === "CAT") {
+                    catHungBadge = `<span style="background-color: #15803d; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">CÁT (TỐT LÀNH)</span>`;
+                } else if (catHung === "HUNG") {
+                    catHungBadge = `<span style="background-color: #b91c1c; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">HUNG (BẤT LỢI)</span>`;
+                } else {
+                    catHungBadge = `<span style="background-color: #4b5563; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">BÌNH HÒA</span>`;
+                }
+
                 let html = `
-                    <p><strong>Người gieo:</strong> Giới tính ${gender} | <strong>Chủ đề hỏi:</strong> Xem về ${topic}.</p>
+                    <p style="margin-bottom: 15px;"><strong>Người hỏi:</strong> Giới tính ${gender} | <strong>Chủ đề:</strong> Xem về ${topic}.</p>
                     <p><strong>Dụng Thần Lục Lục Hào:</strong> <strong>${deity.deity}</strong> (Kỵ thần: <em>${deity.kỵ || 'Không'}</em>).</p>
                     
-                    <h4>1. Tổng Quan Quẻ Dịch</h4>
-                    <p>Quẻ Chủ của bạn là <strong>${main.name}</strong> (${main.vietnamese_meaning || ''}) thuộc họ quẻ <strong>${main.palace}</strong>.</p>
-                    <p><em>Ý nghĩa chung:</em> ${main.overall_meaning || 'Đang cập nhật...'}</p>
-                    
-                    <h4>2. Bình Giải Chủ Đề [${topic.toUpperCase()}]</h4>
-                    <p>${main.topic_meaning || 'Đang cập nhật...'}</p>
+                    <div class="result-summary-block" style="background-color: rgba(212,163,89,0.08); border-left: 4px solid var(--gold); padding: 15px; margin: 20px 0; border-radius: 4px;">
+                        <div style="margin-bottom: 8px;"><strong>Kết luận Quẻ Dịch:</strong> ${catHungBadge}</div>
+                        <p style="font-weight: bold; margin-bottom: 5px;">${templateContent?.summary || 'Đang xác định kết luận...'}</p>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">${templateContent?.detail || ''}</p>
+                    </div>
+
+                    <h4>1. Ý Nghĩa Quẻ Dịch Tĩnh</h4>
+                    <p>Quẻ Chủ là <strong>${main.name}</strong> (${main.vietnamese_meaning || ''}) thuộc họ quẻ <strong>${main.palace}</strong>.</p>
+                    <p><em>Giải nghĩa:</em> ${main.overall_meaning || 'Đang cập nhật...'}</p>
+                    <p><em>Ý nghĩa chủ đề [${topic.toUpperCase()}]:</em> ${main.topic_meaning || 'Đang cập nhật...'}</p>
                     
                     ${changed ? `
                     <h4>Quẻ Biến: ${changed.name} (${changed.vietnamese_meaning || ''})</h4>
@@ -448,8 +483,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     ${linesHtml}
 
+                    <div class="theory-analysis-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 15px;">
+                        <h3 class="interpretation-title" style="margin-bottom: 12px; font-size: 1.15rem; color: var(--gold);">PHÂN TÍCH KỸ THUẬT (CHU THẦN BÂN)</h3>
+                        ${analysisHtml || '<p>Không có dữ liệu phân tích.</p>'}
+                    </div>
+
+                    ${aiExplanation ? `
+                    <div class="ai-explanation-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; background-color: rgba(212,163,89,0.05); padding: 20px; border-radius: 8px; border: 1px dashed var(--gold);">
+                        <h3 class="interpretation-title" style="margin-top: 0; margin-bottom: 15px; font-size: 1.2rem; color: var(--gold); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">LỜI BÀN CỦA TRỢ LÝ AI CÁ NHÂN HÓA</h3>
+                        <div style="line-height: 1.6; font-size: 0.98rem; white-space: pre-line;">${aiExplanation}</div>
+                    </div>
+                    ` : ''}
+
                     <div style="font-size: 0.85rem; color: #888; border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 20px; text-align: right;">
-                        Nguồn dữ liệu bình giải: Supabase Cloud Database (${resData.source === 'supabase' ? 'Kết nối trực tiếp API' : 'Dữ liệu dự phòng Mock'})
+                        Nguồn dữ liệu: Supabase Cloud Database (${resData.source === 'supabase' ? 'Kết nối trực tiếp API' : 'Dữ liệu dự phòng Mock'})
                     </div>
                 `;
                 body.innerHTML = html;

@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Nguyệt_Phá",
+    "condition": "Deity.IsNguyetPha == true",
+    "effect": {
+      "power": -80,
+      "risk": 50,
+      "tags": ["Deity.Broken", "Deity.Severely_Weak"]
+    },
+    "explain": "Hào bị Nguyệt lệnh tương xung gọi là Nguyệt phá, lực lượng suy bại cao tầng."
+  },
+  {
+    "name": "Tuần_Không",
+    "condition": "Deity.IsTK == true",
+    "effect": {
+      "power": -30,
+      "stability": -20,
+      "tags": ["Deity.Empty", "Deity.Pending"]
+    },
+    "explain": "Hào lâm Tuần Không đại biểu sự việc chưa rõ ràng, chưa phát sinh hoặc gặp cản trở ngắn hạn."
+  },
+  {
+    "name": "Ám_Động",
+    "condition": "Deity.IsMoving == false && Deity.IsXungDay == true && Deity.IsVuongInMonth == true",
+    "effect": {
+      "power": 40,
+      "timing": 80,
+      "opportunity": 50,
+      "tags": ["Deity.AmDong", "Deity.Fast_Trigger"]
+    },
+    "explain": "Hào tĩnh vượng tướng gặp Nhật xung là Ám động, chủ sự việc phát sinh rất nhanh ngoài dự kiến."
+  },
+  {
+    "name": "Nhật_Phá",
+    "condition": "Deity.IsMoving == false && Deity.IsXungDay == true && Deity.IsVuongInMonth == false",
+    "effect": {
+      "power": -60,
+      "risk": 40,
+      "tags": ["Deity.NhatPha", "Deity.DongTan"]
+    },
+    "explain": "Hào tĩnh suy yếu bị Nhật xung là Nhật phá hoặc Động tán, hào bị phá vỡ không thể sinh khắc."
+  },
+  {
+    "name": "Hồi_Đầu_Khắc",
+    "condition": "Deity.IsMoving == true && Deity.IsHoiDauKhac == true",
+    "effect": {
+      "power": -90,
+      "risk": 80,
+      "tags": ["Deity.HoiDauKhac", "Deity.Damaged"]
+    },
+    "explain": "Hào động bị hào biến hồi đầu tương khắc, hào động hóa suy bại hoàn toàn, vô dụng."
+  },
+  {
+    "name": "Hóa_Tiến_Thần",
+    "condition": "Deity.IsMoving == true && Deity.TienThoai == 'tiến'",
+    "effect": {
+      "power": 50,
+      "stability": 40,
+      "tags": ["Deity.TienThan", "Deity.Growing"]
+    },
+    "explain": "Hào động hóa tiến thần (như Dần hóa Mão, Tị hóa Ngọ), thế lực ngày càng vượng mạnh mẽ."
+  },
+  {
+    "name": "Hóa_Thoái_Thần",
+    "condition": "Deity.IsMoving == true && Deity.TienThoai == 'thoái'",
+    "effect": {
+      "power": -50,
+      "stability": -40,
+      "tags": ["Deity.ThoaiThan", "Deity.Fading"]
+    },
+    "explain": "Hào động hóa thoái thần (như Mão hóa Dần, Ngọ hóa Tị), thế lực ngày càng suy giảm, lùi bước."
+  },
+  {
+    "name": "Thế_Động_Hóa_Quỷ",
+    "condition": "Deity.IsShi == true && Deity.IsMoving == true && Deity.ChangedRelation == 'Quan Quỷ'",
+    "effect": {
+      "risk": 70,
+      "threat": 60,
+      "tags": ["Shi.HaoQuy", "Shi.Danger"]
+    },
+    "explain": "Hào Thế phát động hóa ra Quan Quỷ, điềm báo tự thân hành động chiêu mời lo âu, tai họa."
+  }
+]

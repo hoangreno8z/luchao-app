@@ -1,4 +1,4 @@
--- Seed data for Lục Hào Database on Supabase
+-- Seed data for all 64 Hexagrams in Kinh Dịch
 -- Run this in Supabase -> SQL Editor -> New Query
 
 -- 1. Nạp quy tắc Dụng Thần (topics_rules)
@@ -24,74 +24,87 @@ SET primary_deity = EXCLUDED.primary_deity,
     secondary_deity = EXCLUDED.secondary_deity, 
     description = EXCLUDED.description;
 
--- 2. Nạp dữ liệu mẫu cho bảng hexagrams (Ví dụ 8 quẻ Bát Thuần tiêu biểu đại diện)
--- Các quẻ này tương ứng với ID được tính theo: (o << 3) | i
--- Với: Càn=7, Khảm=2, Cấn=1, Chấn=4, Tốn=3, Ly=5, Khôn=0, Đoài=6
--- Bát Thuần Càn: (7 << 3) | 7 = 63
--- Bát Thuần Khôn: (0 << 3) | 0 = 0
--- Bát Thuần Khảm: (2 << 3) | 2 = 18
--- Bát Thuần Ly: (5 << 3) | 5 = 45
--- Bát Thuần Chấn: (4 << 3) | 4 = 36
--- Bát Thuần Tốn: (3 << 3) | 3 = 27
--- Bát Thuần Cấn: (1 << 3) | 1 = 9
--- Bát Thuần Đoài: (6 << 3) | 6 = 54
-
+-- 2. Nạp dữ liệu 64 quẻ dịch (hexagrams)
 INSERT INTO hexagrams (id, name, palace, vietnamese_meaning, overall_meaning, career_meaning, love_meaning, wealth_meaning, health_meaning) VALUES
-(63, 'Bát Thuần Càn', 'Càn', 'Thuần Càn (Trời)', 
-'Quẻ Càn tượng trưng cho Trời, sức mạnh sáng tạo vô biên, sự cương kiện và vĩ đại. Đây là quẻ cực cát nếu biết hành động đúng thời cơ và giữ vững sự trung chính.',
-'Sự nghiệp vượng phát, có cơ hội thăng tiến mạnh mẽ hoặc đảm nhận vị trí lãnh đạo. Tránh kiêu ngạo tự phụ.',
-'Tình duyên nồng nhiệt, nam giới chiếm ưu thế. Tuy nhiên, tính cách quá mạnh mẽ của hai bên dễ dẫn đến bất hòa, cần nhường nhịn.',
-'Tài lộc hanh thông, đầu tư có lời lớn. Thích hợp khởi sự kinh doanh quy mô lớn.',
-'Sức khỏe tốt, sinh lực dồi dào. Cần phòng các bệnh cao huyết áp hoặc đau đầu do hoạt động quá công suất.'),
+-- Càn Cung (Palace: Càn)
+(63, 'Bát Thuần Càn', 'Càn', 'Cương kiện, sáng tạo', 'Trời hành kiện, quân tử tự cường bất tức. Quẻ Càn tượng trưng cho sức mạnh, sự khởi đầu vĩ đại.', 'Cơ hội thăng tiến lớn, đảm nhận vị trí lãnh đạo. Tránh kiêu ngạo tự phụ.', 'Tình cảm nồng nhiệt, nam giới chiếm thế chủ động. Cần nhường nhịn tránh xung đột.', 'Tài lộc dồi dào, đầu tư quy mô lớn có lợi nhuận tốt.', 'Sinh lực tốt, đề phòng cao huyết áp.'),
+(59, 'Thiên Phong Cấu', 'Càn', 'Gặp gỡ bất ngờ', 'Một luồng gió thổi dưới trời, vạn vật gặp gỡ. Quẻ chỉ sự gặp gỡ bất ngờ hoặc thế lực âm đang lớn mạnh.', 'Công việc gặp đối tác bất ngờ, đề phòng tiểu nhân ngấm ngầm gây khó dễ.', 'Gặp gỡ bất ngờ, duyên đến nhanh đi. Tránh nhẹ dạ cả tin.', 'Tài lộc có biến động, thu hoạch ngắn hạn tốt nhưng không bền.', 'Đề phòng bệnh truyền nhiễm hoặc cảm cúm.'),
+(57, 'Thiên Sơn Độn', 'Càn', 'Ẩn lánh, rút lui', 'Dưới trời có núi, quân tử thoái lui để bảo toàn thực lực. Thời kỳ nên ẩn nhẫn.', 'Không nên thay đổi công việc hay đầu tư lớn. Hãy lui về củng cố kỹ năng.', 'Tình cảm lạnh nhạt, cần khoảng lặng riêng cho hai người.', 'Tài lộc ngưng trệ, giữ tiền chặt chẽ, tránh thất thoát.', 'Chú ý bệnh xương khớp hoặc đau chân.'),
+(56, 'Thiên Địa Bĩ', 'Càn', 'Bế tắc, không thông', 'Trời đất không giao hòa, vạn vật bế tắc. Thời kỳ khó khăn, tiểu nhân đắc thế.', 'Công việc bế tắc, chịu nhiều chèn ép. Nên kiên nhẫn chờ thời cơ.', 'Hiểu lầm sâu sắc, dễ chia ly nếu không bao dung.', 'Hao tài tốn của, đầu tư thua lỗ. Giữ nguyên hiện trạng.', 'Sức khỏe yếu, phòng suy nhược cơ thể.'),
+(24, 'Phong Địa Quan', 'Càn', 'Quan sát, xem xét', 'Gió thổi trên đất, quan sát vạn vật. Quẻ khuyên nên bình tĩnh xem xét kỹ lưỡng trước khi hành động.', 'Nên đánh giá lại kế hoạch công việc, chưa nên vội vàng khởi sự mới.', 'Quan sát thái độ đối phương, tránh vội vàng tỏ tình hay kết hôn.', 'Tài lộc bình thường, cần quản lý chi tiêu chặt chẽ.', 'Phòng bệnh đau đầu hoặc phong hàn.'),
+(8, 'Sơn Địa Bác', 'Càn', 'Tiêu mòn, sụp đổ', 'Núi lở đè xuống đất, thế lực xấu đang phá hủy nền tảng. Thời kỳ hiểm họa.', 'Công việc gặp rủi ro lớn, đề phòng mất việc hoặc bị gièm pha. Giữ mình trung chính.', 'Tình cảm rạn nứt, có kẻ phá hoại hoặc bất hòa lớn.', 'Hao tổn tài lộc nghiêm trọng, tuyệt đối không đầu tư đầu cơ.', 'Sức khỏe suy giảm, cần khám tổng quát.'),
+(40, 'Hỏa Địa Tấn', 'Càn', 'Tiến lên, sáng sủa', 'Mặt trời mọc trên đất, hào quang chiếu sáng. Thời kỳ tiến lên mạnh mẽ, công danh rực rỡ.', 'Sự nghiệp thăng tiến nhanh chóng, được cấp trên tín nhiệm đề bạt.', 'Tình cảm tiến triển tốt đẹp, gặp được nhân duyên như ý.', 'Tài lộc dồi dào, đầu tư kinh doanh có thu hoạch lớn.', 'Sức khỏe tốt, tinh thần phấn chấn.'),
+(47, 'Hỏa Thiên Đại Hữu', 'Càn', 'Sở hữu lớn', 'Lửa sáng trên trời, vạn vật quy thuận. Quẻ đại cát về sự sung túc và thịnh vượng.', 'Sự nghiệp đạt đỉnh cao, có thành tựu lớn được công nhận rộng rãi.', 'Tình duyên viên mãn, gia đạo thịnh vượng ấm cúng.', 'Tài lộc dồi dào, tiền bạc tự tìm đến, kinh doanh phát đạt.', 'Sức khỏe dồi dào, tràn đầy năng lượng.'),
 
-(0, 'Bát Thuần Khôn', 'Khôn', 'Thuần Khôn (Đất)', 
-'Quẻ Khôn tượng trưng cho Đất, sự nhu thuận, bao dung, tĩnh lặng để nuôi dưỡng vạn vật. Quẻ khuyên người gieo nên thuận theo tự nhiên, làm hậu phương vững chắc sẽ gặt hái đại cát.',
-'Sự nghiệp cần sự kiên trì, làm việc nhóm hoặc hỗ trợ cấp trên sẽ có kết quả tốt hơn tự mình đứng mũi chịu sào.',
-'Tình duyên êm đẹp, dịu dàng. Hôn nhân gia đình hòa thuận, bao dung lẫn nhau.',
-'Tài lộc ổn định, thu hoạch đều đặn từ tích lũy. Không nên tham gia các dự án đầu cơ mạo hiểm.',
-'Sức khỏe bình thường, cần chú ý chăm sóc hệ tiêu hóa, dạ dày và tránh suy nghĩ quá nhiều gây mệt mỏi.'),
+-- Khảm Cung (Palace: Khảm)
+(18, 'Bát Thuần Khảm', 'Khảm', 'Hiểm trở, vực sâu', 'Vực sâu hiểm trở, khó khăn chồng chất. Thời kỳ gian nan thử thách lòng kiên trì.', 'Công việc gặp trắc trở, đề phòng cạm bẫy hoặc tiểu nhân. Giữ yên vị trí.', 'Tình cảm nhiều mâu thuẫn, lạnh nhạt. Cần chân thành tháo gỡ.', 'Tài lộc kém, dễ hao hụt, tránh cho vay mượn.', 'Phòng bệnh thận, đường tiết niệu, tai nạn nước.'),
+(22, 'Thủy Trạch Tiết', 'Khảm', 'Chừng mực, tiết chế', 'Nước đầy đầm tràn ra ngoài, cần bờ đê tiết chế. Quẻ khuyên nên sống chừng mực, có chừng có giới.', 'Công việc cần tuân thủ quy định, không nên vượt quyền hay làm liều.', 'Tình cảm có giới hạn, tôn trọng quyền riêng tư của nhau.', 'Tài lộc có chừng mực, chi tiêu hợp lý sẽ tích lũy được.', 'Sức khỏe ổn định nếu sinh hoạt điều độ.'),
+(20, 'Thủy Lôi Truân', 'Khảm', 'Gian nan ban đầu', 'Mầm non mới nhú gặp sấm chớp mưa sa, gian nan buổi ban đầu nhưng tương lai hứa hẹn.', 'Công việc mới bắt đầu có khó khăn, cần kiên trì bền bỉ sẽ vượt qua.', 'Tình cảm mới chớm nở gặp cản trở nhỏ, cần thời gian vun đắp.', 'Tài lộc ban đầu eo hẹp, sau sẽ khấm khá dần.', 'Đề phòng chấn thương nhẹ hoặc mệt mỏi.'),
+(21, 'Thủy Hỏa Ký Tế', 'Khảm', 'Đã hoàn thành', 'Nước trên lửa dưới, đã giao hòa hoàn tất. Vạn sự đã thành công nhưng phòng lúc thịnh cực suy.', 'Công việc đã đạt kết quả tốt đẹp, cần giữ vững phong độ tránh lơ là.', 'Tình cảm ngọt ngào viên mãn, chú ý duy trì lửa hạnh phúc lâu dài.', 'Tài lộc hanh thông, thu hoạch tốt từ dự án cũ.', 'Sức khỏe ổn định, chú ý các bệnh vặt.'),
+(53, 'Trạch Hỏa Cách', 'Khảm', 'Cải cách, thay đổi', 'Hồ nước dập lửa, lửa đốt cạn hồ. Quẻ chỉ sự thay đổi hoàn toàn, cải tổ đổi mới.', 'Rất thích hợp để đổi việc, chuyển bộ phận hoặc bắt đầu dự án mới.', 'Tình cảm có bước ngoặt mới (hoặc hàn gắn hoặc dứt khoát chia tay).', 'Tài lộc chuyển biến tốt sau khi thay đổi phương thức kinh doanh.', 'Chú ý bệnh về da hoặc nóng trong người.'),
+(37, 'Lôi Hỏa Phong', 'Khảm', 'Thịnh vượng, phong phú', 'Sấm chớp bùng nổ cùng ánh sáng, thời kỳ cực thịnh, sung túc và giàu có.', 'Công việc gặt hái thành quả lớn, doanh số tăng vọt.', 'Gia đạo êm ấm, tình cảm thăng hoa ngọt ngào.', 'Tài lộc dồi dào, đầu tư có lợi nhuận cao đột biến.', 'Sức khỏe tốt, đề phòng các bệnh do ăn uống quá đà.'),
+(5, 'Địa Hỏa Minh Di', 'Khảm', 'Ánh sáng bị tổn thương', 'Mặt trời lặn dưới đất, ánh sáng bị che lấp. Thời kỳ u tối, nên ẩn giấu tài năng.', 'Công việc chịu nhiều bất công, bị đè nén. Nên nhẫn nhịn giữ mình.', 'Tình cảm âm thầm lặng lẽ, có nỗi buồn thầm kín chưa thể chia sẻ.', 'Tài lộc sa sút, chi tiêu tiết kiệm tối đa.', 'Phòng bệnh tim mạch, suy nhược tinh thần.'),
+(2, 'Địa Thủy Sư', 'Khảm', 'Binh chúng, tranh chấp', 'Nước ẩn dưới đất, tượng trưng cho quân đội, sự tranh chấp kỷ luật.', 'Công việc cần tính tổ chức cao, đề phòng có tranh chấp pháp lý hoặc cạnh tranh khốc liệt.', 'Tình cảm gặp áp lực từ gia đình hoặc có sự đối kháng lẫn nhau.', 'Tài lộc tranh chấp mới có, giữ tiền chặt chẽ.', 'Chú ý bệnh đường ruột hoặc tiêu hóa.'),
 
-(18, 'Bát Thuần Khảm', 'Khảm', 'Thuần Khảm (Nước)', 
-'Quẻ Khảm tượng trưng cho Nước, vực sâu hiểm trở, khó khăn chồng chất. Quẻ báo hiệu thời kỳ gian nan, cần sự tỉnh táo và lòng tin vững vàng để vượt qua hiểm cảnh.',
-'Sự nghiệp gặp bế tắc, nhiều cạm bẫy hoặc tiểu nhân hãm hại. Nên giữ mình bình tĩnh, không nên thay đổi công việc lúc này.',
-'Tình duyên trắc trở, nhiều hiểu lầm hoặc rạn nứt. Cần giao tiếp chân thành để tháo gỡ nút thắt.',
-'Tài lộc kém, dễ thất thoát tiền bạc hoặc gặp tranh chấp tài chính. Tránh cho vay mượn tiền bạc.',
-'Sức khỏe yếu, phòng ngừa các bệnh về hệ tiết niệu, thận, hoặc tai nạn liên quan đến sông nước.'),
+-- Cấn Cung (Palace: Cấn)
+(9, 'Bát Thuần Cấn', 'Cấn', 'Núi dừng, tĩnh lặng', 'Núi cao vững chãi, khuyên người gieo nên dừng lại tĩnh lặng để củng cố nội lực.', 'Sự nghiệp đứng yên, không thích hợp đổi việc. Nên học hỏi thêm.', 'Tình cảm im lặng, lạnh nhạt. Hãy cho nhau khoảng không gian riêng.', 'Tài lộc ngưng trệ, thu chi vừa đủ, không nên đầu tư mới.', 'Chú ý bệnh đau lưng, xương khớp.'),
+(13, 'Sơn Hỏa Bí', 'Cấn', 'Trang sức, bề ngoài', 'Lửa chiếu sáng dưới chân núi, vẻ đẹp trang hoàng bên ngoài. Tránh hào nhoáng vô thực.', 'Công việc cần chăm chút hình ảnh, thương hiệu ngoại giao tốt.', 'Tình duyên lãng mạn bên ngoài, cần vun đắp tình cảm thực tế.', 'Tài lộc có vẻ ngoài tốt đẹp, doanh thu đều đặn.', 'Chú ý bệnh về mắt hoặc tim mạch vặt.'),
+(15, 'Sơn Thiên Đại Súc', 'Cấn', 'Tích lũy lớn', 'Núi chứa càn khôn, tích lũy tài sản và tri thức lớn lao.', 'Công việc tiến triển rất tốt, tích lũy được nhiều kinh nghiệm quý.', 'Nhân duyên bền chặt, có sự chuẩn bị tốt cho hôn nhân.', 'Tài lộc dồi dào, tiền bạc tích lũy ngày một nhiều.', 'Sức khỏe dồi dào, tinh thần minh mẫn.'),
+(14, 'Sơn Trạch Tổn', 'Cấn', 'Hao tổn, nhường nhịn', 'Dưới núi có đầm, đầm sạt lở bồi đắp cho núi. Chấp nhận chịu thiệt trước được lợi sau.', 'Công việc ban đầu chịu thiệt thòi, cống hiến hết mình sẽ có đền đáp.', 'Tình cảm cần nhường nhịn đối phương để giữ hòa khí ấm cúng.', 'Hao tài nhỏ cho việc chính đáng (học hành, từ thiện).', 'Chú ý bệnh tỳ vị, ăn uống kém.'),
+(46, 'Hỏa Trạch Khuê', 'Cấn', 'Chia rẽ, trái ngược', 'Lửa bốc lên cao, nước hồ chảy xuống thấp. Sự bất đồng ý kiến, trái ngược nhau.', 'Công việc gặp mâu thuẫn nội bộ, khó đồng thuận. Cần bình tĩnh lắng nghe.', 'Tình cảm bất hòa, ông nói gà bà nói vịt. Dễ cãi vã vặt.', 'Tài lộc phân tán, đầu tư dễ thua lỗ do không đồng quan điểm.', 'Sức khỏe chú ý thần kinh, đau đầu.'),
+(62, 'Thiên Trạch Lý', 'Cấn', 'Lễ nghĩa, nguy hiểm', 'Đi trên đuôi cọp nhưng không bị cắn nhờ giữ đúng lễ nghĩa, chừng mực.', 'Công việc có rủi ro cao nhưng ứng xử khéo léo sẽ hóa nguy thành an.', 'Tình duyên cần giữ khoảng cách chuẩn mực lịch sự ban đầu.', 'Tài lộc khó khăn, cần thận trọng từng khoản chi tiêu.', 'Đề phòng tai nạn nhỏ hoặc trầy xước.'),
+(30, 'Phong Trạch Trung Phu', 'Cấn', 'Chân thành, tin cậy', 'Gió thổi trên đầm nước, lòng tin chân thành thấu suốt vạn vật.', 'Hợp tác làm ăn rất tốt nhờ uy tín và sự chân thành đôi bên.', 'Tình cảm sâu sắc, tin tưởng tuyệt đối vào đối phương.', 'Tài lộc hanh thông, thu lợi từ các mối quan hệ uy tín lâu năm.', 'Sức khỏe tốt, tinh thần thoải mái.'),
+(25, 'Phong Sơn Tiệm', 'Cấn', 'Tiến tuần tự', 'Cây trên núi lớn dần theo thời gian, tiến lên từng bước vững chắc.', 'Công việc thăng tiến chậm rãi nhưng bền vững. Tránh nhảy cóc.', 'Tình cảm chín muồi tuần tự, tiến tới hôn nhân hạnh phúc lâu bền.', 'Tài lộc tăng trưởng đều đặn hàng tháng.', 'Sức khỏe ổn định, hồi phục tốt nếu đang dưỡng bệnh.'),
 
-(45, 'Bát Thuần Ly', 'Ly', 'Thuần Ly (Lửa)', 
-'Quẻ Ly tượng trưng cho Lửa, sự bám víu, ánh sáng và trí tuệ. Quẻ mang ý nghĩa tươi sáng, rực rỡ nhưng cần sự chừng mực, tránh nóng nảy thiêu rụi thành quả.',
-'Sự nghiệp thăng hoa, thích hợp với các lĩnh vực sáng tạo, truyền thông, giáo dục. Cần giữ bình tĩnh khi làm việc với đối tác.',
-'Tình cảm nồng cháy nhưng nhanh đến nhanh đi, dễ phát sinh tranh cãi nhỏ do nóng tính. Hôn nhân cần sự nhẫn nại.',
-'Tài lộc có nguồn thu tốt từ các dự án ngắn hạn. Cần quản lý chi tiêu tránh vung tay quá trán.',
-'Sức khỏe chú ý các bệnh về tim mạch, huyết áp, mắt và các bệnh nhiệt trong người.'),
+-- Chấn Cung (Palace: Chấn)
+(36, 'Bát Thuần Chấn', 'Chấn', 'Sấm sét, chấn động', 'Sấm nổ vang trời, gây kinh sợ ban đầu nhưng mang lại sự thức tỉnh tốt lành.', 'Công việc có biến động lớn bất ngờ, hãy chủ động thích nghi sẽ gặp may.', 'Tình cảm có sóng gió bất ngờ rồi lại làm lành nhanh chóng.', 'Tài lộc có khoản thu/chi đột xuất ngoài kế hoạch.', 'Chú ý hệ thần kinh, mất ngủ, đau nửa đầu.'),
+(32, 'Lôi Địa Dự', 'Chấn', 'Vui vẻ, chuẩn bị', 'Sấm nổ trên đất, vạn vật vui sướng đón mưa. Quẻ của sự vui vẻ, hòa nhã.', 'Công việc thuận lợi, nhận được sự đồng thuận giúp đỡ từ đồng nghiệp.', 'Tình duyên vui vẻ hạnh phúc, nhiều buổi hẹn hò ấm áp.', 'Tài lộc hanh thông, thích hợp đầu tư dịch vụ giải trí.', 'Sức khỏe tốt, tinh thần sảng khoái.'),
+(34, 'Lôi Thủy Giải', 'Chấn', 'Giải thoát, tháo gỡ', 'Sấm chớp mưa sa giải tỏa oi bức, khó khăn bế tắc bắt đầu được tháo gỡ.', 'Khó khăn công việc được giải quyết, áp lực giảm bớt rõ rệt.', 'Mâu thuẫn tình cảm được giải tỏa, hai bên hiểu nhau hơn.', 'Tài lộc dần hồi phục, nợ nần được giải quyết.', 'Sức khỏe tiến triển tốt, đẩy lùi bệnh tật.'),
+(35, 'Lôi Phong Hằng', 'Chấn', 'Lâu bền, kiên trì', 'Sấm gió cùng hoạt động, giữ vững đạo lý kiên trì lâu dài sẽ thành công.', 'Công việc đòi hỏi sự kiên trì, không nên đứng núi này trông núi nọ.', 'Tình cảm gắn kết lâu bền, vợ chồng đồng lòng vượt khó khăn.', 'Tài lộc ổn định dài hạn, đầu tư bền vững có lợi.', 'Sức khỏe tốt nhờ duy trì lối sống lành mạnh.'),
+(3, 'Địa Phong Thăng', 'Chấn', 'Bay cao, thăng tiến', 'Cây mọc từ dưới đất vươn lên cao, sự nghiệp thăng tiến không ngừng.', 'Cơ hội thăng chức, tăng lương hoặc đỗ đạt khoa bảng rất lớn.', 'Tình cảm thăng hoa, mối quan hệ tiến lên bước phát triển mới.', 'Tài lộc dồi dào, doanh thu tăng trưởng mạnh mẽ.', 'Sức khỏe dồi dào, tràn đầy sinh lực.'),
+(19, 'Thủy Phong Tỉnh', 'Chấn', 'Cái giếng nuôi vạn vật', 'Giếng nước cung cấp nguồn sống không cạn, khuyên nên giữ gìn giá trị cốt lõi.', 'Công việc ổn định, cống hiến bền bỉ sẽ được ghi nhận tương xứng.', 'Tình cảm bình lặng, cần sự quan tâm chăm sóc thiết thực hàng ngày.', 'Tài lộc ổn định đều đặn như mạch nước ngầm.', 'Chú ý bệnh đường hô hấp hoặc cảm cúm.'),
+(51, 'Trạch Phong Đại Quá', 'Chấn', 'Quá tải, cột kèo cong', 'Nước ngập quá cây, áp lực quá lớn vượt ngoài tầm kiểm soát. Cần cẩn trọng.', 'Công việc quá tải, áp lực đè nặng. Đề phòng sai sót nghiêm trọng.', 'Tình cảm rạn nứt do kỳ vọng quá cao hoặc chịu áp lực bên ngoài.', 'Tài chính khủng hoảng, thất thoát tiền bạc lớn. Tránh vay mượn.', 'Đề phòng suy nhược cơ thể hoặc stress nặng.'),
+(52, 'Trạch Lôi Tùy', 'Chấn', 'Thuận theo, đi theo', 'Sấm ẩn dưới đầm nước, thuận theo thời thế để đạt được sự bình yên.', 'Công việc nên nghe theo cấp trên hoặc xu hướng thị trường, tránh tự ý làm liều.', 'Tình cảm hòa hợp nhờ biết lắng nghe và chiều theo ý đối phương.', 'Tài lộc khá tốt nếu làm ăn theo xu hướng đám đông.', 'Sức khỏe tốt, tinh thần vui vẻ.'),
 
-(36, 'Bát Thuần Chấn', 'Chấn', 'Thuần Chấn (Sấm Sét)', 
-'Quẻ Chấn tượng trưng cho Sấm sét, sự chấn động, thức tỉnh. Vạn sự ban đầu có thể gây kinh sợ, bất ngờ nhưng kết quả cuối cùng lại bình yên, mang lại sự đổi mới tốt lành.',
-'Công việc có biến động bất ngờ (chuyển bộ phận, công tác đột xuất). Hãy chủ động thích ứng, biến động này sẽ mang lại cơ hội phát triển.',
-'Tình duyên có bất ngờ thú vị hoặc có tranh cãi lớn rồi lại làm lành nhanh chóng. Giai đoạn nhiều cảm xúc xáo trộn.',
-'Tài lộc có biến động mạnh, có thể thu được khoản tiền lớn bất ngờ hoặc chi tiêu đột xuất cho người thân.',
-'Chú ý các bệnh về thần kinh, mất ngủ, đau đầu hoặc chấn thương ở chân tay do vận động mạnh.'),
+-- Tốn Cung (Palace: Tốn)
+(27, 'Bát Thuần Tốn', 'Tốn', 'Nhu thuận, làn gió', 'Gió thổi len lỏi khắp nơi, sự uyển chuyển nhu thuận giúp đạt mục đích thuận lợi.', 'Công việc tiến triển tốt nhờ tài ngoại giao, đàm phán ứng biến khéo léo.', 'Tình cảm êm đềm, ngọt ngào nhờ sự quan tâm nhẹ nhàng.', 'Tài lộc nhỏ nhưng đều đặn, thích hợp đầu tư ngắn hạn.', 'Chú ý cảm mạo, đau đầu nhẹ do trúng gió.'),
+(31, 'Phong Thiên Tiểu Súc', 'Tốn', 'Tích lũy nhỏ', 'Mây đen giăng kín trời nhưng chưa mưa, thế lực nhỏ tích lũy chờ thời.', 'Công việc có tiến triển nhỏ, cần kiên nhẫn tích lũy thêm uy tín.', 'Tình cảm mới chớm nở, cần bồi đắp từ những quan tâm nhỏ nhặt.', 'Tài lộc tích lũy nhỏ, có khoản thu nhẹ.', 'Sức khỏe ổn định, chú ý các triệu chứng nhẹ.'),
+(29, 'Phong Hỏa Gia Nhân', 'Tốn', 'Người trong nhà', 'Lửa cháy sinh gió, gia đạo chỉnh tề. Quẻ khuyên nên lo toan việc nội bộ trước.', 'Công việc nội bộ cần được sắp xếp ổn thỏa trước khi mở rộng ra ngoài.', 'Tình cảm gắn kết như người một nhà, gia đạo êm ấm.', 'Tài lộc tốt từ các công việc kinh doanh gia đình hoặc quen thuộc.', 'Sức khỏe tốt, gia đình chăm sóc lẫn nhau.'),
+(28, 'Phong Lôi Ích', 'Tốn', 'Lợi ích, bồi đắp', 'Sấm gió cùng tăng cường sức mạnh, thời kỳ bồi đắp và mang lại lợi ích lớn.', 'Công việc có cơ hội thăng tiến, mở rộng quy mô kinh doanh đại cát.', 'Tình cảm thăng hoa ngọt ngào, đôi bên giúp đỡ nhau cùng phát triển.', 'Tài lộc dồi dào, đầu tư có lợi nhuận cao.', 'Sức khỏe dồi dào, nhanh hồi phục bệnh tật.'),
+(60, 'Thiên Lôi Vô Vọng', 'Tốn', 'Không vọng tưởng', 'Sấm nổ dưới trời, vạn vật tự nhiên. Khuyên giữ tâm ngay thẳng, tránh vọng tưởng.', 'Công việc cần làm đúng bổn phận, tránh đi đường tắt kẻo gặp tai họa bất ngờ.', 'Tình cảm tự nhiên, hữu duyên thiên lý năng tương ngộ, tránh gượng ép.', 'Tài lộc bình thường, tiền tài do lao động chân chính mà có.', 'Đề phòng tai nạn bất ngờ hoặc bệnh bộc phát đột ngột.'),
+(44, 'Hỏa Lôi Phệ Hạp', 'Tốn', 'Cắn hợp, vượt trở ngại', 'Sấm sét bùng cháy, cắn vỡ trở ngại giữa răng để ngậm miệng lại. Vượt qua khó khăn pháp lý.', 'Công việc gặp cản trở lớn, cần quyết đoán xử lý triệt để (hoặc giải quyết tranh chấp pháp lý).', 'Tình cảm có cản trở từ bên ngoài, cần đồng lòng vượt qua.', 'Tài lộc gặp khó khăn ban đầu, giải quyết xong vướng mắc tiền mới về.', 'Chú ý răng miệng hoặc hệ tiêu hóa.'),
+(12, 'Sơn Lôi Di', 'Tốn', 'Nuôi dưỡng, ăn uống', 'Núi dưới sấm sét, nuôi dưỡng bản thân và người khác đúng đạo lý.', 'Công việc liên quan đến y tế, giáo dục, ăn uống phát triển tốt.', 'Tình cảm cần sự quan tâm chăm sóc sức khỏe thể chất lẫn nhau.', 'Tài lộc đủ dùng, tiêu pha chủ yếu cho nhu cầu ăn uống học tập.', 'Chú ý chế độ ăn uống, phòng ngộ độc thực phẩm.'),
+(11, 'Sơn Phong Cổ', 'Tốn', 'Đổ nát, cải tổ', 'Gió ngưng dưới núi gây ẩm mốc đổ nát, cần cải tổ sửa đổi sai lầm cũ.', 'Công việc trì trệ do quy trình cũ lỗi thời, cần dũng cảm cải tổ toàn diện.', 'Mâu thuẫn tích tụ lâu ngày dễ bộc phát, cần thẳng thắn đối thoại.', 'Tài chính thâm hụt do quản lý kém, cần thắt chặt chi tiêu.', 'Đề phòng bệnh mãn tính tái phát nặng.'),
 
-(27, 'Bát Thuần Tốn', 'Tốn', 'Thuần Tốn (Gió)', 
-'Quẻ Tốn tượng trưng cho Gió, sự nhu hòa, len lỏi và thấu suốt. Quẻ khuyên nên uyển chuyển như làn gió, thuận theo thời thế để đạt được mục tiêu một cách êm thấm.',
-'Công việc tiến triển thuận lợi nhờ tài ngoại giao và sự khéo léo. Thích hợp làm các công việc tư vấn, đàm phán.',
-'Tình duyên êm dịu, tiến triển tự nhiên. Hai bên thấu hiểu và biết chia sẻ cùng nhau.',
-'Tài lộc nhỏ nhưng đều đặn, không có đột phá lớn nhưng dòng tiền ổn định.',
-'Chú ý các bệnh cảm mạo, đường hô hấp, phổi hoặc phong thấp.'),
+-- Ly Cung (Palace: Ly)
+(45, 'Bát Thuần Ly', 'Ly', 'Sáng suốt, bám víu', 'Lửa cháy sáng rực rỡ, mang lại trí tuệ và sự thấu suốt nhưng phòng nóng nảy.', 'Sự nghiệp thăng hoa trong sáng tạo, nghệ thuật, truyền thông.', 'Tình cảm nồng cháy nhưng dễ giận dỗi vì nóng tính.', 'Tài lộc tốt từ các công việc ngắn hạn hoặc hoa hồng.', 'Chú ý bệnh huyết áp, tim mạch hoặc mắt.'),
+(41, 'Hỏa Sơn Lữ', 'Ly', 'Khách đi đường', 'Lửa cháy trên núi lan đi nhanh chóng, tượng trưng cho hành trình di chuyển khách trú.', 'Công việc dễ có chuyến công tác xa, thay đổi chỗ làm hoặc đi lại nhiều.', 'Tình cảm như khách qua đường, chưa bền chặt ổn định.', 'Tài lộc tiêu pha nhiều cho việc đi lại, du lịch.', 'Đề phòng chấn thương khi di chuyển xa.'),
+(43, 'Hỏa Phong Đỉnh', 'Ly', 'Cái vạc, vững chãi', 'Gió thổi lửa cháy dưới vạc, đun nấu thức ăn dâng cúng. Sự ổn định, vững chãi.', 'Công việc thăng tiến vững chắc, củng cố được địa vị thế lực.', 'Tình cảm sâu sắc bền chặt, chuẩn bị tiến tới hôn nhân vững vàng.', 'Tài lộc thịnh vượng, đầu tư lâu dài sinh lợi lớn.', 'Sức khỏe tốt, cơ thể tráng kiện.'),
+(42, 'Hỏa Thủy Vị Tế', 'Ly', 'Chưa hoàn thành', 'Lửa trên nước dưới, chưa giao hòa hoàn tất. Thời kỳ chuẩn bị bước sang trang mới.', 'Công việc còn dang dở, cần kiên nhẫn hoàn thành nốt các bước cuối cùng.', 'Tình cảm mập mờ, chưa xác định rõ mối quan hệ rõ ràng.', 'Tài lộc chưa về ví ngay, cần chờ thêm một thời gian ngắn.', 'Đề phòng mất ngủ hoặc suy nghĩ lo âu.'),
+(10, 'Sơn Thủy Mông', 'Ly', 'Non nớt, mông muội', 'Suối nước chảy ra chân núi bị sương mù che phủ. Cần được giáo dục, chỉ dẫn.', 'Công việc mới mẻ chưa có kinh nghiệm, nên tìm kiếm người thầy dẫn dắt.', 'Tình cảm ngây thơ, mới chớm nở còn nhiều bỡ ngỡ.', 'Tài lộc hạn chế, tránh đầu tư mạo hiểm vì thiếu thông tin.', 'Chú ý sức khỏe trẻ em hoặc bệnh vặt hệ hô hấp.'),
+(26, 'Phong Thủy Hoán', 'Ly', 'Ly tán, xua tan', 'Gió thổi trên nước làm tan biến băng giá hoặc xua tan điềm xấu tích tụ.', 'Công việc giải tỏa được bế tắc cũ, có sự luân chuyển nhân sự tốt.', 'Xóa bỏ hiểu lầm trong tình cảm, giải tỏa khúc mắc lâu ngày.', 'Tài lộc có sự phân tán nhỏ nhưng giải quyết được nợ nần.', 'Hồi phục tốt sau thời gian dài đau ốm.'),
+(58, 'Thiên Thủy Tụng', 'Ly', 'Tranh chấp, kiện tụng', 'Trời đi lên nước chảy xuống, bất đồng quan điểm dẫn đến tranh chấp pháp lý.', 'Công việc dễ gặp tranh chấp hợp đồng, kiện tụng hoặc cãi vã với đối tác.', 'Tình cảm mâu thuẫn gay gắt, cái tôi quá lớn gây rạn nứt.', 'Hao tài tốn của vì kiện cáo tranh chấp. Nên hòa giải.', 'Chú ý stress thần kinh, đau dạ dày do lo nghĩ.'),
+(53, 'Thiên Hỏa Đồng Nhân', 'Ly', 'Cùng người, hợp tác', 'Trời và lửa cùng chiếu sáng vạn vật, tinh thần đồng đội hòa hợp đại cát.', 'Hợp tác làm ăn, làm việc nhóm đạt hiệu quả xuất sắc. Gặp quý nhân nâng đỡ.', 'Mối quan hệ đôi bên nhận được sự ủng hộ rộng rãi từ bạn bè gia đình.', 'Tài lộc hanh thông nhờ cùng đầu tư góp vốn làm ăn uy tín.', 'Sức khỏe dồi dào, tinh thần vui vẻ.'),
 
-(9, 'Bát Thuần Cấn', 'Cấn', 'Thuần Cấn (Núi)', 
-'Quẻ Cấn tượng trưng cho Núi, sự dừng lại, tĩnh lặng và vững chãi. Quẻ báo hiệu thời điểm nên dừng lại để suy ngẫm, củng cố nội lực hơn là cố chấp tiến lên phía trước.',
-'Sự nghiệp đứng yên, không nên mưu cầu thăng tiến hay đổi việc lúc này. Hãy tận dụng thời gian để học hỏi thêm.',
-'Tình duyên rơi vào giai đoạn lạnh nhạt, im lặng. Cần tôn trọng không gian riêng của nhau thay vì dồn ép.',
-'Tài lộc ngưng trệ, thu chi cân bằng, không thích hợp đầu tư mới.',
-'Chú ý các bệnh về xương khớp, đau lưng hoặc các bệnh mãn tính tái phát.'),
+-- Khôn Cung (Palace: Khôn)
+(0, 'Bát Thuần Khôn', 'Khôn', 'Nhu thuận, đất mẹ', 'Đất dày chở che vạn vật, nhu thuận bao dung gieo quẻ điềm tĩnh sẽ gặt hái đại cát.', 'Công việc cần sự bền bỉ, hỗ trợ đồng đội sẽ đạt kết quả cao hơn tự làm.', 'Tình cảm êm đềm ấm áp, gia đạo hòa thuận yên vui.', 'Tài lộc ổn định dài hạn từ tích lũy đất đai hoặc tiết kiệm.', 'Chú ý hệ tiêu hóa, bao tử.'),
+(4, 'Địa Lôi Phục', 'Khôn', 'Hồi phục, trở lại', 'Sấm chớp ẩn tàng dưới lòng đất, dương khí phục hồi quay trở lại tốt đẹp.', 'Công việc bắt đầu khởi sắc trở lại sau thời gian dài trì trệ.', 'Người yêu cũ có thể quay lại hoặc tình cảm nguội lạnh dần ấm lên.', 'Tài lộc bắt đầu có nguồn thu mới quay trở về.', 'Sức khỏe hồi phục nhanh chóng, thể trạng tốt lên.'),
+(6, 'Địa Trạch Lâm', 'Khôn', 'Tiến đến cận kề', 'Đầm nước bồi đắp cho đất mẹ, cơ hội lớn đang đến gần kề.', 'Cơ hội thăng tiến hoặc hợp tác lớn đang cận kề, hãy sẵn sàng đón nhận.', 'Tình cảm tiến triển nhanh chóng, chuẩn bị đón tin vui đám cưới.', 'Tài lộc dồi dào, dòng tiền chảy về túi hanh thông.', 'Sức khỏe tốt, tinh thần vui tươi phấn khởi.'),
+(7, 'Địa Thiên Thái', 'Khôn', 'Hòa hợp, hanh thông', 'Trời đất giao hòa vạn vật hanh thông, thời kỳ đại cát tường thịnh vượng.', 'Sự nghiệp đạt thành tựu rực rỡ, được mọi người ủng hộ nể phục.', 'Tình cảm vô cùng hòa hợp hạnh phúc viên mãn.', 'Tài lộc dồi dào, đầu tư kinh doanh gặp nhiều may mắn phát đạt.', 'Sức khỏe tuyệt vời, cơ thể khỏe mạnh.'),
+(39, 'Lôi Thiên Đại Tráng', 'Khôn', 'Chí khí lớn, mạnh mẽ', 'Sấm sét nổ vang trên trời, sức mạnh vĩ đại nhưng phòng cậy mạnh làm càn.', 'Sự nghiệp thăng tiến mạnh, vị thế vững chắc. Tuy nhiên tránh độc đoán.', 'Tình cảm nồng nhiệt mạnh mẽ, đôi lúc cần kiềm chế cái tôi.', 'Tài lộc phát triển mạnh, thu lợi nhuận lớn từ kinh doanh.', 'Sinh lực dồi dào, chú ý tránh chấn thương do vận động quá sức.'),
+(55, 'Trạch Thiên Quải', 'Khôn', 'Quyết đoán, dứt khoát', 'Hồ nước dâng cao lên trời, cần quyết đoán dứt khoát giải quyết vấn đề triệt để.', 'Cần đưa ra quyết định dứt khoát trong công việc (thay đổi hoặc đầu tư).', 'Quyết định dứt khoát hướng đi cho mối quan hệ, tránh mập mờ kéo dài.', 'Tài chính cần thanh quyết toán dứt điểm các khoản nợ nần.', 'Đề phòng các bệnh về răng miệng hoặc huyết áp.'),
+(23, 'Thủy Thiên Nhu', 'Khôn', 'Chờ đợi thời cơ', 'Mây đen đầy trời nhưng chưa mưa, cần kiên nhẫn ăn uống vui vẻ chờ thời cơ.', 'Chưa nên hành động vội vã, hãy kiên nhẫn tích lũy năng lực chờ thời cơ chín muồi.', 'Tình cảm cần thời gian tìm hiểu kỹ lưỡng hơn, tránh nóng vội ép buộc.', 'Tài lộc đang đến, cần kiên nhẫn chờ dòng tiền thanh toán về.', 'Ăn uống bồi bổ cơ thể để tăng sức đề kháng.'),
+(1, 'Thủy Địa Tỷ', 'Khôn', 'Gắn kết, hỗ trợ', 'Nước chảy trên đất gắn kết keo sơn, thời kỳ liên kết hợp tác đại cát.', 'Rất tốt cho việc tìm đối tác làm ăn, ký kết hợp tác đồng lòng.', 'Tình cảm đôi bên thấu hiểu sâu sắc, gắn kết keo sơn như hình với bóng.', 'Tài lộc hanh thông nhờ sự chung tay góp sức từ nhiều nguồn.', 'Sức khỏe ổn định, tinh thần vui vẻ hòa đồng.'),
 
-(54, 'Bát Thuần Đoài', 'Đoài', 'Thuần Đoài (Đầm Hồ)', 
-'Quẻ Đoài tượng trưng cho Đầm hồ, sự vui vẻ, hòa nhã và ăn nói. Quẻ mang điềm cát tường về tiệc tùng, các mối quan hệ xã giao tốt đẹp nhưng phòng thị phi từ lời nói.',
-'Sự nghiệp gặp thuận lợi nhờ khả năng giao tiếp và thuyết phục. Phòng ngừa tiểu nhân nói xấu sau lưng.',
-'Tình cảm hạnh phúc, ngọt ngào. Hai bên có nhiều buổi hẹn hò, đi chơi vui vẻ cùng nhau.',
-'Tài lộc dồi dào, có lộc ăn uống, quà tặng hoặc doanh thu từ bán hàng rất tốt.',
-'Sức khỏe ổn định, đề phòng các bệnh về răng miệng, cổ họng hoặc phế quản.')
+-- Đoài Cung (Palace: Đoài)
+(54, 'Bát Thuần Đoài', 'Đoài', 'Vui vẻ, ăn nói', 'Đầm hồ song hành chiếu sáng vui vẻ, khuyên dùng lời nói thuyết phục hòa nhã.', 'Sự nghiệp phát triển mạnh trong các mảng kinh doanh, dịch vụ, ăn nói.', 'Tình cảm vui vẻ hạnh phúc, đôi bên có nhiều tiếng cười.', 'Tài lộc dồi dào, có lộc ăn uống hoặc quà tặng bất ngờ.', 'Chú ý bệnh răng miệng, đau họng.'),
+(50, 'Trạch Thủy Khốn', 'Đoài', 'Khốn khó, cùng đường', 'Hồ không có nước bị cạn khô, thời kỳ khốn khó bế tắc cần ý chí vững vàng.', 'Công việc gặp muôn vàn khó khăn, nỗ lực chưa được ghi nhận. Nên ẩn nhẫn.', 'Tình cảm bế tắc, chịu nhiều áp lực đè nặng hoặc cãi vã mệt mỏi.', 'Tài lộc cạn kiệt thất thoát lớn, đề phòng nợ nần túng quẫn.', 'Sức khỏe suy giảm, cần bồi bổ tránh kiệt sức.'),
+(48, 'Trạch Địa Tụy', 'Đoài', 'Tụ họp, đoàn kết', 'Đầm hồ tụ nước trên đất mẹ, quẻ của sự tụ họp đoàn kết đông vui cát tường.', 'Công việc gặp thuận lợi nhờ tinh thần làm việc nhóm và sự đồng lòng.', 'Có cơ hội gặp gỡ gia đình đôi bên, tiệc tùng vui vẻ.', 'Tài lộc dồi dào nhờ tích tụ dòng tiền từ nhiều nguồn kinh doanh.', 'Sức khỏe tốt, tinh thần vui tươi phấn khởi.'),
+(49, 'Trạch Sơn Hàm', 'Đoài', 'Cảm ứng, giao hòa', 'Đầm nước trên núi cao, lòng chân thành tạo sự cảm ứng giao hòa sâu sắc.', 'Hợp tác làm ăn đạt thỏa thuận tốt nhờ sự đồng điệu thấu hiểu đối tác.', 'Tình cảm vô cùng lãng mạn, đôi bên cảm ứng sâu sắc yêu thương nhau.', 'Tài lộc tốt đẹp, nguồn thu từ kinh doanh dịch vụ hanh thông.', 'Sức khỏe ổn định, thể trạng tốt.'),
+(21, 'Thủy Sơn Kiển', 'Đoài', 'Gian nan, đi đứng khó', 'Trên núi có nước chảy tạo bùn lầy khó đi, gặp gian nan khuyên nên dừng lại.', 'Công việc gặp trở ngại lớn khó tiến lên, nên tạm dừng củng cố nội lực.', 'Tình cảm gặp nhiều rào cản địa lý hoặc gia đình ngăn cấm mệt mỏi.', 'Tài lộc khó khăn, thu không bù chi, tránh đầu tư mạo hiểm.', 'Chú ý đau chân, đi lại khó khăn hoặc xương khớp.'),
+(17, 'Địa Sơn Khiêm', 'Đoài', 'Khiêm tốn, nhún nhường', 'Núi ẩn dưới đất phẳng, quân tử giữ lòng khiêm tốn nhún nhường sẽ gặt hái đại cát.', 'Sự nghiệp thăng tiến vững chắc nhờ tính khiêm nhường được lòng đồng nghiệp.', 'Tình cảm bền bỉ chân thành, đôi bên tôn trọng nể phục lẫn nhau.', 'Tài lộc ổn định đều đặn, không có đột phá lớn nhưng dòng tiền an toàn.', 'Sức khỏe tốt, tinh thần bình an thư thái.'),
+(33, 'Lôi Sơn Tiểu Quá', 'Đoài', 'Sai sót nhỏ, quá đà chút', 'Sấm nổ trên núi cao, vạn sự chỉ nên làm việc nhỏ, tránh làm việc lớn quá tầm.', 'Chỉ nên hoàn thành các mục tiêu công việc nhỏ hàng ngày, tránh khởi sự dự án lớn.', 'Tình cảm có hiểu lầm nhỏ vặt vãnh, cần khéo léo giải thích xử lý.', 'Tài lộc thu chi nhỏ, tránh các khoản đầu tư lớn mạo hiểm.', 'Chú ý sức khỏe tai mũi họng hoặc cảm cúm.'),
+(38, 'Lôi Trạch Quy Muội', 'Đoài', 'Em gái lấy chồng, sai lệch', 'Sấm nổ trên đầm hồ, hành động vội vã lệch lạc quy luật tự nhiên dễ chuốc thất bại.', 'Công việc dễ đi sai hướng hoặc hợp tác không đúng người. Cần rà soát kỹ quy trình.', 'Tình cảm dễ vội vàng ngộ nhận hoặc mối quan hệ không danh chính ngôn thuận.', 'Tài lộc thất thoát do đầu tư vội vã thiếu tính toán.', 'Chú ý sức khỏe phụ khoa hoặc hệ sinh sản.')
 ON CONFLICT (id) DO UPDATE 
 SET name = EXCLUDED.name, 
     palace = EXCLUDED.palace,
@@ -101,16 +114,3 @@ SET name = EXCLUDED.name,
     love_meaning = EXCLUDED.love_meaning,
     wealth_meaning = EXCLUDED.wealth_meaning,
     health_meaning = EXCLUDED.health_meaning;
-
--- 3. Nạp dữ liệu mẫu cho bảng lines (Giải hào Thế/Ứng tĩnh động cho Bát Thuần Càn)
-INSERT INTO lines (hexagram_id, line_number, relation, meaning_static, meaning_active) VALUES
-(63, 1, 'Tử Tôn', 'Hào 1 tĩnh: Mọi sự khởi đầu cần âm thầm tích lũy, không nên vội vã thể hiện bản thân.', 'Hào 1 động (Tử Tôn động): Điềm cát tường, có lộc nhỏ hoặc có ý tưởng sáng tạo mới nảy sinh giúp giải quyết khó khăn.'),
-(63, 2, 'Thê Tài', 'Hào 2 tĩnh: Thời cơ thuận lợi bắt đầu xuất hiện, gặp được đối tác hoặc cơ hội tốt.', 'Hào 2 động (Thê Tài động): Tiền tài hanh thông, công việc làm ăn thuận lợi, mưu sự dễ thành.'),
-(63, 3, 'Huynh Đệ', 'Hào 3 tĩnh: Công việc bận rộn vất vả, chịu nhiều áp lực nhưng nếu kiên trì sẽ thành công.', 'Hào 3 động (Huynh Đệ động): Đề phòng hao tài, tranh chấp với đồng nghiệp hoặc có kẻ dòm ngó tài sản.'),
-(63, 4, 'Tử Tôn', 'Hào 4 tĩnh: Cơ hội thăng tiến đang ở thế lưỡng lự, cần quan sát kỹ lưỡng để chọn thời điểm.', 'Hào 4 động (Tử Tôn động): Khó khăn được tháo gỡ nhờ có người trợ giúp hoặc tìm ra phương pháp đúng đắn.'),
-(63, 5, 'Thê Tài', 'Hào 5 tĩnh: Vị trí cao nhất, công danh và tài lộc viên mãn, nhận được sự kính trọng.', 'Hào 5 động (Thê Tài động): Gặp vận may lớn về tiền bạc, hợp đồng lớn ký kết thành công.'),
-(63, 6, 'Phụ Mẫu', 'Hào 6 tĩnh: Cực thịnh dễ suy, tránh kiêu ngạo tự phụ dẫn đến sai lầm đáng tiếc.', 'Hào 6 động (Phụ Mẫu động): Điềm báo công việc nhiều giấy tờ mệt mỏi, áp lực từ cấp trên hoặc người lớn tuổi.')
-ON CONFLICT (hexagram_id, line_number) DO UPDATE
-SET relation = EXCLUDED.relation,
-    meaning_static = EXCLUDED.meaning_static,
-    meaning_active = EXCLUDED.meaning_active;

@@ -1,0 +1,19 @@
+{
+  "scenarios": {
+    "CAT": {
+      "summary": "Tình duyên tốt đẹp, tình cảm thăng hoa ngọt ngào.",
+      "detail": "Quẻ cát tường chỉ ra sự cảm ứng sâu sắc giữa Thế và Dụng thần (Thê Tài/Quan Quỷ). Hai bạn thấu hiểu và nâng đỡ lẫn nhau, gia đình đôi bên ủng hộ, mối quan hệ tiến triển vững chắc hướng tới hôn nhân viên mãn.",
+      "advice": "Hãy trân trọng nhân duyên, chia sẻ chân thành để thắt chặt thêm sự gắn kết."
+    },
+    "HUNG": {
+      "summary": "Tình duyên bất hòa, đề phòng rạn nứt hoặc chia rẽ.",
+      "detail": "Quẻ hiện điềm báo bất lợi, kỵ thần Huynh Đệ hoặc Tử Tôn phát động khắc chế Dụng thần, hoặc hào Thế biến suy bại. Mối quan hệ dễ nảy sinh hiểu lầm lớn, cãi vã vặt vãnh hoặc có sự can thiệp từ bên ngoài gây rạn nứt.",
+      "advice": "Cần bình tĩnh lắng nghe, kiềm chế cái tôi nóng nảy và tránh đưa ra quyết định vội vã lúc giận dỗi."
+    },
+    "BINH": {
+      "summary": "Tình duyên bình lặng, chưa có đột phá rõ rệt.",
+      "detail": "Quẻ cho thấy tình trạng tĩnh lặng hoặc Dụng vượng Thế suy. Tình cảm đôi bên vẫn còn nhưng có khoảng cách địa lý hoặc tâm lý chưa sẵn sàng mở lòng trọn vẹn, có chút lo lắng mơ hồ.",
+      "advice": "Hãy tạo cơ hội gặp gỡ chia sẻ nhiều hơn, đừng để sự im lặng kéo dài tạo khoảng cách."
+    }
+  }
+}
