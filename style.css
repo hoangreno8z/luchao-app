@@ -1,5 +1,5 @@
 /* CSS Design System for Kinh Dịch Lục Hào - style.css */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
     --bg-dark: #0f0a05;
@@ -12,9 +12,9 @@
     --text-light: #f5ece1;
     --text-muted: #bda287;
     --border-color: #3d2a19;
-    --font-serif: 'Playfair Display', Georgia, serif;
-    --font-ancient: 'Cinzel', serif;
-    --font-sans: 'Quicksand', sans-serif;
+    --font-serif: 'Inter', sans-serif;
+    --font-ancient: 'Inter', sans-serif;
+    --font-sans: 'Inter', sans-serif;
 }
 
 * {
