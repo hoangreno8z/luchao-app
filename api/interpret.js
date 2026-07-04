@@ -378,6 +378,7 @@ export default async function handler(req, res) {
     const geminiKey = process.env.GEMINI_API_KEY;
 
     if (geminiKey && userInputs && hexData && analysisTextsList.length > 0) {
+        try {
             // --- LOGIC HÓA GIẢI PHONG THỦY VƯƠNG HỔ ỨNG ---
             let hoaGiaiAdvice = "";
             if (engineResult && engineResult.targetRelation) {
