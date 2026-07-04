@@ -3,7 +3,7 @@
  * Runs Chu Than Ban's I Ching rules engine and integrates Google Gemini API for copywriting.
  */
 
-import { COMPILED_KNOWLEDGE } from '../generated/compiled_knowledge.js';
+import { COMPILED_KNOWLEDGE } from './compiled_knowledge.js';
 
 const KHAC_MAP = {
     'Kim': 'Mộc', 'Mộc': 'Thổ', 'Thổ': 'Thủy', 'Thủy': 'Hỏa', 'Hỏa': 'Kim'

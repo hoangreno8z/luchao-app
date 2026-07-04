@@ -7,12 +7,12 @@ const __dirname = path.dirname(__filename);
 
 const projectRoot = path.join(__dirname, '..');
 const knowledgeDir = path.join(projectRoot, 'knowledge');
-const generatedDir = path.join(projectRoot, 'generated');
+const apiDir = path.join(projectRoot, 'api');
 const publicDir = path.join(projectRoot, 'public');
 
-// Ensure generated folder exists
-if (!fs.existsSync(generatedDir)) {
-    fs.mkdirSync(generatedDir);
+// Ensure api folder exists
+if (!fs.existsSync(apiDir)) {
+    fs.mkdirSync(apiDir);
 }
 
 try {
@@ -35,13 +35,13 @@ try {
         }
     };
 
-    // Generate ES module file for modern Vercel serverless environment
+    // Đổi thư mục đầu ra sang thẳng thư mục api/ để Vercel không bị lỗi gom nhóm file
     const outputCode = `// Generated compiled knowledge file - DO NOT EDIT MANUALLY
 export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
 `;
 
-    fs.writeFileSync(path.join(generatedDir, 'compiled_knowledge.js'), outputCode, 'utf8');
-    console.log('Successfully compiled knowledge files into generated/compiled_knowledge.js!');
+    fs.writeFileSync(path.join(apiDir, 'compiled_knowledge.js'), outputCode, 'utf8');
+    console.log('Successfully compiled knowledge files into api/compiled_knowledge.js!');
 
     // HACK: Tự động tạo thư mục public và sao chép các tệp tĩnh sang để Vercel đóng gói thành công
     if (!fs.existsSync(publicDir)) {
@@ -58,17 +58,6 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
             console.log(`Copied ${file} to public/`);
         }
     });
-
-    // Sao chép cả thư mục generated sang public
-    const publicGeneratedDir = path.join(publicDir, 'generated');
-    if (!fs.existsSync(publicGeneratedDir)) {
-        fs.mkdirSync(publicGeneratedDir);
-    }
-    fs.copyFileSync(
-        path.join(generatedDir, 'compiled_knowledge.js'),
-        path.join(publicGeneratedDir, 'compiled_knowledge.js')
-    );
-    console.log('Copied generated files to public/generated/');
 
 } catch (err) {
     console.error('Compilation failed:', err);
