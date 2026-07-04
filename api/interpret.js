@@ -4,6 +4,7 @@
  */
 
 import { runFullEngineAnalysis } from './luchao_engine.js';
+import { FALLBACK_HEXAGRAMS_DB } from './fallback_db.js';
 
 const COMPILED_KNOWLEDGE = {
   templates: {
@@ -201,10 +202,25 @@ export default async function handler(req, res) {
     const overallMeaning = dbMainHex?.overall_meaning || fallbackMain.overall;
 
     let topicMeaning = overallMeaning;
-    if (['công việc', 'thi cử'].includes(topic)) topicMeaning = dbMainHex?.career_meaning || fallbackMain.career;
-    else if (['tình yêu', 'hôn nhân'].includes(topic)) topicMeaning = dbMainHex?.love_meaning || fallbackMain.love;
-    else if (topic === 'sức khỏe') topicMeaning = dbMainHex?.health_meaning || fallbackMain.health;
-    else if (['kinh doanh', 'dự án'].includes(topic)) topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.wealth;
+    if (['công việc', 'thi cử'].includes(topic)) topicMeaning = dbMainHex?.career_meaning || fallbackMain.overall;
+    else if (['tình yêu', 'hôn nhân'].includes(topic)) topicMeaning = dbMainHex?.love_meaning || fallbackMain.overall;
+    else if (topic === 'sức khỏe') topicMeaning = dbMainHex?.health_meaning || fallbackMain.overall;
+    else if (['kinh doanh', 'dự án'].includes(topic)) topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.overall;
+
+    // Nếu Supabase không trả về Hào từ, lấy Hào từ từ fallback database để hiển thị đầy đủ
+    if (dbLines.length === 0 && fallbackMain.lines) {
+        dbLines = Object.keys(fallbackMain.lines).map(hKey => {
+            const hNum = parseInt(hKey);
+            // Lấy Lục Thân tương ứng từ hexData.linesData để hiển thị chính xác
+            const matchedLine = hexData?.linesData?.[hNum - 1];
+            return {
+                line_number: hNum,
+                relation: matchedLine?.relation || 'Hào ' + hNum,
+                meaning_static: fallbackMain.lines[hKey].static,
+                meaning_active: fallbackMain.lines[hKey].active
+            };
+        });
+    }
 
     // ===========================================================================
     // TỔNG HỢP VĂN BẢN PHÂN TÍCH: 6 LỚP NGUỒN DỮ LIỆU
@@ -423,13 +439,17 @@ Cấu trúc 4 phần bắt buộc:
 }
 
 function getFallbackHex(hex_id) {
-    const list = {
-        63: { name: 'Bát Thuần Càn', palace: 'Càn', meaning: 'Thuần Càn', overall: 'Cương kiện, sáng tạo vô hạn.', career: 'Cơ hội thăng tiến lớn.', love: 'Nồng nhiệt, tránh xung đột.', wealth: 'Tài lộc hanh thông.', health: 'Sinh lực tốt.' },
-        0:  { name: 'Bát Thuần Khôn', palace: 'Khôn', meaning: 'Thuần Khôn', overall: 'Nhu thuận, bao dung.', career: 'Kiên trì, làm việc nhóm.', love: 'Tình cảm hòa thuận.', wealth: 'Tài lộc ổn định.', health: 'Chú ý tiêu hóa.' },
-        28: { name: 'Phong Lôi Ích', palace: 'Tốn', meaning: 'Phong Lôi Ích', overall: 'Lợi ích, bồi đắp.', career: 'Công danh thuận lợi.', love: 'Tình cảm nồng nàn.', wealth: 'Tài lộc dồi dào.', health: 'Sức khỏe tốt.' },
-        12: { name: 'Sơn Lôi Di', palace: 'Tốn', meaning: 'Sơn Lôi Di', overall: 'Nuôi dưỡng thân tâm.', career: 'Học tập nâng cao.', love: 'Chăm sóc lẫn nhau.', wealth: 'Chi tiêu hợp lý.', health: 'Chú ý ngộ độc.' }
-    };
-    return list[hex_id] || { name: 'Quẻ Số ' + hex_id, palace: 'Chưa rõ', meaning: 'Đang cập nhật...', overall: 'Đang cập nhật...', career: 'Đang cập nhật...', love: 'Đang cập nhật...', wealth: 'Đang cập nhật...', health: 'Đang cập nhật...' };
+    const hex = FALLBACK_HEXAGRAMS_DB[hex_id];
+    if (hex) {
+        return {
+            name: hex.name,
+            palace: hex.palace,
+            meaning: hex.name,
+            overall: hex.overall,
+            lines: hex.lines
+        };
+    }
+    return { name: 'Quẻ Số ' + hex_id, palace: 'Chưa rõ', meaning: 'Đang cập nhật...', overall: 'Đang cập nhật...', lines: {} };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
