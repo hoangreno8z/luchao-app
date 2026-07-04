@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function - api/interpret.js
  * Runs Chu Than Ban's I Ching rules engine and integrates Google Gemini API for copywriting.
- * Uses embedded COMPILED_KNOWLEDGE to guarantee 100% successful Vercel serverless bundling.
+ * Uses embedded COMPILED_KNOWLEDGE and dynamic semantic code database mapping.
  */
 
 const COMPILED_KNOWLEDGE = {
@@ -125,25 +125,6 @@ const COMPILED_KNOWLEDGE = {
         }
       }
     },
-    "thi cử": {
-      "scenarios": {
-        "CAT": {
-          "summary": "Thi cử đỗ đạt, đạt kết quả cao như kỳ vọng.",
-          "detail": "Dụng thần Phụ Mẫu (bằng cấp, bài thi) và Quan Quỷ đều vượng tướng, hào Thế vững vàng. Điềm báo học hành thi cử gặp nhiều thuận lợi, đỗ đạt bảng vàng.",
-          "advice": "Tiếp tục ôn luyện kỹ càng, giữ vững tự tin sẽ gặt hái thành quả rực rỡ."
-        },
-        "HUNG": {
-          "summary": "Thi cử gặp trắc trở, kết quả không thuận lợi.",
-          "detail": "Hào Phụ Mẫu bị khắc thương hoặc bị Không Vong phá hại, hào Thế suy yếu. Điềm thi cử bất lợi, đề phòng nhầm lẫn giấy tờ hoặc phong độ không tốt.",
-          "advice": "Rà soát lại kiến thức, cẩn thận khi làm bài và tránh chủ quan khinh suất."
-        },
-        "BINH": {
-          "summary": "Kết quả thi cử đạt mức trung bình, cần cố gắng hơn.",
-          "detail": "Dụng thần vượng nhưng hào Thế suy. Lực học có thể tốt nhưng tâm lý phòng thi hoặc sức khỏe không ổn định làm ảnh hưởng đến kết quả.",
-          "advice": "Rèn luyện thêm tâm lý vững vàng, chú ý giữ gìn sức khỏe trước ngày thi."
-        }
-      }
-    },
     "tình yêu": {
       "scenarios": {
         "CAT": {
@@ -166,10 +147,10 @@ const COMPILED_KNOWLEDGE = {
   }
 };
 
-COMPILED_KNOWLEDGE.templates['thi cử'] = COMPILED_KNOWLEDGE.templates['thi cử'] || COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['kinh doanh'] = COMPILED_KNOWLEDGE.templates['kinh doanh'] || COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['dự án'] = COMPILED_KNOWLEDGE.templates['dự án'] || COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['hôn nhân'] = COMPILED_KNOWLEDGE.templates['hôn nhân'] || COMPILED_KNOWLEDGE.templates['tình yêu'];
+COMPILED_KNOWLEDGE.templates['thi cử'] = COMPILED_KNOWLEDGE.templates['công việc'];
+COMPILED_KNOWLEDGE.templates['kinh doanh'] = COMPILED_KNOWLEDGE.templates['công việc'];
+COMPILED_KNOWLEDGE.templates['dự án'] = COMPILED_KNOWLEDGE.templates['công việc'];
+COMPILED_KNOWLEDGE.templates['hôn nhân'] = COMPILED_KNOWLEDGE.templates['tình yêu'];
 
 const KHAC_MAP = {
     'Kim': 'Mộc', 'Mộc': 'Thổ', 'Thổ': 'Thủy', 'Thủy': 'Hỏa', 'Hỏa': 'Kim'
@@ -187,6 +168,36 @@ const XUNG_MAP = {
     'Thìn': 'Tuất', 'Tuất': 'Thìn',
     'Tỵ': 'Hợi', 'Hợi': 'Tỵ'
 };
+
+function convertLucThanToCode(vietnamese) {
+    const map = {
+        'Phụ Mẫu': 'PHU_MAU',
+        'Quan Quỷ': 'QUAN_QUY',
+        'Huynh Đệ': 'HUYNH_DE',
+        'Thê Tài': 'THE_TAI',
+        'Tử Tôn': 'TU_TON'
+    };
+    // Extract first 2 words in case of full strings like "Quan Quỷ (Quan chức)"
+    for (const key of Object.keys(map)) {
+        if (vietnamese.includes(key)) return map[key];
+    }
+    return 'UNKNOWN';
+}
+
+function convertBeastToCode(vietnamese) {
+    const map = {
+        'Thanh Long': 'THANH_LONG',
+        'Chu Tước': 'CHU_TUOC',
+        'Câu Trần': 'CAU_TRAN',
+        'Đằng Xà': 'DANG_XA',
+        'Bạch Hổ': 'BACH_HO',
+        'Huyền Vũ': 'HUYEN_VU'
+    };
+    for (const key of Object.keys(map)) {
+        if (vietnamese.includes(key)) return map[key];
+    }
+    return 'UNKNOWN';
+}
 
 function checkTienThoai(mainChi, changedChi) {
     const tien = {
@@ -226,10 +237,9 @@ function evaluateCondition(conditionStr, context) {
 }
 
 export default async function handler(req, res) {
-    // CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
     res.setHeader(
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
@@ -258,52 +268,10 @@ export default async function handler(req, res) {
     let dbMainHex = null;
     let dbChangedHex = null;
     let dbLines = [];
+    let dbSemanticTexts = [];
 
-    // 1. Fetch static descriptions from Supabase
-    if (supabaseUrl && supabaseKey) {
-        try {
-            const headers = {
-                'apikey': supabaseKey,
-                'Authorization': `Bearer ${supabaseKey}`,
-                'Content-Type': 'application/json'
-            };
-
-            const [mainRes, changedRes, linesRes] = await Promise.all([
-                fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${hex_id}`, { headers }).then(r => r.json()),
-                changed_id ? fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${changed_id}`, { headers }).then(r => r.json()) : Promise.resolve([]),
-                fetch(`${supabaseUrl}/rest/v1/lines?hexagram_id=eq.${hex_id}`, { headers }).then(r => r.json())
-            ]);
-
-            dbMainHex = mainRes && mainRes[0];
-            dbChangedHex = changedRes && changedRes[0];
-            dbLines = linesRes || [];
-        } catch (err) {
-            console.error('Supabase query failed, running local mock...', err);
-        }
-    }
-
-    // 2. Fetch from compiled ontology mapping
-    const ontology = COMPILED_KNOWLEDGE.ontology;
-    const fallbackMain = getFallbackHex(parseInt(hex_id));
-    const fallbackChanged = changed_id ? getFallbackHex(parseInt(changed_id)) : null;
-
-    const mainName = dbMainHex?.name || fallbackMain.name;
-    const palaceName = dbMainHex?.palace || fallbackMain.palace;
-    const vietnameseMeaning = dbMainHex?.vietnamese_meaning || fallbackMain.meaning;
-    const overallMeaning = dbMainHex?.overall_meaning || fallbackMain.overall;
-
-    let topicMeaning = "";
-    if (topic === "công việc" || topic === "thi cử") topicMeaning = dbMainHex?.career_meaning || fallbackMain.career;
-    else if (topic === "tình yêu" || topic === "hôn nhân") topicMeaning = dbMainHex?.love_meaning || fallbackMain.love;
-    else if (topic === "sức khỏe") topicMeaning = dbMainHex?.health_meaning || fallbackMain.health;
-    else if (topic === "kinh doanh" || topic === "dự án") topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.wealth;
-    else topicMeaning = overallMeaning;
-
-    // 3. DETERMINISTIC ENGINE & RULE SCORING
-    let analysisHtml = "";
-    let scores = { power: 0, risk: 0, timing: 50, stability: 50, relationship: 50, opportunity: 0, threat: 0 };
-    let inferenceChain = [];
-    let catHung = "BINH";
+    // MÃ HÓA NGỮ NGHĨA (SEMANTIC CODES GENERATOR)
+    const generatedCodes = [];
 
     if (hexData && hexData.linesData) {
         const lines = hexData.linesData;
@@ -311,7 +279,37 @@ export default async function handler(req, res) {
         const monthChi = hexData.dateInfo.nguyetLenh.split(' - ')[0];
         const monthHanh = hexData.dateInfo.nguyetLenh.split(' - ')[1];
 
-        // Determine primary relation deity
+        // 1. Quẻ tĩnh / quẻ động
+        const isMoving = lines.some(l => l.isMoving);
+        generatedCodes.push(isMoving ? 'QUE_DONG' : 'QUE_TINH');
+
+        // 2. Họ quẻ (Palace)
+        const palaceName = hexData.palace || '';
+        if (palaceName) generatedCodes.push(`PALACE_${palaceName.toUpperCase()}`);
+
+        // 3. Phục ngâm / Phản ngâm / Lục xung / Lục hợp (nếu có)
+        // Trạng thái quẻ tĩnh
+        const isLucXung = lines.length === 6 && 
+            XUNG_MAP[lines[0].chi] === lines[3].chi &&
+            XUNG_MAP[lines[1].chi] === lines[4].chi &&
+            XUNG_MAP[lines[2].chi] === lines[5].chi;
+        if (isLucXung) generatedCodes.push('PROPERTY_LUC_XUNG');
+
+        const isLucHop = lines.length === 6 && 
+            SINH_MAP[lines[0].chi] === lines[3].chi; // simplified logic check
+        if (isLucHop) generatedCodes.push('PROPERTY_LUC_HOP');
+
+        // 4. Lục thân trì thế & Lục thú trì thế
+        const shiLine = lines.find(l => l.isShi);
+        if (shiLine) {
+            const lucThanCode = convertLucThanToCode(shiLine.relation);
+            generatedCodes.push(`THE_TRI_${lucThanCode}`);
+
+            const beastCode = convertBeastToCode(shiLine.thu);
+            generatedCodes.push(`THE_LUC_THU_${beastCode}`);
+        }
+
+        // 5. Xác định Dụng thần & các trạng thái vượng suy xung hợp
         const deityMap = {
             'công việc': 'Quan Quỷ', 'thi cử': 'Phụ Mẫu',
             'tình yêu': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
@@ -320,12 +318,10 @@ export default async function handler(req, res) {
         };
         const targetRel = deityMap[topic] || 'Thế Hào';
 
-        // Select Deity line index
         let deityIdx = lines.findIndex(l => (l.isShi || l.isYing) && l.relation.includes(targetRel));
         if (deityIdx === -1) deityIdx = lines.findIndex(l => l.isMoving && l.relation.includes(targetRel));
         if (deityIdx === -1) deityIdx = lines.findIndex(l => l.relation.includes(targetRel));
 
-        // Evaluate each line for compiling contextual facts
         const evaluatedLines = lines.map((line, idx) => {
             const isXungDay = XUNG_MAP[line.chi] === dayChi;
             const isXungMonth = XUNG_MAP[line.chi] === monthChi;
@@ -347,57 +343,122 @@ export default async function handler(req, res) {
             };
         });
 
-        // Run Rule Engine for Deity
         if (deityIdx !== -1) {
-            const deityContext = { Deity: evaluatedLines[deityIdx] };
-            COMPILED_KNOWLEDGE.rules.forEach(rule => {
-                if (evaluateCondition(rule.condition, deityContext)) {
-                    // Apply effects
-                    for (const [key, val] of Object.entries(rule.effect)) {
-                        if (key in scores) scores[key] += val;
-                    }
-                    inferenceChain.push(`**${rule.name}**: ${rule.explain}`);
-                }
-            });
+            const deityLine = lines[deityIdx];
+            const lucThanCode = convertLucThanToCode(deityLine.relation);
+            generatedCodes.push(`DUNG_TRI_${lucThanCode}`);
+
+            const beastCode = convertBeastToCode(deityLine.thu);
+            generatedCodes.push(`DUNG_LUC_THU_${beastCode}`);
+
+            const deityEval = evaluatedLines[deityIdx];
+            if (deityEval.IsNguyetPha) generatedCodes.push('DUNG_STATUS_NGUYET_PHA');
+            if (deityEval.IsTK) generatedCodes.push('DUNG_STATUS_TUAN_KHONG');
+            if (deityEval.IsHoiDauKhac) generatedCodes.push('DUNG_STATUS_HOI_DAU_KHAC');
+            if (deityEval.TienThoai === 'tiến') generatedCodes.push('DUNG_STATUS_TIEN_THAN');
+            if (deityEval.TienThoai === 'thoái') generatedCodes.push('DUNG_STATUS_THOAI_THAN');
+            if (deityEval.IsMoving === false && deityEval.IsXungDay === true && deityEval.IsVuongInMonth === true) {
+                generatedCodes.push('DUNG_STATUS_AM_DONG');
+            }
+            if (deityEval.IsVuongInMonth) {
+                generatedCodes.push('DUNG_STATUS_VUONG');
+            } else {
+                generatedCodes.push('DUNG_STATUS_SUY');
+            }
         }
 
-        // Run Rule Engine for Shi (Thế hào)
-        const shiIdx = lines.findIndex(l => l.isShi);
-        if (shiIdx !== -1) {
-            const shiContext = { Deity: evaluatedLines[shiIdx] };
-            COMPILED_KNOWLEDGE.rules.forEach(rule => {
-                if (evaluateCondition(rule.condition, shiContext)) {
-                    if (rule.name === 'Thế_Động_Hóa_Quỷ' || rule.name === 'Hồi_Đầu_Khắc') {
-                        scores.risk += 40;
-                        scores.power -= 30;
-                        inferenceChain.push(`**Thế Hào gặp hạn (${rule.name})**: ${rule.explain}`);
-                    }
-                }
-            });
+        if (shiLine && shiLine.isMoving) {
+            const shiEval = evaluatedLines[lines.indexOf(shiLine)];
+            if (shiEval.IsHoiDauKhac) generatedCodes.push('THE_STATUS_HOI_DAU_KHAC');
+            if (shiLine.changed.relation.includes('Quan Quỷ')) generatedCodes.push('THE_STATUS_HOA_QUY');
         }
-
-        // Determine final Cát Hung based on scores
-        const netScore = scores.power - scores.risk;
-        if (netScore > 15) catHung = "CAT";
-        else if (netScore < -15) catHung = "HUNG";
-        else catHung = "BINH";
-
-        // Formulate Explainability HTML
-        const targetDeityInfo = getDeityExplanation(topic, gender);
-        analysisHtml = `
-            <p><strong>Dụng Thần Lục Thân xác định:</strong> ${targetRel} (${targetDeityInfo.deity || ''})</p>
-            <ul>
-                ${inferenceChain.map(item => `<li>${item}</li>`).join('')}
-            </ul>
-            <p><strong>Thống kê chỉ số:</strong> Lực dụng thần: ${scores.power} | Mức độ rủi ro: ${scores.risk} | Độ ổn định: ${scores.stability}</p>
-        `;
     }
 
-    // 4. TEMPLATE RETRIEVAL
+    // 6. TRUY XUẤT DATABASE THEO MÃ HÓA (EXTRACT FROM DATABASE)
+    if (supabaseUrl && supabaseKey) {
+        try {
+            const headers = {
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`,
+                'Content-Type': 'application/json'
+            };
+
+            const [mainRes, changedRes, linesRes, semanticRes] = await Promise.all([
+                fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${hex_id}`, { headers }).then(r => r.json()),
+                changed_id ? fetch(`${supabaseUrl}/rest/v1/hexagrams?id=eq.${changed_id}`, { headers }).then(r => r.json()) : Promise.resolve([]),
+                fetch(`${supabaseUrl}/rest/v1/lines?hexagram_id=eq.${hex_id}`, { headers }).then(r => r.json()),
+                generatedCodes.length > 0 ? fetch(`${supabaseUrl}/rest/v1/semantic_texts?code=in.(${generatedCodes.join(',')})`, { headers }).then(r => r.json()) : Promise.resolve([])
+            ]);
+
+            dbMainHex = mainRes && mainRes[0];
+            dbChangedHex = changedRes && changedRes[0];
+            dbLines = linesRes || [];
+            dbSemanticTexts = semanticRes || [];
+        } catch (err) {
+            console.error('Supabase query failed, running local mock...', err);
+        }
+    }
+
+    // fallback to local if database returned nothing
+    const fallbackMain = getFallbackHex(parseInt(hex_id));
+    const fallbackChanged = changed_id ? getFallbackHex(parseInt(changed_id)) : null;
+
+    const mainName = dbMainHex?.name || fallbackMain.name;
+    const palaceName = dbMainHex?.palace || fallbackMain.palace;
+    const vietnameseMeaning = dbMainHex?.vietnamese_meaning || fallbackMain.meaning;
+    const overallMeaning = dbMainHex?.overall_meaning || fallbackMain.overall;
+
+    let topicMeaning = "";
+    if (topic === "công việc" || topic === "thi cử") topicMeaning = dbMainHex?.career_meaning || fallbackMain.career;
+    else if (topic === "tình yêu" || topic === "hôn nhân") topicMeaning = dbMainHex?.love_meaning || fallbackMain.love;
+    else if (topic === "sức khỏe") topicMeaning = dbMainHex?.health_meaning || fallbackMain.health;
+    else if (topic === "kinh doanh" || topic === "dự án") topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.wealth;
+    else topicMeaning = overallMeaning;
+
+    // Assembling explainability html and scores
+    let scores = { power: 0, risk: 0, timing: 50, stability: 50, relationship: 50, opportunity: 0, threat: 0 };
+    let catHung = "BINH";
+
+    // Build the inference chain text from both database semantic texts and local codes fallback
+    let analysisTextsList = [];
+    generatedCodes.forEach(code => {
+        const dbMatch = dbSemanticTexts.find(s => s.code === code);
+        if (dbMatch) {
+            analysisTextsList.push(dbMatch.vietnamese_text);
+        } else {
+            // fallback text mappings
+            const fallbackTextMap = {
+                'QUE_TINH': 'Quẻ tĩnh: Mọi sự bình lặng, lực lượng hai bên ổn định.',
+                'QUE_DONG': 'Quẻ động: Sự việc đang có biến chuyển mạnh mẽ, cần hành động linh hoạt.',
+                'DUNG_STATUS_VUONG': 'Dụng thần vượng tướng cát lợi.',
+                'DUNG_STATUS_SUY': 'Dụng thần hưu tù suy nhược.',
+                'DUNG_STATUS_NGUYET_PHA': 'Dụng thần bị Nguyệt phá, việc mưu khó thành.',
+                'DUNG_STATUS_TUAN_KHONG': 'Dụng thần lâm Không, mọi việc còn mơ hồ.',
+                'DUNG_STATUS_HOI_DAU_KHAC': 'Dụng thần bị Hồi đầu khắc, kết quả xấu.',
+                'THE_STATUS_HOA_QUY': 'Thế động hóa Quỷ: Đề phòng tai họa, lo âu.'
+            };
+            if (fallbackTextMap[code]) {
+                analysisTextsList.push(fallbackTextMap[code]);
+            }
+        }
+    });
+
+    // Score calculations
+    if (generatedCodes.includes('DUNG_STATUS_VUONG')) scores.power += 30;
+    if (generatedCodes.includes('DUNG_STATUS_SUY')) scores.power -= 20;
+    if (generatedCodes.includes('DUNG_STATUS_NGUYET_PHA')) { scores.power -= 50; scores.risk += 30; }
+    if (generatedCodes.includes('DUNG_STATUS_HOI_DAU_KHAC')) { scores.power -= 60; scores.risk += 50; }
+    if (generatedCodes.includes('THE_STATUS_HOA_QUY')) scores.risk += 40;
+
+    const netScore = scores.power - scores.risk;
+    if (netScore > 10) catHung = "CAT";
+    else if (netScore < -10) catHung = "HUNG";
+    else catHung = "BINH";
+
     const topicTemplates = COMPILED_KNOWLEDGE.templates[topic] || COMPILED_KNOWLEDGE.templates['công việc'];
     const scenarioText = topicTemplates.scenarios[catHung];
 
-    // 5. TASK-LOCKED GEMINI API PERSONALIZATION (Optional)
+    // AI personalization using dynamic codes mapping summary
     let aiExplanation = "";
     const geminiKey = process.env.GEMINI_API_KEY;
 
@@ -410,25 +471,24 @@ export default async function handler(req, res) {
                 hex_name: mainName,
                 hex_palace: palaceName,
                 calculated_canghung: catHung === 'CAT' ? 'Cát (Tốt)' : catHung === 'HUNG' ? 'Hung (Xấu)' : 'Bình hòa',
-                technical_findings: inferenceChain.join('\n'),
+                technical_findings: analysisTextsList.join('\n'),
                 database_static_meaning: overallMeaning,
                 database_topic_meaning: topicMeaning,
                 database_advice: scenarioText.advice
             };
 
             const systemPrompt = `Bạn là một biên tập viên Lục Hào chuyên nghiệp.
-Nhiệm vụ của bạn là tổng hợp dữ liệu kỹ thuật và văn bản giải thích được cung cấp dưới đây thành một bài luận giải cá nhân hóa mượt mà, chân thực bằng tiếng Việt.
+Nhiệm vụ của bạn là tổng hợp các văn bản luận giải ngữ nghĩa đã trích xuất từ database dưới đây thành một báo cáo cá nhân hóa mạch lạc bằng tiếng Việt.
 
-CÁC NGUYÊN TẮC CỨNG BẮT BUỘC:
-1. KHÔNG được tự ý tính toán lại ngũ hành, địa chi, vượng suy hay tự suy đoán cát hung. Hãy trung thành 100% với kết luận cát hung đã được tính toán ở đầu vào.
-2. KHÔNG tự bịa ra ý nghĩa của quẻ chủ, quẻ biến hay các hào ngoài văn bản giải nghĩa được cung cấp.
-3. Lồng ghép câu hỏi thật sự, mong muốn thật tâm và giới tính của người hỏi để xưng hô thân mật, đưa ra lời khuyên thực tế.
+CÁC NGUYÊN TẮC:
+1. KHÔNG tự bịa ngũ hành, can chi hay thay đổi kết luận cát hung đầu vào.
+2. Dùng đại từ xưng hô thích hợp dựa trên giới tính của người hỏi để đưa ra lời khuyên.
 
-Cấu trúc đầu ra bắt buộc gồm 4 phần rõ ràng:
-1. PHÂN TÍCH HIỆN TRẠNG (Đối quỹ thực chứng): Đối chiếu hoàn cảnh của người hỏi với quẻ gieo.
-2. ĐÁNH GIÁ CÁT HUNG CHỦ ĐỀ: Giải thích rõ thành bại dựa trên thông số đầu vào.
-3. DIỄN TIẾN CHI TIẾT: Giải thích ý nghĩa của các hào động biến đã có sẵn.
-4. LỜI KHUYÊN HÀNH ĐỘNG (Xu cát tị hung): Chỉ dẫn cụ thể thái độ thực tế nên làm để thay đổi hoặc nắm giữ cơ hội.`;
+Cấu trúc:
+1. PHÂN TÍCH HIỆN TRẠNG (Đối quỹ thực chứng)
+2. ĐÁNH GIÁ CÁT HUNG
+3. DIỄN BIẾN CHI TIẾT
+4. LỜI KHUYÊN HÀNH ĐỘNG`;
 
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
             
@@ -451,7 +511,18 @@ Cấu trúc đầu ra bắt buộc gồm 4 phần rõ ràng:
         }
     }
 
-    const deityInfo = getDeityExplanation(topic, gender);
+    const deityMap = {
+        'công việc': 'Quan Quỷ', 'thi cử': 'Phụ Mẫu',
+        'tình yêu': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
+        'hôn nhân': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
+        'sức khỏe': 'Tử Tôn', 'kinh doanh': 'Thê Tài', 'dự án': 'Thê Tài'
+    };
+    const targetRel = deityMap[topic] || 'Thế Hào';
+
+    const deityInfo = {
+        deity: targetRel,
+        kỵ: targetRel === 'Quan Quỷ' ? 'Tử Tôn' : targetRel === 'Phụ Mẫu' ? 'Thê Tài' : targetRel === 'Thê Tài' ? 'Huynh Đệ' : 'Phụ Mẫu'
+    };
 
     return res.status(200).json({
         success: true,
@@ -476,38 +547,19 @@ Cấu trúc đầu ra bắt buộc gồm 4 phần rõ ràng:
             meaning_active: l.meaning_active
         })) : [
             { line_number: 1, relation: 'Tử Tôn', meaning_static: 'Tích lũy nội lực.', meaning_active: 'Giải vây khó khăn.' },
-            { line_number: 2, relation: 'Thê Tài', meaning_static: 'Gặp cơ hội tốt.', meaning_active: 'Giao dịch hanh thông.' }
+            { line_number: 2, relation: 'Thê Tài', meaning_static: 'Tích tụ tài lộc.', meaning_active: 'Giao dịch hanh thông.' }
         ],
         deity: deityInfo,
-        analysisHtml: analysisHtml,
+        analysisHtml: `
+            <p><strong>Dụng Thần Lục Thân:</strong> ${targetRel} (Hệ thống tự động xác định)</p>
+            <ul>
+                ${analysisTextsList.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+        `,
         catHung: catHung,
         templateContent: scenarioText,
         aiExplanation: aiExplanation
     });
-}
-
-function getDeityExplanation(topic, gender) {
-    const map = {
-        'công việc': { deity: 'Quan Quỷ (Quan chức, công danh)', kỵ: 'Tử Tôn (khắc Quan Quỷ)' },
-        'thi cử': { deity: 'Phụ Mẫu (Bằng cấp, bài thi)', kỵ: 'Thê Tài (khắc Phụ Mẫu)' },
-        'tình yêu': {
-            deity: gender === 'Nam' ? 'Thê Tài (vợ, người yêu)' : 'Quan Quỷ (chồng, người yêu)',
-            kỵ: gender === 'Nam' ? 'Huynh Đệ (khắc Tài)' : 'Tử Tôn (khắc Quan)'
-        },
-        'hôn nhân': {
-            deity: gender === 'Nam' ? 'Thê Tài (vợ)' : 'Quan Quỷ (chồng)',
-            kỵ: gender === 'Nam' ? 'Huynh Đệ' : 'Tử Tôn'
-        },
-        'sức khỏe': { deity: 'Thế Hào (chính mình) & Tử Tôn (Y dược)', kỵ: 'Quan Quỷ (Bệnh tật)' },
-        'kinh doanh': { deity: 'Thê Tài (Lợi nhuận) & Tử Tôn (Nguồn tài)', kỵ: 'Huynh Đệ (Hao tài)' },
-        'dự án': { deity: 'Thê Tài (Tài chính)', kỵ: 'Huynh Đệ' },
-        'tìm kiếm': { deity: 'Thê Tài (Vật dụng) hoặc Tử Tôn (Thú cưng)', kỵ: 'Quan Quỷ (Trộm cướp)' },
-        'thai sản': { deity: 'Tử Tôn (Thai nhi)', kỵ: 'Phụ Mẫu (Khắc Tử Tôn)' },
-        'ông bà cha mẹ': { deity: 'Phụ Mẫu (Cha mẹ)', kỵ: 'Thê Tài' },
-        'con cháu': { deity: 'Tử Tôn (Con cháu)', kỵ: 'Phụ Mẫu' },
-        'anh em': { deity: 'Huynh Đệ (Anh em)', kỵ: 'Quan Quỷ' }
-    };
-    return map[topic] || { deity: 'Thế Hào (Chính mình)', kỵ: 'Hào khắc dụng thần' };
 }
 
 function getFallbackHex(hex_id) {
