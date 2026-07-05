@@ -33,6 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('current-date-time').value = now.toISOString().slice(0, 16);
 
+        // Thiết lập câu hỏi mặc định lần đầu theo chủ đề được chọn
+        const activeQs = getActiveQuestions();
+        if (questionText) {
+            questionText.innerText = activeQs[0];
+        }
+
         // Khởi động đồng hồ thời gian thực
         updateClock();
         liveClockTimer = setInterval(updateClock, 1000);
@@ -49,14 +55,164 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 3. LUỒNG CÂU HỎI VÀ GIEO QUẺ
     // -------------------------------------------------------------------------
-    const questions = [
-        "Câu 1: Vấn đề này của bạn hay bạn đang thay mặt người khác để hỏi?",
-        "Câu 2: Bạn là Nam hay Nữ?",
-        "Câu 3: Bạn sinh năm bao nhiêu (năm sinh âm/dương lịch)?",
-        "Câu 4: Mô tả sơ lược vấn đề bạn đang quan tâm là gì?",
-        "Câu 5: Hiện tại bạn đang ở tỉnh/thành phố nào?",
-        "Câu 6: Bạn mong muốn thật tâm đạt được điều gì nhất ở vấn đề này?"
-    ];
+    const TOPIC_QUESTIONS = {
+        'công việc': [
+            "Câu 1: Bạn đang tìm việc hay đang có công việc?",
+            "Câu 2: Công việc của bạn thuộc lĩnh vực gì?",
+            "Câu 3: Khó khăn thường gặp của bạn là gì?",
+            "Câu 4: Lợi thế của bạn là gì?",
+            "Câu 5: Bạn bao nhiêu tuổi?",
+            "Câu 6: Mong muốn hiện tại của bạn là gì?"
+        ],
+        'thi cử': [
+            "Câu 1: Hãy chắc chắn bạn đang tĩnh tâm.",
+            "Câu 2: Mô tả lợi thế của bạn.",
+            "Câu 3: Mô tả khó khăn của bạn.",
+            "Câu 4: Mô tả nguyện vọng của bạn.",
+            "Câu 5: Mô tả lĩnh vực bạn yêu thích.",
+            "Câu 6: Mô tả chi tiết câu hỏi của bạn."
+        ],
+        'tình yêu': [
+            "Câu 1: Bạn đang có người yêu hay đang độc thân?",
+            "Câu 2: Bạn sinh năm bao nhiêu?",
+            "Câu 3: Bạn từng kết hôn chưa?",
+            "Câu 4: Bạn có con chưa?",
+            "Câu 5: Rào cản lớn nhất hiện tại là gì?",
+            "Câu 6: Mô tả chi tiết câu hỏi và điều bạn muốn biết."
+        ],
+        'hôn nhân': [
+            "Câu 1: Bạn đang muốn kết hôn hay ly hôn?",
+            "Câu 2: Bạn sinh năm bao nhiêu?",
+            "Câu 3: Hôn phối sinh năm bao nhiêu?",
+            "Câu 4: Hai bạn cùng quê hay xa quê?",
+            "Câu 5: Điều gì hiện tại khiến bạn trăn trở?",
+            "Câu 6: Mô tả chi tiết câu hỏi và điều muốn biết."
+        ],
+        'sức khỏe': [
+            "Câu 1: Mục này là xem vấn đề của bạn, nếu xem cho người thân hãy chọn chủ đề khác tương ứng.",
+            "Câu 2: Xác nhận rằng QUẺ chỉ tham khảo, không thay thế quyết định y tế.",
+            "Câu 3: Bạn bao nhiêu tuổi? đã đi khám chưa?",
+            "Câu 4: Bác sĩ nói tình trạng thế nào?",
+            "Câu 5: Mô tả các dấu hiệu sức khỏe của bạn.",
+            "Câu 6: Chi tiết câu hỏi và điều muốn biết."
+        ],
+        'kinh doanh': [
+            "Câu 1: Bạn kinh doanh 1 mình hay hợp tác?",
+            "Câu 2: Vốn bạn tích lũy hay vay?",
+            "Câu 3: Đây là ý tưởng thôi hay đã triển khai?",
+            "Câu 4: Bạn kinh doanh online hay cửa hàng?",
+            "Câu 5: Bạn kinh doanh sản phẩm gì?",
+            "Câu 6: Mô tả chi tiết câu hỏi và điều muốn biết."
+        ],
+        'dự án': [
+            "Câu 1: Bạn đầu tư 1 mình hay hợp tác?",
+            "Câu 2: Lĩnh vực cụ thể là gì?",
+            "Câu 3: Khó khăn hiện tại là gì?",
+            "Câu 4: Lợi thế hiện tại là gì?",
+            "Câu 5: Dự án đã triển khai chưa?",
+            "Câu 6: Mô tả chi tiết câu hỏi và điều muốn biết."
+        ],
+        'phong thủy': [
+            "Câu 1: Bạn xem nhà hay cửa hàng?",
+            "Câu 2: Nhà này của bạn hay thuê lại?",
+            "Câu 3: Nhà mặt tiền hay hẻm sâu?",
+            "Câu 4: Kiến trúc cao tầng, chung cư hay trệt?",
+            "Câu 5: Bạn ở tỉnh/thành nào?",
+            "Câu 6: Mô tả chi tiết câu hỏi và điều mong muốn cải thiện."
+        ],
+        'kiện tụng': [
+            "Câu 1: Bạn bị kiện hay bạn chủ động kiện?",
+            "Câu 2: Tranh chấp dân sự hay hình sự?",
+            "Câu 3: Đã giam giữ hay đang triệu tập?",
+            "Câu 4: Bạn có thuê luật sư chưa?",
+            "Câu 5: Mô tả chi tiết câu hỏi và điều muốn biết.",
+            "Câu 6: QUẺ tham khảo và không thay thế quyết định của tòa bạn nhé."
+        ],
+        'tìm kiếm': [
+            "Câu 1: Người/vật mất bao lâu rồi?",
+            "Câu 2: Bạn ở nhà riêng hay ở trọ nơi xa?",
+            "Câu 3: Người thất lạc bao nhiêu tuổi/ vật bị mất là gì?",
+            "Câu 4: Bạn đã tìm hay đã trình báo chưa?",
+            "Câu 5: Mô tả chi tiết tình trạng và mong muốn.",
+            "Câu 6: QUẺ chỉ xác định phương hướng và cát hung, không định vị cụ thể."
+        ],
+        'thai sản': [
+            "Câu 1: Bạn đang mang thai hay đang thả bầu?",
+            "Câu 2: Bạn đã khám chuyên khoa chưa?",
+            "Câu 3: Bạn có bệnh lý nào nghiêm trọng không?",
+            "Câu 4: Bạn từng có em bé chưa?",
+            "Câu 5: Mô tả chi tiết vấn đề và mong muốn.",
+            "Câu 6: QUẺ chỉ tham khảo, không thay thế quyết định y tế."
+        ],
+        'ông bà cha mẹ': [
+            "Câu 1: Người này là vai vế gì với bạn?",
+            "Câu 2: Người này bao nhiêu tuổi?",
+            "Câu 3: Mô tả tình trạng hiện tại.",
+            "Câu 4: Khó khăn hiện tại là gì?",
+            "Câu 5: Mô tả chi tiết câu hỏi và mong muốn.",
+            "Câu 6: Quẻ chỉ mang tính chất tham khảo, không có giá trị pháp luật hoặc y tế."
+        ],
+        'con cháu': [
+            "Câu 1: Người này là vai vế gì với bạn?",
+            "Câu 2: Người này bao nhiêu tuổi?",
+            "Câu 3: Mô tả tình trạng hiện tại.",
+            "Câu 4: Khó khăn hiện tại là gì?",
+            "Câu 5: Mô tả chi tiết câu hỏi và mong muốn.",
+            "Câu 6: Quẻ chỉ mang tính chất tham khảo, không có giá trị pháp luật hoặc y tế."
+        ],
+        'anh em': [
+            "Câu 1: Người này là vai vế gì với bạn?",
+            "Câu 2: Người này bao nhiêu tuổi?",
+            "Câu 3: Mô tả tình trạng hiện tại.",
+            "Câu 4: Khó khăn hiện tại là gì?",
+            "Câu 5: Mô tả chi tiết câu hỏi và mong muốn.",
+            "Câu 6: Quẻ chỉ mang tính chất tham khảo, không có giá trị pháp luật hoặc y tế."
+        ],
+        'xem thay mặt chồng': [
+            "Câu 1: Người này là vai vế gì với bạn?",
+            "Câu 2: Người này bao nhiêu tuổi?",
+            "Câu 3: Mô tả tình trạng hiện tại.",
+            "Câu 4: Khó khăn hiện tại là gì?",
+            "Câu 5: Mô tả chi tiết câu hỏi và mong muốn.",
+            "Câu 6: Quẻ chỉ mang tính chất tham khảo, không có giá trị pháp luật hoặc y tế."
+        ],
+        'xem thay mặt vợ': [
+            "Câu 1: Người này là vai vế gì với bạn?",
+            "Câu 2: Người này bao nhiêu tuổi?",
+            "Câu 3: Mô tả tình trạng hiện tại.",
+            "Câu 4: Khó khăn hiện tại là gì?",
+            "Câu 5: Mô tả chi tiết câu hỏi và mong muốn.",
+            "Câu 6: Quẻ chỉ mang tính chất tham khảo, không có giá trị pháp luật hoặc y tế."
+        ]
+    };
+
+    function getActiveQuestions() {
+        const topicSelect = document.getElementById('topic-select');
+        const selectedTopic = topicSelect ? topicSelect.value : 'công việc';
+        return TOPIC_QUESTIONS[selectedTopic] || TOPIC_QUESTIONS['công việc'];
+    }
+
+    // Thiết lập listener tự động đổi câu hỏi trên giao diện khi chọn lại chủ đề
+    document.getElementById('topic-select').addEventListener('change', () => {
+        currentStep = 0;
+        userAnswers = [];
+        const activeQs = getActiveQuestions();
+        if (questionText) {
+            questionText.innerText = activeQs[0];
+        }
+        if (progressText) {
+            progressText.innerText = `Lần gieo: 1/6`;
+        }
+        if (progressFill) {
+            progressFill.style.width = `0%`;
+        }
+        if (questionForm) {
+            questionForm.classList.remove('hidden');
+        }
+        if (finishContainer) {
+            finishContainer.classList.add('hidden');
+        }
+    });
 
     let currentStep = 0;
     let userAnswers = [];
@@ -97,7 +253,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentStep < 6) {
                 progressText.innerText = `Lần gieo: ${currentStep + 1}/6`;
-                questionText.innerText = questions[currentStep];
+                const activeQs = getActiveQuestions();
+                questionText.innerText = activeQs[currentStep];
                 questionInput.focus();
             } else {
                 // Ẩn form nhập và hiện nút hoàn tất
