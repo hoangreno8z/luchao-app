@@ -1,0 +1,233 @@
+[
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Công việc ban đầu tưởng tốt nhưng về sau bị nhân viên cấp dưới hoặc đồng nghiệp cản trở, dẫn đến đổ vỡ thất bại hoàn toàn"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "huynh_de",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Hợp đồng hoặc thu nhập tưởng chắc chắn nhưng bị đồng nghiệp tranh giành hoặc chi phí ăn hết lợi nhuận"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Hợp đồng ký xong lại trở thành gánh nặng áp lực, điều khoản bất lợi bộc lộ sau khi đã cam kết"
+  },
+  {
+    "luc_than_goc": "huynh_de",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Đồng nghiệp hợp tác lúc đầu tốt đẹp nhưng về sau tạo ra ràng buộc, thủ tục phức tạp khó thoát ra"
+  },
+  {
+    "luc_than_goc": "tu_ton",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Kế hoạch nghỉ ngơi hay dự án sáng tạo tự do lại dẫn đến áp lực mới và trách nhiệm nặng nề hơn"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Áp lực công việc nặng nề lúc đầu nhưng tạo ra hợp đồng quý giá và kiến thức vững chắc về lâu dài"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Thu nhập có vẻ giảm ban đầu nhưng mang lại sự ổn định và phúc lợi lâu dài cho bản thân và đội nhóm"
+  },
+  {
+    "luc_than_goc": "huynh_de",
+    "luc_than_bien": "the_tai",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Tranh chấp với đồng nghiệp lúc đầu căng thẳng nhưng cuối cùng lại sinh ra lợi ích và tài nguyên mới"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Thủ tục giấy tờ lúc đầu phức tạp nhưng hoàn thiện xong tạo nền tảng vững chắc, giảm rủi ro lâu dài"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "the_tai",
+    "huong_bien": "hoa_tien",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Thu nhập và cơ hội tài chính ngày càng tăng trưởng, đang trên đà đi lên mạnh mẽ"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoa_tien",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Vị trí và quyền lực ngày càng được củng cố, thăng tiến đang trên đà tăng tốc rõ rệt"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoa_tien",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Dự án và hợp đồng ngày càng trưởng thành, mọi thủ tục đang đi đúng hướng và tiến triển tốt"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "the_tai",
+    "huong_bien": "hoa_thoai",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Thu nhập và cơ hội dần co lại, cần điều chỉnh chiến lược trước khi tình hình tệ hơn"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoa_thoai",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Quyền lực và ảnh hưởng đang suy giảm dần, vị trí không còn vững chắc như trước"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoa_thoai",
+    "chu_de": "cong_viec",
+    "mo_ta_bien": "Hợp đồng hoặc dự án đang mất đà, cần xem lại toàn bộ kế hoạch và điều kiện thực hiện"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "tinh_yeu",
+    "mo_ta_bien": "Người yêu ban đầu cuốn hút mạnh nhưng về sau bị con cái hoặc người thân đối phương can thiệp gây chia rẽ"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "huynh_de",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "tinh_yeu",
+    "mo_ta_bien": "Tình cảm ban đầu nồng ấm nhưng người thứ ba xuất hiện hoặc bạn bè can thiệp phá vỡ mối quan hệ"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "tinh_yeu",
+    "mo_ta_bien": "Tình cảm ban đầu có nhiều ràng buộc nhưng cuối cùng dẫn đến hôn nhân chính thức được gia đình chấp thuận"
+  },
+  {
+    "luc_than_goc": "tu_ton",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "tinh_yeu",
+    "mo_ta_bien": "Mối quan hệ nhẹ nhàng thoải mái lúc đầu bỗng trở nên ràng buộc và áp lực, dễ gây ngột ngạt"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "tinh_yeu",
+    "mo_ta_bien": "Tình cảm bắt đầu từ mục đích vật chất nhưng dần dần trở nên thuần khiết, hạnh phúc thực sự"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "huynh_de",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "kinh_doanh",
+    "mo_ta_bien": "Doanh thu ban đầu tưởng tốt nhưng đối thủ hoặc chi phí phát sinh ăn hết lợi nhuận, thực sự thua lỗ"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "kinh_doanh",
+    "mo_ta_bien": "Vốn vay hoặc đầu tư ban đầu trở thành gánh nặng pháp lý và áp lực tài chính, nguy cơ vỡ nợ"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "kinh_doanh",
+    "mo_ta_bien": "Doanh thu giảm giai đoạn đầu nhưng đang xây dựng đội ngũ tốt và nền tảng vững cho tương lai"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "kinh_doanh",
+    "mo_ta_bien": "Vượt qua rào cản pháp lý khó khăn lúc đầu giúp doanh nghiệp vận hành bền vững hơn về sau"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "suc_khoe",
+    "mo_ta_bien": "Bệnh tình tưởng thuyên giảm nhưng thuốc không phù hợp gây phản ứng phụ hoặc bệnh khác phát sinh"
+  },
+  {
+    "luc_than_goc": "tu_ton",
+    "luc_than_bien": "quan_quy",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "suc_khoe",
+    "mo_ta_bien": "Phương pháp điều trị ban đầu có vẻ ổn nhưng về sau gây biến chứng mới nghiêm trọng hơn"
+  },
+  {
+    "luc_than_goc": "quan_quy",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "suc_khoe",
+    "mo_ta_bien": "Bệnh tình phức tạp nhưng tìm được đúng bác sĩ và phác đồ, dần dần hồi phục theo đúng kế hoạch"
+  },
+  {
+    "luc_than_goc": "tu_ton",
+    "luc_than_bien": "phu_mau",
+    "huong_bien": "hoa_tien",
+    "chu_de": "suc_khoe",
+    "mo_ta_bien": "Sức khỏe đang phục hồi tốt từng ngày, thuốc và chế độ dinh dưỡng đang phát huy hiệu quả rõ ràng"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "huynh_de",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "chung_khoan",
+    "mo_ta_bien": "Cổ phiếu tăng đẹp lúc đầu nhưng sau đó bị xả hàng mạnh, lãi chưa kịp chốt đã hóa thành thua lỗ"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "chung_khoan",
+    "mo_ta_bien": "Giai đoạn điều chỉnh ngắn hạn nhưng đây là cơ hội gom hàng tốt, về lâu dài cổ phiếu sẽ tăng bền vững"
+  },
+  {
+    "luc_than_goc": "huynh_de",
+    "luc_than_bien": "the_tai",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "chung_khoan",
+    "mo_ta_bien": "Sau giai đoạn bán tháo và mất mát, thị trường đảo chiều và sinh lời bất ngờ cho những ai giữ vị thế"
+  },
+  {
+    "luc_than_goc": "the_tai",
+    "luc_than_bien": "huynh_de",
+    "huong_bien": "hoi_dau_khac",
+    "chu_de": "bat_dong_san",
+    "mo_ta_bien": "BĐS tưởng có lời nhưng chi phí phát sinh và tranh chấp ăn hết giá trị, cuối cùng thua lỗ nặng"
+  },
+  {
+    "luc_than_goc": "phu_mau",
+    "luc_than_bien": "tu_ton",
+    "huong_bien": "hoi_dau_sinh",
+    "chu_de": "bat_dong_san",
+    "mo_ta_bien": "Thủ tục pháp lý phức tạp ban đầu nhưng sau khi hoàn thiện, tài sản sinh lời ổn định và an toàn"
+  }
+]

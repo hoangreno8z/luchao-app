@@ -22,9 +22,21 @@ try {
     const workTemplate = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'templates', 'work.json'), 'utf8'));
     const loveTemplate = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'templates', 'love.json'), 'utf8'));
 
+    // Load các file tri thức Lục Hào mới trích xuất
+    const hexagrams = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'hexagrams.json'), 'utf8'));
+    const lines = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'lines.json'), 'utf8'));
+    const tuong_co_ban = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'tuong_co_ban.json'), 'utf8'));
+    const tuong_da_tang = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'tuong_da_tang.json'), 'utf8'));
+    const tuong_dong_bien = JSON.parse(fs.readFileSync(path.join(knowledgeDir, 'tuong_dong_bien.json'), 'utf8'));
+
     const compiledData = {
         ontology: { deities, beasts },
         rules: rules,
+        hexagrams: hexagrams,
+        lines: lines,
+        tuong_co_ban: tuong_co_ban,
+        tuong_da_tang: tuong_da_tang,
+        tuong_dong_bien: tuong_dong_bien,
         templates: {
             'công việc': workTemplate,
             'thi cử': workTemplate,

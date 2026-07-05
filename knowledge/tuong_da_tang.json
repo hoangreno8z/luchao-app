@@ -1,0 +1,380 @@
+[
+  {
+    "hao_vi": 1,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Cơ hội tài chính mới xuất hiện ngay ở giai đoạn khởi đầu, rất thuận lợi để nhận dự án hoặc ký hợp đồng"
+  },
+  {
+    "hao_vi": 1,
+    "luc_than": "huynh_de",
+    "luc_thu": "chu_tuoc",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Nội bộ xảy ra tranh cãi lúc mới bắt đầu, đồng nghiệp cạnh tranh hoặc lan truyền tin không tốt về bạn"
+  },
+  {
+    "hao_vi": 1,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "tuan_khong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Sếp hoặc áp lực cấp trên chưa thực sự hiện hữu, đây là lo lắng ảo, chưa có nguy cơ thực sự"
+  },
+  {
+    "hao_vi": 2,
+    "luc_than": "phu_mau",
+    "luc_thu": "cau_tran",
+    "than_sat": null,
+    "trang_thai": "tuan_khong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Hợp đồng hoặc giấy tờ còn vướng mắc thủ tục, hiện tại chưa có hiệu lực hoặc chưa được duyệt"
+  },
+  {
+    "hao_vi": 2,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Năng lực tài chính bản thân đang tốt, thu nhập tăng trưởng, nhận được khen thưởng xứng đáng"
+  },
+  {
+    "hao_vi": 2,
+    "luc_than": "huynh_de",
+    "luc_thu": "huyen_vu",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Có người âm thầm phá hoại từ bên trong nội bộ, cẩn thận bị mạo danh hoặc lấy cắp thông tin"
+  },
+  {
+    "hao_vi": 3,
+    "luc_than": "quan_quy",
+    "luc_thu": "chu_tuoc",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Áp lực cấp trên tăng mạnh, tranh cãi và thách thức trực tiếp, điểm bùng phát xung đột công việc"
+  },
+  {
+    "hao_vi": 3,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Lo lắng cực độ về vị trí công việc, áp lực tâm lý tích tụ lâu bùng phát, giai đoạn rất căng thẳng"
+  },
+  {
+    "hao_vi": 3,
+    "luc_than": "quan_quy",
+    "luc_thu": "chu_tuoc",
+    "than_sat": null,
+    "trang_thai": "tuan_khong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Tranh chấp với cấp trên hiện tại còn là không trung, mâu thuẫn chưa bùng phát — hãy chủ động hóa giải"
+  },
+  {
+    "hao_vi": 3,
+    "luc_than": "huynh_de",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Đồng nghiệp hoặc đối thủ hành động quyết liệt gây tổn hại trực tiếp, thậm chí có thể mất việc"
+  },
+  {
+    "hao_vi": 4,
+    "luc_than": "quan_quy",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Cơ hội thăng tiến cụ thể từ cấp trên hoặc đối tác quan trọng bên ngoài, lời đề nghị có giá trị"
+  },
+  {
+    "hao_vi": 4,
+    "luc_than": "phu_mau",
+    "luc_thu": "cau_tran",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Dự án bị kéo dài hoặc quy trình phê duyệt chậm, cần kiên nhẫn chờ đợi thủ tục bên ngoài"
+  },
+  {
+    "hao_vi": 4,
+    "luc_than": "the_tai",
+    "luc_thu": "huyen_vu",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Khách hàng hoặc đối tác bên ngoài không minh bạch, có thể xảy ra gian lận hoặc trốn tránh thanh toán"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Vị trí quản lý cấp cao đang chịu áp lực tinh thần cực lớn, quyết sách khó khăn, hoặc hệ thống gặp lỗi bất ngờ"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "quan_quy",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Thăng tiến lên vị trí cao, được giao trọng trách, cấp trên tin tưởng và đề bạt chính thức"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "phu_mau",
+    "luc_thu": "chu_tuoc",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Văn bản chính sách quan trọng được ban hành, hợp đồng lớn cần thương thảo kỹ, trao đổi căng thẳng cấp cao"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "huynh_de",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Đối thủ hoặc đồng nghiệp ngang cấp ra đòn quyết định, có thể xảy ra tranh giành vị trí cấp cao"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "tuan_khong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Áp lực lãnh đạo hiện tại chỉ là lo sợ ảo, thực tế chưa có nguy cơ — tâm lý tự tạo áp lực không cần thiết"
+  },
+  {
+    "hao_vi": 6,
+    "luc_than": "phu_mau",
+    "luc_thu": "cau_tran",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Hợp đồng hoặc dự án đến giai đoạn cuối nhưng bị trì hoãn, kết thúc không đúng kế hoạch"
+  },
+  {
+    "hao_vi": 6,
+    "luc_than": "quan_quy",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Kết cục cực đoan, có thể là sa thải, nghỉ việc bắt buộc, sự cố nghiêm trọng khi dự án vào giai đoạn cuối"
+  },
+  {
+    "hao_vi": 6,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Phần thưởng và thành quả đến vào giai đoạn cuối chu kỳ, công sức được đền đáp xứng đáng"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "nhap_mo",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Cơ hội thăng tiến hoặc trọng trách bị giam hãm, bế tắc không tiến lên được dù đã cố gắng rất nhiều"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "nhap_mo",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Thu nhập hoặc tài nguyên bị đóng băng, tiền đến tay rồi lại bị giữ lại hoặc tốn hết không rõ nguyên nhân"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "nguyet_pha",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Hợp đồng hoặc kế hoạch bị phá vỡ hoàn toàn trong tháng này, không thể cứu vãn được"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "am_dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Sếp hoặc áp lực công việc sẽ bùng phát rất nhanh và bất ngờ, cần phản ứng ngay lập tức"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "am_dong",
+    "chu_de": "cong_viec",
+    "mo_ta_tuong": "Đồng nghiệp hoặc đối thủ sẽ bất ngờ hành động, không có thời gian chuẩn bị — phải đề phòng ngay"
+  },
+  {
+    "hao_vi": 3,
+    "luc_than": "huynh_de",
+    "luc_thu": "chu_tuoc",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "tinh_yeu",
+    "mo_ta_tuong": "Người thứ ba xuất hiện và gây ra tranh cãi công khai, mối quan hệ bị thử thách nghiêm trọng"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "tinh_yeu",
+    "mo_ta_tuong": "Cầu hôn hoặc xác nhận mối quan hệ chính thức từ đối phương, tin vui tình cảm ở cấp độ cao nhất"
+  },
+  {
+    "hao_vi": 5,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "tinh_yeu",
+    "mo_ta_tuong": "Người yêu (nữ hỏi) đang lo lắng ẩn giấu điều gì đó, tình cảm mơ hồ không chắc chắn"
+  },
+  {
+    "hao_vi": 2,
+    "luc_than": "the_tai",
+    "luc_thu": "huyen_vu",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "tinh_yeu",
+    "mo_ta_tuong": "Người yêu có bí mật riêng, âm thầm liên lạc với người khác, cần kiểm tra lại lòng chân thành"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "tuan_khong",
+    "chu_de": "tinh_yeu",
+    "mo_ta_tuong": "Người yêu/chồng hiện tại chưa xuất hiện trong cuộc sống thực, hoặc mối quan hệ đang ở trạng thái hư ảo"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "suc_khoe",
+    "mo_ta_tuong": "Bệnh tật phát nặng bất ngờ cần nhập viện hoặc phẫu thuật gấp, đây là dấu hiệu y tế khẩn cấp"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "tu_ton",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "suc_khoe",
+    "mo_ta_tuong": "Thuốc đúng, phác đồ hiệu quả, cơ thể hồi phục nhanh chóng, tinh thần tốt dần lên"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": "dang_xa",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "suc_khoe",
+    "mo_ta_tuong": "Bệnh không rõ nguyên nhân, khó chẩn đoán, cần làm thêm xét nghiệm chuyên sâu hoặc đổi bác sĩ"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "chung_khoan",
+    "mo_ta_tuong": "Cổ phiếu phá kháng cự, tạo đỉnh mới, tín hiệu mua vào rất mạnh, uptrend xác nhận rõ ràng"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "the_tai",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "chung_khoan",
+    "mo_ta_tuong": "Sell-off mạnh, cổ phiếu lao dốc nhanh, cần cắt lỗ ngay hoặc đứng ngoài thị trường"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "huynh_de",
+    "luc_thu": "huyen_vu",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "chung_khoan",
+    "mo_ta_tuong": "Thao túng giá, nhà đầu tư nhỏ lẻ bị bẫy vào để xả hàng, cẩn thận cổ phiếu làm giá ngầm"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "chung_khoan",
+    "mo_ta_tuong": "Cắt lỗ đúng lúc bảo vệ vốn, hoặc chốt lời hợp lý trước khi thị trường đảo chiều"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "the_tai",
+    "luc_thu": "thanh_long",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "bat_dong_san",
+    "mo_ta_tuong": "Cơ hội mua BĐS tốt xuất hiện, giá hợp lý, pháp lý sạch, thanh khoản tốt — nên hành động"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "phu_mau",
+    "luc_thu": "cau_tran",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "bat_dong_san",
+    "mo_ta_tuong": "Sổ đỏ hoặc hợp đồng công chứng đang bị kẹt thủ tục, cần thêm thời gian để hoàn thiện giấy tờ"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "quan_quy",
+    "luc_thu": "bach_ho",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "bat_dong_san",
+    "mo_ta_tuong": "Tranh chấp pháp lý nghiêm trọng, nguy cơ mất tiền đặt cọc hoặc bị thu hồi tài sản, cần luật sư ngay"
+  },
+  {
+    "hao_vi": null,
+    "luc_than": "huynh_de",
+    "luc_thu": "huyen_vu",
+    "than_sat": null,
+    "trang_thai": "dong",
+    "chu_de": "bat_dong_san",
+    "mo_ta_tuong": "Môi giới hoặc đối tác âm thầm gian lận, bán cùng lúc cho nhiều người, cần kiểm tra pháp lý độc lập"
+  }
+]

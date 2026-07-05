@@ -6,55 +6,7 @@
 import { runFullEngineAnalysis } from './luchao_engine.js';
 import { FALLBACK_HEXAGRAMS_DB } from './fallback_db.js';
 
-const COMPILED_KNOWLEDGE = {
-  templates: {
-    "công việc": {
-      scenarios: {
-        "CAT": {
-          summary: "Công việc vô cùng hanh thông, cơ hội thăng tiến rộng mở.",
-          detail: "Dụng thần Quan Quỷ vượng tướng và Hào Thế hưng vượng. Đây là thời cơ chín muồi để hành động, chuyển đổi công tác hoặc đảm nhận trọng trách mới.",
-          advice: "Hãy chủ động nắm bắt cơ hội, khiêm tốn học hỏi và quyết đoán thực thi kế hoạch."
-        },
-        "HUNG": {
-          summary: "Công việc gặp nhiều trắc trở, áp lực lớn, đề phòng rủi ro.",
-          detail: "Dụng thần bị tổn hại nặng (hồi đầu khắc, tuần không hoặc nguyệt phá). Điềm báo mưu sự bất thành, dễ có tranh chấp hao tài hoặc áp lực nặng nề từ cấp trên.",
-          advice: "Thời điểm này nên tĩnh không nên động. Tạm dừng dự án lớn, tránh tiểu nhân, củng cố nội lực."
-        },
-        "BINH": {
-          summary: "Công việc tiến thoái lưỡng nan, có cơ hội nhưng bản thân mệt mỏi.",
-          detail: "Tình trạng Dụng vượng Thế suy. Cơ hội có nhưng bản thân chưa đủ lực hoặc đang stress nên chưa gánh vác được.",
-          advice: "Bồi bổ sức khỏe, phân bổ công việc hợp lý, không ôm đồm quá nhiều việc một lúc."
-        }
-      }
-    },
-    "tình yêu": {
-      scenarios: {
-        "CAT": {
-          summary: "Tình duyên tốt đẹp, tình cảm thăng hoa ngọt ngào.",
-          detail: "Sự cảm ứng sâu sắc giữa Thế và Dụng thần. Hai bên thấu hiểu nhau, gia đình ủng hộ, tiến tới hôn nhân viên mãn.",
-          advice: "Trân trọng nhân duyên, chia sẻ chân thành để thắt chặt gắn kết."
-        },
-        "HUNG": {
-          summary: "Tình duyên bất hòa, đề phòng rạn nứt hoặc chia rẽ.",
-          detail: "Kỵ thần Huynh Đệ phát động khắc chế Dụng thần, hoặc hào Thế biến suy bại. Dễ hiểu lầm, cãi vã hoặc có người phá hoại.",
-          advice: "Bình tĩnh lắng nghe, kiềm chế cái tôi, tránh quyết định vội vã lúc giận."
-        },
-        "BINH": {
-          summary: "Tình duyên bình lặng, chưa có đột phá rõ rệt.",
-          detail: "Dụng vượng Thế suy. Tình cảm vẫn còn nhưng có khoảng cách địa lý hoặc tâm lý chưa sẵn sàng.",
-          advice: "Tạo cơ hội gặp gỡ chia sẻ nhiều hơn, đừng để im lặng kéo dài tạo khoảng cách."
-        }
-      }
-    }
-  }
-};
-
-COMPILED_KNOWLEDGE.templates['thi cử'] = COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['kinh doanh'] = COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['dự án'] = COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['hôn nhân'] = COMPILED_KNOWLEDGE.templates['tình yêu'];
-COMPILED_KNOWLEDGE.templates['sức khỏe'] = COMPILED_KNOWLEDGE.templates['công việc'];
-COMPILED_KNOWLEDGE.templates['tìm kiếm'] = COMPILED_KNOWLEDGE.templates['công việc'];
+import { COMPILED_KNOWLEDGE } from './compiled_knowledge.js';
 
 const FALLBACK_TEXTS = {
     'THE_TRI_QUAN_QUY': 'Thế trì Quan Quỷ: Điềm báo người hỏi tâm lý đang lo âu, stress cực lớn hoặc thân thể có bệnh tật âm ỉ chưa giải tỏa được. Trong công việc chủ về gánh vác nhiều trách nhiệm nặng nề.',
@@ -247,34 +199,60 @@ export default async function handler(req, res) {
         }
     }
 
-    // fallback local data
-    const fallbackMain = getFallbackHex(parseInt(hex_id));
-    const fallbackChanged = changed_id ? getFallbackHex(parseInt(changed_id)) : null;
+    // ===========================================================================
+    // ĐỌC DỮ LIỆU TỪ TRI THỨC ĐÓNG GÓI TRÊN RAM (LOCAL HYBRID INFERENCE)
+    // ===========================================================================
+    const localMainHex = COMPILED_KNOWLEDGE.hexagrams?.find(h => h.id === parseInt(hex_id)) || getFallbackHex(parseInt(hex_id));
+    const localChangedHex = changed_id ? (COMPILED_KNOWLEDGE.hexagrams?.find(h => h.id === parseInt(changed_id)) || getFallbackHex(parseInt(changed_id))) : null;
 
-    const mainName = dbMainHex?.name || fallbackMain.name;
-    const palaceName = dbMainHex?.palace || fallbackMain.palace;
-    const vietnameseMeaning = dbMainHex?.vietnamese_meaning || fallbackMain.meaning;
-    const overallMeaning = dbMainHex?.overall_meaning || fallbackMain.overall;
+    const mainName = dbMainHex?.name || localMainHex.name;
+    const palaceName = dbMainHex?.palace || localMainHex.palace;
+    const vietnameseMeaning = dbMainHex?.vietnamese_meaning || localMainHex.vietnamese_meaning || localMainHex.name;
+    const overallMeaning = dbMainHex?.overall_meaning || localMainHex.overall_meaning || localMainHex.overall;
 
     let topicMeaning = overallMeaning;
-    if (['công việc', 'thi cử'].includes(topic)) topicMeaning = dbMainHex?.career_meaning || fallbackMain.overall;
-    else if (['tình yêu', 'hôn nhân'].includes(topic)) topicMeaning = dbMainHex?.love_meaning || fallbackMain.overall;
-    else if (topic === 'sức khỏe') topicMeaning = dbMainHex?.health_meaning || fallbackMain.overall;
-    else if (['kinh doanh', 'dự án'].includes(topic)) topicMeaning = dbMainHex?.wealth_meaning || fallbackMain.overall;
+    const cleanTopic = topic.trim();
+    if (['công việc', 'thi cử'].includes(cleanTopic)) {
+        topicMeaning = dbMainHex?.career_meaning || localMainHex.career_meaning || overallMeaning;
+    } else if (['tình yêu', 'hôn nhân'].includes(cleanTopic)) {
+        topicMeaning = dbMainHex?.love_meaning || localMainHex.love_meaning || overallMeaning;
+    } else if (cleanTopic === 'sức khỏe') {
+        topicMeaning = dbMainHex?.health_meaning || localMainHex.health_meaning || overallMeaning;
+    } else if (['kinh doanh', 'dự án'].includes(cleanTopic)) {
+        topicMeaning = dbMainHex?.wealth_meaning || localMainHex.wealth_meaning || overallMeaning;
+    }
 
-    // Nếu Supabase không trả về Hào từ, lấy Hào từ từ fallback database để hiển thị đầy đủ
-    if (dbLines.length === 0 && fallbackMain.lines) {
-        dbLines = Object.keys(fallbackMain.lines).map(hKey => {
-            const hNum = parseInt(hKey);
-            // Lấy Lục Thân tương ứng từ hexData.linesData để hiển thị chính xác
-            const matchedLine = hexData?.linesData?.[hNum - 1];
-            return {
-                line_number: hNum,
-                relation: matchedLine?.relation || 'Hào ' + hNum,
-                meaning_static: fallbackMain.lines[hKey].static,
-                meaning_active: fallbackMain.lines[hKey].active
-            };
-        });
+    // Nếu Supabase không trả về Hào từ, lấy Hào từ từ tri thức đóng gói trong RAM (đầy đủ 384 hào từ chuẩn)
+    if (dbLines.length === 0) {
+        const localLines = COMPILED_KNOWLEDGE.lines?.filter(l => l.hexagram_id === parseInt(hex_id)) || [];
+        if (localLines.length > 0) {
+            dbLines = localLines.map(l => {
+                const matchedLine = hexData?.linesData?.[l.line_number - 1];
+                return {
+                    line_number: l.line_number,
+                    relation: matchedLine?.relation || l.relation || 'Hào ' + l.line_number,
+                    meaning_static: l.meaning_static,
+                    meaning_active: l.meaning_active
+                };
+            });
+        }
+    }
+
+    // Nếu vẫn trống hào từ (fallback dự phòng cấp 3)
+    if (dbLines.length === 0) {
+        const fbMain = getFallbackHex(parseInt(hex_id));
+        if (fbMain && fbMain.lines) {
+            dbLines = Object.keys(fbMain.lines).map(hKey => {
+                const hNum = parseInt(hKey);
+                const matchedLine = hexData?.linesData?.[hNum - 1];
+                return {
+                    line_number: hNum,
+                    relation: matchedLine?.relation || 'Hào ' + hNum,
+                    meaning_static: fbMain.lines[hKey].static,
+                    meaning_active: fbMain.lines[hKey].active
+                };
+            });
+        }
     }
 
     // ===========================================================================
@@ -284,11 +262,20 @@ export default async function handler(req, res) {
     const analysisTextsList = [];
     const processedCodes = new Set();
 
-    // Chuẩn hóa biến DB thành mảng an toàn
-    const safeSemanticTexts = Array.isArray(dbSemanticTexts) ? dbSemanticTexts : [];
-    const safeTuongDaTang = Array.isArray(dbTuongDaTang) ? dbTuongDaTang : [];
-    const safeTuongDongBien = Array.isArray(dbTuongDongBien) ? dbTuongDongBien : [];
-    const safeTuongCoBan = Array.isArray(dbTuongCoBan) ? dbTuongCoBan : [];
+    // Chuẩn hóa biến DB thành mảng an toàn (Ưu tiên DB online, tự động fallback sang RAM local đóng gói nếu lỗi)
+    const safeSemanticTexts = (Array.isArray(dbSemanticTexts) && dbSemanticTexts.length > 0) ? dbSemanticTexts : [];
+    
+    const safeTuongDaTang = (Array.isArray(dbTuongDaTang) && dbTuongDaTang.length > 0) 
+        ? dbTuongDaTang 
+        : (COMPILED_KNOWLEDGE.tuong_da_tang || []);
+        
+    const safeTuongDongBien = (Array.isArray(dbTuongDongBien) && dbTuongDongBien.length > 0) 
+        ? dbTuongDongBien 
+        : (COMPILED_KNOWLEDGE.tuong_dong_bien || []);
+        
+    const safeTuongCoBan = (Array.isArray(dbTuongCoBan) && dbTuongCoBan.length > 0) 
+        ? dbTuongCoBan 
+        : (COMPILED_KNOWLEDGE.tuong_co_ban || []);
 
     // LỚP 1: semantic_texts cũ (backward compat, ưu tiên cao nhất)
     safeSemanticTexts.forEach(row => {
@@ -582,11 +569,11 @@ ${scenarioText.advice || 'Tùy thời hành sự, giữ vững chính đạo.'}
         success: true,
         source: dbMainHex ? 'supabase' : 'local_fallback',
         main: { name: mainName, palace: palaceName, vietnamese_meaning: vietnameseMeaning, overall_meaning: overallMeaning, topic_meaning: topicMeaning },
-        changed: fallbackChanged ? {
-            name: dbChangedHex?.name || fallbackChanged.name,
-            palace: dbChangedHex?.palace || fallbackChanged.palace,
-            vietnamese_meaning: dbChangedHex?.vietnamese_meaning || fallbackChanged.meaning,
-            overall_meaning: dbChangedHex?.overall_meaning || fallbackChanged.overall
+        changed: localChangedHex ? {
+            name: dbChangedHex?.name || localChangedHex.name,
+            palace: dbChangedHex?.palace || localChangedHex.palace,
+            vietnamese_meaning: dbChangedHex?.vietnamese_meaning || localChangedHex.vietnamese_meaning || localChangedHex.name,
+            overall_meaning: dbChangedHex?.overall_meaning || localChangedHex.overall_meaning || localChangedHex.overall
         } : null,
         lines: dbLines.length > 0 ? dbLines.map(l => ({ line_number: l.line_number, relation: l.relation, meaning_static: l.meaning_static, meaning_active: l.meaning_active }))
             : [{ line_number: 1, relation: 'Tử Tôn', meaning_static: 'Tích lũy nội lực.', meaning_active: 'Giải vây khó khăn.' }],

@@ -1,0 +1,296 @@
+[
+  {
+    "chu_de": "cong_viec",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "KPI, áp lực công việc, sếp/quản lý, cơ hội thăng tiến, chức vụ, cạnh tranh"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Hợp đồng, giấy tờ, quy trình, đào tạo, tài liệu, server hệ thống, quy định công ty"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Đồng nghiệp cùng cấp, đối thủ nội bộ, hao phí chi phí, tranh chấp nguồn lực"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Thu nhập, bonus, hoa hồng, khách hàng, tài nguyên dự án, ngân sách"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Nghỉ ngơi, giải tỏa áp lực, sáng tạo tự do, nhân viên cấp dưới, phúc lợi"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "thanh_long",
+    "y_nghia": "Tín hiệu tốt, cơ hội vàng, thăng chức rõ ràng, sếp ủng hộ, hợp đồng béo bở"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "chu_tuoc",
+    "y_nghia": "Email quan trọng, cuộc họp căng thẳng, tranh cãi quyết sách, tin đồn nội bộ"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "cau_tran",
+    "y_nghia": "Dự án bị trì hoãn, hành chính quan liêu, deadline kéo dài vô tận, thủ tục phức tạp"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "dang_xa",
+    "y_nghia": "Lo lắng mơ hồ về tương lai công việc, áp lực tâm lý không rõ nguồn gốc, dự án bí ẩn"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "bach_ho",
+    "y_nghia": "Tai nạn lao động, xung đột gay gắt, sa thải bất ngờ, áp lực đến mức burnout"
+  },
+  {
+    "chu_de": "cong_viec",
+    "luc_than": null,
+    "luc_thu": "huyen_vu",
+    "y_nghia": "Âm mưu nội bộ, đồng nghiệp phản bội, ăn cắp ý tưởng, thông tin bị rò rỉ"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "Người yêu/chồng (nữ hỏi), sức hút mạnh mẽ, sự chiếm hữu, áp lực tình cảm, ghen tuông"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Hôn ước, cam kết chính thức, cha mẹ can thiệp, điều kiện cưới hỏi, tổ chức lễ cưới"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Tình địch, người thứ ba, bạn bè can thiệp, tranh giành người yêu, hao tình cảm"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Người yêu/vợ (nam hỏi), vật chất trong tình yêu, quà tặng, đi du lịch cùng"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Niềm vui, hạnh phúc ngọt ngào, con cái, tình cảm nhẹ nhàng không ràng buộc"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": null,
+    "luc_thu": "thanh_long",
+    "y_nghia": "Tin vui tình cảm, cầu hôn thành công, mối quan hệ thăng hoa, hôn nhân vui vẻ"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": null,
+    "luc_thu": "dang_xa",
+    "y_nghia": "Mơ hồ trong tình cảm, không chắc chắn, hay lo âu vô cớ, tình cảm ảo"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": null,
+    "luc_thu": "bach_ho",
+    "y_nghia": "Chia tay đau đớn, cãi vã lớn, bạo lực lời nói, tổn thương sâu trong lòng"
+  },
+  {
+    "chu_de": "tinh_yeu",
+    "luc_than": null,
+    "luc_thu": "huyen_vu",
+    "y_nghia": "Bí mật trong tình yêu, tình ngoài hôn nhân, người yêu giấu giếm điều gì đó"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "Bệnh tật cụ thể, mầm bệnh, tai nạn, bác sĩ điều trị, phẫu thuật"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Đơn thuốc, hồ sơ bệnh án, chế độ ăn uống, nghỉ dưỡng theo chỉ dẫn"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Căng thẳng hao tổn thể lực, nhiễm trùng chéo, tranh chấp nguồn sinh lực"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Chi phí thuốc men bệnh viện, suy kiệt thể lực vì lao lực"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Thuốc men hiệu quả, sức đề kháng tốt, hồi phục nhanh, sức khỏe tốt"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": null,
+    "luc_thu": "bach_ho",
+    "y_nghia": "Xuất huyết, chấn thương nặng, phẫu thuật gấp, bệnh phát nhanh và nguy hiểm"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": null,
+    "luc_thu": "dang_xa",
+    "y_nghia": "Bệnh không rõ nguyên nhân, triệu chứng lạ, lo âu tâm lý, mất ngủ triền miên"
+  },
+  {
+    "chu_de": "suc_khoe",
+    "luc_than": null,
+    "luc_thu": "chu_tuoc",
+    "y_nghia": "Bệnh hô hấp, viêm họng, cần tư vấn chuyên gia y tế gấp"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "Cơ quan quản lý, giấy phép, thuế, đối thủ cạnh tranh, rào cản pháp lý"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Vốn vay, hợp đồng đối tác, giấy phép, kế hoạch kinh doanh, công nghệ nền tảng"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Đối thủ tranh thị phần, đối tác phản bội, chi phí vô hình, hao tổn tài lực"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Doanh thu, lợi nhuận, khách hàng chốt đơn, sản phẩm thành công, thị trường tiêu thụ"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Đội ngũ nhân viên trung thành, phúc lợi, giải quyết khủng hoảng, sáng kiến mới"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": null,
+    "luc_thu": "thanh_long",
+    "y_nghia": "Đối tác chiến lược uy tín, hợp đồng lớn thành công, thị trường mở rộng tốt"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": null,
+    "luc_thu": "bach_ho",
+    "y_nghia": "Phá sản rủi ro, kiện tụng thương mại, mất hợp đồng lớn, khủng hoảng nghiêm trọng"
+  },
+  {
+    "chu_de": "kinh_doanh",
+    "luc_than": null,
+    "luc_thu": "huyen_vu",
+    "y_nghia": "Gian lận hợp đồng, đối tác lừa đảo, tiền vốn biến mất, thao túng giá ngầm"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "Lực lượng thị trường lớn (big player), áp lực pháp lý, quy định UBCKNN, rủi ro hệ thống"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Báo cáo tài chính, tin tức cơ bản, chỉ số phân tích, dữ liệu nền"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Nhà đầu tư bán tháo, phí giao dịch hao tổn, đua lệnh thua lỗ, bẫy thanh khoản"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Cổ phiếu tăng giá, chốt lời thành công, tài sản sinh lời, margin hiệu quả"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Cắt lỗ đúng thời điểm, quản lý rủi ro tốt, tâm lý điềm tĩnh, chiến lược bảo vệ vốn"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": null,
+    "luc_thu": "bach_ho",
+    "y_nghia": "Sàn sập, sell-off mạnh, tin xấu bất ngờ, margin call, mất vốn nghiêm trọng"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": null,
+    "luc_thu": "thanh_long",
+    "y_nghia": "Phá kháng cự, uptrend rõ, cổ phiếu có sóng, mua vào đúng thời điểm vàng"
+  },
+  {
+    "chu_de": "chung_khoan",
+    "luc_than": null,
+    "luc_thu": "huyen_vu",
+    "y_nghia": "Thao túng giá, cổ phiếu lừa đảo, thông tin nội gián âm thầm, bơm xả không rõ"
+  },
+  {
+    "chu_de": "bat_dong_san",
+    "luc_than": "quan_quy",
+    "luc_thu": null,
+    "y_nghia": "Quy hoạch nhà nước, pháp lý đất đai, tranh chấp sở hữu, áp lực vay thế chấp"
+  },
+  {
+    "chu_de": "bat_dong_san",
+    "luc_than": "phu_mau",
+    "luc_thu": null,
+    "y_nghia": "Sổ đỏ/sổ hồng, hợp đồng mua bán, giấy phép xây dựng, quy hoạch 1/500"
+  },
+  {
+    "chu_de": "bat_dong_san",
+    "luc_than": "huynh_de",
+    "luc_thu": null,
+    "y_nghia": "Đối thủ tranh mua, môi giới phản bội, chi phí phát sinh ngoài dự toán"
+  },
+  {
+    "chu_de": "bat_dong_san",
+    "luc_than": "the_tai",
+    "luc_thu": null,
+    "y_nghia": "Giá trị tài sản tăng, chốt lời BĐS, cho thuê có lợi, thanh khoản tốt"
+  },
+  {
+    "chu_de": "bat_dong_san",
+    "luc_than": "tu_ton",
+    "luc_thu": null,
+    "y_nghia": "Mua để ở yên ổn, nơi an cư lạc nghiệp, cải tạo nội thất, bảo vệ tài sản"
+  }
+]
