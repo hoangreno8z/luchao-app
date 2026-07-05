@@ -402,6 +402,20 @@ export function aggregateMicroOverlap(enrichedLines, hexProperties) {
             if (line.isNguyetPha) singleCodes.push('THE_STATUS_NGUYET_PHA');
             if (line.isAmDong) singleCodes.push('THE_STATUS_AM_DONG');
             if (line.isMoDay || line.isMoMonth) singleCodes.push('THE_STATUS_MO');
+            
+            // Thế động sinh khắc động học
+            if (line.isMoving && line.changed) {
+                const mainHanh = line.hanh;
+                const changedHanh = line.changed.hanh;
+                if (KHAC_MAP[changedHanh] === mainHanh) {
+                    singleCodes.push('THE_STATUS_HOI_DAU_KHAC');
+                } else if (SINH_MAP[changedHanh] === mainHanh) {
+                    singleCodes.push('THE_STATUS_HOI_DAU_SINH');
+                }
+                if (line.changed.relation === 'Quan Quỷ') {
+                    singleCodes.push('THE_STATUS_HOA_QUY');
+                }
+            }
         }
 
         if (line.isYing) {
@@ -526,7 +540,9 @@ export function runFullEngineAnalysis(hexData, topic, gender) {
         'sức khỏe': 'Tử Tôn', 'kinh doanh': 'Thê Tài', 'dự án': 'Thê Tài',
         'tìm kiếm': 'Thê Tài', 'thai sản': 'Tử Tôn',
         'ông bà cha mẹ': 'Phụ Mẫu', 'con cháu': 'Tử Tôn',
-        'anh em': 'Huynh Đệ'
+        'anh em': 'Huynh Đệ',
+        'phong thủy': 'Thê Tài',
+        'kiện tụng': 'Quan Quỷ'
     };
     const targetRelation = deityMap[topic] || 'Quan Quỷ';
 

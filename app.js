@@ -70,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionForm = document.getElementById('question-flow-form');
     const finishContainer = document.getElementById('finish-container');
 
+    questionInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            questionSubmit.click();
+        }
+    });
+
     questionSubmit.addEventListener('click', (e) => {
         e.preventDefault();
         const ans = questionInput.value.trim();

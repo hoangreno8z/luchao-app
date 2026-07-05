@@ -8,6 +8,48 @@ import { FALLBACK_HEXAGRAMS_DB } from './fallback_db.js';
 
 import { COMPILED_KNOWLEDGE } from './compiled_knowledge.js';
 
+if (COMPILED_KNOWLEDGE && COMPILED_KNOWLEDGE.templates) {
+    COMPILED_KNOWLEDGE.templates['phong_thuy'] = {
+        scenarios: {
+            "CAT": {
+                summary: "Gia trạch cát tường, trạch vận sinh vượng phát đạt.",
+                detail: "Các hào vị trạch thế vượng tướng, đắc lực và không bị xung phá. Điềm báo nhà ở tụ khí tốt, mang lại sức khỏe, bình an và tài lộc dồi dào cho cả gia đình.",
+                advice: "Nên giữ gìn nhà cửa sạch sẽ, duy trì luồng sinh khí tự nhiên, có thể kích hoạt tài lộc bằng vật phẩm phong thủy thông quan."
+            },
+            "HUNG": {
+                summary: "Gia trạch gặp sát khí, phong thủy có điểm nứt vỡ hoặc xung khắc.",
+                detail: "Hào Trạch (Hào 2) hoặc hào Môn (Hào 3) bị Nguyệt Phá, Nhật Phá, hoặc tương khắc trực diện với hào Thế. Điềm báo gia đạo dễ bất hòa, người ở mệt mỏi, tài lộc thất thoát.",
+                advice: "Cần kiểm tra kỹ các vị trí bị xung phá trong nhà (bếp, cửa, mái nhà...) để sửa chữa hỏng hóc, dọn dẹp sạch sẽ và áp dụng vật phẩm thông quan hóa sát."
+            },
+            "BINH": {
+                summary: "Phong thủy trạch vận bình hòa, ít biến chuyển lớn.",
+                detail: "Các hào vị ở trạng thái cân bằng khí trường. Không có điểm xung phá lớn đe dọa nhưng cũng chưa tụ sinh khí mạnh để bứt phá tài lộc.",
+                advice: "Giữ nguyên trạng trạch thiết, dọn dẹp vệ sinh bếp núc định kỳ để duy trì dòng khí ổn định."
+            }
+        }
+    };
+
+    COMPILED_KNOWLEDGE.templates['kien_tung'] = {
+        scenarios: {
+            "CAT": {
+                summary: "Án tụng chiếm thế thượng phong, có điềm báo đắc lợi hoặc án nhẹ thoát hiểm.",
+                detail: "Hào Thế (Bản thân) vượng tướng đắc lực, Dụng Thần vượng. Trong án dân sự chủ về thắng kiện giành lợi thế lớn, trong án hình sự chủ về được khoan hồng, giảm nhẹ án hoặc tha bổng.",
+                advice: "Hãy tự tin đưa ra lập luận trước tòa, phối hợp chặt chẽ với luật sư để bảo vệ quyền lợi hợp pháp."
+            },
+            "HUNG": {
+                summary: "Án tụng bất lợi dữ dội, đề phòng thua kiện hoặc chịu án phạt nặng.",
+                detail: "Hào Thế suy bại lâm Tuần Không/Nhập Mộ hoặc bị Hồi đầu khắc. Đối với án dân sự chủ về hào Ứng (đối phương) quá mạnh đè nén dẫn đến thua cuộc. Đối với án hình sự chủ về gặp tình thế nguy hiểm, án phạt nặng nề.",
+                advice: "Tuyệt đối không manh động, tránh các hành vi vi phạm pháp luật thêm. Tìm kiếm sự trợ giúp pháp lý chính thống khẩn cấp."
+            },
+            "BINH": {
+                summary: "Tranh chấp kiện tụng ở thế giằng co, tiến thoái lưỡng nan.",
+                detail: "Thế và Ứng cân bằng lực lượng, hoặc Dụng thần vượng nhưng Thế suy. Vụ việc kéo dài chưa thể có phán quyết dứt điểm ngay lập tức.",
+                advice: "Chủ động đề xuất thương lượng, hòa giải đôi bên cùng có lợi để tránh tiêu hao tiền của vào kiện tụng kéo dài."
+            }
+        }
+    };
+}
+
 function getTopicAwareFallbackTexts(topicCode) {
     const isLove = ['tinh_yeu'].includes(topicCode);
     const isHealth = ['suc_khoe'].includes(topicCode);
@@ -97,7 +139,9 @@ export default async function handler(req, res) {
         'tình yêu': 'tinh_yeu',  'hôn nhân': 'tinh_yeu',
         'sức khỏe': 'suc_khoe',  'kinh doanh': 'kinh_doanh',
         'dự án': 'kinh_doanh',   'chứng khoán': 'chung_khoan',
-        'bất động sản': 'bat_dong_san'
+        'bất động sản': 'bat_dong_san',
+        'phong thủy': 'phong_thuy',
+        'kiện tụng': 'kien_tung'
     }[topic] || 'cong_viec';
 
     if (!hex_id) {
@@ -127,6 +171,29 @@ export default async function handler(req, res) {
         const targetIdx = NGU_HANH_LIST.indexOf(targetHanh);
         if (srcIdx === -1 || targetIdx === -1) return 0;
         return SHENG_KE_MATRIX[srcIdx][targetIdx];
+    };
+
+    const getHaoPowerState = (hanh, nguyetLenhStr) => {
+        const nguyetChi = (nguyetLenhStr || '').split(' - ')[0].trim();
+        const chiToHanh = {
+            'Dần': 'Mộc', 'Mão': 'Mộc',
+            'Tỵ': 'Hỏa', 'Ngọ': 'Hỏa',
+            'Thân': 'Kim', 'Dậu': 'Kim',
+            'Tý': 'Thủy', 'Hợi': 'Thủy',
+            'Thìn': 'Thổ', 'Tuất': 'Thổ', 'Sửu': 'Thổ', 'Mùi': 'Thổ'
+        };
+        const nguyetHanh = chiToHanh[nguyetChi] || 'Thổ';
+        const maps = {
+            'Mộc': { vuong: 'Mộc', tuong: 'Hỏa', huu: 'Thủy', tu: 'Thổ', tu2: 'Kim' },
+            'Hỏa': { vuong: 'Hỏa', tuong: 'Thổ', huu: 'Mộc', tu: 'Kim', tu2: 'Thủy' },
+            'Thổ': { vuong: 'Thổ', tuong: 'Kim', huu: 'Hỏa', tu: 'Thủy', tu2: 'Mộc' },
+            'Kim': { vuong: 'Kim', tuong: 'Thủy', huu: 'Thổ', tu: 'Mộc', tu2: 'Hỏa' },
+            'Thủy': { vuong: 'Thủy', tuong: 'Mộc', huu: 'Kim', tu: 'Hỏa', tu2: 'Thổ' }
+        };
+        const table = maps[nguyetHanh] || maps['Thổ'];
+        if (table.vuong === hanh) return 'Vượng';
+        if (table.tuong === hanh) return 'Tướng';
+        return 'Suy';
     };
 
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -300,7 +367,88 @@ export default async function handler(req, res) {
     // ===========================================================================
     // BỘ DIỄN GIẢI ĐỊA CHI NHẬT NGUYỆT SINH KHẮC ĐỘNG HỌC (TECHNICAL CELESTIAL INTERPRETER)
     // ===========================================================================
+    const XUNG_CHI_MAP = {
+        'Tý': 'Ngọ', 'Ngọ': 'Tý',
+        'Sửu': 'Mùi', 'Mùi': 'Sửu',
+        'Dần': 'Thân', 'Thân': 'Dần',
+        'Mão': 'Dậu', 'Dậu': 'Mão',
+        'Thìn': 'Tuất', 'Tuất': 'Thìn',
+        'Tỵ': 'Hợi', 'Hợi': 'Tỵ'
+    };
+    const isXungChi = (chi1, chi2) => XUNG_CHI_MAP[chi1] === chi2;
+
     const celestialLogs = [];
+    
+    // --- KHỐI A: PHÂN TÍCH PHONG THỦY TOÀN TRẠCH 6 HÀO ---
+    if (topicCode === 'phong_thuy' && hexData && hexData.linesData) {
+        const positions = [
+            "Địa cơ (Nền đất, móng nhà, giếng nước, đường đi sát nhà)",
+            "Trạch (Ngôi nhà, gian bếp, phòng ngủ người vợ)",
+            "Môn (Cửa chính ra vào, giường ngủ, hành lang)",
+            "Hộ (Cửa sổ, cửa ngách, nhà vệ sinh, đồ gia dụng)",
+            "Trạch chủ (Chủ nhà, con đường chính, phòng khách)",
+            "Trần nhà, mái nhà, tường bao, bàn thờ gia tiên"
+        ];
+        
+        celestialLogs.push(`🏠 PHÂN TÍCH PHONG THỦY TOÀN DIỆN HÀO VỊ GIA TRẠCH:`);
+        
+        hexData.linesData.forEach((line, idx) => {
+            const lineNum = idx + 1;
+            const posName = positions[idx];
+            let statusText = `Bình hòa, khí trường luân chuyển ổn định.`;
+            
+            const rawNhat = hexData?.dateInfo?.nhatThan || '';
+            const nhatChi = rawNhat.split(' - ')[0].trim();
+            const rawNguyet = hexData?.dateInfo?.nguyetLenh || '';
+            const nguyetChi = rawNguyet.split(' - ')[0].trim();
+            
+            const isNhatXung = isXungChi(nhatChi, line.chi);
+            const isNguyetXung = isXungChi(nguyetChi, line.chi);
+            
+            let isPha = false;
+            if (isNguyetXung) {
+                statusText = `⚠️ Gặp thế NGUYỆT PHÁ: Bị Tháng gieo quẻ tương xung làm nứt vỡ khí trường. Vị trí này đang bị nứt hỏng, ô uế hoặc có sát khí xâm nhập nặng.`;
+                isPha = true;
+            } else if (isNhatXung) {
+                statusText = `⚠️ Gặp thế NHẬT PHÁ: Bị Ngày gieo quẻ xung phá. Dấu hiệu động đất, sửa chữa, thay đổi vị trí đồ đạc hoặc tổn hao dòng chảy năng lượng đột ngột.`;
+                isPha = true;
+            }
+            
+            if (!isPha && line.isTK) {
+                statusText = `🌀 Lâm TUẦN KHÔNG: Sinh khí tại đây trống rỗng, tụ khí kém, có thể bị bỏ hoang hoặc hư hại âm thầm.`;
+            }
+            
+            if (!isPha && !line.isTK && (line.isMoDay || line.isMoMonth)) {
+                statusText = `🌑 Nhập MỘ: Tích tụ âm khí, tối tăm ẩm thấp hoặc tắc nghẽn, cản trở tài lộc.`;
+            }
+            
+            celestialLogs.push(`   • Hào ${lineNum} [${line.relation} - Chi ${line.chi} - ${posName}]: ${statusText}`);
+        });
+
+        // Kiểm tra Thế (Người ở) bị Trạch (Hào 2) hoặc Môn (Hào 3) khắc
+        const shiLine = hexData.linesData.find(l => l.isShi);
+        const nhicLine = hexData.linesData[1]; // Hào 2
+        const tamcLine = hexData.linesData[2]; // Hào 3
+        if (shiLine && nhicLine) {
+            const trachKhacThe = getShengKeRelation(nhicLine.hanh, shiLine.hanh) === -1;
+            if (trachKhacThe) {
+                celestialLogs.push(`⚠️ Cảnh báo Gia chủ: Hào Trạch (Hào 2) tương khắc với Hào Thế (Bản thân bạn). Báo hiệu người ở không hợp khí trạch của ngôi nhà, ở lâu dễ mệt mỏi, tài lộc khó tụ.`);
+            }
+        }
+    }
+
+    // --- KHỐI B: PHÂN PHÂN LOẠI VÀ DIỄN GIẢI KIỆN TỤNG ---
+    let isCriminal = false;
+    let criminalAnalysisLog = '';
+    if (topicCode === 'kien_tung') {
+        const questionText = (userInputs?.question || userInputs?.issue || '').toLowerCase();
+        const criminalKeywords = ['tù', 'tội', 'giam', 'hình sự', 'bắt', 'vi phạm', 'khởi tố', 'công an', 'án hình', 'phạt tù', 'giam giữ', 'tòa án nhân dân', 'viện kiểm sát'];
+        isCriminal = criminalKeywords.some(kw => questionText.includes(kw));
+        
+        criminalAnalysisLog = `⚖️ KIỂM TRA ÁN TỤNG: Được phân loại là **${isCriminal ? 'ÁN HÌNH SỰ (Criminal Case)' : 'ÁN DÂN SỰ (Civil Case)'}** dựa theo câu hỏi của bạn.`;
+        celestialLogs.push(criminalAnalysisLog);
+    }
+
     if (engineResult && hexData && hexData.linesData) {
         const targetLine = hexData.linesData.find(l => l.relation === engineResult.targetRelation);
         const shiLine = hexData.linesData.find(l => l.isShi);
@@ -535,16 +683,65 @@ export default async function handler(req, res) {
     // 3. Phép tính Cát hung cuối cùng
     const finalScore = baseScore * multiplier;
 
-    // 4. Conflict Resolver & Fallback Hierarchy (Hệ thống phân cấp ưu tiên)
-    // Ngưỡng phân định: Cát > 10 điểm, Hung < -10 điểm, còn lại rơi xuống mặc định "Bình hòa"
+    // 4. Phân định Cát Hung theo Quy tắc Chuyên biệt (Phong thủy / Kiện tụng / Dân sự / Hình sự)
     let catHung = 'BINH'; 
-    if (finalScore > 10) catHung = 'CAT';
-    else if (finalScore < -10) catHung = 'HUNG';
+    
+    if (topicCode === 'kien_tung') {
+        const shiLine = hexData?.linesData?.find(l => l.isShi);
+        const yingLine = hexData?.linesData?.find(l => l.isYing);
+        
+        // Đánh giá sức vượng của Thế và Ứng
+        const isShiVuong = generatedCodes.includes('DUNG_STATUS_VUONG') || (shiLine && ['Vượng', 'Tướng'].includes(getHaoPowerState(shiLine.hanh, hexData?.dateInfo?.nguyetLenh)));
+        const isYingVuong = yingLine && ['Vượng', 'Tướng'].includes(getHaoPowerState(yingLine.hanh, hexData?.dateInfo?.nguyetLenh));
+        
+        if (isCriminal) {
+            // Án hình sự: Bản thân vượng = án nhẹ (Cát). Suy bại, xung phá, nhập mộ = án nặng (Hung).
+            const isSuyBai = generatedCodes.includes('DUNG_STATUS_SUY') || 
+                              generatedCodes.includes('DUNG_STATUS_NGUYET_PHA') || 
+                              generatedCodes.includes('DUNG_STATUS_NHAT_PHA') ||
+                              generatedCodes.includes('DUNG_STATUS_MO') ||
+                              generatedCodes.includes('THE_STATUS_HOI_DAU_KHAC');
+            if (isSuyBai) {
+                catHung = 'HUNG';
+            } else if (isShiVuong) {
+                catHung = 'CAT';
+            }
+        } else {
+            // Án dân sự: Thế vượng = thắng kiện (Cát). Ứng vượng mà Thế suy = thua kiện (Hung).
+            if (isShiVuong && !isYingVuong) {
+                catHung = 'CAT';
+            } else if (isYingVuong && !isShiVuong) {
+                catHung = 'HUNG';
+            }
+        }
+    } else if (topicCode === 'phong_thuy') {
+        // Phong thủy: Có hào bị Phá hoặc Mộ, hoặc Trạch khắc Thế = Hung
+        const hasSevereDamage = generatedCodes.includes('DUNG_STATUS_NGUYET_PHA') || 
+                                generatedCodes.includes('DUNG_STATUS_NHAT_PHA') ||
+                                celestialLogs.some(log => log.includes('⚠️ Gặp thế NGUYỆT PHÁ') || log.includes('⚠️ Cảnh báo Gia chủ'));
+        if (hasSevereDamage) {
+            catHung = 'HUNG';
+        } else {
+            catHung = 'CAT';
+        }
+    } else {
+        // Các chủ đề thông thường: dựa trên finalScore truyền thống
+        if (finalScore > 10) catHung = 'CAT';
+        else if (finalScore < -10) catHung = 'HUNG';
+    }
 
     // Cơ chế Fallback Template (không bao giờ lỗi Null)
-    const topicTemplates = COMPILED_KNOWLEDGE.templates[topic] || COMPILED_KNOWLEDGE.templates['công việc'];
+    let topicKeyForTemplate = topic;
+    if (topicCode === 'phong_thuy') topicKeyForTemplate = 'phong_thuy';
+    if (topicCode === 'kien_tung') topicKeyForTemplate = 'kien_tung';
+
+    const topicTemplates = COMPILED_KNOWLEDGE.templates[topicKeyForTemplate] || COMPILED_KNOWLEDGE.templates['công việc'];
     const scenarioText = (topicTemplates && topicTemplates.scenarios) ? topicTemplates.scenarios[catHung] : {
-        summary: "Sự việc bình hòa, cục diện ổn định.",
+        summary: topicCode === 'phong_thuy' 
+            ? (catHung === 'CAT' ? "Phong thủy tốt, trạch cát sinh vượng tài lộc." : "Gia trạch gặp sát khí, phong thủy có điểm xung khắc hỏng hóc.")
+            : (topicCode === 'kien_tung'
+                ? (catHung === 'CAT' ? "Kiện tụng đắc lợi, chiếm ưu thế lớn trước tòa." : "Kiện tụng gặp bất lợi, đề phòng phán quyết nặng nề hoặc thua kiện.")
+                : "Sự việc bình hòa, cục diện ổn định."),
         detail: "Năng lượng ngũ hành cân bằng. Không có biến động lớn đe dọa hay mang lại bứt phá đột ngột, mưu sự cần tiến bước thận trọng.",
         advice: "Giữ tâm thế bình tĩnh, củng cố nền tảng cũ trước khi hướng tới thay đổi lớn."
     };
@@ -590,19 +787,20 @@ export default async function handler(req, res) {
                 advice: (scenarioText?.advice || '') + (hoaGiaiAdvice ? `\n\n[Bí quyết Hóa giải phong thủy Vương Hổ Ứng]: ${hoaGiaiAdvice}` : '')
             };
 
-            const systemPrompt = `Bạn là một bậc thầy Kinh Dịch Lục Hào giàu kinh nghiệm thực chiến, tinh thông học thuyết Vương Hổ Ứng và Chu Thần Bân.
-Nhiệm vụ của bạn là đọc các dữ liệu phân tích kỹ thuật thô và tổng hợp lại thành một bài luận giải cá nhân hóa mượt mà, sâu sắc, có hồn và mang văn phong của một người thầy thực sự: điềm đạm, thấu hiểu, uy nghiêm nhưng tràn đầy sự định hướng chân thành.
+            const systemPrompt = `Bạn là một bậc thầy Kinh Dịch Lục Hào tinh thông học thuyết Vương Hổ Ứng và phong thủy trạch cát cổ truyền.
+Nhiệm vụ của bạn là đọc dữ liệu phân tích kỹ thuật thô và tổng hợp thành một bài luận giải cá nhân hóa sâu sắc, uy nghiêm mà tràn đầy định hướng chân thành.
 
-NGUYÊN TẮC TUYỆT ĐỐI:
-1. KHÔNG được tự tính toán lại ngũ hành, không thay đổi kết luận Cát/Hung/Bình của quẻ đầu vào.
-2. KHÔNG bịa đặt thêm các yếu tố kỹ thuật ngoài dữ liệu thô cung cấp.
-3. Hành văn bằng tiếng Việt chính thống, xưng hô tôn trọng phù hợp với giới tính người xem (Nam/Nữ).
-4. Phân tích rõ ràng nguyên nhân tại sao Cát hay Hung dựa trên tình trạng của Hào Thế và Dụng Thần (Vượng, Suy, Phá, Không, Mộ).
+NGUYÊN TẮC TUYỆT ĐỐI THEO CHỦ ĐỀ:
+1. Nếu chủ đề là [PHONG THỦY]: Phân tích đầy đủ sự tác động lên 6 hào vị của ngôi nhà (từ Hào 1 móng đất đến Hào 6 mái nhà). Chỉ rõ hào nào bị xung phá, khắc hại, nhập mộ hoặc tuần không để khuyên chủ nhà sửa sang, hóa giải. Phong thủy trạch cát tác động lên toàn bộ thành viên gia đạo và hào thế.
+2. Nếu chủ đề là [KIỆN TỤNG]: Phân biệt rõ án Dân sự hay Hình sự (dựa vào câu hỏi của người dùng).
+   - Án dân sự: Xem thắng thua. Cần Thế vượng, Dụng vượng để thắng. Nếu Ứng vượng, Thế suy bại thì thua kiện.
+   - Án hình sự: Xem mức độ nặng nhẹ. Xem cho bản thân lấy Thế, xem cho người khác lấy Dụng thần tương ứng. Vượng đắc lực thì án nhẹ/được tha bổng. Suy bại, xung phá, hình hại hoặc nhập mộ là án nặng bất lợi.
+3. KHÔNG tự tính toán lại ngũ hành, giữ nguyên kết quả Cát/Hung/Bình hòa từ dữ liệu thô.
 
 Bố cục trình bày bắt buộc gồm 4 phần:
-I. CHIÊM NGHIỆM HIỆN TRẠNG TÂM LÝ & HOÀN CẢNH (Dùng thông tin Hào Thế trì Lục thân và Hào tâm niệm để chỉ ra tâm tư thật của người xem)
-II. ĐÁNH GIÁ CÁT HUNG & DIỄN BIẾN (Chỉ rõ nguyên nhân theo Ngũ Hành, Nhật Nguyệt sinh khắc)
-III. CHI TIẾT SỰ VIỆC BÊN NGOÀI (Diễn giải ý nghĩa các Thần sát Dịch mã, Đào hoa, Lục thú phát động)
+I. CHIÊM NGHIỆM HIỆN TRẠNG TÂM LÝ & HOÀN CẢNH (Dùng thông tin Hào Thế trì Lục thân để giải mã tâm sự thực tế)
+II. ĐÁNH GIÁ CÁT HUNG & DIỄN BIẾN (Theo ngũ hành sinh khắc, Nhật Nguyệt tác động, hoặc trạch cát 6 hào đối với Phong thủy)
+III. CHI TIẾT SỰ VIỆC BÊN NGOÀI (Thần sát Dịch mã, Đào hoa, Lục thú phát động, hoặc phân loại án dân sự/hình sự kiện tụng)
 IV. LỜI KHUYÊN DỊCH LÝ & HÓA GIẢI PHONG THỦY (Lời khuyên hành sự kết hợp với Bí pháp thông quan Vương Hổ Ứng)`;
 
             const response = await fetch(
