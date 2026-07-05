@@ -105,14 +105,29 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
-    let hex_id, changed_id, topic, gender, hexData, userInputs;
-    if (req.method === 'POST') {
-        ({ hex_id, changed_id, topic, gender, hexData, userInputs } = req.body);
-    } else {
-        ({ hex_id, changed_id, topic, gender } = req.query);
+    let payload = req.body || {};
+    if (typeof payload === 'string') {
+        try {
+            payload = JSON.parse(payload);
+        } catch (e) {
+            payload = {};
+        }
     }
 
-    if (!hex_id) return res.status(400).json({ error: 'Missing hex_id parameter' });
+    const hex_id = payload.hex_id || req.query.hex_id;
+    const changed_id = payload.changed_id || req.query.changed_id;
+    const topic = payload.topic || req.query.topic || 'công việc';
+    const gender = payload.gender || req.query.gender || 'Nam';
+    const hexData = payload.hexData;
+    const userInputs = payload.userInputs;
+
+    if (!hex_id) {
+        return res.status(400).json({ 
+            error: 'Missing hex_id parameter',
+            receivedPayload: payload,
+            receivedQuery: req.query
+        });
+    }
 
     // ===========================================================================
     // MA TRẬN TOÁN HỌC NGŨ HÀNH SINH KHẮC 5x5 TRÊN RAM (BÁNH RĂNG ĐỒNG HỒ)
