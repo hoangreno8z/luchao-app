@@ -8,46 +8,64 @@ import { FALLBACK_HEXAGRAMS_DB } from './fallback_db.js';
 
 import { COMPILED_KNOWLEDGE } from './compiled_knowledge.js';
 
-const FALLBACK_TEXTS = {
-    'THE_TRI_QUAN_QUY': 'Thế trì Quan Quỷ: Điềm báo người hỏi tâm lý đang lo âu, stress cực lớn hoặc thân thể có bệnh tật âm ỉ chưa giải tỏa được. Trong công việc chủ về gánh vác nhiều trách nhiệm nặng nề.',
-    'THE_TRI_PHU_MAU': 'Thế trì Phụ Mẫu: Bản thân công việc rất vất vả cực nhọc, phải ôm đồm nhiều giấy tờ thủ tục hoặc chịu áp lực lớn từ phía ban lãnh đạo/sếp.',
-    'THE_TRI_HUYNH_DE': 'Thế trì Huynh Đệ: Công việc đang gặp sự cạnh tranh gay gắt từ đồng nghiệp hoặc đối thủ. Mọi mưu cầu tài lộc giai đoạn này đều dễ bị thâm hụt tốn của.',
-    'THE_TRI_THE_TAI': 'Thế trì Thê Tài: Tâm lý hướng về lợi nhuận, tiền bạc hoặc có tin mừng về lương thưởng, thu nhập dự án hanh thông cát khánh.',
-    'THE_TRI_TU_TON': 'Thế trì Tử Tôn: Chủ về bản thân hướng tới sự tự do, chán nản cảnh gông cùm công sở. Đây là kỵ thần của Quan Quỷ nên việc cầu thăng chức lúc này bị cản trở lớn.',
-    'QUE_TINH': 'Quẻ tĩnh: Mọi sự bình lặng, lực lượng hai bên ổn định.',
-    'QUE_DONG': 'Quẻ động: Sự việc đang có biến chuyển mạnh mẽ.',
-    'DUNG_STATUS_VUONG': 'Dụng thần Vượng Tướng: Lực lượng mạnh, triển vọng tốt.',
-    'DUNG_STATUS_SUY': 'Dụng thần Hưu Tù: Lực yếu, sự việc chưa thuận.',
-    'DUNG_STATUS_NGUYET_PHA': 'Dụng thần bị Nguyệt Phá: Sự việc bị phá vỡ, khó cứu vãn.',
-    'DUNG_STATUS_TUAN_KHONG': 'Dụng thần lâm Tuần Không: Sự việc còn hư ảo, chưa thành hình.',
-    'DUNG_STATUS_AM_DONG': 'Dụng thần Ám Động: Sự việc sẽ bộc phát nhanh, ngoài dự kiến.',
-    'DUNG_STATUS_NHAT_PHA': 'Dụng thần bị Nhật Phá: Sự việc bị Ngày xung vỡ, động tán.',
-    'DUNG_STATUS_MO': 'Dụng thần nhập Mộ: Bị giam hãm, năng lực bị che khuất, người hỏi đang ở trong hoàn cảnh bế tắc, bất lực không có cách nào tự thoát ra.',
-    'DUNG_STATUS_PHUC_THAN': 'Dụng thần đang ẩn (Phục Thần), cần thời cơ mới hiển lộ.',
-    'DUNG_STATUS_KHONG_CO_MAT': 'Dụng thần không xuất hiện: Việc hỏi không liên quan hoặc thời điểm chưa đúng.',
-    'PHUC_THAN_BI_PHI_KHAC': 'Phục thần bị Phi thần áp chế: Thông tin ẩn giấu bị che khuất, việc mưu cầu gặp cản trở lớn.',
-    'PHUC_THAN_DUOC_PHI_SINH': 'Phục thần được Phi thần nâng đỡ: Tiềm năng ẩn đang chờ cơ hội hiển lộ.',
-    'PHUC_THAN_KHAC_PHI': 'Phục thần khắc Phi thần: Thông tin ẩn đang cố vượt ra ngoài ánh sáng.',
-    'THE_STATUS_HOA_QUY': 'Hào Thế động hóa Quan Quỷ: Tự thân chiêu mời lo âu tai họa, đề phòng sếp khiển trách hoặc bệnh tật phát sinh.',
-    'THE_STATUS_HOI_DAU_KHAC': 'Hào Thế Hồi đầu khắc: Tự thân hành động lại tự hại bản thân, việc làm lúc đầu tưởng thuận nhưng sau tự chuốc thất bại.',
-    'PROPERTY_LUC_XUNG': 'Quẻ Lục Xung: Mọi việc diễn biến nhanh chóng, dứt điểm mau lẹ nhưng khó bền vững lâu dài.',
-    'PROPERTY_LUC_HOP': 'Quẻ Lục Hợp: Gắn kết bền chặt, hợp tác đôi bên có lợi, mưu sự có quý nhân nâng đỡ.',
-    'PROPERTY_DU_HON': 'Quẻ Du Hồn: Tâm lý bất định, hay thay đổi ý kiến, thích hợp đi xa hoặc làm việc lưu động.',
-    'PROPERTY_QUY_HON': 'Quẻ Quy Hồn: Quay về ổn định nơi cũ, người đi xa sắp quay về, mưu sự nên giữ nguyên trạng.',
-    'PROPERTY_PHAN_NGAM': 'Phản Ngâm: Hai chiều đối nghịch gay gắt, mọi việc đảo lộn, lặp đi lặp lại nhiều lần gây mệt mỏi.',
-    'PROPERTY_PHUC_NGAM': 'Phục Ngâm: Sự việc vòng quẩn, không tiến lên được, tiến thoái lưỡng nan, lòng đầy đau khổ.',
-    'PATTERN_BACH_HO_DONG_TAI_BENH': 'Cảnh báo: Bạch Hổ phát động chủ về tai nạn đột xuất, bệnh phát rất nhanh hoặc có sự xung đột gay gắt trực diện.',
-    'PATTERN_THE_DANG_XA_TK_LO_AO': 'Tượng pháp: Thế lâm Đằng Xà ngộ Tuần Không chủ về người hỏi đang lo âu hoang mang mơ hồ, thực chất sự việc không nguy hiểm như bạn nghĩ.',
-    'PATTERN_THANH_LONG_TAI_DONG_TIN_VUI': 'Tượng pháp: Thanh Long cùng Thê Tài phát động chủ về có hỉ khánh, tài lộc vượng phát, đón nhận tin vui lớn về tiền bạc hoặc nhân duyên.',
-    'PATTERN_CHU_TUOC_QUAN_DONG_TRANH_CHAP': 'Tượng pháp: Chu Tước cùng Quan Quỷ phát động chủ về có cãi vã, tranh chấp pháp lý hoặc bị tiểu nhân gièm pha gièm pha công danh.',
-    'PATTERN_DANG_XA_QUAN_DONG_AP_LUC': 'Tượng pháp thực chiến: Quan Quỷ phát động lâm Đằng Xà chủ về công việc sắp có sự điều chuyển đột ngột tạo áp lực tâm lý cực lớn hoặc hệ thống gặp sự cố bất ngờ.',
-    'PATTERN_CHU_TUOC_PHU_DONG_VAN_BAN': 'Tượng pháp thực chiến: Phụ Mẫu lâm Chu Tước phát động chủ về có quyết định hành chính chính thức bằng văn bản hoặc thông báo bổ nhiệm được công bố.',
-    'PATTERN_HUYEN_VU_TAI_TK_THAT_THOAT': 'Tượng pháp thực chiến: Thê Tài lâm Huyền Vũ ngộ Tuần Không chủ về rủi ro thất thoát tài chính âm thầm, đối tác mờ ám hoặc có gian lận tiền bạc ngầm.',
-    'PATTERN_BACH_HO_HUYNH_DONG_TRANH_DOAT': 'Tượng pháp thực chiến: Huynh Đệ phát động lâm Bạch Hổ chủ về đối thủ cạnh tranh quyết liệt nhằm đoạt quyền lợi, hoặc chi phí dự án bị thâm hụt lớn.',
-    'PATTERN_DICH_MA_DONG_BIEN_DONG': 'Thần sát: Hào động lâm Dịch Mã đại diện cho sự biến động mạnh mẽ về không gian, có điềm báo đi du lịch, đi công tác xa, xuất ngoại hoặc điều chuyển công tác rất nhanh chóng.',
-    'PATTERN_DAO_HOA_DONG_DUYEN_VONG': 'Thần sát: Hào động lâm Đào Hoa là tượng có tin vui lớn về nhân duyên, tình cảm đôi lứa thăng hoa vượng phát hoặc công việc xuất hiện nhiều khách hàng/đối tác mến mộ.',
-    'PATTERN_HOA_CAI_DONG_NGHE_THUAT': 'Thần sát: Hào động lâm Hoa Cái chủ về trí tuệ hanh thông, thích hợp cho việc nghiên cứu học tập chuyên sâu, phát triển kỹ năng nghệ thuật hoặc tôn giáo.'
-};
+function getTopicAwareFallbackTexts(topicCode) {
+    const isLove = ['tinh_yeu'].includes(topicCode);
+    const isHealth = ['suc_khoe'].includes(topicCode);
+    
+    return {
+        'THE_TRI_QUAN_QUY': isLove 
+            ? 'Thế trì Quan Quỷ: Rất có lợi cho Nữ mệnh khi xem tình duyên (biểu thị phu tinh lâm thế, gắn kết mật thiết). Tuy nhiên cũng có điềm báo bản thân dễ lo âu, ghen tuông hoặc suy nghĩ quá nhiều.' 
+            : (isHealth ? 'Thế trì Quan Quỷ: Thể hiện mầm bệnh đang bám rễ ở cơ thể, hoặc lo lắng bệnh tật kéo dài.' : 'Thế trì Quan Quỷ: Điềm báo chủ sự đang gánh vác trách nhiệm nặng nề, chịu áp lực công việc lớn từ cấp trên hoặc lo âu mất chức.'),
+        
+        'THE_TRI_PHU_MAU': isLove 
+            ? 'Thế trì Phụ Mẫu: Tâm lý suy nghĩ nhiều về chuyện cam kết dài lâu, bàn thảo thủ tục cưới hỏi hoặc chịu sự can thiệp, áp lực từ gia đình hai bên.' 
+            : 'Thế trì Phụ Mẫu: Bản thân công việc vô cùng vất vả, cực nhọc, phải xử lý nhiều quy trình, giấy tờ hành chính phức tạp.',
+        
+        'THE_TRI_HUYNH_DE': isLove 
+            ? 'Thế trì Huynh Đệ: Tình cảm gặp nhiều trắc trở, xuất hiện tình địch cạnh tranh hoặc bản thân nóng nảy làm rạn nứt mối quan hệ.' 
+            : 'Thế trì Huynh Đệ: Môi trường làm việc có sự cạnh tranh vị trí gay gắt từ đồng nghiệp, cẩn thận thâm hụt tiền bạc.',
+        
+        'THE_TRI_THE_TAI': isLove 
+            ? 'Thế trì Thê Tài: Rất cát lợi cho Nam mệnh xem tình duyên (thê tinh lâm thế). Bản thân tràn đầy tình cảm sâu sắc, trân trọng đối phương.' 
+            : 'Thế trì Thê Tài: Bản thân đang tập trung mưu cầu lợi ích kinh tế, thu nhập dự án hanh thông cát khánh.',
+        
+        'THE_TRI_TU_TON': isLove 
+            ? 'Thế trì Tử Tôn: Bản thân hướng tới niềm vui, sự tự do thoải mái, không muốn bị ràng buộc hoặc kiểm soát ngột ngạt trong tình yêu. Nữ mệnh đề phòng có khoảng cách với người yêu (vì Tử Tôn khắc Quan Quỷ).' 
+            : (isHealth ? 'Thế trì Tử Tôn: Khí đề kháng của cơ thể rất tốt, có dấu hiệu tìm đúng thầy đúng thuốc và hồi phục nhanh.' : 'Thế trì Tử Tôn: Chủ sự hướng tới tự do sáng tạo, chán ghét môi trường gò bó công sở. Khó cầu chức quyền.'),
+        
+        'QUE_TINH': 'Quẻ tĩnh: Mọi sự bình lặng, cục diện hai bên ổn định.',
+        'QUE_DONG': 'Quẻ động: Sự việc đang có biến chuyển mạnh mẽ, tình hình chuyển động.',
+        'DUNG_STATUS_VUONG': 'Dụng thần Vượng Tướng: Khí thế của đối tượng mưu cầu rất mạnh, triển vọng phát triển tốt đẹp.',
+        'DUNG_STATUS_SUY': 'Dụng thần Hưu Tù Vô Khí: Khí lực suy yếu, sự việc chưa chín muồi để hành động.',
+        'DUNG_STATUS_NGUYET_PHA': 'Dụng thần bị Nguyệt Phá: Bị Tháng gieo quẻ tương xung làm vỡ nát khí lực, mưu sự cực kỳ khó thành công.',
+        'DUNG_STATUS_TUAN_KHONG': 'Dụng thần lâm Tuần Không: Đối tượng mưu cầu còn ảo vọng, trống rỗng hoặc chưa xuất hiện.',
+        'DUNG_STATUS_AM_DONG': 'Dụng thần Ám Động: Sự việc sẽ diễn biến bất ngờ, âm thầm bộc phát rất nhanh chóng.',
+        'DUNG_STATUS_NHAT_PHA': 'Dụng thần bị Nhật Phá: Sự việc bị Ngày gieo quẻ xung vỡ tán loạn.',
+        'DUNG_STATUS_MO': 'Dụng thần nhập Mộ: Bị che khuất, giam hãm hoặc bản thân chủ sự đang rơi vào bế tắc không lối thoát.',
+        'DUNG_STATUS_PHUC_THAN': 'Dụng thần ẩn tàng (Phục Thần): Cần kiên nhẫn đợi thời cơ hiển lộ.',
+        'DUNG_STATUS_KHONG_CO_MAT': 'Dụng thần không xuất hiện trên quẻ.',
+        'PHUC_THAN_BI_PHI_KHAC': 'Phục Thần bị Phi Thần tương khắc đè nén: Tiềm năng ẩn bị áp chế mạnh mẽ.',
+        'PHUC_THAN_DUOC_PHI_SINH': 'Phục Thần được Phi Thần tương sinh nâng đỡ: Tuy ẩn tàng nhưng có cơ hội bứt phá tốt.',
+        'PHUC_THAN_KHAC_PHI': 'Phục Thần khắc Phi Thần: Bản thân tự nỗ lực vượt qua rào cản.',
+        'THE_STATUS_HOA_QUY': isLove 
+            ? 'Hào Thế động hóa Quan Quỷ: Tự thân nảy sinh lo âu phiền muộn, hoang mang hoài nghi về tình cảm đôi bên.' 
+            : 'Hào Thế động hóa Quan Quỷ: Đề phòng áp lực công việc quá lớn hoặc tự mình gây ra rắc rối công sở.',
+        'THE_STATUS_HOI_DAU_KHAC': 'Hào Thế bị Hồi Đầu Khắc: Tự mình hành sự sai lầm dẫn đến hỏng việc của mình.',
+        'PROPERTY_LUC_XUNG': 'Quẻ Lục Xung: Sự việc diễn biến cực kỳ nhanh chóng, dứt điểm mau lẹ nhưng không bền vững.',
+        'PROPERTY_LUC_HOP': 'Quẻ Lục Hợp: Mối quan hệ gắn kết bền chặt, giao hòa tốt đẹp, mưu sự được quý nhân nâng đỡ.',
+        'PROPERTY_DU_HON': 'Quẻ Du Hồn: Tâm lý bất định, dao động không kiên định, sự việc trôi nổi.',
+        'PROPERTY_QUY_HON': 'Quẻ Quy Hồn: Mọi sự quay về trạng thái ổn định cũ, thích hợp giữ nguyên hiện trạng.',
+        'PROPERTY_PHAN_NGAM': 'Phản Ngâm: Sự việc lặp đi lặp lại đảo lộn, tiến thoái lưỡng nan cực kỳ mệt mỏi.',
+        'PROPERTY_PHUC_NGAM': 'Phục Ngâm: Trạng thái bế tắc trì trệ, lòng đầy u uất đau khổ không thể tiến bước.',
+        'PATTERN_BACH_HO_DONG_TAI_BENH': 'Bạch Hổ phát động: Điềm báo có tranh chấp gay gắt trực diện hoặc chấn thương đột xuất.',
+        'PATTERN_THE_DANG_XA_TK_LO_AO': 'Thế lâm Đằng Xà ngộ Tuần Không: Người hỏi đang lo sợ hoang mang mơ hồ, thực chất sự việc không nguy hiểm.',
+        'PATTERN_THANH_LONG_TAI_DONG_TIN_VUI': 'Thanh Long cùng Thê Tài phát động: Đón nhận hỉ sự cát tường, tin vui lớn về nhân duyên hoặc tiền của.',
+        'PATTERN_CHU_TUOC_QUAN_DONG_TRANH_CHAP': 'Chu Tước cùng Quan Quỷ phát động: Đề phòng cãi vã lớn, thị phi gièm pha gièm pha tiếng tăm.',
+        'PATTERN_DICH_MA_DONG_BIEN_DONG': 'Thần Sát Dịch Mã phát động: Có điềm chuyển dịch, thay đổi vị trí, đi xa hoặc đi lại lưu động nhanh chóng.',
+        'PATTERN_DAO_HOA_DONG_DUYEN_VONG': 'Thần Sát Đào Hoa phát động: Điềm báo tình duyên khởi sắc, đào hoa vượng phát, được đối phương mến mộ.',
+        'PATTERN_HOA_CAI_DONG_NGHE_THUAT': 'Thần Sát Hoa Cái phát động: Trí tuệ sáng suốt, thích hợp suy ngẫm hướng nội hoặc học thuật.'
+    };
+}
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -72,6 +90,15 @@ export default async function handler(req, res) {
     const gender = payload.gender || req.query.gender || 'Nam';
     const hexData = payload.hexData;
     const userInputs = payload.userInputs;
+
+    // Chuẩn hóa tên chủ đề sang mã DB (Toàn cục cho Handler)
+    const topicCode = {
+        'công việc': 'cong_viec', 'thi cử': 'cong_viec',
+        'tình yêu': 'tinh_yeu',  'hôn nhân': 'tinh_yeu',
+        'sức khỏe': 'suc_khoe',  'kinh doanh': 'kinh_doanh',
+        'dự án': 'kinh_doanh',   'chứng khoán': 'chung_khoan',
+        'bất động sản': 'bat_dong_san'
+    }[topic] || 'cong_viec';
 
     if (!hex_id) {
         return res.status(400).json({ 
@@ -138,14 +165,7 @@ export default async function handler(req, res) {
                 return fetch(url, { headers: H }).then(r => r.json()).catch(() => []);
             };
 
-            // Chuẩn hóa tên chủ đề sang mã DB
-            const topicCode = {
-                'công việc': 'cong_viec', 'thi cử': 'cong_viec',
-                'tình yêu': 'tinh_yeu',  'hôn nhân': 'tinh_yeu',
-                'sức khỏe': 'suc_khoe',  'kinh doanh': 'kinh_doanh',
-                'dự án': 'kinh_doanh',   'chứng khoán': 'chung_khoan',
-                'bất động sản': 'bat_dong_san'
-            }[topic] || 'cong_viec';
+            // Đã sử dụng topicCode toàn cục
 
             const codeList = generatedCodes.map(c => `"${c}"`).join(',');
 
@@ -262,20 +282,95 @@ export default async function handler(req, res) {
     const analysisTextsList = [];
     const processedCodes = new Set();
 
-    // Chuẩn hóa biến DB thành mảng an toàn (Ưu tiên DB online, tự động fallback sang RAM local đóng gói nếu lỗi)
+    // Chuẩn hóa biến DB thành mảng an toàn (Lọc chính xác theo Hộp Chủ Đề để tránh chồng chéo thông tin)
     const safeSemanticTexts = (Array.isArray(dbSemanticTexts) && dbSemanticTexts.length > 0) ? dbSemanticTexts : [];
     
     const safeTuongDaTang = (Array.isArray(dbTuongDaTang) && dbTuongDaTang.length > 0) 
-        ? dbTuongDaTang 
-        : (COMPILED_KNOWLEDGE.tuong_da_tang || []);
+        ? dbTuongDaTang.filter(r => r.chu_de === topicCode || r.chu_de === 'all')
+        : (COMPILED_KNOWLEDGE.tuong_da_tang || []).filter(r => r.chu_de === topicCode || r.chu_de === 'all');
         
     const safeTuongDongBien = (Array.isArray(dbTuongDongBien) && dbTuongDongBien.length > 0) 
-        ? dbTuongDongBien 
-        : (COMPILED_KNOWLEDGE.tuong_dong_bien || []);
+        ? dbTuongDongBien.filter(r => r.chu_de === topicCode || r.chu_de === 'all')
+        : (COMPILED_KNOWLEDGE.tuong_dong_bien || []).filter(r => r.chu_de === topicCode || r.chu_de === 'all');
         
     const safeTuongCoBan = (Array.isArray(dbTuongCoBan) && dbTuongCoBan.length > 0) 
-        ? dbTuongCoBan 
-        : (COMPILED_KNOWLEDGE.tuong_co_ban || []);
+        ? dbTuongCoBan.filter(r => r.chu_de === topicCode || r.chu_de === 'all')
+        : (COMPILED_KNOWLEDGE.tuong_co_ban || []).filter(r => r.chu_de === topicCode || r.chu_de === 'all');
+
+    // ===========================================================================
+    // BỘ DIỄN GIẢI ĐỊA CHI NHẬT NGUYỆT SINH KHẮC ĐỘNG HỌC (TECHNICAL CELESTIAL INTERPRETER)
+    // ===========================================================================
+    const celestialLogs = [];
+    if (engineResult && hexData && hexData.linesData) {
+        const targetLine = hexData.linesData.find(l => l.relation === engineResult.targetRelation);
+        const shiLine = hexData.linesData.find(l => l.isShi);
+
+        // 1. Phân tích Dụng Thần
+        if (targetLine) {
+            const rawNhat = hexData?.dateInfo?.nhatThan || '';
+            const nhatChi = rawNhat.split(' - ')[0].trim();
+            const nhatHanh = rawNhat.includes(' - ') ? rawNhat.split(' - ')[1].trim() : 'Thổ';
+
+            const rawNguyet = hexData?.dateInfo?.nguyetLenh || '';
+            const nguyetChi = rawNguyet.split(' - ')[0].trim();
+            const nguyetHanh = rawNguyet.includes(' - ') ? rawNguyet.split(' - ')[1].trim() : 'Thổ';
+
+            celestialLogs.push(`⚡ PHÂN TÍCH NHẬT NGUYỆT CHO DỤNG THẦN [${engineResult.targetRelation} - Chi ${targetLine.chi} Ngũ hành ${targetLine.hanh}]:`);
+
+            // Tương tác Nhật Thần (Ngày gieo)
+            const nhatRel = getShengKeRelation(nhatHanh, targetLine.hanh);
+            let nhatTxt = `Nhật Thần ${nhatChi} (${nhatHanh})`;
+            if (nhatRel === 1) nhatTxt += ` tương sinh trợ lực cho Dụng Thần.`;
+            else if (nhatRel === -1) nhatTxt += ` tương khắc áp chế Dụng Thần.`;
+            else if (nhatRel === 0.5) nhatTxt += ` tỷ hòa song hành cùng Dụng Thần.`;
+            else nhatTxt += ` không có quan hệ sinh khắc trực tiếp.`;
+            celestialLogs.push(`   • Ngày: ${nhatTxt}`);
+
+            // Kiểm tra Nhật Xung (Ám Động / Nhật Phá)
+            if (generatedCodes.includes('DUNG_STATUS_AM_DONG')) {
+                celestialLogs.push(`   • Nhật Xung: Hào Dụng Thần tĩnh được Nhật Thần ${nhatChi} xung kích hoạt thế ÁM ĐỘNG. Biểu thị sự việc sẽ bộc phát ngầm rất nhanh chóng.`);
+            } else if (generatedCodes.includes('DUNG_STATUS_NHAT_PHA')) {
+                celestialLogs.push(`   • Nhật Xung: Dụng Thần suy yếu bị Nhật Thần ${nhatChi} tương xung tạo thế NHẬT PHÁ, bị tổn thương vỡ tán khí lực.`);
+            }
+
+            // Tương tác Nguyệt Lệnh (Tháng gieo)
+            const nguyetRel = getShengKeRelation(nguyetHanh, targetLine.hanh);
+            let nguyetTxt = `Nguyệt Lệnh ${nguyetChi} (${nguyetHanh})`;
+            if (nguyetRel === 1) nguyetTxt += ` tương sinh vượng khí cho Dụng Thần.`;
+            else if (nguyetRel === -1) nguyetTxt += ` tương khắc làm suy bại Dụng Thần.`;
+            else if (nguyetRel === 0.5) nguyetTxt += ` tỷ hòa làm tăng khí thế cho Dụng Thần.`;
+            else nguyetTxt += ` bình hòa.`;
+            celestialLogs.push(`   • Tháng: ${nguyetTxt}`);
+
+            if (generatedCodes.includes('DUNG_STATUS_NGUYET_PHA')) {
+                celestialLogs.push(`   • Nguyệt Phá: Hào Dụng Thần bị Nguyệt Lệnh ${nguyetChi} tương xung trực diện tạo thế NGUYỆT PHÁ. Đây là điểm hung hại lớn, mọi mưu cầu dễ bị đổ vỡ nửa chừng.`);
+            }
+
+            // Kiểm tra Tuần Không / Nhập Mộ
+            if (generatedCodes.includes('DUNG_STATUS_TUAN_KHONG')) {
+                celestialLogs.push(`   • Tuần Không: Dụng Thần lâm Tuần Không, hiện tại trống rỗng, vô lực, chưa thể hành sự.`);
+            }
+            if (generatedCodes.includes('DUNG_STATUS_MO')) {
+                celestialLogs.push(`   • Nhập Mộ: Dụng Thần nhập Mộ, bị che mờ, giam hãm khó phát huy khả năng.`);
+            }
+        }
+
+        // 2. Phân tích hào Thế (Bản thân chủ sự)
+        if (shiLine) {
+            celestialLogs.push(`⚡ PHÂN TÍCH HÀO THẾ [Bản thân bạn - Hào ${hexData.linesData.indexOf(shiLine) + 1} - Chi ${shiLine.chi} Ngũ hành ${shiLine.hanh}]:`);
+            if (generatedCodes.some(c => c.includes('HOI_DAU_KHAC'))) {
+                celestialLogs.push(`   • Hồi Đầu Khắc: Hào Thế phát động hóa ra hào biến tương khắc lại chính nó. Điềm báo tự mình làm hỏng việc của mình, hành sự lúc đầu thuận lợi nhưng kết quả tự chuốc lấy thất bại.`);
+            } else if (generatedCodes.some(c => c.includes('HOI_DAU_SINH'))) {
+                celestialLogs.push(`   • Hồi Đầu Sinh: Hào Thế phát động hóa ra hào biến sinh trợ lại chính nó. Cát lành vô cùng, mưu sự càng về sau càng được nâng đỡ phát triển.`);
+            }
+            if (generatedCodes.includes('THE_STATUS_HOA_QUY')) {
+                celestialLogs.push(`   • Hóa Quỷ: Hào Thế động hóa Quan Quỷ. Chủ sự trong lòng đầy lo âu hoang mang, tự chiêu mời stress hoặc đề phòng bệnh tật phát sinh.`);
+            }
+        }
+    }
+
+    // Đẩy phân tích nhật nguyệt vào danh sách
+    celestialLogs.forEach(log => analysisTextsList.push(log));
 
     // LỚP 1: semantic_texts cũ (backward compat, ưu tiên cao nhất)
     safeSemanticTexts.forEach(row => {
@@ -369,19 +464,13 @@ export default async function handler(req, res) {
         analysisTextsList.push(`🔍 Phục Thần: ${engineResult.targetRelation} đang ẩn dưới Hào ${pt.hostIdx + 1} (${pt.hostLine.relation}), chi ${pt.phucLine.branch}.`);
     }
 
-    // LỚP 6: Fallback text từ mã engine (các mã chưa match DB)
+    // LỚP 6: Fallback text từ mã engine (các mã chưa match DB) - ĐÃ BẢO ĐẢM TÁCH BIỆT CHỦ ĐỀ
+    const topicFallbackTexts = getTopicAwareFallbackTexts(topicCode);
     generatedCodes.forEach(code => {
-        if (!processedCodes.has(code) && FALLBACK_TEXTS[code]) {
-            analysisTextsList.push(FALLBACK_TEXTS[code]);
+        if (!processedCodes.has(code) && topicFallbackTexts[code]) {
+            analysisTextsList.push(topicFallbackTexts[code]);
         }
     });
-
-
-    // 4. Thêm phân tích Phục Thần từ Khối 1
-    if (engineResult?.phucThanResult.found) {
-        const pt = engineResult.phucThanResult;
-        analysisTextsList.push(`🔍 Phục Thần: ${engineResult.targetRelation} đang ẩn dưới Hào ${pt.hostIdx + 1} (${pt.hostLine.relation}), chi ${pt.phucLine.branch}.`);
-    }
 
     // ===========================================================================
     // HỆ THỐNG TRỌNG SỐ NGUYÊN TỬ VÀ MA TRẬN PHÂN TÍCH TRÊN RAM (INFERENCE ENGINE)
