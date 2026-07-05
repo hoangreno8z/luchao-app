@@ -450,35 +450,31 @@ export default async function handler(req, res) {
     // ===========================================================================
     let aiExplanation = '';
     const geminiKey = process.env.GEMINI_API_KEY;
+    let hoaGiaiAdvice = "";
+
+    if (engineResult && engineResult.targetRelation) {
+        const targetLine = hexData?.linesData?.find(l => l.relation === engineResult.targetRelation);
+        if (targetLine) {
+            const dungHanh = targetLine.hanh || 'Thủy';
+            const kyThanMap = { 'Quan Quỷ': 'Tử Tôn', 'Phụ Mẫu': 'Thê Tài', 'Thê Tài': 'Huynh Đệ', 'Tử Tôn': 'Phụ Mẫu', 'Huynh Đệ': 'Quan Quỷ' };
+            const kyThanRel = kyThanMap[engineResult.targetRelation];
+            const kyLine = hexData?.linesData?.find(l => l.relation === kyThanRel);
+            const kyHanh = kyLine?.hanh || 'Thổ';
+
+            const hoaGiaiList = {
+                'Thổ_Thủy': 'Sử dụng ngũ hành KIM để thông quan: Đeo trang sức bằng vàng/bạc hình tròn, hoặc đặt vật phẩm bằng đồng ở hướng Tây/Tây Bắc phòng làm việc để hóa giải áp lực từ Kỵ thần Thổ.',
+                'Kim_Mộc': 'Sử dụng ngũ hành THỦY để thông quan: Đặt một bể cá nhỏ hoặc bình nước sạch ở hướng Bắc phòng làm việc để làm dịu điềm hung hiểm và hóa giải xung đột.',
+                'Mộc_Thổ': 'Sử dụng ngũ hành HỎA để thông quan: Bật đèn sáng tại phía Nam, tăng cường dùng tông màu đỏ/hồng để chuyển hóa lực cản từ Mộc thành động lực phát triển.',
+                'Hỏa_Kim': 'Sử dụng ngũ hành THỔ để thông quan: Đặt các vật phẩm bằng gốm sứ, đất nung hoặc thạch anh vàng tại khu vực Đông Bắc/Tây Nam để làm bệ đỡ vững chắc cho công việc.',
+                'Thủy_Hỏa': 'Sử dụng ngũ hành MỘC để thông quan: Trồng cây cảnh xanh tốt hoặc sử dụng các đồ dùng bằng gỗ tự nhiên ở phía Đông/Đông Nam để hút tà khí và sinh trợ bản mệnh.'
+            };
+            const key = `${kyHanh}_${dungHanh}`;
+            hoaGiaiAdvice = hoaGiaiList[key] || "";
+        }
+    }
 
     if (geminiKey && userInputs && hexData && analysisTextsList.length > 0) {
         try {
-            // --- LOGIC HÓA GIẢI PHONG THỦY VƯƠNG HỔ ỨNG ---
-            let hoaGiaiAdvice = "";
-            if (engineResult && engineResult.targetRelation) {
-                // Lấy Ngũ hành của Dụng thần lâm hào
-                const targetLine = hexData?.linesData?.find(l => l.relation === engineResult.targetRelation);
-                if (targetLine) {
-                    const dungHanh = targetLine.hanh || 'Thủy';
-                    // Xác định Kỵ thần tương ứng
-                    const kyThanMap = { 'Quan Quỷ': 'Tử Tôn', 'Phụ Mẫu': 'Thê Tài', 'Thê Tài': 'Huynh Đệ', 'Tử Tôn': 'Phụ Mẫu', 'Huynh Đệ': 'Quan Quỷ' };
-                    const kyThanRel = kyThanMap[engineResult.targetRelation];
-                    const kyLine = hexData?.linesData?.find(l => l.relation === kyThanRel);
-                    const kyHanh = kyLine?.hanh || 'Thổ';
-
-                    // Tìm luật Hóa Giải
-                    const hoaGiaiList = {
-                        'Thổ_Thủy': 'Sử dụng ngũ hành KIM để thông quan: Đeo trang sức bằng vàng/bạc hình tròn, hoặc đặt vật phẩm bằng đồng ở hướng Tây/Tây Bắc phòng làm việc để hóa giải áp lực từ Kỵ thần Thổ.',
-                        'Kim_Mộc': 'Sử dụng ngũ hành THỦY để thông quan: Đặt một bể cá nhỏ hoặc bình nước sạch ở hướng Bắc phòng làm việc để làm dịu điềm hung hiểm và hóa giải xung đột.',
-                        'Mộc_Thổ': 'Sử dụng ngũ hành HỎA để thông quan: Bật đèn sáng tại phía Nam, tăng cường dùng tông màu đỏ/hồng để chuyển hóa lực cản từ Mộc thành động lực phát triển.',
-                        'Hỏa_Kim': 'Sử dụng ngũ hành THỔ để thông quan: Đặt các vật phẩm bằng gốm sứ, đất nung hoặc thạch anh vàng tại khu vực Đông Bắc/Tây Nam để làm bệ đỡ vững chắc cho công việc.',
-                        'Thủy_Hỏa': 'Sử dụng ngũ hành MỘC để thông quan: Trồng cây cảnh xanh tốt hoặc sử dụng các đồ dùng bằng gỗ tự nhiên ở phía Đông/Đông Nam để hút tà khí và sinh trợ bản mệnh.'
-                    };
-                    const key = `${kyHanh}_${dungHanh}`;
-                    hoaGiaiAdvice = hoaGiaiList[key] || "";
-                }
-            }
-
             const promptData = {
                 user_gender: gender,
                 user_question: userInputs.question || 'Không có câu hỏi cụ thể',
@@ -490,18 +486,20 @@ export default async function handler(req, res) {
                 advice: (scenarioText?.advice || '') + (hoaGiaiAdvice ? `\n\n[Bí quyết Hóa giải phong thủy Vương Hổ Ứng]: ${hoaGiaiAdvice}` : '')
             };
 
-            const systemPrompt = `Bạn là biên tập viên Lục Hào chuyên nghiệp. Nhiệm vụ: tổng hợp các đoạn phân tích kỹ thuật thành báo cáo cá nhân hóa mượt mà bằng tiếng Việt.
+            const systemPrompt = `Bạn là một bậc thầy Kinh Dịch Lục Hào giàu kinh nghiệm thực chiến, tinh thông học thuyết Vương Hổ Ứng và Chu Thần Bân.
+Nhiệm vụ của bạn là đọc các dữ liệu phân tích kỹ thuật thô và tổng hợp lại thành một bài luận giải cá nhân hóa mượt mà, sâu sắc, có hồn và mang văn phong của một người thầy thực sự: điềm đạm, thấu hiểu, uy nghiêm nhưng tràn đầy sự định hướng chân thành.
 
 NGUYÊN TẮC TUYỆT ĐỐI:
-1. KHÔNG tự tính toán lại ngũ hành, không thay đổi kết luận Cát/Hung/Bình đầu vào.
-2. KHÔNG bịa thêm bất kỳ thông tin nào ngoài dữ liệu đã cung cấp.
-3. Xưng hô phù hợp với giới tính người hỏi, viết chân thực gần gũi.
+1. KHÔNG được tự tính toán lại ngũ hành, không thay đổi kết luận Cát/Hung/Bình của quẻ đầu vào.
+2. KHÔNG bịa đặt thêm các yếu tố kỹ thuật ngoài dữ liệu thô cung cấp.
+3. Hành văn bằng tiếng Việt chính thống, xưng hô tôn trọng phù hợp với giới tính người xem (Nam/Nữ).
+4. Phân tích rõ ràng nguyên nhân tại sao Cát hay Hung dựa trên tình trạng của Hào Thế và Dụng Thần (Vượng, Suy, Phá, Không, Mộ).
 
-Cấu trúc 4 phần bắt buộc:
-1. PHÂN TÍCH HIỆN TRẠNG
-2. ĐÁNH GIÁ CÁT HUNG
-3. DIỄN BIẾN CHI TIẾT
-4. LỜI KHUYÊN HÀNH ĐỘNG`;
+Bố cục trình bày bắt buộc gồm 4 phần:
+I. CHIÊM NGHIỆM HIỆN TRẠNG TÂM LÝ & HOÀN CẢNH (Dùng thông tin Hào Thế trì Lục thân và Hào tâm niệm để chỉ ra tâm tư thật của người xem)
+II. ĐÁNH GIÁ CÁT HUNG & DIỄN BIẾN (Chỉ rõ nguyên nhân theo Ngũ Hành, Nhật Nguyệt sinh khắc)
+III. CHI TIẾT SỰ VIỆC BÊN NGOÀI (Diễn giải ý nghĩa các Thần sát Dịch mã, Đào hoa, Lục thú phát động)
+IV. LỜI KHUYÊN DỊCH LÝ & HÓA GIẢI PHONG THỦY (Lời khuyên hành sự kết hợp với Bí pháp thông quan Vương Hổ Ứng)`;
 
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
@@ -515,6 +513,28 @@ Cấu trúc 4 phần bắt buộc:
             aiExplanation = resJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
         } catch (err) {
             console.error('Gemini API error:', err.message);
+        }
+    }
+
+    // ===========================================================================
+    // CƠ CHẾ DỰ PHÒNG NẾU AI STUDIO LỖI (FALLBACK EXPERT GENERATOR)
+    // ===========================================================================
+    if (!aiExplanation && userInputs) {
+        aiExplanation = `
+I. CHIÊM NGHIỆM HIỆN TRẠNG TÂM LÝ & HOÀN CẢNH:
+Chủ sự đang mưu cầu việc về [${topic.toUpperCase()}]. Hào Thế đang phản ánh trạng thái năng lượng thực tế của bạn đối với sự việc này. Dữ liệu quẻ dịch chỉ ra tâm tư của bạn đang có sự băn khoăn, áp lực nhất định cần được củng cố.
+
+II. ĐÁNH GIÁ CÁT HUNG & DIỄN BIẾN:
+Kết luận chung của quẻ dịch là: **${catHung === 'CAT' ? 'CÁT TƯỜNG (TỐT LÀNH)' : catHung === 'HUNG' ? 'BẤT LỢI (HUNG)' : 'BÌNH HÒA'}**.
+- Ý nghĩa quẻ chủ: ${mainName} chỉ ra ${overallMeaning}
+- Phân tích tương tác ngũ hành: 
+  ${analysisTextsList.join('\n  ')}
+
+III. LỜI KHUYÊN DỊCH LÝ & HÓA GIẢI PHONG THỦY:
+${scenarioText.advice || 'Tùy thời hành sự, giữ vững chính đạo.'}
+`;
+        if (hoaGiaiAdvice) {
+            aiExplanation += `\n[Bí pháp Hóa giải phong thủy Vương Hổ Ứng]: ${hoaGiaiAdvice}`;
         }
     }
 
