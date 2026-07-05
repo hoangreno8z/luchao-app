@@ -114,6 +114,27 @@ export default async function handler(req, res) {
 
     if (!hex_id) return res.status(400).json({ error: 'Missing hex_id parameter' });
 
+    // ===========================================================================
+    // MA TRẬN TOÁN HỌC NGŨ HÀNH SINH KHẮC 5x5 TRÊN RAM (BÁNH RĂNG ĐỒNG HỒ)
+    // ===========================================================================
+    const NGU_HANH_LIST = ['Mộc', 'Hỏa', 'Thổ', 'Kim', 'Thủy'];
+    const SHENG_KE_MATRIX = [
+        // Target: Mộc(0), Hỏa(1), Thổ(2), Kim(3), Thủy(4)
+        /* Src: Mộc */ [0.5,    1,      -1,     -0.5,   0],
+        /* Src: Hỏa */ [0,      0.5,    1,      -1,     -0.5],
+        /* Src: Thổ */ [-0.5,   0,      0.5,    1,      -1],
+        /* Src: Kim */ [-1,     -0.5,   0,      0.5,    1],
+        /* Src: Thủy */ [1,     -1,     -0.5,   0,      0.5]
+    ];
+
+    // Hàm tra cứu sinh khắc qua tọa độ ma trận
+    const getShengKeRelation = (srcHanh, targetHanh) => {
+        const srcIdx = NGU_HANH_LIST.indexOf(srcHanh);
+        const targetIdx = NGU_HANH_LIST.indexOf(targetHanh);
+        if (srcIdx === -1 || targetIdx === -1) return 0;
+        return SHENG_KE_MATRIX[srcIdx][targetIdx];
+    };
+
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -136,7 +157,7 @@ export default async function handler(req, res) {
     }
 
     // ===========================================================================
-    // TRUY XUẤT DATABASE SONG SONG - 6 QUERY ĐỒNG THỜI
+    // TRUY XUẤT DATABASE SONG SONG (TỰ PHỤC HỒI NẾU NULL/LỖI)
     // ===========================================================================
     if (supabaseUrl && supabaseKey) {
         try {
@@ -350,26 +371,79 @@ export default async function handler(req, res) {
     }
 
     // ===========================================================================
-    // TÍNH ĐIỂM CÁT HUNG
+    // HỆ THỐNG TRỌNG SỐ NGUYÊN TỬ VÀ MA TRẬN PHÂN TÍCH TRÊN RAM (INFERENCE ENGINE)
     // ===========================================================================
-    let power = 0, risk = 0;
-    if (generatedCodes.includes('DUNG_STATUS_VUONG')) power += 30;
-    if (generatedCodes.some(c => c.includes('TIEN_THAN'))) power += 25;
-    if (generatedCodes.includes('DUNG_STATUS_AM_DONG')) power += 20;
-    if (generatedCodes.includes('PROPERTY_LUC_HOP')) power += 15;
-    if (generatedCodes.includes('DUNG_STATUS_SUY')) power -= 20;
-    if (generatedCodes.includes('DUNG_STATUS_TUAN_KHONG')) power -= 25;
-    if (generatedCodes.includes('DUNG_STATUS_NGUYET_PHA')) { power -= 50; risk += 30; }
-    if (generatedCodes.includes('DUNG_STATUS_MO')) { power -= 20; risk += 20; }
-    if (generatedCodes.some(c => c.includes('HOI_DAU_KHAC'))) { power -= 60; risk += 50; }
-    if (generatedCodes.includes('THE_STATUS_HOA_QUY')) risk += 40;
-    if (generatedCodes.includes('PROPERTY_LUC_XUNG')) risk += 15;
+    let baseScore = 0; // Điểm khởi điểm mặc định (State = Bình Hòa)
+    let multiplier = 1.0; // Hệ số nhân (Ví dụ Nguyệt phá làm giảm 50% sức vượng)
 
-    const netScore = power - risk;
-    let catHung = netScore > 10 ? 'CAT' : netScore < -10 ? 'HUNG' : 'BINH';
+    // Khai báo bảng Trọng số nguyên tử (Atomic Weights)
+    const ATOMIC_WEIGHTS = {
+        'DUNG_STATUS_VUONG': 30,
+        'DUNG_STATUS_SUY': -20,
+        'DUNG_STATUS_AM_DONG': 20,
+        'DUNG_STATUS_TUAN_KHONG': -25,
+        'DUNG_STATUS_MO': -20,
+        'DUNG_STATUS_NHAT_PHA': -40,
+        'DUNG_STATUS_PHUC_THAN': -10,
+        'THE_STATUS_HOA_QUY': -20,
+        'THE_STATUS_HOI_DAU_KHAC': -60,
+        'THE_STATUS_HOI_DAU_SINH': 30,
+        'PROPERTY_LUC_HOP': 15,
+        'PROPERTY_LUC_XUNG': -15,
+        'PATTERN_DICH_MA_DONG_BIEN_DONG': 10,
+        'PATTERN_DAO_HOA_DONG_DUYEN_VONG': 15,
+        'PATTERN_HOA_CAI_DONG_NGHE_THUAT': 10
+    };
 
+    // Khai báo các hệ số nhân (Multipliers)
+    const ATOMIC_MULTIPLIERS = {
+        'DUNG_STATUS_NGUYET_PHA': 0.5 // Làm giảm 50% năng lượng cát lành
+    };
+
+    // 1. Áp dụng các quy tắc hạt cơ bản trong quẻ
+    generatedCodes.forEach(code => {
+        if (ATOMIC_WEIGHTS[code] !== undefined) {
+            baseScore += ATOMIC_WEIGHTS[code];
+        }
+        if (ATOMIC_MULTIPLIERS[code] !== undefined) {
+            multiplier *= ATOMIC_MULTIPLIERS[code];
+        }
+    });
+
+    // 2. Tính toán sinh khắc động học từ Nhật/Nguyệt qua Ma trận 5x5
+    if (engineResult && engineResult.targetRelation && hexData && hexData.linesData) {
+        const targetLine = hexData.linesData.find(l => l.relation === engineResult.targetRelation);
+        if (targetLine) {
+            const targetHanh = targetLine.hanh || 'Thổ';
+            
+            // Xung khắc từ Nhật Thần (Ngày)
+            const nhatHanh = NGU_HANH_LIST.indexOf(hexData.nhatThan) !== -1 ? hexData.nhatThan : 'Thổ';
+            const nhatRelationValue = getShengKeRelation(nhatHanh, targetHanh); // Tra cứu ma trận
+            baseScore += nhatRelationValue * 20; // Trọng số tác động của Ngày
+
+            // Xung khắc từ Nguyệt Lệnh (Tháng)
+            const nguyetHanh = NGU_HANH_LIST.indexOf(hexData.nguyetLenh) !== -1 ? hexData.nguyetLenh : 'Thổ';
+            const nguyetRelationValue = getShengKeRelation(nguyetHanh, targetHanh); // Tra cứu ma trận
+            baseScore += nguyetRelationValue * 20; // Trọng số tác động của Tháng
+        }
+    }
+
+    // 3. Phép tính Cát hung cuối cùng
+    const finalScore = baseScore * multiplier;
+
+    // 4. Conflict Resolver & Fallback Hierarchy (Hệ thống phân cấp ưu tiên)
+    // Ngưỡng phân định: Cát > 10 điểm, Hung < -10 điểm, còn lại rơi xuống mặc định "Bình hòa"
+    let catHung = 'BINH'; 
+    if (finalScore > 10) catHung = 'CAT';
+    else if (finalScore < -10) catHung = 'HUNG';
+
+    // Cơ chế Fallback Template (không bao giờ lỗi Null)
     const topicTemplates = COMPILED_KNOWLEDGE.templates[topic] || COMPILED_KNOWLEDGE.templates['công việc'];
-    const scenarioText = topicTemplates.scenarios[catHung];
+    const scenarioText = (topicTemplates && topicTemplates.scenarios) ? topicTemplates.scenarios[catHung] : {
+        summary: "Sự việc bình hòa, cục diện ổn định.",
+        detail: "Năng lượng ngũ hành cân bằng. Không có biến động lớn đe dọa hay mang lại bứt phá đột ngột, mưu sự cần tiến bước thận trọng.",
+        advice: "Giữ tâm thế bình tĩnh, củng cố nền tảng cũ trước khi hướng tới thay đổi lớn."
+    };
 
     // ===========================================================================
     // GEMINI AI BIÊN TẬP CÁ NHÂN HÓA (TASK-LOCKED)
