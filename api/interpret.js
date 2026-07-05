@@ -420,12 +420,14 @@ export default async function handler(req, res) {
             const targetHanh = targetLine.hanh || 'Thổ';
             
             // Xung khắc từ Nhật Thần (Ngày)
-            const nhatHanh = NGU_HANH_LIST.indexOf(hexData.nhatThan) !== -1 ? hexData.nhatThan : 'Thổ';
+            const rawNhat = hexData?.dateInfo?.nhatThan || '';
+            const nhatHanh = rawNhat.includes(' - ') ? rawNhat.split(' - ')[1].trim() : 'Thổ';
             const nhatRelationValue = getShengKeRelation(nhatHanh, targetHanh); // Tra cứu ma trận
             baseScore += nhatRelationValue * 20; // Trọng số tác động của Ngày
 
             // Xung khắc từ Nguyệt Lệnh (Tháng)
-            const nguyetHanh = NGU_HANH_LIST.indexOf(hexData.nguyetLenh) !== -1 ? hexData.nguyetLenh : 'Thổ';
+            const rawNguyet = hexData?.dateInfo?.nguyetLenh || '';
+            const nguyetHanh = rawNguyet.includes(' - ') ? rawNguyet.split(' - ')[1].trim() : 'Thổ';
             const nguyetRelationValue = getShengKeRelation(nguyetHanh, targetHanh); // Tra cứu ma trận
             baseScore += nguyetRelationValue * 20; // Trọng số tác động của Tháng
         }

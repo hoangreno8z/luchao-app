@@ -515,8 +515,8 @@ export function aggregateMicroOverlap(enrichedLines, hexProperties) {
 // =============================================================================
 export function runFullEngineAnalysis(hexData, topic, gender) {
     const linesData = hexData.linesData;
-    const dayChi = (hexData.dateInfo.nhatThan || '').split(' - ')[0].trim();
-    const monthChi = (hexData.dateInfo.nguyetLenh || '').split(' - ')[0].trim();
+    const dayChi = (hexData?.dateInfo?.nhatThan || '').split(' - ')[0].trim();
+    const monthChi = (hexData?.dateInfo?.nguyetLenh || '').split(' - ')[0].trim();
 
     // Xác định Dụng Thần theo chủ đề và giới tính
     const deityMap = {
