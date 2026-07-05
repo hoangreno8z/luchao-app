@@ -166,7 +166,10 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${supabaseKey}`,
                 'Content-Type': 'application/json'
             };
-            const G = (url) => fetch(url, { headers: H }).then(r => r.json()).catch(() => []);
+            const G = (url) => {
+                if (typeof fetch === 'undefined') return Promise.resolve([]);
+                return fetch(url, { headers: H }).then(r => r.json()).catch(() => []);
+            };
 
             // Chuẩn hóa tên chủ đề sang mã DB
             const topicCode = {
