@@ -157,7 +157,6 @@ export default async function handler(req, res) {
     // ===========================================================================
     const NGU_HANH_LIST = ['Mộc', 'Hỏa', 'Thổ', 'Kim', 'Thủy'];
     const SHENG_KE_MATRIX = [
-        // Target: Mộc(0), Hỏa(1), Thổ(2), Kim(3), Thủy(4)
         /* Src: Mộc */ [0.5,    1,      -1,     -0.5,   0],
         /* Src: Hỏa */ [0,      0.5,    1,      -1,     -0.5],
         /* Src: Thổ */ [-0.5,   0,      0.5,    1,      -1],
@@ -165,13 +164,196 @@ export default async function handler(req, res) {
         /* Src: Thủy */ [1,     -1,     -0.5,   0,      0.5]
     ];
 
-    // Hàm tra cứu sinh khắc qua tọa độ ma trận
     const getShengKeRelation = (srcHanh, targetHanh) => {
         const srcIdx = NGU_HANH_LIST.indexOf(srcHanh);
         const targetIdx = NGU_HANH_LIST.indexOf(targetHanh);
         if (srcIdx === -1 || targetIdx === -1) return 0;
         return SHENG_KE_MATRIX[srcIdx][targetIdx];
     };
+
+    // ===========================================================================
+    // BỘ PHÂN GIẢI DỤNG THẦN THẬT / GIẢ & QUẺ TÂM TÍNH (PHASE 1 CORE)
+    // ===========================================================================
+    const deityMap = {
+        'công việc': 'Quan Quỷ', 'thi cử': 'Phụ Mẫu',
+        'tình yêu': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
+        'hôn nhân': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
+        'sức khỏe': 'Tử Tôn', 'kinh doanh': 'Thê Tài', 'dự án': 'Thê Tài',
+        'phong thủy': 'Thê Tài',
+        'kiện tụng': 'Quan Quỷ',
+        'tìm kiếm': 'Thê Tài',
+        'thai sản': 'Tử Tôn',
+        'ông bà cha mẹ': 'Phụ Mẫu',
+        'con cháu': 'Tử Tôn',
+        'anh em': 'Huynh Đệ',
+        'xem thay mặt vợ': 'Thê Tài',
+        'xem thay mặt chồng': 'Quan Quỷ'
+    };
+    const defaultDeity = deityMap[topic] || 'Quan Quỷ';
+    
+    let activeDeity = defaultDeity;
+    let isTrueDungThan = false;
+    let isQueTamTinh = false;
+    let queTamTinhType = ''; // 'Tử tôn (Hỉ thần)' hoặc 'Quan quỷ (Lo thần)'
+
+    const rawNhat = hexData?.dateInfo?.nhatThan || '';
+    const nhatChi = rawNhat.split(' - ')[0].trim();
+    const nhatHanh = rawNhat.includes(' - ') ? rawNhat.split(' - ')[1].trim() : 'Thổ';
+
+    const rawNguyet = hexData?.dateInfo?.nguyetLenh || '';
+    const nguyetChi = rawNguyet.split(' - ')[0].trim();
+    const nguyetHanh = rawNguyet.includes(' - ') ? rawNguyet.split(' - ')[1].trim() : 'Thổ';
+
+    // Xung Chi Map
+    const XUNG_MAP_LOCAL = {
+        'Tý': 'Ngọ', 'Ngọ': 'Tý', 'Sửu': 'Mùi', 'Mùi': 'Sửu',
+        'Dần': 'Thân', 'Thân': 'Dần', 'Mão': 'Dậu', 'Dậu': 'Mão',
+        'Thìn': 'Tuất', 'Tuất': 'Thìn', 'Tỵ': 'Hợi', 'Hợi': 'Tỵ'
+    };
+    const checkXungChi = (c1, c2) => XUNG_MAP_LOCAL[c1] === c2;
+
+    // Hợp Chi Map
+    const HOP_MAP_LOCAL = {
+        'Tý': 'Sửu', 'Sửu': 'Tý', 'Dần': 'Hợi', 'Hợi': 'Dần',
+        'Mão': 'Tuất', 'Tuất': 'Mão', 'Thìn': 'Dậu', 'Dậu': 'Thìn',
+        'Tỵ': 'Thân', 'Thân': 'Tỵ', 'Ngọ': 'Mùi', 'Mùi': 'Ngọ'
+    };
+    const checkHopChi = (c1, c2) => HOP_MAP_LOCAL[c1] === c2;
+
+    // Ngũ hành sinh khắc bổ trợ
+    const SINH_MAP = {
+        'Thủy': 'Mộc', 'Mộc': 'Hỏa', 'Hỏa': 'Thổ', 'Thổ': 'Kim', 'Kim': 'Thủy'
+    };
+    const KHAC_MAP = {
+        'Kim': 'Mộc', 'Mộc': 'Thổ', 'Thổ': 'Thủy', 'Thủy': 'Hỏa', 'Hỏa': 'Kim'
+    };
+
+    const getTrinhCung12 = (hanh, chi) => {
+        if (hanh === 'Mộc') {
+            if (chi === 'Hợi') return 'Trường sinh';
+            if (chi === 'Mão') return 'Đế vượng';
+            if (chi === 'Mùi') return 'Mộ';
+            if (chi === 'Thân') return 'Tuyệt';
+        }
+        if (hanh === 'Hỏa') {
+            if (chi === 'Dần') return 'Trường sinh';
+            if (chi === 'Ngọ') return 'Đế vượng';
+            if (chi === 'Tuất') return 'Mộ';
+            if (chi === 'Hợi') return 'Tuyệt';
+        }
+        if (hanh === 'Kim') {
+            if (chi === 'Tỵ') return 'Trường sinh';
+            if (chi === 'Dậu') return 'Đế vượng';
+            if (chi === 'Sửu') return 'Mộ';
+            if (chi === 'Dần') return 'Tuyệt';
+        }
+        if (hanh === 'Thủy') {
+            if (chi === 'Thân') return 'Trường sinh';
+            if (chi === 'Tý') return 'Đế vượng';
+            if (chi === 'Thìn') return 'Mộ';
+            if (chi === 'Tỵ') return 'Tuyệt';
+        }
+        if (hanh === 'Thổ') {
+            if (chi === 'Thân') return 'Trường sinh';
+            if (chi === 'Tý') return 'Đế vượng';
+        }
+        return 'Bình';
+    };
+
+    if (hexData && hexData.linesData) {
+        // ĐK1: Dụng thần phát động trong quẻ chính hoặc được biến ra
+        const isMovedMain = hexData.linesData.some(l => l.relation === defaultDeity && l.isMoving);
+        const isMovedBien = hexData.linesData.some(l => l.isMoving && l.changed && l.changed.relation === defaultDeity);
+        const dk1 = isMovedMain || isMovedBien;
+
+        // ĐK2: Dụng thần nằm tại hào Thế hoặc Hào Ứng
+        const dk2 = hexData.linesData.some(l => l.relation === defaultDeity && (l.isShi || l.isYing));
+
+        // ĐK3: Hào động tương tác với Dụng thần
+        let dk3 = false;
+        const defaultLines = hexData.linesData.filter(l => l.relation === defaultDeity);
+        const movingLines = hexData.linesData.filter(l => l.isMoving);
+        for (const dl of defaultLines) {
+            for (const ml of movingLines) {
+                const sheng = SINH_MAP[ml.hanh] === dl.hanh;
+                const ke = KHAC_MAP[ml.hanh] === dl.hanh;
+                const xung = checkXungChi(ml.chi, dl.chi);
+                const hop = checkHopChi(ml.chi, dl.chi);
+                if (sheng || ke || xung || hop) { dk3 = true; break; }
+            }
+            if (dk3) break;
+        }
+
+        // ĐK4: Nhật lệnh và nguyệt lệnh tương tác với Dụng thần
+        let dk4 = false;
+        for (const dl of defaultLines) {
+            const nhatSheng = SINH_MAP[nhatHanh] === dl.hanh;
+            const nhatKe = KHAC_MAP[nhatHanh] === dl.hanh;
+            const nhatXung = checkXungChi(nhatChi, dl.chi);
+            const nhatHop = checkHopChi(nhatChi, dl.chi);
+            const nhatMo = getTrinhCung12(dl.hanh, nhatChi) === 'Mộ';
+
+            const nguyetSheng = SINH_MAP[nguyetHanh] === dl.hanh;
+            const nguyetKe = KHAC_MAP[nguyetHanh] === dl.hanh;
+            const nguyetXung = checkXungChi(nguyetChi, dl.chi);
+            const nguyetHop = checkHopChi(nguyetChi, dl.chi);
+
+            if (nhatSheng || nhatKe || nhatXung || nhatHop || nhatMo || 
+                nguyetSheng || nguyetKe || nguyetXung || nguyetHop) {
+                dk4 = true;
+                break;
+            }
+        }
+
+        if (dk1 || dk2 || dk3 || dk4) {
+            isTrueDungThan = true;
+            activeDeity = defaultDeity;
+        } else {
+            // DỤNG THẦN GIẢ -> KÍCH HOẠT QUẺ TÂM TÍNH (Quan Quỷ hoặc Tử Tôn)
+            const qqLine = hexData.linesData.find(l => l.relation === 'Quan Quỷ');
+            const ttLine = hexData.linesData.find(l => l.relation === 'Tử Tôn');
+            let targetDeity = '';
+
+            if (qqLine && qqLine.isShi && ttLine && ttLine.isYing) {
+                targetDeity = 'Quan Quỷ';
+            } else if (ttLine && ttLine.isShi && qqLine && qqLine.isYing) {
+                targetDeity = 'Tử Tôn';
+            } else if (qqLine && (qqLine.isShi || qqLine.isYing)) {
+                targetDeity = 'Quan Quỷ';
+            } else if (ttLine && (ttLine.isShi || ttLine.isYing)) {
+                targetDeity = 'Tử Tôn';
+            }
+
+            if (!targetDeity) {
+                const isQQMoving = hexData.linesData.some(l => l.relation === 'Quan Quỷ' && l.isMoving) ||
+                                   hexData.linesData.some(l => l.isMoving && l.changed && l.changed.relation === 'Quan Quỷ');
+                const isTTMoving = hexData.linesData.some(l => l.relation === 'Tử Tôn' && l.isMoving) ||
+                                   hexData.linesData.some(l => l.isMoving && l.changed && l.changed.relation === 'Tử Tôn');
+                
+                if (isQQMoving) targetDeity = 'Quan Quỷ';
+                else if (isTTMoving) targetDeity = 'Tử Tôn';
+            }
+
+            if (targetDeity) {
+                activeDeity = targetDeity;
+                isQueTamTinh = true;
+                queTamTinhType = targetDeity === 'Quan Quỷ' ? 'Quan quỷ (Lo thần - sầu lo, gian nan)' : 'Tử tôn (Hỉ thần - yên vui, toại nguyện)';
+            }
+        }
+    }
+
+    let engineResult = null;
+    let generatedCodes = [];
+
+    if (hexData && hexData.linesData) {
+        try {
+            engineResult = runFullEngineAnalysis(hexData, topic, gender);
+            engineResult.targetRelation = activeDeity; // Gán lại cho đồng bộ
+            generatedCodes = engineResult.allCodes;
+        } catch (err) {
+            console.error('Engine analysis error:', err.message);
+        }
+    }
 
     const getHaoPowerState = (hanh, nguyetLenhStr) => {
         const nguyetChi = (nguyetLenhStr || '').split(' - ')[0].trim();
@@ -202,20 +384,7 @@ export default async function handler(req, res) {
     let dbMainHex = null, dbChangedHex = null, dbLines = [], dbSemanticTexts = [];
     let dbTuongCoBan = [], dbTuongDaTang = [], dbTuongDongBien = [];
 
-    // ===========================================================================
-    // BỘ NHÂN 4 KHỐI - PHÂN TÍCH ĐA CHIỀU
-    // ===========================================================================
-    let engineResult = null;
-    let generatedCodes = [];
 
-    if (hexData && hexData.linesData) {
-        try {
-            engineResult = runFullEngineAnalysis(hexData, topic, gender);
-            generatedCodes = engineResult.allCodes;
-        } catch (err) {
-            console.error('Engine analysis error:', err.message);
-        }
-    }
 
     // ===========================================================================
     // TRUY XUẤT DATABASE SONG SONG (TỰ PHỤC HỒI NẾU NULL/LỖI)
@@ -449,9 +618,28 @@ export default async function handler(req, res) {
         celestialLogs.push(criminalAnalysisLog);
     }
 
-    if (engineResult && hexData && hexData.linesData) {
-        const targetLine = hexData.linesData.find(l => l.relation === engineResult.targetRelation);
+    if (hexData && hexData.linesData) {
+        // --- KHỐI CƠ BẢN: XÁC MINH DỤNG THẦN & QUẺ TÂM TÍNH ---
+        if (isQueTamTinh) {
+            celestialLogs.push(`⚖️ XÁC MINH DỤNG THẦN: [DỤNG THẦN GIẢ - QUẺ TÂM TÍNH (Gian nan khổ cực)]`);
+            celestialLogs.push(`   • Giải thích: Dụng thần mặc định [${defaultDeity}] vô khí và vô động lực. Hệ thống đã kích hoạt chuyển sang hào ${queTamTinhType} để xét Cát Hung.`);
+        } else {
+            celestialLogs.push(`⚖️ XÁC MINH DỤNG THẦN: [DỤNG THẦN THẬT - ĐẮC KHÍ HỮU LỰC]`);
+            celestialLogs.push(`   • Giải thích: Hào Dụng thần [${activeDeity}] đắc khí tại Thế/Ứng, có động lực hoặc tương tác Nhật Nguyệt nên là Dụng thần chân thực.`);
+        }
+
+        // --- KHỐI C: HÀO TÂM NIỆM (Tâm tư ẩn giấu) ---
         const shiLine = hexData.linesData.find(l => l.isShi);
+        const quanLine = hexData.linesData[4]; // Hào 5
+        celestialLogs.push(`❤️ HÀO TÂM NIỆM (Phản ánh sâu thẳm tâm tư người gieo quẻ):`);
+        if (shiLine) {
+            celestialLogs.push(`   • Hào Thế trì Lục thân: ${shiLine.relation} (Chi ${shiLine.chi} - Ngũ hành ${shiLine.hanh} - Thú ${shiLine.lucThu}).`);
+        }
+        if (quanLine) {
+            celestialLogs.push(`   • Quân Hào (Hào 5 - Trái tim/Vị trí trung tâm ý chí): Lâm ${quanLine.relation} (Chi ${quanLine.chi} - Ngũ hành ${quanLine.hanh} - Thú ${quanLine.lucThu}).`);
+        }
+
+        const targetLine = hexData.linesData.find(l => l.relation === activeDeity);
 
         // 1. Phân tích Dụng Thần
         if (targetLine) {
@@ -463,7 +651,7 @@ export default async function handler(req, res) {
             const nguyetChi = rawNguyet.split(' - ')[0].trim();
             const nguyetHanh = rawNguyet.includes(' - ') ? rawNguyet.split(' - ')[1].trim() : 'Thổ';
 
-            celestialLogs.push(`⚡ PHÂN TÍCH NHẬT NGUYỆT CHO DỤNG THẦN [${engineResult.targetRelation} - Chi ${targetLine.chi} Ngũ hành ${targetLine.hanh}]:`);
+            celestialLogs.push(`⚡ PHÂN TÍCH NHẬT NGUYỆT CHO DỤNG THẦN [${activeDeity} - Chi ${targetLine.chi} Ngũ hành ${targetLine.hanh}]:`);
 
             // Tương tác Nhật Thần (Ngày gieo)
             const nhatRel = getShengKeRelation(nhatHanh, targetLine.hanh);
@@ -475,10 +663,14 @@ export default async function handler(req, res) {
             celestialLogs.push(`   • Ngày: ${nhatTxt}`);
 
             // Kiểm tra Nhật Xung (Ám Động / Nhật Phá)
-            if (generatedCodes.includes('DUNG_STATUS_AM_DONG')) {
-                celestialLogs.push(`   • Nhật Xung: Hào Dụng Thần tĩnh được Nhật Thần ${nhatChi} xung kích hoạt thế ÁM ĐỘNG. Biểu thị sự việc sẽ bộc phát ngầm rất nhanh chóng.`);
-            } else if (generatedCodes.includes('DUNG_STATUS_NHAT_PHA')) {
-                celestialLogs.push(`   • Nhật Xung: Dụng Thần suy yếu bị Nhật Thần ${nhatChi} tương xung tạo thế NHẬT PHÁ, bị tổn thương vỡ tán khí lực.`);
+            const isNhatXung = checkXungChi(nhatChi, targetLine.chi);
+            if (isNhatXung) {
+                const powerNguyet = getHaoPowerState(targetLine.hanh, rawNguyet);
+                if (powerNguyet === 'Vượng' || powerNguyet === 'Tướng') {
+                    celestialLogs.push(`   • Nhật Xung: Hào Dụng Thần đắc khí được Nhật Thần ${nhatChi} xung kích hoạt thế ÁM ĐỘNG. Biểu thị sự việc sẽ bộc phát ngầm rất nhanh chóng.`);
+                } else {
+                    celestialLogs.push(`   • Nhật Xung: Dụng Thần suy yếu bị Nhật Thần ${nhatChi} tương xung tạo thế NHẬT PHÁ, bị tổn thương vỡ tán khí lực.`);
+                }
             }
 
             // Tương tác Nguyệt Lệnh (Tháng gieo)
@@ -490,28 +682,40 @@ export default async function handler(req, res) {
             else nguyetTxt += ` bình hòa.`;
             celestialLogs.push(`   • Tháng: ${nguyetTxt}`);
 
-            if (generatedCodes.includes('DUNG_STATUS_NGUYET_PHA')) {
-                celestialLogs.push(`   • Nguyệt Phá: Hào Dụng Thần bị Nguyệt Lệnh ${nguyetChi} tương xung trực diện tạo thế NGUYỆT PHÁ. Đây là điểm hung hại lớn, mọi mưu cầu dễ bị đổ vỡ nửa chừng.`);
+            const isNguyetXung = checkXungChi(nguyetChi, targetLine.chi);
+            if (isNguyetXung) {
+                celestialLogs.push(`   • Nguyệt Phá: Hào Dụng Thần bị Nguyệt Lệnh ${nguyetChi} tương xung tạo thế NGUYỆT PHÁ. Đây là điểm hung hại lớn, khí lực vỡ tán cao tầng.`);
             }
 
             // Kiểm tra Tuần Không / Nhập Mộ
-            if (generatedCodes.includes('DUNG_STATUS_TUAN_KHONG')) {
-                celestialLogs.push(`   • Tuần Không: Dụng Thần lâm Tuần Không, hiện tại trống rỗng, vô lực, chưa thể hành sự.`);
+            if (targetLine.isTK) {
+                celestialLogs.push(`   • Tuần Không: Dụng Thần lâm Tuần Không, hiện tại trống rỗng, vô lực, cần chờ ngày thực không hoặc xung không mới hành sự được.`);
             }
-            if (generatedCodes.includes('DUNG_STATUS_MO')) {
-                celestialLogs.push(`   • Nhập Mộ: Dụng Thần nhập Mộ, bị che mờ, giam hãm khó phát huy khả năng.`);
+            const isMo = getTrinhCung12(targetLine.hanh, nhatChi) === 'Mộ' || getTrinhCung12(targetLine.hanh, nguyetChi) === 'Mộ';
+            if (isMo) {
+                celestialLogs.push(`   • Nhập Mộ: Dụng Thần nhập Mộ, bị che mờ, giam hãm trong kho tối khó phát huy khí lực.`);
             }
         }
 
         // 2. Phân tích hào Thế (Bản thân chủ sự)
         if (shiLine) {
             celestialLogs.push(`⚡ PHÂN TÍCH HÀO THẾ [Bản thân bạn - Hào ${hexData.linesData.indexOf(shiLine) + 1} - Chi ${shiLine.chi} Ngũ hành ${shiLine.hanh}]:`);
-            if (generatedCodes.some(c => c.includes('HOI_DAU_KHAC'))) {
+            
+            let isTheHoiDauKhac = false;
+            let isTheHoiDauSinh = false;
+            if (shiLine.isMoving && shiLine.changed) {
+                if (KHAC_MAP[shiLine.changed.hanh] === shiLine.hanh) isTheHoiDauKhac = true;
+                if (SINH_MAP[shiLine.changed.hanh] === shiLine.hanh) isTheHoiDauSinh = true;
+            }
+
+            if (isTheHoiDauKhac) {
                 celestialLogs.push(`   • Hồi Đầu Khắc: Hào Thế phát động hóa ra hào biến tương khắc lại chính nó. Điềm báo tự mình làm hỏng việc của mình, hành sự lúc đầu thuận lợi nhưng kết quả tự chuốc lấy thất bại.`);
-            } else if (generatedCodes.some(c => c.includes('HOI_DAU_SINH'))) {
+            } else if (isTheHoiDauSinh) {
                 celestialLogs.push(`   • Hồi Đầu Sinh: Hào Thế phát động hóa ra hào biến sinh trợ lại chính nó. Cát lành vô cùng, mưu sự càng về sau càng được nâng đỡ phát triển.`);
             }
-            if (generatedCodes.includes('THE_STATUS_HOA_QUY')) {
+
+            const isHoaQuy = shiLine.isMoving && shiLine.changed && shiLine.changed.relation === 'Quan Quỷ';
+            if (isHoaQuy) {
                 celestialLogs.push(`   • Hóa Quỷ: Hào Thế động hóa Quan Quỷ. Chủ sự trong lòng đầy lo âu hoang mang, tự chiêu mời stress hoặc đề phòng bệnh tật phát sinh.`);
             }
         }
@@ -621,113 +825,113 @@ export default async function handler(req, res) {
     });
 
     // ===========================================================================
-    // HỆ THỐNG TRỌNG SỐ NGUYÊN TỬ VÀ MA TRẬN PHÂN TÍCH TRÊN RAM (INFERENCE ENGINE)
+    // THUẬT TOÁN ĐỊNH TÍNH CÁT HUNG TOÀN DIỆN LỤC HÀO (backend Vercel quyết định)
     // ===========================================================================
-    let baseScore = 0; // Điểm khởi điểm mặc định (State = Bình Hòa)
-    let multiplier = 1.0; // Hệ số nhân (Ví dụ Nguyệt phá làm giảm 50% sức vượng)
-
-    // Khai báo bảng Trọng số nguyên tử (Atomic Weights)
-    const ATOMIC_WEIGHTS = {
-        'DUNG_STATUS_VUONG': 30,
-        'DUNG_STATUS_SUY': -20,
-        'DUNG_STATUS_AM_DONG': 20,
-        'DUNG_STATUS_TUAN_KHONG': -25,
-        'DUNG_STATUS_MO': -20,
-        'DUNG_STATUS_NHAT_PHA': -40,
-        'DUNG_STATUS_PHUC_THAN': -10,
-        'THE_STATUS_HOA_QUY': -20,
-        'THE_STATUS_HOI_DAU_KHAC': -60,
-        'THE_STATUS_HOI_DAU_SINH': 30,
-        'PROPERTY_LUC_HOP': 15,
-        'PROPERTY_LUC_XUNG': -15,
-        'PATTERN_DICH_MA_DONG_BIEN_DONG': 10,
-        'PATTERN_DAO_HOA_DONG_DUYEN_VONG': 15,
-        'PATTERN_HOA_CAI_DONG_NGHE_THUAT': 10
-    };
-
-    // Khai báo các hệ số nhân (Multipliers)
-    const ATOMIC_MULTIPLIERS = {
-        'DUNG_STATUS_NGUYET_PHA': 0.5 // Làm giảm 50% năng lượng cát lành
-    };
-
-    // 1. Áp dụng các quy tắc hạt cơ bản trong quẻ
-    generatedCodes.forEach(code => {
-        if (ATOMIC_WEIGHTS[code] !== undefined) {
-            baseScore += ATOMIC_WEIGHTS[code];
-        }
-        if (ATOMIC_MULTIPLIERS[code] !== undefined) {
-            multiplier *= ATOMIC_MULTIPLIERS[code];
-        }
-    });
-
-    // 2. Tính toán sinh khắc động học từ Nhật/Nguyệt qua Ma trận 5x5
-    if (engineResult && engineResult.targetRelation && hexData && hexData.linesData) {
-        const targetLine = hexData.linesData.find(l => l.relation === engineResult.targetRelation);
-        if (targetLine) {
-            const targetHanh = targetLine.hanh || 'Thổ';
-            
-            // Xung khắc từ Nhật Thần (Ngày)
-            const rawNhat = hexData?.dateInfo?.nhatThan || '';
-            const nhatHanh = rawNhat.includes(' - ') ? rawNhat.split(' - ')[1].trim() : 'Thổ';
-            const nhatRelationValue = getShengKeRelation(nhatHanh, targetHanh); // Tra cứu ma trận
-            baseScore += nhatRelationValue * 20; // Trọng số tác động của Ngày
-
-            // Xung khắc từ Nguyệt Lệnh (Tháng)
-            const rawNguyet = hexData?.dateInfo?.nguyetLenh || '';
-            const nguyetHanh = rawNguyet.includes(' - ') ? rawNguyet.split(' - ')[1].trim() : 'Thổ';
-            const nguyetRelationValue = getShengKeRelation(nguyetHanh, targetHanh); // Tra cứu ma trận
-            baseScore += nguyetRelationValue * 20; // Trọng số tác động của Tháng
-        }
-    }
-
-    // 3. Phép tính Cát hung cuối cùng
-    const finalScore = baseScore * multiplier;
-
-    // 4. Phân định Cát Hung theo Quy tắc Chuyên biệt (Phong thủy / Kiện tụng / Dân sự / Hình sự)
     let catHung = 'BINH'; 
-    
-    if (topicCode === 'kien_tung') {
-        const shiLine = hexData?.linesData?.find(l => l.isShi);
-        const yingLine = hexData?.linesData?.find(l => l.isYing);
-        
-        // Đánh giá sức vượng của Thế và Ứng
-        const isShiVuong = generatedCodes.includes('DUNG_STATUS_VUONG') || (shiLine && ['Vượng', 'Tướng'].includes(getHaoPowerState(shiLine.hanh, hexData?.dateInfo?.nguyetLenh)));
-        const isYingVuong = yingLine && ['Vượng', 'Tướng'].includes(getHaoPowerState(yingLine.hanh, hexData?.dateInfo?.nguyetLenh));
-        
-        if (isCriminal) {
-            // Án hình sự: Bản thân vượng = án nhẹ (Cát). Suy bại, xung phá, nhập mộ = án nặng (Hung).
-            const isSuyBai = generatedCodes.includes('DUNG_STATUS_SUY') || 
-                              generatedCodes.includes('DUNG_STATUS_NGUYET_PHA') || 
+
+    if (hexData && hexData.linesData) {
+        const targetLine = hexData.linesData.find(l => l.relation === activeDeity);
+        const shiLine = hexData.linesData.find(l => l.isShi);
+        const yingLine = hexData.linesData.find(l => l.isYing);
+
+        let isDungVuong = false;
+        let isDungSuy = false;
+        let isTheVuong = false;
+        let isTheSuy = false;
+
+        // A. Xét Vượng Suy của Dụng Thần
+        if (targetLine) {
+            const powerNguyet = getHaoPowerState(targetLine.hanh, rawNguyet); // 'Vượng' | 'Tướng' | 'Suy'
+            const isNguyetPha = checkXungChi(nguyetChi, targetLine.chi);
+            const isNhatPha = checkXungChi(nhatChi, targetLine.chi) && getHaoPowerState(targetLine.hanh, rawNhat) === 'Suy';
+            
+            let isHoiDauKhac = false;
+            let isHoiDauSinh = false;
+            if (targetLine.isMoving && targetLine.changed) {
+                if (KHAC_MAP[targetLine.changed.hanh] === targetLine.hanh) isHoiDauKhac = true;
+                if (SINH_MAP[targetLine.changed.hanh] === targetLine.hanh) isHoiDauSinh = true;
+            }
+
+            if (isNguyetPha || isNhatPha || isHoiDauKhac) {
+                isDungSuy = true;
+            } else if (powerNguyet === 'Vượng' || powerNguyet === 'Tướng' || isHoiDauSinh) {
+                isDungVuong = true;
+            }
+        }
+
+        // B. Xét Vượng Suy của Hào Thế (Bản thân chủ sự)
+        if (shiLine) {
+            const powerNguyet = getHaoPowerState(shiLine.hanh, rawNguyet);
+            const isNguyetPha = checkXungChi(nguyetChi, shiLine.chi);
+            
+            let isHoiDauKhac = false;
+            if (shiLine.isMoving && shiLine.changed) {
+                if (KHAC_MAP[shiLine.changed.hanh] === shiLine.hanh) isHoiDauKhac = true;
+            }
+
+            // Hào động khắc Thế (ngoại trừ 4 việc đắc tài, y dược, người đi đường, tâm tính)
+            let isTheBiKhac = false;
+            const activeMovingLines = hexData.linesData.filter(l => l.isMoving);
+            for (const ml of activeMovingLines) {
+                if (KHAC_MAP[ml.hanh] === shiLine.hanh) {
+                    const isCauTai = activeDeity === 'Thê Tài';
+                    const isXemBenhTuTon = activeDeity === 'Tử Tôn';
+                    const isNguoiDiDuong = topicCode === 'tìm kiếm';
+                    const isTamTinhQQ = isQueTamTinh && activeDeity === 'Quan Quỷ';
+                    
+                    if (!(isCauTai || isXemBenhTuTon || isNguoiDiDuong || isTamTinhQQ)) {
+                        isTheBiKhac = true;
+                    }
+                }
+            }
+
+            if (isNguyetPha || isHoiDauKhac || isTheBiKhac) {
+                isTheSuy = true;
+            } else if (powerNguyet === 'Vượng' || powerNguyet === 'Tướng') {
+                isTheVuong = true;
+            }
+        }
+
+        // C. Phân định Cát Hung theo chủ đề và quẻ tâm tính
+        if (isQueTamTinh) {
+            if (activeDeity === 'Quan Quỷ') {
+                // Quan Quỷ là Lo Thần: lo lắng tiêu tán mới cát
+                catHung = isDungSuy ? 'CAT' : 'HUNG';
+            } else if (activeDeity === 'Tử Tôn') {
+                // Tử Tôn là Hỷ Thần: vượng tướng cát
+                catHung = isDungVuong ? 'CAT' : 'HUNG';
+            }
+        } else if (topicCode === 'phong_thuy') {
+            // Phong thủy: Có hao bị phá/khắc hoặc trạch khắc Thế = Hung
+            const hasDamage = generatedCodes.includes('DUNG_STATUS_NGUYET_PHA') || 
                               generatedCodes.includes('DUNG_STATUS_NHAT_PHA') ||
-                              generatedCodes.includes('DUNG_STATUS_MO') ||
-                              generatedCodes.includes('THE_STATUS_HOI_DAU_KHAC');
-            if (isSuyBai) {
-                catHung = 'HUNG';
-            } else if (isShiVuong) {
-                catHung = 'CAT';
+                              celestialLogs.some(log => log.includes('⚠️ Gặp thế NGUYỆT PHÁ') || log.includes('⚠️ Cảnh báo Gia chủ'));
+            catHung = hasDamage ? 'HUNG' : 'CAT';
+        } else if (topicCode === 'kien_tung') {
+            const questionText = (userInputs?.question || userInputs?.issue || '').toLowerCase();
+            const criminalKeywords = ['tù', 'tội', 'giam', 'hình sự', 'bắt', 'vi phạm', 'khởi tố', 'công an', 'án hình', 'phạt tù', 'giam giữ'];
+            const isCriminalCase = criminalKeywords.some(kw => questionText.includes(kw));
+
+            if (isCriminalCase) {
+                // Án hình sự: Bản thân vượng tướng = án nhẹ/thoát hiểm (Cát)
+                catHung = isTheSuy ? 'HUNG' : 'CAT';
+            } else {
+                // Án dân sự: Thế vượng, Ứng suy = Thắng (Cát). Ứng vượng, Thế suy = Thua (Hung)
+                const isYingVuong = yingLine && ['Vượng', 'Tướng'].includes(getHaoPowerState(yingLine.hanh, rawNguyet));
+                if (isTheVuong && !isYingVuong) catHung = 'CAT';
+                else if (isYingVuong && !isTheVuong) catHung = 'HUNG';
+                else catHung = 'BINH';
             }
         } else {
-            // Án dân sự: Thế vượng = thắng kiện (Cát). Ứng vượng mà Thế suy = thua kiện (Hung).
-            if (isShiVuong && !isYingVuong) {
-                catHung = 'CAT';
-            } else if (isYingVuong && !isShiVuong) {
+            // Quẻ thường
+            if (isDungSuy || isTheSuy) {
                 catHung = 'HUNG';
+            } else if (isDungVuong && isTheVuong) {
+                catHung = 'CAT';
+            } else {
+                catHung = 'BINH';
             }
         }
-    } else if (topicCode === 'phong_thuy') {
-        // Phong thủy: Có hào bị Phá hoặc Mộ, hoặc Trạch khắc Thế = Hung
-        const hasSevereDamage = generatedCodes.includes('DUNG_STATUS_NGUYET_PHA') || 
-                                generatedCodes.includes('DUNG_STATUS_NHAT_PHA') ||
-                                celestialLogs.some(log => log.includes('⚠️ Gặp thế NGUYỆT PHÁ') || log.includes('⚠️ Cảnh báo Gia chủ'));
-        if (hasSevereDamage) {
-            catHung = 'HUNG';
-        } else {
-            catHung = 'CAT';
-        }
-    } else {
-        // Các chủ đề thông thường: dựa trên finalScore truyền thống
-        if (finalScore > 10) catHung = 'CAT';
-        else if (finalScore < -10) catHung = 'HUNG';
     }
 
     // Cơ chế Fallback Template (không bao giờ lỗi Null)
@@ -843,13 +1047,7 @@ ${scenarioText.advice || 'Tùy thời hành sự, giữ vững chính đạo.'}
     // ===========================================================================
     // TRẢ KẾT QUẢ
     // ===========================================================================
-    const deityMap = {
-        'công việc': 'Quan Quỷ', 'thi cử': 'Phụ Mẫu',
-        'tình yêu': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
-        'hôn nhân': gender === 'Nam' ? 'Thê Tài' : 'Quan Quỷ',
-        'sức khỏe': 'Tử Tôn', 'kinh doanh': 'Thê Tài', 'dự án': 'Thê Tài'
-    };
-    const targetRel = engineResult?.targetRelation || deityMap[topic] || 'Quan Quỷ';
+    const targetRel = activeDeity;
     const kyThan = { 'Quan Quỷ': 'Tử Tôn', 'Phụ Mẫu': 'Thê Tài', 'Thê Tài': 'Huynh Đệ', 'Tử Tôn': 'Phụ Mẫu', 'Huynh Đệ': 'Quan Quỷ' };
 
     return res.status(200).json({
