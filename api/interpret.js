@@ -278,20 +278,28 @@ export default async function handler(req, res) {
     }
 
     // ===========================================================================
-    // TỔNG HỢP VĂN BẢN PHÂN TÍCH: 6 LỚP NGUỒN DỮ LIỆU
+    // TỔNG HỢP VĂN BẢN PHÂN TÍCH: 6 LỚP NGUỒN DỮ LIỆU (AN TOÀN MẢNG 100%)
     // Thứ tự ưu tiên: DB semantic → tuong_da_tang → tuong_dong_bien → tuong_co_ban → fallback → engine
     // ===========================================================================
     const analysisTextsList = [];
     const processedCodes = new Set();
 
+    // Chuẩn hóa biến DB thành mảng an toàn
+    const safeSemanticTexts = Array.isArray(dbSemanticTexts) ? dbSemanticTexts : [];
+    const safeTuongDaTang = Array.isArray(dbTuongDaTang) ? dbTuongDaTang : [];
+    const safeTuongDongBien = Array.isArray(dbTuongDongBien) ? dbTuongDongBien : [];
+    const safeTuongCoBan = Array.isArray(dbTuongCoBan) ? dbTuongCoBan : [];
+
     // LỚP 1: semantic_texts cũ (backward compat, ưu tiên cao nhất)
-    dbSemanticTexts.forEach(row => {
-        analysisTextsList.push(`📌 ${row.vietnamese_text}`);
-        processedCodes.add(row.code);
+    safeSemanticTexts.forEach(row => {
+        if (row && row.vietnamese_text) {
+            analysisTextsList.push(`📌 ${row.vietnamese_text}`);
+            processedCodes.add(row.code);
+        }
     });
 
     // LỚP 2: tuong_da_tang — khớp từng hào theo (hao_vi, luc_than, trang_thai)
-    if (dbTuongDaTang.length > 0 && engineResult?.enrichedLines) {
+    if (safeTuongDaTang.length > 0 && engineResult?.enrichedLines) {
         const enriched = engineResult.enrichedLines;
         enriched.forEach((line, i) => {
             const lucThan = encodeLucThan(line.relation);
@@ -305,7 +313,7 @@ export default async function handler(req, res) {
             const haoNum = i + 1;
 
             // Khớp chính xác: hào vi + lục thân + trạng thái
-            const exact = dbTuongDaTang.find(r =>
+            const exact = safeTuongDaTang.find(r =>
                 r.hao_vi === haoNum && r.luc_than === lucThan && r.trang_thai === trangThai
             );
             if (exact) {
@@ -313,7 +321,7 @@ export default async function handler(req, res) {
                 return;
             }
             // Khớp mở rộng: bỏ qua hao_vi (hao_vi IS NULL = áp dụng mọi hào)
-            const broad = dbTuongDaTang.find(r =>
+            const broad = safeTuongDaTang.find(r =>
                 r.hao_vi === null && r.luc_than === lucThan && r.trang_thai === trangThai
             );
             if (broad) {
@@ -323,7 +331,7 @@ export default async function handler(req, res) {
     }
 
     // LỚP 3: tuong_dong_bien — khớp theo (luc_than_goc, luc_than_bien, huong_bien) của mỗi vec-tơ
-    if (dbTuongDongBien.length > 0 && engineResult?.energyVectors) {
+    if (safeTuongDongBien.length > 0 && engineResult?.energyVectors) {
         const huongBienMap = {
             'HOI_DAU_KHAC': 'hoi_dau_khac', 'HOI_DAU_SINH': 'hoi_dau_sinh',
             'HOA_TIEN_THAN': 'hoa_tien', 'HOA_THOAI_THAN': 'hoa_thoai'
@@ -333,7 +341,7 @@ export default async function handler(req, res) {
             const bien = encodeLucThan(v.changedRelation);
             const huong = huongBienMap[v.vector];
             if (!huong) return;
-            const match = dbTuongDongBien.find(r =>
+            const match = safeTuongDongBien.find(r =>
                 r.luc_than_goc === goc && r.luc_than_bien === bien && r.huong_bien === huong
             );
             if (match) {
@@ -351,9 +359,9 @@ export default async function handler(req, res) {
     }
 
     // LỚP 4: tuong_co_ban — bổ sung từ vựng nền tảng của hào Dụng Thần và Thế
-    if (dbTuongCoBan.length > 0 && engineResult) {
+    if (safeTuongCoBan.length > 0 && engineResult) {
         const dungRel  = encodeLucThan(engineResult.targetRelation);
-        const dungBase = dbTuongCoBan.find(r => r.luc_than === dungRel && !r.luc_thu);
+        const dungBase = safeTuongCoBan.find(r => r.luc_than === dungRel && !r.luc_thu);
         if (dungBase) {
             analysisTextsList.push(`📖 Dụng Thần (${engineResult.targetRelation}) trong chủ đề này: ${dungBase.y_nghia}`);
         }
@@ -361,7 +369,7 @@ export default async function handler(req, res) {
         const dungLine = engineResult.enrichedLines?.find(l => l.relation === engineResult.targetRelation);
         if (dungLine) {
             const lucThuCode = encodeLucThu(dungLine.lucThu);
-            const thuBase = dbTuongCoBan.find(r => r.luc_thu === lucThuCode && !r.luc_than);
+            const thuBase = safeTuongCoBan.find(r => r.luc_thu === lucThuCode && !r.luc_than);
             if (thuBase) {
                 analysisTextsList.push(`📖 ${dungLine.lucThu} trong chủ đề này: ${thuBase.y_nghia}`);
             }
