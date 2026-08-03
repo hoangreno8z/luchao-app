@@ -738,7 +738,7 @@ footer a:hover {
     margin: 0 auto;
 }
 #captureTarget .gua-line {
-    height: 16px;
+    height: 22px; /* Tăng chiều cao vạch hào lên 22px */
     width: 100%;
 }
 #captureTarget .yang {
@@ -766,7 +766,7 @@ footer a:hover {
 #captureTarget table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 17px;
+    font-size: 19px; /* Tăng size chữ bảng */
     background: #fefee5;
     margin-bottom: 15px;
 }
@@ -778,28 +778,28 @@ footer a:hover {
     text-align: center;
     white-space: nowrap;
     color: #000000;
-    font-size: 15px;
+    font-size: 17.5px; /* Tăng size chữ hào, lục thân, can chi */
 }
 #captureTarget td:first-child {
     font-weight: 700;
-    font-size: 18px; /* Tượng Hào —, --, O, X to và rõ */
+    font-size: 24px; /* Tượng Hào —, --, O, X cực kỳ to và rõ */
     color: #111;
 }
 #captureTarget td:nth-child(3),
 #captureTarget td.sep-col {
-    font-weight: 700; /* Lục Thân chính và biến in đậm, rõ nét */
-    color: #b30000; /* Màu đỏ sẫm đặc trưng */
+    font-weight: 700; /* Lục Thân chính và biến in đậm rõ nét */
+    color: #000000; /* Mặc định là màu đen */
 }
 #captureTarget td:nth-child(4),
 #captureTarget td:nth-child(8) {
     font-weight: 600; /* Can chi in đậm vừa phải */
-    color: #000;
+    color: #000000; /* Mặc định là màu đen */
 }
 #captureTarget th {
     background: #e2e2cc;
     font-weight: 700;
     color: #1a1a1a;
-    font-size: 14.5px;
+    font-size: 16px; /* Tăng size tiêu đề th */
     padding: 10px 4px;
     border-bottom: 1px solid #bbb;
     text-transform: uppercase;
@@ -807,26 +807,33 @@ footer a:hover {
 }
 #captureTarget .sep-col {
     border-left: 1px solid rgba(0, 0, 0, 0.25) !important;
+    color: #000000; /* Mặc định màu đen */
 }
 #captureTarget .row-moving td {
-    color: #e60000;
+    color: #e60000 !important; /* Hào động Lục Thân và Can Chi chuyển sang đỏ */
     font-weight: 700;
+}
+#captureTarget .row-moving td .tian-can-abbr {
+    color: #e60000 !important; /* Can chi viết tắt của hào động cũng màu đỏ */
+}
+#captureTarget .row-moving td.sep-col {
+    color: #e60000 !important;
 }
 #captureTarget .marker-the {
     color: #1a1a1a;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px; /* Tăng size marker */
 }
 #captureTarget .marker-ung {
     color: #1a1a1a;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px; /* Tăng size marker */
 }
 #captureTarget .row-moving .marker-the {
-    color: #e60000;
+    color: #e60000 !important;
 }
 #captureTarget .row-moving .marker-ung {
-    color: #e60000;
+    color: #e60000 !important;
 }
 #captureTarget .phuc-than {
     font-size: 17px;
@@ -894,25 +901,39 @@ footer a:hover {
 /* Mobile and Tablet optimizations for manual lines selection */
 @media (max-width: 768px) {
     .manual-lines-grid > div {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 6px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
         width: 100%;
+        box-sizing: border-box;
     }
     .manual-lines-grid strong {
-        width: 100% !important;
+        width: 75px !important;
         text-align: left;
+        font-size: 0.9rem;
+        flex-shrink: 0;
     }
     .manual-lines-grid select {
-        width: 100% !important;
+        flex: 1 !important;
         box-sizing: border-box;
+        font-size: 0.9rem;
+        height: 38px !important;
+        padding: 4px 6px !important;
+        min-width: 0; /* Cho phép co giãn trên màn hình siêu nhỏ */
     }
-    #manual-questions-list > div {
-        width: 100%;
-        box-sizing: border-box;
+    .manual-lines-grid label {
+        width: 75px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        flex-shrink: 0;
+        margin: 0 !important;
+        cursor: pointer;
     }
-    #manual-questions-list input {
-        width: 100%;
-        box-sizing: border-box;
+    .manual-lines-grid label input[type="checkbox"] {
+        margin: 0 !important;
+        width: 18px !important;
+        height: 18px !important;
     }
 }
