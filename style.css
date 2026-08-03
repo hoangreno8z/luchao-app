@@ -627,24 +627,43 @@ footer a:hover {
     font-size: 17px;
     color: #000000;
 }
+#captureTarget .seal-stamp-capture {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    width: 125px;
+    height: 125px;
+    object-fit: contain;
+    z-index: 10;
+    mix-blend-mode: multiply; /* Hòa trộn nền trắng của ấn vào nền giấy da */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+#captureTarget .tian-can-abbr {
+    font-size: 13px;
+    opacity: 0.6;
+    font-weight: 300;
+    margin-right: 1px;
+    color: #444;
+}
 #captureTarget .info-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #fefee5;
     border-bottom: 2px solid #888;
-    padding: 5px 10px 5px 175px !important;
+    padding: 5px 10px 5px 150px !important; /* Đẩy lề trái vừa đủ cho chiếc ấn 125px */
     margin-bottom: 10px;
-    min-height: 145px;
+    min-height: 125px; /* Hạ thấp chiều cao header */
 }
 #captureTarget .info-content {
     flex: 1;
 }
 #captureTarget .info-line {
-    margin-bottom: 6px;
-    line-height: 1.7;
+    margin-bottom: 3px;
+    line-height: 1.4;
     color: #000000;
-    font-size: 17px;
+    font-size: 15px; /* Giảm cỡ chữ */
 }
 #captureTarget .info-line strong {
     color: #000000;
@@ -830,3 +849,29 @@ footer a:hover {
 }
 .loader-content p { font-size: 1rem; font-weight: 500; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Mobile and Tablet optimizations for manual lines selection */
+@media (max-width: 768px) {
+    .manual-lines-grid > div {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        width: 100%;
+    }
+    .manual-lines-grid strong {
+        width: 100% !important;
+        text-align: left;
+    }
+    .manual-lines-grid select {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    #manual-questions-list > div {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #manual-questions-list input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

@@ -562,6 +562,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<div class="gua-container">${html}</div>`;
     }
 
+    function getAbbreviatedCan(can) {
+        if (!can) return '';
+        const map = {
+            'Giáp': 'G.',
+            'Ất': 'Ấ.',
+            'Bính': 'B.',
+            'Đinh': 'Đ.',
+            'Mậu': 'M.',
+            'Kỷ': 'K.',
+            'Canh': 'C.',
+            'Tân': 'T.',
+            'Nhâm': 'N.',
+            'Quý': 'Q.'
+        };
+        return map[can] || can[0] + '.';
+    }
+
     function renderCaptureHTML(data) {
         const {
             mainName, changedName, palaceName,
@@ -582,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let phucHtml = '-';
             if (line.phucThan) {
-                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - ${line.phucThan.can || ''}${line.phucThan.branch}</span>`;
+                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - <span class="tian-can-abbr">${getAbbreviatedCan(line.phucThan.can)}</span>${line.phucThan.branch}</span>`;
             }
 
             const isTK = line.isTK ? 'K' : '-';
@@ -593,25 +610,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${sym}</td>
                 <td>${marker}</td>
                 <td>${line.relation}</td>
-                <td>${line.can || ''}${line.chi}-${line.hanh}</td>
+                <td><span class="tian-can-abbr">${getAbbreviatedCan(line.can)}</span>${line.chi}-${line.hanh}</td>
                 <td>${phucHtml}</td>
                 <td>${isTK}</td>
                 <td class="sep-col">${line.changed.relation}</td>
-                <td>${line.isMoving ? `${line.changed.can || ''}${line.changed.branch}-${line.changed.hanh}` : '-'}</td>
+                <td>${line.isMoving ? `<span class="tian-can-abbr">${getAbbreviatedCan(line.changed.can)}</span>${line.changed.branch}-${line.changed.hanh}` : '-'}</td>
                 <td>${line.lucThu}</td>
                 <td>${isCTK}</td>
-                <td>${line.tsNgay}</td>
-                <td>${line.tsThang}</td>
             </tr>`;
         }
 
         const target = document.getElementById('captureTarget');
         target.style.position = 'relative'; // Bảo đảm layout relative cho seal-stamp định vị tuyệt đối
         target.innerHTML = `
-            <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" style="position: absolute; top: 15px; left: 15px; width: 145px; height: 145px; z-index: 10; border: 1px solid #888;" />
-            <div class="info-header" style="min-height: 145px; padding-left: 175px;">
+            <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" />
+            <div class="info-header">
                 <div class="info-content">
-                    <div class="info-line"><strong>Ngày giờ gieo:</strong> ${data.formattedDate} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Phương pháp:</strong> ${methodText}</div>
+                    <div class="info-line"><strong>Ngày giờ gieo:</strong> ${data.formattedDate}</div>
                     <div class="info-line"><strong>Can chi ngày giờ:</strong> ${dateInfo.fullCanChi}</div>
                     <div class="info-line"><strong>Hào tâm niệm:</strong> ${dateInfo.haoTamText || 'Không'} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
                     <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>
@@ -649,8 +664,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <th>Can Chi</th>
                         <th>Lục Thú</th>
                         <th>TK</th>
-                        <th>TS Ngày</th>
-                        <th>TS Tháng</th>
                     </tr>
                 </thead>
                 <tbody>${rowsHtml}</tbody>
