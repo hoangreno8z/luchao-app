@@ -584,7 +584,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let phucHtml = '-';
             if (line.phucThan) {
-                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - <span class="tian-can-abbr">${getAbbreviatedCan(line.phucThan.can)}</span>${line.phucThan.branch}</span>`;
+                const canAbbr = getAbbreviatedCan(line.phucThan.can);
+                if (line.phucThan.isActive) {
+                    phucHtml = `<span class="phuc-than active-phuc"><span class="phuc-rel">${line.phucThan.rel}</span> - <span class="tian-can-abbr">${canAbbr}</span>${line.phucThan.branch}</span>`;
+                } else {
+                    phucHtml = `<span class="phuc-than inactive-phuc"><span class="phuc-rel">${line.phucThan.rel}</span> - <span class="tian-can-abbr">${canAbbr}</span>${line.phucThan.branch}</span>`;
+                }
             }
 
             const isTK = line.isTK ? 'K' : '-';
@@ -611,9 +616,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" />
             <div class="info-header">
                 <div class="info-content">
-                    <div class="info-line"><strong>Ngày giờ gieo:</strong> <span>${data.formattedDate}</span></div>
-                    <div class="info-line"><strong>Can chi ngày giờ:</strong> <span>${dateInfo.fullCanChi}</span></div>
-                    <div class="info-line"><strong>Hào tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
+                    <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span></div>
+                    <div class="info-line"><strong>Ngày âm:</strong> <span>${dateInfo.fullCanChi}</span></div>
+                    <div class="info-line"><strong>Tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
                     <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>
                 </div>
             </div>

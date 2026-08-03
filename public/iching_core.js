@@ -330,23 +330,23 @@ const ICHING = (function () {
             const isShi = (shi === i + 1);
             const isYing = (ying === i + 1);
 
-            let phucThan = null;
-            if (!presentRelations.has("Tử Tôn") || !presentRelations.has("Thê Tài") ||
-                !presentRelations.has("Quan Quỷ") || !presentRelations.has("Phụ Mẫu") ||
-                !presentRelations.has("Huynh Đệ")) {
-                const pureTri = QUAI_SO[info.p].name;
-                const pureBranch = NAP_GIAP[pureTri][i];
-                const pureCan = getThienCan(pureTri, i >= 3);
-                const pureEl = CALENDAR.NGU_HANH_CHI[pureBranch];
-                const pureRel = getRelation(pureEl, palaceEl);
-                if (!presentRelations.has(pureRel)) {
-                    phucThan = {
-                        rel: pureRel.split(' ')[0],
-                        branch: pureBranch,
-                        can: pureCan
-                    };
-                }
-            }
+            // Tính toán hào tương ứng bên quẻ Bát Thuần của Cung để lấy thông tin phục thần/tàng hào
+            const pureTri = QUAI_SO[info.p].name;
+            const pureBranch = NAP_GIAP[pureTri][i];
+            const pureCan = getThienCan(pureTri, i >= 3);
+            const pureEl = CALENDAR.NGU_HANH_CHI[pureBranch];
+            const pureRel = getRelation(pureEl, palaceEl);
+            const pureRelAbbr = pureRel.split(' ')[0];
+
+            // Chỉ kích hoạt rõ nét (isActive = true) đối với tàng hào thực sự bị khuyết thiếu trên quẻ chính
+            const isMissing = !presentRelations.has(pureRel);
+
+            const phucThan = {
+                rel: pureRelAbbr,
+                branch: pureBranch,
+                can: pureCan,
+                isActive: isMissing
+            };
 
             const isTK = cal.tuanKhong.includes(mBranch);
 
@@ -457,12 +457,12 @@ const ICHING = (function () {
             formattedDate,
             methodText,
             dateInfo: {
-                fullCanChi: `Giờ ${cal.gio.can} ${cal.gio.chi}, Ngày ${cal.ngay.can} ${cal.ngay.chi}`,
+                fullCanChi: `Giờ ${cal.gio.can} ${cal.gio.chi}, Ngày ${cal.ngay.can} ${cal.ngay.chi}, Tháng ${cal.thang.can} ${cal.thang.chi}, Năm ${cal.nam.can} ${cal.nam.chi}`,
                 tietKhi: cal.tietKhi,
                 haoTamText: haoTamText,
                 tuanKhong: cal.tuanKhong.join(', '),
-                nhatThan: `${cal.ngay.chi} - ${cal.ngay.hanh}`,
-                nguyetLenh: `${cal.thang.chi} - ${cal.thang.hanh}`,
+                nhatThan: `${cal.ngay.can} ${cal.ngay.chi}`,
+                nguyetLenh: `${cal.thang.can} ${cal.thang.chi}`,
                 nhatLenhShort: `${cal.ngay.can} ${cal.ngay.chi}`,
                 nguyetLenhShort: `${cal.thang.can} ${cal.thang.chi}`,
                 shenshaRaw: shensha
