@@ -192,27 +192,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return TOPIC_QUESTIONS[selectedTopic] || TOPIC_QUESTIONS['công việc'];
     }
 
-    // Thiết lập listener tự động đổi câu hỏi trên giao diện khi chọn lại chủ đề
+    // Thiết lập listener reset trạng thái gieo xu trực tuyến khi đổi chủ đề
     document.getElementById('topic-select').addEventListener('change', () => {
+        resetTossState();
+    });
+
+    function resetTossState() {
         currentStep = 0;
         userAnswers = [];
-        const activeQs = getActiveQuestions();
-        if (questionText) {
-            questionText.innerText = activeQs[0];
-        }
+        hexLines = [];
+        const progressText = document.getElementById('progress-text');
         if (progressText) {
-            progressText.innerText = `Lần gieo: 1/6`;
+            progressText.innerText = `Lần gieo: 0/6`;
         }
-        if (progressFill) {
-            progressFill.style.width = `0%`;
+        for (let i = 1; i <= 6; i++) {
+            const lineDiv = document.getElementById(`progress-line-${i}`);
+            if (lineDiv) {
+                lineDiv.innerHTML = `Hào ${i}: Đang chờ...`;
+                lineDiv.style.color = '#888';
+            }
         }
-        if (questionForm) {
-            questionForm.classList.remove('hidden');
+        const tossTriggerBtn = document.getElementById('toss-trigger-btn');
+        if (tossTriggerBtn) {
+            tossTriggerBtn.style.display = 'block';
+            tossTriggerBtn.disabled = false;
+            tossTriggerBtn.innerText = "TUNG ĐỒNG XU";
         }
+        const finishContainer = document.getElementById('finish-container');
         if (finishContainer) {
             finishContainer.classList.add('hidden');
         }
-    });
+    }
 
     // -------------------------------------------------------------------------
     // HÀM & LOGIC CHO TAB TỰ NHẬP 6 HÀO
@@ -336,52 +346,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let userAnswers = [];
     let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
 
-    const questionText = document.getElementById('question-text');
-    const questionInput = document.getElementById('question-input');
-    const questionSubmit = document.getElementById('question-submit');
     const progressText = document.getElementById('progress-text');
-    const progressFill = document.getElementById('progress-fill');
-    const questionForm = document.getElementById('question-flow-form');
     const finishContainer = document.getElementById('finish-container');
+    const tossTriggerBtn = document.getElementById('toss-trigger-btn');
 
-    questionInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+    if (tossTriggerBtn) {
+        tossTriggerBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            questionSubmit.click();
-        }
-    });
+            if (currentStep >= 6) return;
 
-    questionSubmit.addEventListener('click', (e) => {
-        e.preventDefault();
-        const ans = questionInput.value.trim();
-        if (!ans) {
-            alert("Vui lòng nhập câu trả lời của bạn trước khi gieo xu!");
-            return;
-        }
+            // Vô hiệu hoá nút để chờ tung xu
+            tossTriggerBtn.disabled = true;
+            tossTriggerBtn.innerText = "ĐANG TUNG XU...";
 
-        userAnswers.push(ans);
-        questionInput.value = "";
+            performCoinToss(() => {
+                currentStep++;
+                const lastLineVal = hexLines[hexLines.length - 1];
+                const lineDiv = document.getElementById(`progress-line-${currentStep}`);
 
-        // Chạy hiệu ứng tung xu
-        performCoinToss(() => {
-            currentStep++;
-            // Cập nhật thanh tiến trình
-            const percent = (currentStep / 6) * 100;
-            progressFill.style.width = `${percent}%`;
+                if (lineDiv) {
+                    lineDiv.style.color = '#fff';
+                    if (lastLineVal === 1) {
+                        lineDiv.innerHTML = `<span style="color: #ebd9c5; font-weight: bold; font-size: 1.1rem;">—</span> <span style="color: #ccc;">(Thiếu Dương)</span>`;
+                    } else if (lastLineVal === 2) {
+                        lineDiv.innerHTML = `<span style="color: #ebd9c5; font-weight: bold; font-size: 1.1rem;">- -</span> <span style="color: #ccc;">(Thiếu Âm)</span>`;
+                    } else if (lastLineVal === 3) {
+                        lineDiv.innerHTML = `<span style="color: #e60000; font-weight: bold; font-size: 1.1rem;">— O</span> <span style="color: #ff6666;">(Lão Dương - Động)</span>`;
+                    } else if (lastLineVal === 0) {
+                        lineDiv.innerHTML = `<span style="color: #e60000; font-weight: bold; font-size: 1.1rem;">- - X</span> <span style="color: #ff6666;">(Lão Âm - Động)</span>`;
+                    }
+                }
 
-            if (currentStep < 6) {
-                progressText.innerText = `Lần gieo: ${currentStep + 1}/6`;
-                const activeQs = getActiveQuestions();
-                questionText.innerText = activeQs[currentStep];
-                questionInput.focus();
-            } else {
-                // Ẩn form nhập và hiện nút hoàn tất
-                questionForm.classList.add('hidden');
-                finishContainer.classList.remove('hidden');
-                progressText.innerText = `Lần gieo: Hoàn tất 6/6`;
-            }
+                if (progressText) {
+                    progressText.innerText = `Lần gieo: ${currentStep}/6`;
+                }
+
+                tossTriggerBtn.disabled = false;
+                tossTriggerBtn.innerText = "TUNG ĐỒNG XU";
+
+                if (currentStep === 6) {
+                    tossTriggerBtn.style.display = 'none';
+                    if (finishContainer) {
+                        finishContainer.classList.remove('hidden');
+                    }
+                }
+            });
         });
-    });
+    }
 
     // -------------------------------------------------------------------------
     // 4. HIỆU ỨNG TUNG XU
@@ -401,8 +412,8 @@ document.addEventListener('DOMContentLoaded', () => {
             coin.classList.add('spinning');
         });
 
-        // Thời gian ngẫu nhiên từ 3000ms đến 6000ms
-        const spinTime = Math.floor(Math.random() * 3000) + 3000;
+        // Thời gian ngẫu nhiên từ 1200ms đến 2000ms
+        const spinTime = Math.floor(Math.random() * 800) + 1200;
 
         setTimeout(() => {
             // Ngừng quay
@@ -451,7 +462,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Kích hoạt lại nút và chạy callback
-            questionSubmit.disabled = false;
             if (callback) callback();
 
         }, spinTime);
@@ -479,6 +489,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Gọi logic tính quẻ dịch
         const hexData = ICHING.calculateHexagramData(hexLines, calendarData, "Lục hào", formattedDate);
+        
+        // Ghi đè ý niệm gieo quẻ của người dùng làm Hào tâm niệm nếu có nhập
+        const yniemInput = document.getElementById('toss-yniem-input');
+        const userYniem = yniemInput ? yniemInput.value.trim() : '';
+        if (userYniem) {
+            hexData.dateInfo.haoTamText = userYniem;
+        }
 
         // Tạo giao diện trong captureTarget
         renderCaptureHTML(hexData);

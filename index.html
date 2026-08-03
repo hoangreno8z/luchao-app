@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinh Dịch - Thái Ất thần quẻ.</title>
     <meta name="description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <link rel="stylesheet" href="style.css?v=2.8">
+    <link rel="stylesheet" href="style.css?v=2.9">
     
     <!-- Open Graph / Zalo / Facebook / Messenger Sharing -->
     <meta property="og:type" content="website">
@@ -119,96 +119,112 @@
                 </div>
 
                 <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
-                <div id="method-toss-area">
-                    <!-- Khu vực 3 Đồng Xu Thuận Trị Cổ Kính -->
-                    <div class="coin-stage">
-                        <div class="coin-wrapper">
-                            <div class="coin" id="coin-1">
-                                <div class="coin-inner">
-                                    <!-- Mặt Dương: 2 ký tự Mãn uốn lượn -->
-                                    <div class="coin-face coin-yang">
-                                        <div class="coin-hole"></div>
-                                        <span class="manchu-top">꠵</span>
-                                        <span class="manchu-bottom">꠶</span>
-                                    </div>
-                                    <!-- Mặt Âm: 4 chữ Hán Thuận Trị Thông Bảo -->
-                                    <div class="coin-face coin-yin">
-                                        <div class="coin-hole"></div>
-                                        <span class="coin-text ct-top">順</span>
-                                        <span class="coin-text ct-bottom">治</span>
-                                        <span class="coin-text ct-left">寶</span>
-                                        <span class="coin-text ct-right">通</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="coin-wrapper">
-                            <div class="coin" id="coin-2">
-                                <div class="coin-inner">
-                                    <!-- Mặt Dương -->
-                                    <div class="coin-face coin-yang">
-                                        <div class="coin-hole"></div>
-                                        <span class="manchu-top">꠵</span>
-                                        <span class="manchu-bottom">꠶</span>
-                                    </div>
-                                    <!-- Mặt Âm -->
-                                    <div class="coin-face coin-yin">
-                                        <div class="coin-hole"></div>
-                                        <span class="coin-text ct-top">順</span>
-                                        <span class="coin-text ct-bottom">治</span>
-                                        <span class="coin-text ct-left">寶</span>
-                                        <span class="coin-text ct-right">通</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="coin-wrapper">
-                            <div class="coin" id="coin-3">
-                                <div class="coin-inner">
-                                    <!-- Mặt Dương -->
-                                    <div class="coin-face coin-yang">
-                                        <div class="coin-hole"></div>
-                                        <span class="manchu-top">꠵</span>
-                                        <span class="manchu-bottom">꠶</span>
-                                    </div>
-                                    <!-- Mặt Âm -->
-                                    <div class="coin-face coin-yin">
-                                        <div class="coin-hole"></div>
-                                        <span class="coin-text ct-top">順</span>
-                                        <span class="coin-text ct-bottom">治</span>
-                                        <span class="coin-text ct-left">寶</span>
-                                        <span class="coin-text ct-right">通</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div id="method-toss-area" style="animation: fadeIn 0.5s ease;">
+                    
+                    <!-- Nhập Ý niệm gieo quẻ ban đầu -->
+                    <div class="yniem-container" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(223, 177, 91, 0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; width: 100%;">
+                        <label for="toss-yniem-input" style="display: block; color: var(--gold); margin-bottom: 8px; font-weight: 600; font-family: var(--font-serif); font-size: 0.95rem;">Ý niệm / Câu hỏi gieo quẻ (Không bắt buộc):</label>
+                        <input type="text" id="toss-yniem-input" class="form-control" placeholder="Ví dụ: Xem tài lộc tháng này, xem công việc sắp tới..." style="width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 8px;">
                     </div>
 
-                    <!-- Dòng câu hỏi gieo quẻ theo từng lượt -->
-                    <div class="question-container" id="question-flow">
-                        <div class="question-progress">
-                            <span id="progress-text">Lần gieo: 1/6</span>
-                            <span>Đồng xu tự động tung ngẫu nhiên (3s - 6s)</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" id="progress-fill"></div>
-                        </div>
-                        <div id="question-flow-form">
-                            <div class="question-text" id="question-text">
-                                Câu 1: Vấn đề này của bạn hay bạn đang thay mặt người khác để hỏi?
+                    <div class="toss-layout-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 20px; width: 100%;">
+                        
+                        <!-- Cột trái: Đồng xu và nút tung -->
+                        <div class="toss-left" style="flex: 1.2; min-width: 280px; max-width: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(223, 177, 91, 0.08); border-radius: 12px; padding: 20px; box-sizing: border-box;">
+                            <!-- Khu vực 3 Đồng Xu Thuận Trị Cổ Kính -->
+                            <div class="coins-container" style="display: flex; gap: 15px; justify-content: center; align-items: center; min-height: 100px;">
+                                <div class="coin-wrapper">
+                                    <div class="coin" id="coin-1">
+                                        <div class="coin-inner">
+                                            <!-- Mặt Dương: 2 ký tự Mãn uốn lượn -->
+                                            <div class="coin-face coin-yang">
+                                                <div class="coin-hole"></div>
+                                                <span class="manchu-top">꠵</span>
+                                                <span class="manchu-bottom">꠶</span>
+                                            </div>
+                                            <!-- Mặt Âm: 4 chữ Hán Thuận Trị Thông Bảo -->
+                                            <div class="coin-face coin-yin">
+                                                <div class="coin-hole"></div>
+                                                <span class="coin-text ct-top">順</span>
+                                                <span class="coin-text ct-bottom">治</span>
+                                                <span class="coin-text ct-left">寶</span>
+                                                <span class="coin-text ct-right">通</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="coin-wrapper">
+                                    <div class="coin" id="coin-2">
+                                        <div class="coin-inner">
+                                            <!-- Mặt Dương -->
+                                            <div class="coin-face coin-yang">
+                                                <div class="coin-hole"></div>
+                                                <span class="manchu-top">꠵</span>
+                                                <span class="manchu-bottom">꠶</span>
+                                            </div>
+                                            <!-- Mặt Âm -->
+                                            <div class="coin-face coin-yin">
+                                                <div class="coin-hole"></div>
+                                                <span class="coin-text ct-top">順</span>
+                                                <span class="coin-text ct-bottom">治</span>
+                                                <span class="coin-text ct-left">寶</span>
+                                                <span class="coin-text ct-right">通</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="coin-wrapper">
+                                    <div class="coin" id="coin-3">
+                                        <div class="coin-inner">
+                                            <!-- Mặt Dương -->
+                                            <div class="coin-face coin-yang">
+                                                <div class="coin-hole"></div>
+                                                <span class="manchu-top">꠵</span>
+                                                <span class="manchu-bottom">꠶</span>
+                                            </div>
+                                            <!-- Mặt Âm -->
+                                            <div class="coin-face coin-yin">
+                                                <div class="coin-hole"></div>
+                                                <span class="coin-text ct-top">順</span>
+                                                <span class="coin-text ct-bottom">治</span>
+                                                <span class="coin-text ct-left">寶</span>
+                                                <span class="coin-text ct-right">通</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="input-row">
-                                <input type="text" id="question-input" class="form-control" placeholder="Nhập câu trả lời của bạn..." autocomplete="off">
-                                <button id="question-submit" class="btn btn-primary" style="width: auto;">Gửi & Tung Xu</button>
+
+                            <button id="toss-trigger-btn" class="btn btn-primary" style="margin-top: 25px; width: 100%; max-width: 250px; font-weight: bold; padding: 12px 20px; font-size: 1rem;">TUNG ĐỒNG XU</button>
+                        </div>
+
+                        <!-- Cột phải: Tiến trình vẽ các hào đang gieo (từ Hào 1 đến Hào 6) -->
+                        <div class="toss-right" style="flex: 1; min-width: 260px; max-width: 350px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(223, 177, 91, 0.08); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
+                            <h4 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; font-family: var(--font-serif); font-size: 1.05rem;">TIẾN TRÌNH GIEO HÀO</h4>
+                            
+                            <div class="toss-progress-display" style="display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; min-height: 180px; justify-content: center; align-items: center;">
+                                <!-- Hào 1 đến 6 sẽ được vẽ động bằng JavaScript từ dưới lên -->
+                                <div id="progress-line-6" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 6: Đang chờ...</div>
+                                <div id="progress-line-5" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 5: Đang chờ...</div>
+                                <div id="progress-line-4" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 4: Đang chờ...</div>
+                                <div id="progress-line-3" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 3: Đang chờ...</div>
+                                <div id="progress-line-2" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 2: Đang chờ...</div>
+                                <div id="progress-line-1" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 1: Đang chờ...</div>
+                            </div>
+
+                            <div class="question-progress" style="margin-top: 15px; font-size: 0.9rem; text-align: center; color: var(--text-muted);">
+                                <span id="progress-text" style="font-weight: bold; color: var(--gold);">Lần gieo: 0/6</span>
                             </div>
                         </div>
 
-                        <!-- Nút nhấn hoàn tất sau khi gieo xong 6 lần -->
-                        <div id="finish-container" class="hidden">
-                            <p style="text-align: center; margin-bottom: 20px; color: var(--gold); font-size: 1.1rem; font-weight: bold;">Đã thu thập đủ 6 hào của quẻ dịch!</p>
-                            <button id="finish-btn" class="btn btn-primary">Lập Bản Đồ Quẻ Dịch</button>
-                        </div>
                     </div>
+
+                    <!-- Nút hoàn tất sau khi gieo xong 6 lần -->
+                    <div id="finish-container" class="hidden" style="text-align: center; margin-top: 20px;">
+                        <p style="margin-bottom: 15px; color: var(--gold); font-size: 1.1rem; font-weight: bold;">Đã gieo đủ 6 hào của quẻ dịch!</p>
+                        <button id="finish-btn" class="btn btn-primary" style="max-width: 280px; margin: 0 auto;">Lập Bản Đồ Quẻ Dịch</button>
+                    </div>
+
                 </div>
 
                 <!-- PHÂN VÙNG 2: TỰ NHẬP HÀO (ẨN MẶC ĐỊNH) -->
@@ -344,8 +360,8 @@
     </div>
 
     <!-- Nạp các thư viện logic -->
-    <script src="calendar.js?v=2.8"></script>
-    <script src="iching_core.js?v=2.8"></script>
-    <script src="app.js?v=2.8"></script>
+    <script src="calendar.js?v=2.9"></script>
+    <script src="iching_core.js?v=2.9"></script>
+    <script src="app.js?v=2.9"></script>
 </body>
 </html>

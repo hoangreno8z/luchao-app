@@ -72,11 +72,11 @@ header {
 
 header h1 {
     font-family: var(--font-ancient);
-    font-size: 2.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     color: var(--gold);
-    text-shadow: 0 0 15px var(--gold-glow);
+    text-shadow: 0 0 10px var(--gold-glow);
     margin-bottom: 5px;
 }
 
@@ -1003,4 +1003,24 @@ footer a:hover {
     .app-switcher-nav .nav-item .icon {
         font-size: 14px;
     }
+}
+
+/* =========================================================================
+   GIEO XU TRỰC TUYẾN - TIẾN TRÌNH HÀO
+   ========================================================================= */
+.toss-progress-line {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(223, 177, 91, 0.15);
+    border-radius: 6px;
+    padding: 6px 12px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+.toss-progress-line:hover {
+    background: rgba(223, 177, 91, 0.05);
 }
