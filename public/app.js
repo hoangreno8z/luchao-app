@@ -4,6 +4,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    let liveClockTimer = null;
+
     // -------------------------------------------------------------------------
     // 1. QUẢN LÝ ĐIỀU KHOẢN VÀ ĐỒNG Ý (DISCLAIMER)
     // -------------------------------------------------------------------------
@@ -16,6 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
         proceedBtn.disabled = !disclaimerCheckbox.checked;
     });
 
+    // Khởi động đồng hồ live và gán ngày giờ hiện tại ngay lập tức khi tải trang
+    const nowInit = new Date();
+    nowInit.setMinutes(nowInit.getMinutes() - nowInit.getTimezoneOffset());
+    const dateInput = document.getElementById('current-date-time');
+    if (dateInput) {
+        dateInput.value = nowInit.toISOString().slice(0, 16);
+    }
+    updateClock();
+    liveClockTimer = setInterval(updateClock, 1000);
+
     proceedBtn.addEventListener('click', () => {
         disclaimerScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
@@ -25,23 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 2. KHỞI TẠO LUỒNG CHÍNH VÀ ĐỒNG HỒ
     // -------------------------------------------------------------------------
-    let liveClockTimer = null;
-
     function initMainFlow() {
-        // Cập nhật ngày giờ hiện tại
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        document.getElementById('current-date-time').value = now.toISOString().slice(0, 16);
-
-        // Thiết lập câu hỏi mặc định lần đầu theo chủ đề được chọn
-        const activeQs = getActiveQuestions();
-        if (questionText) {
-            questionText.innerText = activeQs[0];
-        }
-
-        // Khởi động đồng hồ thời gian thực
-        updateClock();
-        liveClockTimer = setInterval(updateClock, 1000);
+        // Đồng hồ đã được khởi chạy ngay khi tải trang
     }
 
     function updateClock() {
@@ -583,11 +580,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Xáo trộn ngẫu nhiên mặt đồng xu khi quay lại
             randomizeCoinsInitialState();
             
-            // Khởi động lại đồng hồ thời gian thực nếu đang ở tab gieo quẻ tự động
-            const tabToss = document.getElementById('tab-toss');
-            if (tabToss && tabToss.style.background === 'var(--gold-dark)') {
-                liveClockTimer = setInterval(updateClock, 1000);
-            }
+            // Khởi động lại đồng hồ thời gian thực
+            clearInterval(liveClockTimer);
+            liveClockTimer = setInterval(updateClock, 1000);
         });
     }
 
@@ -762,119 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. HIỂN THỊ LUẬN GIẢI QUẺ DỊCH
     // -------------------------------------------------------------------------
     function displayInterpretation(data) {
-        const body = document.getElementById('interpretation-body');
-        const topic = document.getElementById('topic-select').value;
-        const gender = document.getElementById('gender-select').value;
-
-        body.innerHTML = `<p style="text-align: center; color: var(--gold);">Đang truy vấn dữ liệu luận đoán và chạy mô hình AI...</p>`;
-
-        // Thu thập các câu trả lời khảo sát từ người dùng
-        const userInputs = {
-            who: userAnswers[0] || "",
-            gender: userAnswers[1] || "",
-            birthYear: userAnswers[2] || "",
-            issue: userAnswers[3] || "",
-            city: userAnswers[4] || "",
-            desire: userAnswers[5] || "",
-            question: userAnswers[3] || ""
-        };
-
-        // Gửi yêu cầu POST lấy luận đoán động và AI
-        fetch('/api/interpret', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                hex_id: data.mainID,
-                changed_id: data.changedID,
-                topic: topic,
-                gender: gender,
-                hexData: data,
-                userInputs: userInputs
-            })
-        })
-            .then(res => res.json())
-            .then(resData => {
-                if (!resData.success) {
-                    body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Lỗi hệ thống: ${resData.error || 'Không rõ nguyên nhân'}</p>`;
-                    return;
-                }
-
-                const { main, changed, deity, lines, analysisHtml, catHung, templateContent, aiExplanation } = resData;
-
-                let linesHtml = "";
-                if (data.movingLines.length > 0) {
-                    linesHtml += `<h4>3. Chi Tiết Các Hào Phát Động</h4>`;
-                    data.movingLines.forEach(lineNum => {
-                        const dbLine = lines.find(l => l.line_number === lineNum);
-                        if (dbLine) {
-                            linesHtml += `<p><strong>Hào ${lineNum} Động (${dbLine.relation}):</strong> ${dbLine.meaning_active || 'Đang cập nhật...'}</p>`;
-                        }
-                    });
-                } else {
-                    linesHtml += `<h4>3. Trạng Thái Hào Tĩnh</h4>`;
-                    const shiLineNum = data.linesData.findIndex(l => l.isShi) + 1;
-                    const dbLine = lines.find(l => l.line_number === shiLineNum);
-                    if (dbLine) {
-                        linesHtml += `<p><strong>Hào Thế (Hào ${shiLineNum} - ${dbLine.relation}):</strong> ${dbLine.meaning_static || 'Đang cập nhật...'}</p>`;
-                    }
-                }
-
-                // Cấu hình nhãn Cát Hung trực quan
-                let catHungBadge = "";
-                if (catHung === "CAT") {
-                    catHungBadge = `<span style="background-color: #15803d; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">CÁT (TỐT LÀNH)</span>`;
-                } else if (catHung === "HUNG") {
-                    catHungBadge = `<span style="background-color: #b91c1c; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">HUNG (BẤT LỢI)</span>`;
-                } else {
-                    catHungBadge = `<span style="background-color: #4b5563; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.9rem;">BÌNH HÒA</span>`;
-                }
-
-                let html = `
-                    <p style="margin-bottom: 15px;"><strong>Người hỏi:</strong> Giới tính ${gender} | <strong>Chủ đề:</strong> Xem về ${topic}.</p>
-                    <p><strong>Dụng Thần Lục Lục Hào:</strong> <strong>${deity.deity}</strong> (Kỵ thần: <em>${deity.kỵ || 'Không'}</em>).</p>
-                    
-                    <div class="result-summary-block" style="background-color: rgba(212,163,89,0.08); border-left: 4px solid var(--gold); padding: 15px; margin: 20px 0; border-radius: 4px;">
-                        <div style="margin-bottom: 8px;"><strong>Kết luận Quẻ Dịch:</strong> ${catHungBadge}</div>
-                        <p style="font-weight: bold; margin-bottom: 5px;">${templateContent?.summary || 'Đang xác định kết luận...'}</p>
-                        <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">${templateContent?.detail || ''}</p>
-                    </div>
-
-                    <h4>1. Ý Nghĩa Quẻ Dịch Tĩnh</h4>
-                    <p>Quẻ Chủ là <strong>${main.name}</strong> (${main.vietnamese_meaning || ''}) thuộc họ quẻ <strong>${main.palace}</strong>.</p>
-                    <p><em>Giải nghĩa:</em> ${main.overall_meaning || 'Đang cập nhật...'}</p>
-                    <p><em>Ý nghĩa chủ đề [${topic.toUpperCase()}]:</em> ${main.topic_meaning || 'Đang cập nhật...'}</p>
-                    
-                    ${changed ? `
-                    <h4>Quẻ Biến: ${changed.name} (${changed.vietnamese_meaning || ''})</h4>
-                    <p>Quẻ biến biểu thị xu hướng diễn biến tiếp theo của sự việc: <em>${changed.overall_meaning || 'Đang cập nhật...'}</em></p>
-                    ` : ''}
-                    
-                    ${linesHtml}
-
-                    <div class="theory-analysis-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 15px;">
-                        <h3 class="interpretation-title" style="margin-bottom: 12px; font-size: 1.15rem; color: var(--gold);">PHÂN TÍCH KỸ THUẬT (CHU THẦN BÂN)</h3>
-                        ${analysisHtml || '<p>Không có dữ liệu phân tích.</p>'}
-                    </div>
-
-                    ${aiExplanation ? `
-                    <div class="ai-explanation-block" style="margin-top: 25px; border-top: 2px solid var(--border-color); padding-top: 20px; background-color: rgba(212,163,89,0.05); padding: 20px; border-radius: 8px; border: 1px dashed var(--gold);">
-                        <h3 class="interpretation-title" style="margin-top: 0; margin-bottom: 15px; font-size: 1.2rem; color: var(--gold); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">LỜI BÀN CỦA TRỢ LÝ AI CÁ NHÂN HÓA</h3>
-                        <div style="line-height: 1.6; font-size: 0.98rem; white-space: pre-line;">${aiExplanation}</div>
-                    </div>
-                    ` : ''}
-
-                    <div style="font-size: 0.85rem; color: #888; border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 20px; text-align: right;">
-                        Nguồn dữ liệu: Supabase Cloud Database (${resData.source === 'supabase' ? 'Kết nối trực tiếp API' : 'Dữ liệu dự phòng Mock'})
-                    </div>
-                `;
-                body.innerHTML = html;
-            })
-            .catch(err => {
-                console.error(err);
-                body.innerHTML = `<p style="color: #ef4444; font-weight: bold;">Không thể kết nối đến máy chủ API để lấy luận giải!</p>`;
-            });
+        // Nội dung luận đoán tự động đã được thay thế hoàn toàn bằng thông tin hướng dẫn liên hệ luận giải tĩnh trong index.html
     }
 
     // -------------------------------------------------------------------------

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinh Dịch - Thái Ất thần quẻ.</title>
     <meta name="description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <link rel="stylesheet" href="style.css?v=3.1">
+    <link rel="stylesheet" href="style.css?v=3.2">
     
     <!-- Open Graph / Zalo / Facebook / Messenger Sharing -->
     <meta property="og:type" content="website">
@@ -121,13 +121,6 @@
 
                 <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
                 <div id="method-toss-area" style="animation: fadeIn 0.5s ease;">
-                    
-                    <!-- Nhập Ý niệm gieo quẻ ban đầu -->
-                    <div class="yniem-container" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(223, 177, 91, 0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; box-sizing: border-box; width: 100%;">
-                        <label for="toss-yniem-input" style="display: block; color: var(--gold); margin-bottom: 8px; font-weight: 600; font-family: var(--font-serif); font-size: 0.95rem;">Ý niệm / Câu hỏi gieo quẻ (Không bắt buộc):</label>
-                        <input type="text" id="toss-yniem-input" class="form-control" placeholder="Ví dụ: Xem tài lộc tháng này, xem công việc sắp tới..." style="width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 8px;">
-                    </div>
-
                     <div class="toss-layout-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 20px; width: 100%;">
                         
                         <!-- Cột trái: Đồng xu và nút tung -->
@@ -203,7 +196,7 @@
                         <div class="toss-right" style="flex: 1; min-width: 260px; max-width: 350px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(223, 177, 91, 0.08); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
                             <h4 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; font-family: var(--font-serif); font-size: 1.05rem;">TIẾN TRÌNH GIEO HÀO</h4>
                             
-                            <div class="toss-progress-display" style="display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; min-height: 180px; justify-content: center; align-items: center;">
+                            <div class="toss-progress-display" style="display: flex; flex-direction: column; gap: 8px; width: 100%; min-height: 180px; justify-content: center; align-items: center;">
                                 <!-- Hào 1 đến 6 sẽ được vẽ động bằng JavaScript từ dưới lên -->
                                 <div id="progress-line-6" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 6: Đang chờ...</div>
                                 <div id="progress-line-5" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 5: Đang chờ...</div>
@@ -331,11 +324,38 @@
                     <button onclick="window.location.reload();" class="btn btn-primary" style="background: #2b1f15; border-color: #3d2a19; color: var(--text-light); padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Gieo Mới</button>
                 </div>
 
-                <!-- Bảng Luận Giải Chi Tiết -->
+                <!-- Thông Tin Liên Hệ Luận Giải & Lưu Ý -->
                 <div class="interpretation-panel">
-                    <h3 class="interpretation-title">LUẬN GIẢI QUẺ DỊCH CƠ BẢN</h3>
-                    <div class="interpretation-body" id="interpretation-body">
-                        <!-- Luận giải được chèn tự động bởi JS -->
+                    <h3 class="interpretation-title" style="letter-spacing: 1px;">LIÊN HỆ LUẬN GIẢI QUẺ DỊCH</h3>
+                    <div class="interpretation-body" style="font-family: var(--font-serif); font-size: 0.98rem; line-height: 1.8; color: #ebd9c5; padding: 10px 5px;">
+                        
+                        <!-- Khung thông tin dịch sư -->
+                        <div class="contact-info-box" style="background: rgba(223, 177, 91, 0.05); border: 1px solid rgba(223, 177, 91, 0.15); border-radius: 8px; padding: 18px; margin-bottom: 20px; text-align: left; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                            <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: var(--gold); font-weight: bold; font-size: 1.02rem;">☯ Dịch Sư:</span>
+                                <span style="font-weight: 600; font-size: 1.02rem; letter-spacing: 0.5px; color: #fff;">Nguyễn Huy Hoàng</span>
+                            </div>
+                            <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: var(--gold); font-weight: bold;">💬 Zalo luận giải:</span>
+                                <a href="https://zalo.me/0933116860" target="_blank" style="color: #66b2ff; text-decoration: underline; font-weight: 600;">0933116860</a>
+                            </div>
+                            <div style="margin-bottom: 0px; border-top: 1px dashed rgba(223, 177, 91, 0.2); padding-top: 12px; margin-top: 12px;">
+                                <span style="color: var(--gold); font-weight: bold; display: block; margin-bottom: 6px;">🏦 Tài khoản ngân hàng (Cúng dường / Tùy hỷ):</span>
+                                <span style="display: block; font-size: 0.93rem; color: #e5c392; margin-bottom: 3px;">Ngân hàng: <strong>Sacombank</strong></span>
+                                <span style="display: block; font-size: 0.93rem; color: #e5c392;">Số tài khoản (STK): <strong style="font-size: 1.05rem; color: var(--gold); font-family: monospace;">060216644258</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Khung lưu ý cảnh báo màu đỏ -->
+                        <div class="warning-info-box" style="border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.05); border-radius: 8px; padding: 15px; text-align: justify; box-shadow: inset 0 0 8px rgba(255, 77, 77, 0.15);">
+                            <p style="color: #ff6666; font-weight: bold; margin: 0 0 8px 0; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
+                                ⚠️ LƯU Ý QUAN TRỌNG:
+                            </p>
+                            <p style="color: #ffb3b3; margin: 0; font-size: 0.9rem; line-height: 1.6;">
+                                Sau khi tải ảnh, hãy <strong>chụp màn hình ảnh quẻ</strong> trước khi thoát web để đảm bảo an toàn. Vì khi thoát web và gieo lại sẽ không còn quẻ hiện tại nữa, thông tin luận đoán chắc chắn sai lệch.
+                            </p>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -364,8 +384,8 @@
     <!-- Lightning Flash overlay -->
     <div id="lightning-strike-overlay"></div>
 
-    <script src="calendar.js?v=3.1"></script>
-    <script src="iching_core.js?v=3.1"></script>
-    <script src="app.js?v=3.1"></script>
+    <script src="calendar.js?v=3.2"></script>
+    <script src="iching_core.js?v=3.2"></script>
+    <script src="app.js?v=3.2"></script>
 </body>
 </html>
