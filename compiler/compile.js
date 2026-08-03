@@ -60,7 +60,7 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         fs.mkdirSync(publicDir);
     }
     
-    // Sao chép các tệp giao diện tĩnh
+    // Sao chép các tệp giao diện tĩnh của phân hệ Kinh Dịch
     const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share_v2.png'];
     staticFiles.forEach(file => {
         const src = path.join(projectRoot, file);
@@ -70,6 +70,36 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
             console.log(`Copied ${file} to public/`);
         }
     });
+
+    // Hàm sao chép đệ quy thư mục
+    function copyDirRecursiveSync(src, dest) {
+        if (!fs.existsSync(src)) return;
+        if (!fs.existsSync(dest)) {
+            fs.mkdirSync(dest, { recursive: true });
+        }
+        const entries = fs.readdirSync(src, { withFileTypes: true });
+        for (let entry of entries) {
+            // Bỏ qua các thư mục phát triển không cần thiết
+            if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.gitignore' || entry.name === 'scratch') {
+                continue;
+            }
+            const srcPath = path.join(src, entry.name);
+            const destPath = path.join(dest, entry.name);
+            if (entry.isDirectory()) {
+                copyDirRecursiveSync(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
+        }
+    }
+
+    // Sao chép đệ quy thư mục phân hệ Thái Ất sang public/thai-at
+    const srcThaiAt = path.join(projectRoot, 'thai-at');
+    const destThaiAt = path.join(publicDir, 'thai-at');
+    if (fs.existsSync(srcThaiAt)) {
+        copyDirRecursiveSync(srcThaiAt, destThaiAt);
+        console.log('Successfully copied thai-at module recursively to public/thai-at!');
+    }
 
 } catch (err) {
     console.error('Compilation failed:', err);

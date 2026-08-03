@@ -937,3 +937,70 @@ footer a:hover {
         height: 18px !important;
     }
 }
+
+/* =========================================================================
+   CỔNG DỊCH HỌC HỢP NHẤT - MENU SWITCHER
+   ========================================================================= */
+.app-switcher-nav {
+    background: #140f0a;
+    border-bottom: 2px solid #b38f54; /* Đường viền vàng đồng cổ phong */
+    padding: 10px 0;
+    width: 100%;
+    position: relative;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+.app-switcher-nav .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 0 15px;
+}
+.app-switcher-nav .nav-item {
+    color: #e2d3bb;
+    text-decoration: none;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(179, 143, 84, 0.3);
+    background: rgba(43, 31, 21, 0.5);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+}
+.app-switcher-nav .nav-item .icon {
+    font-size: 16px;
+}
+.app-switcher-nav .nav-item:hover {
+    color: #ffd899;
+    border-color: #ffd899;
+    background: rgba(179, 143, 84, 0.15);
+    box-shadow: 0 0 10px rgba(255, 216, 153, 0.2);
+}
+.app-switcher-nav .nav-item.active {
+    color: #ffffff;
+    background: #b38f54; /* Màu vàng đồng active */
+    border-color: #ffd899;
+    box-shadow: 0 0 12px rgba(179, 143, 84, 0.4);
+}
+
+@media (max-width: 768px) {
+    .app-switcher-nav .nav-container {
+        gap: 10px;
+    }
+    .app-switcher-nav .nav-item {
+        font-size: 13px;
+        padding: 6px 12px;
+        gap: 6px;
+    }
+    .app-switcher-nav .nav-item .icon {
+        font-size: 14px;
+    }
+}
