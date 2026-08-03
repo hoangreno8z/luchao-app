@@ -525,6 +525,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
+    // Thêm sự kiện quay lại sửa đổi hào mà không mất dữ liệu đã nhập
+    const backToCastBtn = document.getElementById('back-to-cast-btn');
+    if (backToCastBtn) {
+        backToCastBtn.addEventListener('click', () => {
+            resultArea.classList.add('hidden');
+            castingStage.classList.remove('hidden');
+            castingStage.scrollIntoView({ behavior: 'smooth' });
+            // Khởi động lại đồng hồ thời gian thực nếu đang ở tab gieo quẻ tự động
+            const tabToss = document.getElementById('tab-toss');
+            if (tabToss && tabToss.style.background === 'var(--gold-dark)') {
+                liveClockTimer = setInterval(updateClock, 1000);
+            }
+        });
+    }
+
     // Định dạng ngày giờ hiển thị
     function formatDate(isoStr) {
         if (!isoStr) return "";

@@ -95,7 +95,8 @@ const CALENDAR = (function () {
             }
         }
 
-        const canThangIdx = ((canNamIdx * 2 + 2) + (chiThangIdx - 2 + 12)) % 10;
+        const diffChi = (chiThangIdx - 2 + 12) % 12;
+        const canThangIdx = (canNamIdx * 2 + 2 + diffChi) % 10;
 
         let h = d.getHours();
         const chiGioIdx = (h >= 23 || h < 1) ? 0 : Math.floor((h + 1) / 2) % 12;

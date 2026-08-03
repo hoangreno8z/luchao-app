@@ -701,18 +701,18 @@ footer a:hover {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 40px;
+    gap: 100px; /* Giãn cách xa hơn nữa giữa quẻ chính và quẻ biến */
     padding: 20px 0;
     border-bottom: 2px solid #888;
     margin-bottom: 10px;
 }
 #captureTarget .hex-box {
     text-align: center;
-    min-width: 180px;
+    min-width: 220px;
 }
 #captureTarget .hex-box-ho {
     text-align: center;
-    min-width: 180px;
+    min-width: 220px;
 }
 #captureTarget .hex-title {
     font-size: 19px;
@@ -733,12 +733,12 @@ footer a:hover {
 #captureTarget .gua-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    width: 110px;
+    gap: 12px; /* Tăng khoảng cách đứng giữa các vạch quẻ */
+    width: 165px; /* Dài hơn gấp rưỡi (từ 110px lên 165px) */
     margin: 0 auto;
 }
 #captureTarget .gua-line {
-    height: 22px; /* Tăng chiều cao vạch hào lên 22px */
+    height: 11px; /* Mỏng hơn (từ 22px xuống 11px) */
     width: 100%;
 }
 #captureTarget .yang {
