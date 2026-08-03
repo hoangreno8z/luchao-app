@@ -403,68 +403,81 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('coin-3')
     ];
 
-    function performCoinToss(callback) {
-        // Tắt nút submit
-        questionSubmit.disabled = true;
-
-        // Bắt đầu hiệu ứng quay
+    // Hàm reset ngẫu nhiên mặt sấp ngửa của 3 đồng xu lúc khởi tạo hoặc back về
+    function randomizeCoinsInitialState() {
         coins.forEach(coin => {
-            coin.classList.add('spinning');
-        });
-
-        // Thời gian ngẫu nhiên từ 1200ms đến 2000ms
-        const spinTime = Math.floor(Math.random() * 800) + 1200;
-
-        setTimeout(() => {
-            // Ngừng quay
-            coins.forEach(coin => {
-                coin.classList.remove('spinning');
-            });
-
-            // Tung ngẫu nhiên mặt ngửa (true/dương - 2 chữ) và sấp (false/âm - 1 chữ)
-            // Mặt 2 chữ (mặt Dương) và mặt 1 chữ (mặt Âm)
-            const r1 = Math.random() < 0.5;
-            const r2 = Math.random() < 0.5;
-            const r3 = Math.random() < 0.5;
-
-            const coinResults = [r1, r2, r3];
-            const yangCount = coinResults.filter(r => r).length;
-
-            // Áp dụng quy tắc Lục Hào:
-            // 0 Dương (3 Âm): Âm Động (Lão Âm - X) -> value = 0
-            // 1 Dương (2 Âm): Dương Tĩnh (Thiếu Dương - —) -> value = 1
-            // 2 Dương (1 Âm): Âm Tĩnh (Thiếu Âm - --) -> value = 2
-            // 3 Dương (0 Âm): Dương Động (Lão Dương - O) -> value = 3
-            let lineValue;
-            if (yangCount === 0) {
-                lineValue = 0; // Lão Âm
-            } else if (yangCount === 1) {
-                lineValue = 1; // Thiếu Dương
-            } else if (yangCount === 2) {
-                lineValue = 2; // Thiếu Âm
-            } else {
-                lineValue = 3; // Lão Dương
+            if (!coin) return;
+            const innerEl = coin.querySelector('.coin-inner');
+            if (innerEl) {
+                const isYang = Math.random() < 0.5;
+                innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
             }
+        });
+    }
 
-            hexLines.push(lineValue);
+    // Thực hiện reset ngẫu nhiên ngay khi tải trang
+    randomizeCoinsInitialState();
 
-            // Cập nhật hiển thị mặt xu trực quan cho người dùng xem bằng phép quay 3D
-            coins.forEach((coin, idx) => {
-                const isYang = coinResults[idx];
+    function performCoinToss(callback) {
+        // Tắt nút tung xu của giao diện
+        if (tossTriggerBtn) tossTriggerBtn.disabled = true;
+
+        const coinResults = [false, false, false];
+        let coinsFinished = 0;
+
+        // Cho mỗi đồng xu quay độc lập với thời gian ngẫu nhiên từ 1 giây đến 2.5 giây (1000ms - 2500ms)
+        coins.forEach((coin, idx) => {
+            if (!coin) return;
+
+            // Kích hoạt class quay siêu tốc
+            coin.classList.add('spinning-fast');
+
+            const coinSpinDuration = Math.floor(Math.random() * 1500) + 1000;
+
+            setTimeout(() => {
+                // Tắt quay siêu tốc
+                coin.classList.remove('spinning-fast');
+
+                // Quyết định mặt ngửa (true/Dương) hay sấp (false/Âm)
+                const isYang = Math.random() < 0.5;
+                coinResults[idx] = isYang;
+
+                // Cập nhật góc quay Y tương ứng
                 const innerEl = coin.querySelector('.coin-inner');
                 if (innerEl) {
-                    if (isYang) {
-                        innerEl.style.transform = 'rotateY(0deg)';
-                    } else {
-                        innerEl.style.transform = 'rotateY(180deg)';
-                    }
+                    innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
-            });
 
-            // Kích hoạt lại nút và chạy callback
-            if (callback) callback();
+                coinsFinished++;
 
-        }, spinTime);
+                // Khi cả 3 đồng xu đã dừng hẳn
+                if (coinsFinished === 3) {
+                    const yangCount = coinResults.filter(r => r).length;
+
+                    // Tính hào dịch:
+                    // 0 Dương (3 Âm): Lão Âm (Âm Động, value = 0)
+                    // 1 Dương (2 Âm): Thiếu Dương (Dương Tĩnh, value = 1)
+                    // 2 Dương (1 Âm): Thiếu Âm (Âm Tĩnh, value = 2)
+                    // 3 Dương (0 Âm): Lão Dương (Dương Động, value = 3)
+                    let lineValue;
+                    if (yangCount === 0) {
+                        lineValue = 0;
+                    } else if (yangCount === 1) {
+                        lineValue = 1;
+                    } else if (yangCount === 2) {
+                        lineValue = 2;
+                    } else {
+                        lineValue = 3;
+                    }
+
+                    hexLines.push(lineValue);
+
+                    // Kích hoạt lại nút và chạy callback
+                    if (tossTriggerBtn) tossTriggerBtn.disabled = false;
+                    if (callback) callback();
+                }
+            }, coinSpinDuration);
+        });
     }
 
     // -------------------------------------------------------------------------
@@ -549,6 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
             resultArea.classList.add('hidden');
             castingStage.classList.remove('hidden');
             castingStage.scrollIntoView({ behavior: 'smooth' });
+            
+            // Xáo trộn ngẫu nhiên mặt đồng xu khi quay lại
+            randomizeCoinsInitialState();
+            
             // Khởi động lại đồng hồ thời gian thực nếu đang ở tab gieo quẻ tự động
             const tabToss = document.getElementById('tab-toss');
             if (tabToss && tabToss.style.background === 'var(--gold-dark)') {

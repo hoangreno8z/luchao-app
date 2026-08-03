@@ -347,34 +347,12 @@ header p {
     z-index: 5;
 }
 
-/* Mặt Dương: Ký tự Mãn ở trên và dưới */
+/* Mặt Dương: Ký tự Càn Long ở hai bên trái phải */
 .coin-yang {
     transform: rotateY(0deg);
 }
 
-.manchu-top {
-    position: absolute;
-    top: 6px;
-    font-size: 26px;
-    font-weight: bold;
-    color: #4a340f;
-    font-family: var(--font-ancient);
-    text-shadow: 1px 1px 1px #fff;
-    transform: scaleX(1.3);
-}
-
-.manchu-bottom {
-    position: absolute;
-    bottom: 6px;
-    font-size: 26px;
-    font-weight: bold;
-    color: #4a340f;
-    font-family: var(--font-ancient);
-    text-shadow: 1px 1px 1px #fff;
-    transform: scaleX(1.3);
-}
-
-/* Mặt Âm: 4 chữ Hán Thuận Trị Thông Bảo */
+/* Mặt Âm: 4 chữ Hán Càn Long Thông Bảo */
 .coin-yin {
     transform: rotateY(180deg);
 }
@@ -382,32 +360,33 @@ header p {
 /* Coin character styling */
 .coin-text {
     font-family: var(--font-serif);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: bold;
     color: #3d2a0e;
     position: absolute;
     z-index: 4;
     pointer-events: none;
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.4);
 }
 
-/* 4 Chinese Characters: 順 - 治 - 通 - 寶 (Shun - Zhi - Tong - Bao) */
-.ct-top { top: 6px; left: 50%; transform: translateX(-50%); }
-.ct-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); }
-.ct-left { left: 8px; top: 50%; transform: translateY(-50%); }
-.ct-right { right: 8px; top: 50%; transform: translateY(-50%); }
+/* Ký tự mặt Âm (4 chữ): 乾 - 隆 - 通 - 寶 */
+.ct-top { top: 6px; left: 50%; transform: translateX(-50%); font-size: 17px; }
+.ct-bottom { bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 17px; }
+.ct-left { left: 8px; top: 50%; transform: translateY(-50%); font-size: 17px; }
+.ct-right { right: 8px; top: 50%; transform: translateY(-50%); font-size: 17px; }
 
-/* Coin animation */
-@keyframes coin-spin {
-    0% { transform: rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1); }
-    25% { transform: rotateY(180deg) rotateX(360deg) scale3d(1.2, 1.2, 1.2); }
-    50% { transform: rotateY(360deg) rotateX(720deg) scale3d(1.3, 1.3, 1.3); }
-    75% { transform: rotateY(540deg) rotateX(1080deg) scale3d(1.2, 1.2, 1.2); }
-    100% { transform: rotateY(720deg) rotateX(1440deg) scale3d(1, 1, 1); }
+/* Ký tự mặt Dương (2 chữ): 乾 - 隆 */
+.ct-left-2 { left: 10px; top: 50%; transform: translateY(-50%); font-size: 21px; }
+.ct-right-2 { right: 10px; top: 50%; transform: translateY(-50%); font-size: 21px; }
+
+/* Coin animation: Hiệu ứng quay siêu tốc (Tốc độ âm thanh) độc lập cho từng đồng xu */
+@keyframes coin-spin-fast {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
 }
 
-.coin.spinning {
-    animation: coin-spin 0.6s infinite linear;
+.coin.spinning-fast {
+    animation: coin-spin-fast 0.08s infinite linear;
 }
 
 /* Questions and input */
