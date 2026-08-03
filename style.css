@@ -599,12 +599,27 @@ footer a:hover {
    CAPTURE TARGET STYLES
    These styles are used for html2canvas image generation
    ======================================== */
+/* Tabs method switcher styling */
+.method-tabs button {
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+.method-tabs button:hover {
+    background: var(--gold-dark) !important;
+    color: #fff !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 4px 12px rgba(223, 177, 91, 0.2);
+}
+
 #captureArea {
     position: absolute;
     left: -9999px;
     top: 0;
 }
 #captureTarget {
+    position: relative;
     width: 1000px;
     background-color: #fefee5;
     padding: 20px;
@@ -618,9 +633,9 @@ footer a:hover {
     align-items: center;
     background: #fefee5;
     border-bottom: 2px solid #888;
-    padding: 5px 10px;
+    padding: 5px 10px 5px 175px !important;
     margin-bottom: 10px;
-    min-height: 110px;
+    min-height: 145px;
 }
 #captureTarget .info-content {
     flex: 1;

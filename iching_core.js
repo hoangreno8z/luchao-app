@@ -260,6 +260,18 @@ const ICHING = (function () {
         return list;
     }
 
+    function getThienCan(quaiName, isNgoaiQuai) {
+        if (quaiName === 'Càn') return isNgoaiQuai ? 'Nhâm' : 'Giáp';
+        if (quaiName === 'Khôn') return isNgoaiQuai ? 'Quý' : 'Ất';
+        if (quaiName === 'Cấn') return 'Bính';
+        if (quaiName === 'Đoài') return 'Đinh';
+        if (quaiName === 'Khảm') return 'Mậu';
+        if (quaiName === 'Ly') return 'Kỷ';
+        if (quaiName === 'Chấn') return 'Canh';
+        if (quaiName === 'Tốn') return 'Tân';
+        return '';
+    }
+
     function calculateHexagramData(lines, cal, methodText, formattedDate) {
         const mBits = lines.map(v => getBit(v, false));
         const mInBin = mBits.slice(0, 3).join('');
@@ -306,6 +318,7 @@ const ICHING = (function () {
 
             const mTriName = (i + 1 <= 3) ? QUAI_SO[mInIdx].name : QUAI_SO[mOutIdx].name;
             const mBranch = NAP_GIAP[mTriName][i];
+            const mCan = getThienCan(mTriName, i >= 3);
             const mEl = CALENDAR.NGU_HANH_CHI[mBranch];
             const mRel = getRelation(mEl, palaceEl);
 
@@ -323,12 +336,14 @@ const ICHING = (function () {
                 !presentRelations.has("Huynh Đệ")) {
                 const pureTri = QUAI_SO[info.p].name;
                 const pureBranch = NAP_GIAP[pureTri][i];
+                const pureCan = getThienCan(pureTri, i >= 3);
                 const pureEl = CALENDAR.NGU_HANH_CHI[pureBranch];
                 const pureRel = getRelation(pureEl, palaceEl);
                 if (!presentRelations.has(pureRel)) {
                     phucThan = {
                         rel: pureRel.split(' ')[0],
-                        branch: pureBranch
+                        branch: pureBranch,
+                        can: pureCan
                     };
                 }
             }
@@ -337,6 +352,7 @@ const ICHING = (function () {
 
             const cTriName = (i + 1 <= 3) ? QUAI_SO[cInIdx].name : QUAI_SO[cOutIdx].name;
             const cBranch = NAP_GIAP[cTriName][i];
+            const cCan = getThienCan(cTriName, i >= 3);
             const cEl = CALENDAR.NGU_HANH_CHI[cBranch];
             const cRel = getRelation(cEl, palaceEl);
 
@@ -347,6 +363,7 @@ const ICHING = (function () {
                 isMoving,
                 relation: mRel,
                 chi: mBranch,
+                can: mCan,
                 hanh: mEl,
                 phucThan,
                 isTK,
@@ -358,6 +375,7 @@ const ICHING = (function () {
                 changed: {
                     relation: cRel,
                     branch: cBranch,
+                    can: cCan,
                     hanh: cEl
                 },
                 isCTK

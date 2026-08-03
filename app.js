@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
             questionText.innerText = activeQs[0];
         }
 
+        renderManualQuestions(); // Khởi tạo các ô input nhập hào
+
         // Khởi động đồng hồ thời gian thực
         updateClock();
         liveClockTimer = setInterval(updateClock, 1000);
@@ -212,7 +214,138 @@ document.addEventListener('DOMContentLoaded', () => {
         if (finishContainer) {
             finishContainer.classList.add('hidden');
         }
+        renderManualQuestions(); // Cập nhật lại các câu hỏi của tab Nhập Hào tương ứng chủ đề mới
     });
+
+    // -------------------------------------------------------------------------
+    // HÀM & LOGIC CHO TAB TỰ NHẬP 6 HÀO
+    // -------------------------------------------------------------------------
+    function renderManualQuestions() {
+        const qContainer = document.getElementById('manual-questions-list');
+        if (!qContainer) return;
+        const activeQs = getActiveQuestions();
+        qContainer.innerHTML = '';
+        activeQs.forEach((q, idx) => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.flexDirection = 'column';
+            row.style.gap = '6px';
+            row.innerHTML = `
+                <label style="color: var(--text-light); font-weight: 500; font-size: 0.95rem;">${q}</label>
+                <input type="text" id="manual-q-input-${idx}" class="form-control" placeholder="Nhập câu trả lời của bạn..." autocomplete="off">
+            `;
+            qContainer.appendChild(row);
+        });
+    }
+
+    const tabToss = document.getElementById('tab-toss');
+    const tabManual = document.getElementById('tab-manual');
+    const methodTossArea = document.getElementById('method-toss-area');
+    const methodManualArea = document.getElementById('method-manual-area');
+
+    if (tabToss && tabManual) {
+        tabToss.addEventListener('click', () => {
+            tabToss.style.background = 'var(--gold-dark)';
+            tabToss.style.borderColor = 'var(--gold)';
+            tabToss.style.color = '#fff';
+            tabManual.style.background = 'rgba(0,0,0,0.3)';
+            tabManual.style.borderColor = 'rgba(223,177,91,0.2)';
+            tabManual.style.color = 'var(--text-muted)';
+            
+            methodTossArea.classList.remove('hidden');
+            methodManualArea.classList.add('hidden');
+        });
+
+        tabManual.addEventListener('click', () => {
+            tabManual.style.background = 'var(--gold-dark)';
+            tabManual.style.borderColor = 'var(--gold)';
+            tabManual.style.color = '#fff';
+            tabToss.style.background = 'rgba(0,0,0,0.3)';
+            tabToss.style.borderColor = 'rgba(223,177,91,0.2)';
+            tabToss.style.color = 'var(--text-muted)';
+            
+            methodManualArea.classList.remove('hidden');
+            methodTossArea.classList.add('hidden');
+            renderManualQuestions(); // Vẽ lại các câu hỏi khảo sát
+        });
+    }
+
+    const manualSubmitBtn = document.getElementById('manual-submit-btn');
+    if (manualSubmitBtn) {
+        manualSubmitBtn.addEventListener('click', () => {
+            const manualHexLines = [];
+            // Lấy 6 hào từ 1 đến 6 (hào 1 dưới cùng, hào 6 trên cùng)
+            for (let i = 1; i <= 6; i++) {
+                const hVal = parseInt(document.getElementById(`manual-hao-${i}`).value);
+                manualHexLines.push(hVal);
+            }
+
+            // Lấy các câu trả lời của 6 câu hỏi
+            userAnswers = [];
+            const activeQs = getActiveQuestions();
+            for (let idx = 0; idx < activeQs.length; idx++) {
+                const inp = document.getElementById(`manual-q-input-${idx}`);
+                const val = inp ? inp.value.trim() : '';
+                userAnswers.push(val || 'Tĩnh tâm lập quẻ');
+            }
+
+            // Tắt đếm giờ thực
+            if (liveClockTimer) clearInterval(liveClockTimer);
+
+            loadingOverlay.classList.add('visible');
+
+            const dVal = document.getElementById('current-date-time').value;
+            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const formattedDate = formatDate(dVal);
+
+            // Gọi logic tính quẻ dịch với phương pháp "Nhập hào"
+            const hexData = ICHING.calculateHexagramData(manualHexLines, calendarData, "Lục hào (Nhập hào)", formattedDate);
+
+            // Tạo giao diện trong captureTarget
+            renderCaptureHTML(hexData);
+
+            // Chờ vẽ và lấy ảnh
+            setTimeout(() => {
+                const captureArea = document.getElementById('captureArea');
+                const target = document.getElementById('captureTarget');
+
+                captureArea.style.position = 'fixed';
+                captureArea.style.left = '0';
+                captureArea.style.top = '0';
+                captureArea.style.zIndex = '-1';
+                captureArea.style.opacity = '0.01';
+
+                html2canvas(target, {
+                    scale: window.innerWidth < 768 ? 1 : 1.5,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    captureArea.style.position = 'absolute';
+                    captureArea.style.left = '-9999px';
+                    captureArea.style.opacity = '1';
+
+                    const imgData = canvas.toDataURL('image/png');
+                    hexagramImg.src = imgData;
+
+                    // Cập nhật kết luận giải thích
+                    displayInterpretation(hexData);
+
+                    // Ẩn khu gieo và hiện khu kết quả
+                    castingStage.classList.add('hidden');
+                    resultArea.classList.remove('hidden');
+                    loadingOverlay.classList.remove('visible');
+
+                    // Cuộn mượt đến đầu kết quả
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
+
+                }).catch(err => {
+                    console.error(err);
+                    loadingOverlay.classList.remove('visible');
+                    alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch!");
+                });
+            }, 300);
+        });
+    }
 
     let currentStep = 0;
     let userAnswers = [];
@@ -449,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let phucHtml = '-';
             if (line.phucThan) {
-                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - ${line.phucThan.branch}</span>`;
+                phucHtml = `<span class="phuc-than">${line.phucThan.rel} - ${line.phucThan.can || ''}${line.phucThan.branch}</span>`;
             }
 
             const isTK = line.isTK ? 'K' : '-';
@@ -460,11 +593,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${sym}</td>
                 <td>${marker}</td>
                 <td>${line.relation}</td>
-                <td>${line.chi}-${line.hanh}</td>
+                <td>${line.can || ''}${line.chi}-${line.hanh}</td>
                 <td>${phucHtml}</td>
                 <td>${isTK}</td>
                 <td class="sep-col">${line.changed.relation}</td>
-                <td>${line.changed.branch}-${line.changed.hanh}</td>
+                <td>${line.isMoving ? `${line.changed.can || ''}${line.changed.branch}-${line.changed.hanh}` : '-'}</td>
                 <td>${line.lucThu}</td>
                 <td>${isCTK}</td>
                 <td>${line.tsNgay}</td>
@@ -473,8 +606,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const target = document.getElementById('captureTarget');
+        target.style.position = 'relative'; // Bảo đảm layout relative cho seal-stamp định vị tuyệt đối
         target.innerHTML = `
-            <div class="info-header">
+            <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" style="position: absolute; top: 15px; left: 15px; width: 145px; height: 145px; z-index: 10; border: 1px solid #888;" />
+            <div class="info-header" style="min-height: 145px; padding-left: 175px;">
                 <div class="info-content">
                     <div class="info-line"><strong>Ngày giờ gieo:</strong> ${data.formattedDate} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Phương pháp:</strong> ${methodText}</div>
                     <div class="info-line"><strong>Can chi ngày giờ:</strong> ${dateInfo.fullCanChi}</div>
