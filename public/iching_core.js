@@ -298,7 +298,15 @@ const ICHING = (function () {
         const changedAttr = getHexAttribute(changedName, infoChanged.type);
 
         const ngamResult = checkNgam(mInIdx, mOutIdx, cInIdx, cOutIdx);
-        const lucThuList = LUC_THU[cal.ngay.can];
+        const safeCal = cal || {
+            ngay: { can: 'Giáp', chi: 'Tý', hanh: 'Kim' },
+            thang: { can: 'Giáp', chi: 'Tý', hanh: 'Kim' },
+            nam: { can: 'Giáp', chi: 'Tý' },
+            gio: { can: 'Giáp', chi: 'Tý' },
+            tuanKhong: ['Giáp', 'Ngọ'],
+            tietKhi: ''
+        };
+        const lucThuList = LUC_THU[safeCal.ngay.can] || LUC_THU['Giáp'];
 
         const presentRelations = new Set();
         for (let i = 0; i < 6; i++) {
@@ -322,8 +330,8 @@ const ICHING = (function () {
             const mEl = CALENDAR.NGU_HANH_CHI[mBranch];
             const mRel = getRelation(mEl, palaceEl);
 
-            const tsNgay = getLifeStage(mEl, cal.ngay.chi);
-            const tsThang = getLifeStage(mEl, cal.thang.chi);
+            const tsNgay = getLifeStage(mEl, safeCal.ngay.chi);
+            const tsThang = getLifeStage(mEl, safeCal.thang.chi);
 
             const shi = info.shi;
             const ying = (shi + 3) > 6 ? shi - 3 : shi + 3;
@@ -348,7 +356,7 @@ const ICHING = (function () {
                 isActive: isMissing
             };
 
-            const isTK = cal.tuanKhong.includes(mBranch);
+            const isTK = safeCal.tuanKhong.includes(mBranch);
 
             const cTriName = (i + 1 <= 3) ? QUAI_SO[cInIdx].name : QUAI_SO[cOutIdx].name;
             const cBranch = NAP_GIAP[cTriName][i];
@@ -356,7 +364,7 @@ const ICHING = (function () {
             const cEl = CALENDAR.NGU_HANH_CHI[cBranch];
             const cRel = getRelation(cEl, palaceEl);
 
-            const isCTK = cal.tuanKhong.includes(cBranch);
+            const isCTK = safeCal.tuanKhong.includes(cBranch);
 
             linesData.push({
                 val: lineVal,
@@ -436,7 +444,7 @@ const ICHING = (function () {
             haoTamText = `${relShort} - ${haoTamObj.branch}`;
         }
 
-        const shensha = calculateShenSha(cal.ngay.can, cal.ngay.chi, cal.thang.chi);
+        const shensha = calculateShenSha(safeCal.ngay.can, safeCal.ngay.chi, safeCal.thang.chi);
 
         return {
             mainID: hexID,
@@ -457,14 +465,14 @@ const ICHING = (function () {
             formattedDate,
             methodText,
             dateInfo: {
-                fullCanChi: `Giờ ${cal.gio.can} ${cal.gio.chi}, Ngày ${cal.ngay.can} ${cal.ngay.chi}, Tháng ${cal.thang.can} ${cal.thang.chi}, Năm ${cal.nam.can} ${cal.nam.chi}`,
-                tietKhi: cal.tietKhi,
+                fullCanChi: `Giờ ${safeCal.gio.can} ${safeCal.gio.chi}, Ngày ${safeCal.ngay.can} ${safeCal.ngay.chi}, Tháng ${safeCal.thang.can} ${safeCal.thang.chi}, Năm ${safeCal.nam.can} ${safeCal.nam.chi}`,
+                tietKhi: safeCal.tietKhi,
                 haoTamText: haoTamText,
-                tuanKhong: cal.tuanKhong.join(', '),
-                nhatThan: `${cal.ngay.can} ${cal.ngay.chi}`,
-                nguyetLenh: `${cal.thang.can} ${cal.thang.chi}`,
-                nhatLenhShort: `${cal.ngay.can} ${cal.ngay.chi}`,
-                nguyetLenhShort: `${cal.thang.can} ${cal.thang.chi}`,
+                tuanKhong: safeCal.tuanKhong.join(', '),
+                nhatThan: `${safeCal.ngay.can} ${safeCal.ngay.chi}`,
+                nguyetLenh: `${safeCal.thang.can} ${safeCal.thang.chi}`,
+                nhatLenhShort: `${safeCal.ngay.can} ${safeCal.ngay.chi}`,
+                nguyetLenhShort: `${safeCal.thang.can} ${safeCal.thang.chi}`,
                 shenshaRaw: shensha
             }
         };

@@ -60,6 +60,9 @@ const CALENDAR = (function () {
 
     function calculateCanChi(dateInput) {
         let d = new Date(dateInput);
+        if (isNaN(d.getTime())) {
+            d = new Date(); // Fallback về thời gian hiện tại nếu ngày nhập không hợp lệ
+        }
         if (d.getHours() >= 23) d.setDate(d.getDate() + 1); // Giờ Tý đổi ngày
 
         const y = d.getFullYear();
