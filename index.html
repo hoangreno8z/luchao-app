@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Luận Giải Kinh Dịch Lục Hào - Dự Đoán Huyền Học Phương Đông</title>
     <meta name="description" content="Website gieo quẻ và luận giải Kinh Dịch Lục Hào tự động, áp dụng lịch tiết khí chính xác để xác định Nguyệt Lệnh và Nhật Thần. Tiện lợi, giao diện cao cấp.">
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="stylesheet" href="style.css?v=2.2">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -196,72 +196,76 @@
                         <div class="manual-lines-grid" style="display: flex; flex-direction: column; gap: 12px; max-width: 450px; margin: 0 auto;">
                             <!-- Hào 6 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 6 (Trên):</strong>
-                                <select id="manual-hao-6" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 6 (Trên):</strong>
+                                <select id="manual-hao-6" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-6" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
                             <!-- Hào 5 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 5:</strong>
-                                <select id="manual-hao-5" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 5:</strong>
+                                <select id="manual-hao-5" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-5" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
                             <!-- Hào 4 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 4:</strong>
-                                <select id="manual-hao-4" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 4:</strong>
+                                <select id="manual-hao-4" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-4" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
                             <!-- Hào 3 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 3:</strong>
-                                <select id="manual-hao-3" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 3:</strong>
+                                <select id="manual-hao-3" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-3" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
                             <!-- Hào 2 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 2:</strong>
-                                <select id="manual-hao-2" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 2:</strong>
+                                <select id="manual-hao-2" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-2" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
                             <!-- Hào 1 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 80px;">Hào 1 (Dưới):</strong>
-                                <select id="manual-hao-1" class="form-control" style="flex: 1;">
-                                    <option value="1">Thiếu Dương (— Nét liền)</option>
-                                    <option value="2">Thiếu Âm (- - Nét đứt)</option>
-                                    <option value="3">Lão Dương (— Động nét liền)</option>
-                                    <option value="0">Lão Âm (- - Động nét đứt)</option>
+                                <strong style="color: var(--text-light); width: 100px;">Hào 1 (Dưới):</strong>
+                                <select id="manual-hao-1" class="form-control" style="flex: 2;">
+                                    <option value="1">Dương (— Nét liền)</option>
+                                    <option value="2">Âm (- - Nét đứt)</option>
                                 </select>
+                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
+                                    <input type="checkbox" id="manual-dong-1" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span style="font-size: 0.95rem;">Động</span>
+                                </label>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Khảo sát nhanh thông tin cho tab nhập hào -->
-                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(223, 177, 91, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; text-align: center; font-family: var(--font-serif); font-size: 1.1rem;">KHẢO SÁT THÔNG TIN CHỦ ĐỀ</h4>
-                        <div id="manual-questions-list" style="display: flex; flex-direction: column; gap: 15px;">
-                            <!-- Sẽ được điền động bằng JS tương tự luồng 6 câu hỏi -->
                         </div>
                     </div>
 
@@ -316,8 +320,8 @@
     </div>
 
     <!-- Nạp các thư viện logic -->
-    <script src="calendar.js?v=2.1"></script>
-    <script src="iching_core.js?v=2.1"></script>
-    <script src="app.js?v=2.1"></script>
+    <script src="calendar.js?v=2.2"></script>
+    <script src="iching_core.js?v=2.2"></script>
+    <script src="app.js?v=2.2"></script>
 </body>
 </html>

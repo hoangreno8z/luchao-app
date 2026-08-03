@@ -39,8 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
             questionText.innerText = activeQs[0];
         }
 
-        renderManualQuestions(); // Khởi tạo các ô input nhập hào
-
         // Khởi động đồng hồ thời gian thực
         updateClock();
         liveClockTimer = setInterval(updateClock, 1000);
@@ -214,30 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (finishContainer) {
             finishContainer.classList.add('hidden');
         }
-        renderManualQuestions(); // Cập nhật lại các câu hỏi của tab Nhập Hào tương ứng chủ đề mới
     });
 
     // -------------------------------------------------------------------------
     // HÀM & LOGIC CHO TAB TỰ NHẬP 6 HÀO
     // -------------------------------------------------------------------------
-    function renderManualQuestions() {
-        const qContainer = document.getElementById('manual-questions-list');
-        if (!qContainer) return;
-        const activeQs = getActiveQuestions();
-        qContainer.innerHTML = '';
-        activeQs.forEach((q, idx) => {
-            const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.flexDirection = 'column';
-            row.style.gap = '6px';
-            row.innerHTML = `
-                <label style="color: var(--text-light); font-weight: 500; font-size: 0.95rem;">${q}</label>
-                <input type="text" id="manual-q-input-${idx}" class="form-control" placeholder="Nhập câu trả lời của bạn..." autocomplete="off">
-            `;
-            qContainer.appendChild(row);
-        });
-    }
-
     const tabToss = document.getElementById('tab-toss');
     const tabManual = document.getElementById('tab-manual');
     const methodTossArea = document.getElementById('method-toss-area');
@@ -265,8 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
             tabToss.style.color = 'var(--text-muted)';
             
             methodManualArea.classList.remove('hidden');
+            tabToss.style.background = 'rgba(0,0,0,0.3)';
             methodTossArea.classList.add('hidden');
-            renderManualQuestions(); // Vẽ lại các câu hỏi khảo sát
         });
     }
 
@@ -275,19 +254,25 @@ document.addEventListener('DOMContentLoaded', () => {
         manualSubmitBtn.addEventListener('click', () => {
             const manualHexLines = [];
             // Lấy 6 hào từ 1 đến 6 (hào 1 dưới cùng, hào 6 trên cùng)
+            // Logic:
+            // Dương (1) + Không Động -> 1 (Thiếu Dương)
+            // Dương (1) + Động -> 3 (Lão Dương)
+            // Âm (2) + Không Động -> 2 (Thiếu Âm)
+            // Âm (2) + Động -> 0 (Lão Âm)
             for (let i = 1; i <= 6; i++) {
-                const hVal = parseInt(document.getElementById(`manual-hao-${i}`).value);
-                manualHexLines.push(hVal);
+                const lineVal = parseInt(document.getElementById(`manual-hao-${i}`).value);
+                const isDong = document.getElementById(`manual-dong-${i}`).checked;
+                let finalVal = 1;
+                if (lineVal === 1) {
+                    finalVal = isDong ? 3 : 1;
+                } else if (lineVal === 2) {
+                    finalVal = isDong ? 0 : 2;
+                }
+                manualHexLines.push(finalVal);
             }
 
-            // Lấy các câu trả lời của 6 câu hỏi
-            userAnswers = [];
-            const activeQs = getActiveQuestions();
-            for (let idx = 0; idx < activeQs.length; idx++) {
-                const inp = document.getElementById(`manual-q-input-${idx}`);
-                const val = inp ? inp.value.trim() : '';
-                userAnswers.push(val || 'Tĩnh tâm lập quẻ');
-            }
+            // Gán 6 câu trả lời trống vì người dùng không cần nhập câu hỏi khảo sát ở tab tự nhập
+            userAnswers = ['', '', '', '', '', ''];
 
             // Tắt đếm giờ thực
             if (liveClockTimer) clearInterval(liveClockTimer);
