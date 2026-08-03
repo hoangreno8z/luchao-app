@@ -61,7 +61,7 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
     }
     
     // Sao chép các tệp giao diện tĩnh
-    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg'];
+    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share.png'];
     staticFiles.forEach(file => {
         const src = path.join(projectRoot, file);
         const dest = path.join(publicDir, file);
