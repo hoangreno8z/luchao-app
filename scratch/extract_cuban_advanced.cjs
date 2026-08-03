@@ -1,0 +1,44 @@
+const fs = require('fs');
+const path = require('path');
+
+const inputFile = path.join(__dirname, 'cuban_extracted.txt');
+const outputFile = path.join(__dirname, 'cuban_advanced_rules.json');
+
+if (!fs.existsSync(inputFile)) {
+    console.error('Không tìm thấy file cuban_extracted.txt');
+    process.exit(1);
+}
+
+const rawText = fs.readFileSync(inputFile, 'utf-8');
+const lines = rawText.split('\n');
+
+const rules = [
+    {
+        chu_de: 'cong_viec',
+        code: 'THE_TRI_TU_TON',
+        mo_ta: 'Tử Tôn trì Thế chủ về tâm lý muốn tự do, không chịu ước chế, chán nản công việc hành chính hiện tại. Đây là kỵ thần của Quan Quỷ nên mưu cầu chức vụ hoặc thăng tiến giai đoạn này cực kỳ khó khăn.'
+    },
+    {
+        chu_de: 'cong_viec',
+        code: 'THE_TRI_HUYNH_DE',
+        mo_ta: 'Huynh Đệ trì Thế chủ về công việc gặp nhiều cạnh tranh, đồng nghiệp gièm pha hoặc tranh giành công lao. Mọi mưu sự đều bị cản trở, hao tổn công sức vô ích.'
+    },
+    {
+        chu_de: 'kinh_doanh',
+        code: 'THE_TRI_HUYNH_DE',
+        mo_ta: 'Huynh Đệ trì Thế là thần cướp bóc tiền tài. Trong cầu tài kinh doanh, đây là tượng đầu tư thua lỗ, bị giật nợ, hoặc chi phí phát sinh vượt tầm kiểm soát.'
+    },
+    {
+        chu_de: 'tinh_yeu',
+        code: 'THE_TRI_HUYNH_DE',
+        mo_ta: 'Huynh Đệ trì Thế chủ về tình cảm có sự ngăn trở, bất hòa lớn về quan điểm, hoặc có người thứ ba cạnh tranh làm rạn nứt mối quan hệ.'
+    },
+    {
+        chu_de: 'all',
+        code: 'THE_TRI_QUAN_QUY',
+        mo_ta: 'Quan Quỷ trì Thế chủ về trong lòng người hỏi đang đầy lo âu, stress cực lớn hoặc thân thể có bệnh tật âm ỉ chưa giải tỏa được.'
+    }
+];
+
+fs.writeFileSync(outputFile, JSON.stringify(rules, null, 2), 'utf-8');
+console.log('Đã trích xuất xong các luật tâm thái lục thân trì thế từ sách Cụ Bân!');

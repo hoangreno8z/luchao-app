@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     function initMainFlow() {
         // Đồng hồ đã được khởi chạy ngay khi tải trang
+        // Khởi tạo userAnswers mặc định
+        userAnswers = ['', '', '', '', '', ''];
     }
 
     function updateClock() {
@@ -397,6 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentStep === 6) {
                     tossTriggerBtn.style.display = 'none';
                     
+                    // Gán userAnswers mặc định cho flow tung xu tự động
+                    userAnswers = ['', '', '', '', '', ''];
+                    
                     // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ:
                     // Không cần người dùng bấm thêm nút Hoàn tất nào nữa
                     const autoFinishBtn = document.getElementById('finish-btn');
@@ -443,21 +448,27 @@ document.addEventListener('DOMContentLoaded', () => {
         coins.forEach((coin, idx) => {
             if (!coin) return;
 
-            // Kích hoạt class quay siêu tốc
-            coin.classList.add('spinning-fast');
+            // Kích hoạt class quay siêu tốc trên .coin-inner (chứa 2 mặt xu)
+            const innerEl = coin.querySelector('.coin-inner');
+            if (innerEl) {
+                innerEl.style.transition = 'none'; // Tắt transition để animation mượt
+                innerEl.classList.add('spinning-fast');
+            }
 
             const coinSpinDuration = Math.floor(Math.random() * 1500) + 1000;
 
             setTimeout(() => {
                 // Tắt quay siêu tốc
-                coin.classList.remove('spinning-fast');
+                if (innerEl) {
+                    innerEl.classList.remove('spinning-fast');
+                    innerEl.style.transition = 'transform 0.5s ease-in-out'; // Phục hồi transition
+                }
 
                 // Quyết định mặt ngửa (true/Dương) hay sấp (false/Âm)
                 const isYang = Math.random() < 0.5;
                 coinResults[idx] = isYang;
 
-                // Cập nhật góc quay Y tương ứng
-                const innerEl = coin.querySelector('.coin-inner');
+                // Cập nhật góc quay Y tương ứng trên .coin-inner
                 if (innerEl) {
                     innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
@@ -516,13 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Gọi logic tính quẻ dịch
         const hexData = ICHING.calculateHexagramData(hexLines, calendarData, "Lục hào", formattedDate);
-        
-        // Ghi đè ý niệm gieo quẻ của người dùng làm Hào tâm niệm nếu có nhập
-        const yniemInput = document.getElementById('toss-yniem-input');
-        const userYniem = yniemInput ? yniemInput.value.trim() : '';
-        if (userYniem) {
-            hexData.dateInfo.haoTamText = userYniem;
-        }
 
         // Tạo giao diện trong captureTarget
         renderCaptureHTML(hexData);
@@ -576,6 +580,9 @@ document.addEventListener('DOMContentLoaded', () => {
             resultArea.classList.add('hidden');
             castingStage.classList.remove('hidden');
             castingStage.scrollIntoView({ behavior: 'smooth' });
+            
+            // Reset toàn bộ trạng thái gieo quẻ để cho phép gieo lại
+            resetTossState();
             
             // Xáo trộn ngẫu nhiên mặt đồng xu khi quay lại
             randomizeCoinsInitialState();

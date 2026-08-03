@@ -1,0 +1,2310 @@
+Lục Hào Tường Chân
+Người dịch: 
+Nguyễn Viê
+̣
+t Kiên
+Mục lục
+Chương 2 – Quy Luật Quy Tắc Cơ Bản Của Đoán Quẻ
+...................................................................
+2
+Chương 3 – Lý Luận Bốn Tầng Thứ Của Hào
+..................................................................................
+8
+Ứng dụng cụ thể của bốn tầng thứ hào.
+...................................................................................
+8
+Chương 4: Phán Đoán Quyền Sinh Khắc Của Hào
+........................................................................
+12
+4.1. Hào phùng xung đối với quyền sinh khắc ảnh hưởng
+.........................................................
+12
+4.1.1. Cùng tầng thứ hào tương xung.
+...................................................................................
+12
+4.1.1.1. Nhật kiến cùng nguyệt kiến tương xung
+..............................................................
+12
+4.1.1.2. Hào động cùng hào động tương xung
+..................................................................
+13
+4.1.1.3. Hào tĩnh cùng hào tĩnh tương xung
+......................................................................
+13
+4.1.1.4. Hào biến cùng hào biến tương xung.
+...................................................................
+13
+4.1.2. Hào tầng thứ cao xung hào tầng thứ thấp
+....................................................................
+13
+4.1.2.1. Nhật, Nguyệt kiến xung hào biến.
+.......................................................................
+13
+4.1.2.2. Nhật, nguyệt xung hào động
+................................................................................
+15
+4.1.2.3. Nhật, Nguyệt kiến xung hào tĩnh
+.........................................................................
+15
+4.1.2.4. Hào biến xung hào động trong quẻ chủ
+...............................................................
+17
+4.1.2.5. Hào biến xung hào tĩnh trong chủ quẻ
+.................................................................
+19
+4.1.2.5. Hào động xung hào tĩnh
+.......................................................................................
+19
+4.2. Hào phùng hợp đối với ảnh hưởng của quyền sinh khắc
+....................................................
+19
+4.2.1. Lục hợp
+........................................................................................................................
+20
+4.2.2. Tam hợp
+.......................................................................................................................
+22
+4.3. Nhập Mộ đối với quyền sinh khắc ảnh hưởng
+....................................................................
+25
+4.3.1. Nhập mộ
+.......................................................................................................................
+25
+4.3.2. Xuất mộ
+.......................................................................................................................
+28
+4.4. Không vong đối với quyền sinh khắc ảnh hưởng
+................................................................
+33
+4.5. Phán đoán tiêu chuẩn vượng suy cùng quyền sinh khắc của hào quẻ
+.................................
+38
+4.5.1. Xác định hào tĩnh trong quẻ có hay không quyền sinh khắc.
+......................................
+38
+4.5.2. Phán định hào động trong quẻ có hay không quyền sinh khắc
+....................................
+40
+4.5.3. Phán đoán quyền sinh khắc của hào biến
+....................................................................
+41
+1
+/
+44
+ - MTC editor 
+Chương 2 – Quy Luật Quy Tắc Cơ Bản Của Đoán
+Quẻ
+https://huyenhocthucchien.com.vn/543-2/
+Quy luật quy tắc cơ bản của đoán quẻ
+Mỗi một vị dự trắc sư tựu giống như một phán định viên, phán định viên cấp quốc
+tế hay cấp quốc gia đẳng cấp khác biệt, đều có căn cứ nên phán định viên nắm
+chắc quy tắc quy luật cơ bản của thi đấu để ít nhiều sẽ cùng trình độ thuần thục
+đến để đánh giá. Trình độ cao thấp của dự trắc sư, mấu chốt là xem độ chuẩn
+xác cao thấp của dự đoán, bạn nắm chắc đoán quẻ cơ bản quy luật, quy tắc càng
+nhiều, đều có thể vận dụng linh hoạt thông thạo, độ chuẩn xác của đoán quẻ
+cũng càng cao.
+Tại trong lục hào dự trắc, có trên hàng trăm hàng ngàn loại quy luật, quy tắc bên
+trong đoán quẻ, mỗi lần đoán một quẻ đều được dùng trên hàng chục loại quy
+luật, quy tắc, nếu như trong đó có một loại quy tắc nhỏ bạn không nắm chắc tốt,
+vậy thì quẻ này sẽ không có phương pháp đoán xuống tới được, mi
+ễ
+n cưỡng bỏ
+qua đoán chỉ là che đậy, là phỏng đoán, không phải trên ý nghĩa chân chính của
+dự đoán .
+Vì vậy nắm chắc quy luật, quy tắc cơ bản của đoán quẻ là điều kiện hàng đầu để
+đoán chuẩn quẻ, vì vậy tác giả đem tại chương này cùng trong chương tiết sau
+không ngừng tỉ mỉ trình bày quy luật, quy tắc cơ bản giữa lục hào, cố gắng cung
+cấp cho độc giả một nhận thức rõ ràng. Đối với một số quy tắc, quy luật có tranh
+luận, tác giả dựa vào kinh nghiệm cá nhân, cũng đưa ra cách xem của chính
+mình, còn như chính xác hay không tôi cho rằng: thực ti
+ễ
+n là tiêu chuẩn duy nhất
+để kiểm nghiệm chân lý, không nên mê tín ở cổ thư và danh nhân. Phải hấp thu
+để soi lại, dùng thực ti
+ễ
+n đi nghiệm chính.
+Hình, xung, hợp, hại thực chất cũng là một loại hình thức biểu hiện đặc thù của
+sinh khắc, bất kể tại trên tứ trụ hay lục hào dự trắc học, đều là căn cứ ngũ hành
+sinh khắc chế hoá hình xung hợp hại quy luật cơ bản đến thể hiện giữa ngũ hành
+để suy đoán sinh khắc cát hung. Tất cả sách mệnh lý lục hào đều giảng sinh khắc
+chế hoá hình xung hợp hại, nhưng đến cùng ứng dụng ra sao, toàn bộ các sách
+không tỉ mỉ nói rõ, càng là tại trong lục hào dường như hình và hại không có quá
+lớn tác dụng, giống nhau chỉ dựa sinh khắc khán, kỳ thực hình hại cũng cần
+2
+/
+44
+ - MTC editor 
+khán. Lục hào dự trắc đều là lấy địa chi ngũ hành là chủ đến luận sinh khắc,
+nhưng giữa một số địa chi này sinh khắc là có trước có sau đó.
+Thường là giữa ngũ hành có hình, xung, hợp, hại những quan hệ đặc thù này,
+đều là có đủ ưu tiên sinh quyền, tại hào trong cùng một tầng thứ, 
+đầu tiên luận
+hợp cùng xứng tiếp đó lại luận hình, tiếp theo luận hại, sau cùng mới luận
+không có đặc thù quan hệ giữa ngũ hành sinh khắc.
+ Đây là một nguyên tắc
+lớn. Khi hào thuộc tầng thứ bất đồng, những sinh khắc thứ tự khiến phát sinh
+thay đổi, dưới tầng thứ sinh khắc chế hoá hình xung hợp hại giữa các hào đều
+nhường chỗ tại hào tầng thứ trên.
+Ví dụ quẻ Thiên Sơn Độn:
+Thiên Sơn Độn (họ Càn)
+Thiên Phong Cấu
+--- Tuất
+PM
+Thanh Long
+--- Tuất
+PM
+--- Thân
+HĐ
+Ứng
+Huyền Vũ
+--- Thân
+HĐ
+--- Ngọ
+QQ
+Bạch Hổ
+--- Ngọ
+QQ
+--- Thân
+HĐ
+Đằng Xà
+--- 
+Dậu
+HĐ
+- - Ngọ
+QQ
+Thế
+Phục: Tài Dần
+Câu Trần
+--- 
+Hợi
+Tử Tôn
+- - Thìn
+PM
+Phục: Tử Tý
+Chu Tước
+- - 
+Sửu
+PM
+Trong quẻ hào thế Ngọ hoả động, đến sinh hào thượng Phụ Mẫu Tuất Thổ, cũng
+có thể lấy sinh hào sơ Phụ mẫu Thìn thổ. Mà thực tế trên Quan quỷ Ngọ Hoả tuy
+khoảng cách Phụ mẫu thìn thổ gần, nhưng sinh thìn thổ lực lượng đều không lớn
+bằng sinh tuất thổ lực lượng. Vì sao? Bởi vì Ngọ và Tuất có quan hệ bán hợp, có
+ưu tiên sinh khắc quyền, mà Ngọ và Thìn không có quan hệ đặc thù. Ngọ, Tuất
+có bán hợp quan hệ giống như có quan hệ thân thuộc, bạn bè tốt quan hệ, tự
+nhiên sẽ mang cái tốt nhiều cấp cho Tuất thổ, mà Thìn thổ và Ngọ hoả không có
+quan hệ đặc thù nào, giống như quan hệ bình thường hoặc không quá quen
+thuộc và cơ bản là người không quen biết.
+Vì vậy hào thế nếu như có một vật giống nhau phải tặng cho người, mà lại có hai
+người đều cần vật này, theo lẽ thường đoán vật của hào Thế tất nhiên là cấp cho
+người có quan hệ đặc thù với chính mình, ví dụ như người thân, bằng hữu… mà
+người không quen thuộc, không có quan hệ nào, sẽ không có được, trừ phi là
+hào Thế nhiều đồ vật, cũng là nói rằng rất vượng, cũng có thể lấy để cấp cho
+Thìn thổ một chút, nhưng chỉ cần có Tuất thổ tồn tại, Thìn thổ đạt được chỗ tốt
+thường là so với Tuất thổ ít hơn. Như không có Tuất Thổ, chỉ có Thìn thổ thì tự
+nhiên nơi tốt sẽ được cấp cho Thìn thổ. Đây là sinh, nếu như là tương khắc quan
+hệ, tự nhiên là trước luận đặc thù quan hệ đó.
+3
+/
+44
+ - MTC editor 
+4
+/
+44
+ - MTC editor 
+Ví dụ quẻ Thủy Phong Tỉnh:
+Thủy Phong Tỉnh (họ Chấn)
+Thủy Thiên Nhu
+- - Tý
+PM
+- - Tý
+PM
+--- Tuất
+Tài
+Thế 
+--- Tuất
+Tài
+- - Thân
+QQ
+Phục: Tử Ngọ
+- - Thân
+QQ
+--- Dậu
+QQ
+--- 
+Thìn
+Tài
+--- Hợi
+PM
+Ứng
+Phục: Huynh Dần
+--- Dần
+HĐ
+-0- Sửu
+Tài
+--- Tý
+PM
+Quẻ này hào sơ Thê tài Sửu thổ động, khắc hào thượng Phụ mẫu Tý thủy lực
+lượng lớn, khắc Phụ mẫu Hợi thủy lực lượng nhỏ. Vì Tý và Sửu có quan hệ hợp,
+mà Sửu và Hợi không có đặc thù quan hệ, vì vậy khi phụ mẫu Tý thủy là dụng, sẽ
+bị tượng hợp trú, như phụ mẫu tý thủy nhược, thì bị hợp khắc, không có quyền
+sinh khắc. (Còn như Tị Thân hợp, Thân vượng lấy hợp luận, Thân nhược lấy bị
+khắc luận, lúc này Thân kim mất đi quyền sinh khắc, Mão Tuất hợp cũng giống
+vậy.)
+Ví dụ quẻ Thủy Hỏa Ký Tế:
+Thủy Hỏa Ký Tế (họ Khảm)
+Thủy Thiên Nhu
+- - Tý
+ HĐ
+Ứng
+- - Tý
+ HĐ
+--- Tuất
+ QQ
+--- Tuất
+ QQ
+- - Thân
+ PM
+- - Thân
+ PM
+--- Hợi
+ HĐ
+Thế
+Phục: Tài Ngọ
+--- 
+Thìn
+ QQ
+-
+0
+- 
+Sửu
+ QQ
+--- 
+Dần
+ Tử
+--- Mão
+ Tử
+--- 
+Tý
+ HĐ
+Như đoán cạnh tranh quan vị, tại không xem xét các nhân tố điều kiện khác, quan
+vị này ứng với ai được vậy? Trong quẻ, Quan quỷ Sửu thổ động, là dưới tình
+huống của Dụng thần, Quan này nhất định là Ứng phương đạt được, mà cùng
+hào Thế vô duyên. Bởi vì Quan quỷ Sửu thổ và hào Ứng có quan hệ hợp, mà
+cùng hào Thế không có đặc thù quan hệ, tự nhiên trước tiên luận hợp. Quan hợp
+hào Ứng, Quan cùng hào Thế vô duyên, đây là một điểm rất quan trọng.
+Có độc giả sẽ hỏi, Quan quỷ Sửu thổ khoảng cách cùng hào Thế gần, khoảng
+cách với hào Ứng xa, cần phải lấy cái gần là trước tiên mới đúng? Tại trong lục
+hào, 
+hào động cùng các hào khác là không phân xa gần,
+ bởi vì nó là hào
+động sẽ có tính lưu động, có thể vận động trên bất kỳ hào nào, cùng tất cả hào
+5
+/
+44
+ - MTC editor 
+trong quẻ đều là một loại [quan hệ gần kề] bất phân khoảng cách. Đương nhiên
+tại hào tĩnh cùng hào tĩnh ở giữa do không động, nó vẫn còn là có cự li đó, lúc
+này phải khán xa gần.
+Lại như Sơn Trạch Tổn:
+Sơn Trạch Tổn (họ Cấn)
+Phong Thiên Tiểu Súc
+--- Dần
+ QQ
+Ứng
+--- Mão
+ QQ
+-0- Tý 
+ Tài
+--- Tị
+ Tài
+- - Tuất
+ HĐ
+- - Mùi
+ HĐ
+-0- Sửu
+ HĐ
+Thế
+Phục: Tử Thân
+--- Thìn
+ HĐ
+--- Mão
+ QQ
+--- Dần
+ QQ
+--- Tị
+ PM
+--- Tý
+ PM
+Trong quẻ, hào Tý, hào Sửu, hào Mão động, có Tý Sửu hợp, có Tý Mão hình,
+đến cùng luận cái nào? Vì hợp xung tại trước, vì vậy 
+đầu tiên luận hợp xung
+,
+nên lấy Tý Sửu hợp đến luận, Tý thủy không hình Mão mộc, cũng sẽ là nói Tý
+thủy không thể chủ động sinh Mão mộc, nhưng bất đồng ở Mão mộc không hình
+Tý thủy. Mão mộc hình Tý thủy, là Mão mộc chủ động trộm tiết ra Tý thủy lực
+lượng, khiến Tý thủy giảm lực. Tý Sửu hợp, kết quả cũng là Tý thủy bị hợp khắc
+giảm lực. Quẻ này nếu như Sửu thổ là hào tĩnh, thì 
+trước 
+(đầu tiên)
+ luận Tý Mão
+hình, Tý thủy chủ động sinh Mão mộc, Mão mộc cũng tích cực trộm tiết lực lượng
+của Tý thủy. Tại thực tế đoán trong quẻ sẽ có dạng này tin tức: như hào Tý, hào
+Sửu, hào Mão đều động, là hào Tài Tý thủy cùng Sửu hợp còn bị Mão mộc hình.
+Nói rõ tiền tài này bị huynh đệ nơi đại biểu là người, sự, vật hợp mất (bị lừa) là
+chính mình chủ động cấp cho huynh đệ đó. Mão mộc hình Tý thủy, Mão mộc chủ
+động trộm rút Tý thủy, Tý thủy bị động sinh Mão mộc. Nói rõ có một bộ phận tiền
+tài hao tổn là bị hào Quan Mão mộc đại biểu là người, sự, vật chủ động phải mất
+đi, không là chính mình chủ động cấp đi, chính mình không nguyện ý cầm đưa
+cho hào Quan đó, không là chủ động nắm lấy đưa cho hào quan đó, Tựu giống
+như hàng ngày trong sinh hoạt, bị động hướng phải nhà nước nộp thuế, bị động
+cầm tiền giao cho chồng… Khán là đoán những việc gì, khán Quan quỷ tại trong
+việc cụ thể nơi đoán đại biểu cái gì? Cũng nghĩa là đối ứng là thế nào người, sự,
+vật, lấy điều này suy ra tiền tài là cấp cho ai, bị người thế nào, sự, vật hao phí đi.
+Kỳ thực giữa ngũ hành có sinh khắc chế hoá hình xung hợp hại, đều không đơn
+thuần chỉ là một loại quan hệ sinh khắc, cũng đã cho thấy giữa nhân thế những
+nội hàm của sự vật này. Như đã nói ở trên thì tin tức của tượng cũng đều theo
+ngũ hành sinh khắc chế hoá hình xung khắc hại đây là một góc độ chắt lọc ra
+6
+/
+44
+ - MTC editor 
+đến. Đây là trong sách khác không có nói đến (trong lục hào như này, tứ trụ cũng
+là như này, xem kỹ tác giả. Của Tứ Trụ Tường Chân trình thư).
+Sinh khắc chế hoá hình xung hợp hại, tức phải luận nó thực chất là một loại quan
+hệ sinh khắc, cũng phải càng sâu một tầng để khán đến cái khác đồng dạng đã
+cho thấy một đăng tin tức của tượng. Chỉ đơn giản luận sinh khắc sẽ có một số
+quá đơn giản, quá hạn hẹp. Tục ngữ nói đến rất hay, sư phụ đưa vào cửa, tu
+hành tại cá nhân. Dạy hay không dạy là vấn đề của sư phụ, học hay không học,
+có thể hay không thể học một biết mười linh hoạt vận dụng, cái đó sẽ là vấn đề
+của chính đồ đệ. Học dịch, không thể đơn giản dựa vào sách vở, chỉ dựa vào sư
+phụ từng câu từng chữ truyền, hoàn toàn bón miệng, đem đạo lý đưa cho bạn
+một cách thấu đáo, phần còn lại hoàn toàn dựa vào tự thân đi ngộ!
+Hợp và hại có thế nào khác biệt? Ngoài ra có lần lượt ưu tiên, nó thực chất hai
+cái đều là một loại quan hệ sinh khắc, nhưng, đồng dạng cũng cho thấy một loại
+tượng tin tức, như Sửu Ngọ tương hại, thực chất là Ngọ hoả sinh Sửu thổ, hoặc
+nói Sửu thổ trộm rút lực của Ngọ hoả. Là một loại tượng thế nào vậy? Tựu là ta
+Ngọ hoả cấp cho bạn Sửu thổ chỗ tốt đi giúp bạn, nhưng không quá cam tâm tình
+nguyện. Tương hại mà! Chủ không quá thân thiện, giống như bình thường tôi có
+thể đem tiền cho bạn vay, hoặc giúp đỡ bạn, nhưng tôi không quá tình nguyện,
+tôi phải nói vài câu với bạn.
+Mà Ngọ và Mùi tương hợp tuy cũng là Ngọ hoả sinh Mùi thổ, nhưng thể hiện
+tượng tin tức sẽ không giống nhau; Ngọ hoả như bất động, vậy thì Ngọ hoả tình
+nguyện cầm chỗ tốt cấp cho Mùi thổ, không chút oán thán, thậm chí còn sẽ nói:
+tiền bạn cứ cầm hết đi dùng, không đủ lại đến lấy, hiển thị một loại tin tức đặc biệt
+thân thiện, tình nguyện, chủ động, bởi vì là hợp mà. Hợp có hợp tốt, có ý tình
+nguyện. Cái khác như hình, xung các đại tượng đều có thể đi liên tưởng, tại đây
+sẽ không từng cái nói ra chỉ tiết.
+Nói tóm lại chỉ cần nhiều liên tưởng đi ngộ, rất nhanh sẽ có thể đề cao lên một
+tầng thứ, sẽ không nắm sinh khắc chế hoá hình xung hợp hại chỉ cho rằng một
+loại đơn thuần của ngũ hành sinh khắc. Xem xong chương này các bạn sẽ có
+cảm tưởng thế nào?
+7
+/
+44
+ - MTC editor 
+Chương 3 – Lý Luận Bốn Tầng Thứ Của Hào
+Lý Hồng Thành đại sư đã đề xuất lý luận về 3 tầng thứ của hào, tại trong thực tế
+đoán quẻ đã xác thực ra tác dụng trọng yếu của nắm chắc khâu chính, tác giả
+cũng là người nhận lợi ích từ lý luận này, vì vậy không có xem qua Lý Hồng
+Thành Đại sư độc giả của (Cụ thể đoán lục hào giảng nghĩa), hoặc là quá khứ
+không có nghiêm túc đọc qua Lý Hồng Thành đại sư (giảng nghĩa), mời các bạn
+nghiên cứu thêm các tác phẩm của Lý Hồng Thành đại sư. Tại đây đề xuất 4 loại
+tầng thứ của hào thực tế là tại 3 loại tầng thứ của hào trên cơ sở lý luận trải qua
+đại lượng thực chiến mà có được cải tiến.
+Để độc giả xem thuận tiện, càng sâu hơn nhận thức về 3 tầng thứ của hào của
+Lý lão sư, tác giả tại chương này tuy có một số trình bày lặp lại, chủ yếu là cấp
+những độc giả không đọc qua các tác phẩm của Lý lão sư một nhận thức lý luận
+từ đầu đến cuối, để tránh hết mất cảm xúc, khiến cho một bộ phận độc giả có thể
+càng thích lý giải nội dung tư tưởng của cuốn sách này. Tóm lại một câu, độc giả
+là thượng đế, mục đích sáng tác của cuốn sách này là khiến mỗi một vị độc giả
+đều có thể theo đó được lợi. 
+Ứng dụng cụ thể của bốn tầng thứ hào. 
+Nguyên tắc sinh khắc giữa các hào là: 
+hào tầng thứ trên có quyền sinh khắc
+hào tầng thứ dưới, mà hào tầng thứ dưới không có quyền sinh khắc hào tầng thứ
+trên, hào tầng thứ trên đối với hào tầng thứ dưới là quyền chủ động sinh khắc.
+Tại trong quái cùng tầng thứ hào ở giữa có thể tương hỗ phát sinh tác dụng sinh,
+khắc, xung, hợp. Khi có hào tầng trên can dự, hợp xung sinh khắc ở giữa chúng
+nó đều nhường ở tại hào tầng thứ trên, hào cùng thuộc tầng thứ tương sinh
+tương khắc là một loại kiềm chế và lưu thông, ai cũng không tổn thương được ai,
+chỉ có khi song phương lực lượng tương quan quá chênh lệch hoặc nhiều hào
+động, cùng hào động hình thành tam hợp cục đến khắc một cái hào động đơn
+độc, hào động này mới có thể bị chế trụ mà bị thương. 
+Nắm chắc lý luận bốn tầng thứ của hào, có thể chọn ra trong quẻ hào ngũ hành ở
+giữa tương sinh tương khắc thứ tự, ngăn ngừa rơi vào trong ngũ hành tuần hoàn
+ác tính. 
+Ví dụ: Chị của một cô gái ra bên ngoài trị bệnh cát hung thế nào? Có thể hay
+không an toàn đạt được mục đích? 
+8
+/
+44
+ - MTC editor 
+Năm Bính Tý, tháng Tân Mão, ngày Canh Tuất (Dần Mão Tuần Không)
+Bát thuần Khảm
+Trạch Địa Tụy
+- - Tý
+HĐ
+Thế
+ĐX
+- - Mùi
+QQ
+--- Tuất
+QQ
+CTr
+--- Dậu
+PM
+-0- Thân
+PM
+ChT
+--- Hợi
+HĐ
+- - Ngọ
+Tài
+Ứng
+ThL
+- - 
+Mão
+Tử
+KV
+-x- Thìn
+QQ
+HV
+- - Tị
+Tài
+- - Dần
+Tử
+KV
+BH
+- - 
+Mùi
+QQ
+Quẻ này dụng thần là Huynh đệ Tý thủy. Trong quái hào Thế Tý thủy và hào động
+Thân kim cùng Quan quỷ Thìn thổ hình thành tam hợp cục; còn có Quan quỷ
+Thìn thổ động xung Tuất thổ; Nguyệt lệnh Mão mộc còn hợp Quan quỷ Tuất thổ;
+nhật kiến Tuất thổ còn xung Quan quỷ Thìn thổ; Hào biến Tị hỏa sinh Quan quỷ
+Thìn thổ, còn hợp hào Phụ mẫu Thân kim, còn nhập nhật mộ… Những quan hệ
+rắc rối phức tạp làm thế nào duỗi thẳng ra? Dựa vào lý luận bốn tầng thứ của
+hào, những vấn đề này sẽ giải quyết d
+ễ
+ dàng.
+Nguyên trong quẻ có Thân Tý Thìn tam hợp cục, hào biến Tị hỏa hợp Thân kim
+thành lập hay không? Như Thân Tý Thìn thành lập, có bị thành tượng hợp trú,
+người sẽ không thể đi. 
+Khán quẻ, đầu tiên khán nhật
+, nguyệt đối với tác dụng sinh khắc xung hợp của
+quẻ hào. Vì 
+nhật, nguyệt là đệ nhất tầng thứ hào
+ trong quẻ, tất cả hợp xung
+quan hệ đều nhường tại nhật nguyệt. Vì vậy bên trong quẻ có Thân Tý Thìn tam
+hợp cục, nhưng phải nhường chỗ cho nhật kiến Tuất xung Quan quỷ Thìn thổ, đã
+phá đi tam hợp cục, Huynh đệ Tý thủy Dụng thần không bị hợp trú, Đoán kỳ có
+thể đi thành công. 
+Người có thể đi thành công, việc này đại tượng đã định, bên dưới khán người an
+toàn hay không? người là an toàn hay không, quan trọng xem Dụng thần Huynh
+đệ Tý thủy thụ sinh thụ khắc trình độ, là có cứu hay không? 
+Dụng thần khắc ngưng Tý thủy tại nguyệt hưu tù, tại nhật thụ khắc, nói rõ hiện tại
+cảnh ngộ rất không tốt, hoàn cảnh bên ngoài đối cô ấy bất lợi 
+(nhật nguyệt đại
+biểu ngoại giới hoàn cảnh).
+ Đây là nguyên nhân bên ngoài, chính là phản ánh
+chị gái của cô ấy bệnh rất nặng là một sự thật. Đến mức có thể hay không có cứu
+có an toàn hay không, quan trọng phải xem nguyên nhân bên trong, ngay cả cơ
+chế nội bộ của quẻ. Hiện trong quái, Kị thần Thìn thổ động, còn xung khởi Quan
+quỷ Tuất thổ, Tuất thổ vì xung mà ám động, nhưng may mắn trong quái có
+9
+/
+44
+ - MTC editor 
+Nguyên thần Phụ mẫu Thân kim phát động thông quan, Thân kim là cứu ứng.
+Phải khán Thân kim có hay không thông quan năng lực. Nhưng Thân kim chỉ có
+một, chỉ có thể thông một cái Thổ quan, khó thông cả hai Thổ quan, và hào biến
+Tị hỏa hợp Thân kim là có thể hay không hợp trú Thân kim vậy?… Những vấn đề
+quan trọng này xem nhật, nguyệt đệ nhất tầng thứ hào có thể hay không giải cứu.
+Trong quẻ Quan quỷ Tuất thổ ám động, nhưng còn bị nguyệt hợp Mão mộc hợp
+trú, Thìn tuất xung nhường chỗ cho đệ nhị tầng thứ hào Mão Tuất hợp, xem đến
+Tuất thổ do ám động còn bị nguyệt kiến hợp trú, giảm lực, mao bệnh của Tuất thổ
+được giải quyết. Hào biến Tị hỏa do sinh bản vị hào động Thìn thổ, nên đối với
+Thân kim hợp lực không lớn. Càng quan trọng một điểm là Tị hỏa nhập nhật mộ,
+nguyệt kiến là đệ nhất tầng thứ hào có quyền lực ưu tiên thu hỏa nhập mộ, vì vậy
+Tị hỏa không thể hợp trú Thân kim. Như vậy Thân kim tại trong quái cùng nhật
+nguyệt toàn bộ đều không khắc ngũ hành của nó, Thân kim hoàn toàn có thể
+thông Thìn thổ khắc Tý thủy quan, sinh Huynh đệ Tý thủy. Dụng thần nguy mà có
+cứu ứng, và còn lâm thái tuế, nên người sẽ bình an đến nơi, không đến nỗi nguy
+đến sinh mệnh. 
+Ngay lúc đó, tôi phân tích trọn cái quẻ sau đó đoán chị của cô ấy sinh mệnh sẽ
+không nguy hiểm, lại sống mười năm cũng không việc gì. Người cầu đoán nói:
+“Không quá có khả năng, bệnh viện kiểm tra là ung thư ruột giai đoạn cuối, buổi
+sáng ngồi xe đi, đến thạch gia trang tìm thầy khí công chữa bệnh, trước khi đi
+đau không chịu nổi, còn thình lình té ngã, chúng tôi đều lo lắng, người đến không
+được thạch gia trang sẽ có lo âu về sinh mệnh… bạn cho là không chuẩn!” Tôi
+nói: “tôi chỉ là căn cứ quẻ lý dự đoán, đến nỗi kết quả như nào ngày sau tự sẽ có
+nghiệm chứng”. Trên thực tế, chị gái của cô ấy bình an đi đến thạch gia trang.
+Sau đó còn phản hồi: chị gái của cô ấy bị chuẩn đoán nhầm là ung thư ruột, ở
+năm 98 phẫu thuật trị khỏi. 
+Ứng dung bốn tầng thứ của hào lấy giải quyết hợp và xung tương hỗ quan hệ
+phá giải. Dưới tình huống nào luận hợp giải xung? Dưới tình huống nào là xung
+giải hợp? dưới tình huống nào gọi hai xung một? Dưới tình huống thế nào không
+tính hai xung một hoặc ba xung một? Dưới tình huống nào là tranh hợp?… một
+số vấn đề vướng mắc không rõ. Độc giả chỉ cần ghi nhớ: trong quẻ cùng tầng thứ
+hào hợp xung đều nhường chỗ cho hợp và xung của tầng thứ hào trên, đây là
+mọt quy tắc quan trọng. Nguyệt kiến và hào quẻ xung, nhật hợp có thể giải.
+Nguyệt kiến và quẻ hào tương hợp, nhật xung có thể giải, nói trắng ra, chỉ cần
+ghi nhớ thành thứ tự, sẽ có thể hiểu là xung giải hợp, hay là hợp giải xung. 
+10
+/
+44
+ - MTC editor 
+Lên quẻ lần lượt là:
+ đầu tiên chủ quẻ, sau có biến quẻ, tiếp đó là nguyệt kiến,
+tiếp tục là nhật kiến, sau cùng là tiến hành kết hợp nguyệt, nhật kiến. Hợp xung
+của quẻ chủ, biến hào có thể giải, nhật, nguyệt kiến có thể giải; hào động và hào
+biến hợp xung, nhật, nguyệt kiến có thể giải; Nguyệt kiến và chủ biến, hào có hợp
+xung, nhật kiến có thể giải; Nhật kiến và chủ quẻ có hợp, xung, gặp tiến hành
+thời chi nhật, nguyệt có thể giải. 
+Tại phương diện này Lý Hồng Thành đại sư tại <<Cụ thể đoán lục hào giảng
+nghĩa>> trình bày và phân tích mười phần thấu triệt, độc giả có thể tử tế nghiên
+cứu. Tại đây không cần từng cái đưa lên ví dụ, vì độc giả có duyên phận mua
+sách của tôi, đại đa số đều đọc qua <<giảng nghĩa>> của Lý lão sư, nếu như lại
+viết nội dung cùng Lý lão sư tương tự không có nơi sâu sắc hơn, sẽ không hề có
+ý nghĩa, làm độc giả hao tiền xằng bậy. Chúng ta học dịch đều không d
+ễ
+ dàng, đa
+số là trải qua gập ghềnh, sinh hoạt điều kiện túng quẫn khốn khổ, mới cùng mệnh
+lý kết duyên, tiền tài vốn có sẽ không dư giả, nếu như lại khiến bọn họ bị lừa,
+chẳng khác gì họa vô đơn chí, tình lý bất dung! Vì vậy tác giả viết bản này
+<<tường chân>> khi nỗ lực đột phá và đi đến chỗ sâu sắc hơn, vì vậy muốn xem
+cuốn sách này tốt nhất trước tiên xem <<Giảng nghĩa>> của Lý lão sư, tin tưởng
+các bạn đối với sách này sẽ có lý giải càng tốt cùng tiếp thu những kiến thức đã
+học. 
+11
+/
+44
+ - MTC editor 
+Chương 4: Phán Đoán Quyền Sinh Khắc Của Hào
+Hào Dụng thần có quyền sinh khắc, là đã có đủ điều kiện thành công, không có
+quyền sinh khắc là khó thành công. Nguyên, Kị, Cừu thần cũng là như vậy. Kị
+thần không có quyền sinh khắc, Kị thần sẽ không có khả năng khắc Dụng thần.
+Vì vậy phán đoán quyền sinh khắc của hào lớn nhỏ cùng có không, là kiến thức
+cơ bản của đoán quẻ, cũng là chỗ hạch tâm của đoán quẻ. Vì vậy phán đoán hào
+như nào là có hay không có quyền sinh khắc, là một hạng mục kỹ năng cơ bản
+mà mỗi một vị lục hào dự trắc giả tất phải cần nắm chắc. Tại chương tiết này đem
+trình bày và phân tích tường tận quyền sinh khắc của hào. Độc giả đối quy định,
+quy tắc trong đó cần phải lý giải thật chắc chắn ghi nhớ. 
+4.1. Hào phùng xung đối với quyền sinh khắc ảnh 
+hưởng
+Chúng ta hiểu, hào tương xung có hai loại hình thức: tức cùng tầng thứ hào
+tương xung và hào tầng thứ cao xung hào tầng thứ thấp. Do đó hào tương xung
+hình thức bất đồng, bản thân của hào vượng suy bất đồng, đối với hào bị xung
+quyền sinh khắc ảnh hưởng là bất tương đồng. 
+4.1.1. Cùng tầng thứ hào tương xung. 
+Cùng tầng thứ hào ở giữa tương xung có bốn loại tình huống :
++ 1, Đệ nhất tầng thứ hào tương xung (nguyệt kiến và nhật kiến tương
+xung).
++ 2, Hào động trong quẻ và hào động (ám động cũng tính) tương xung. 
++ 3, Hào tĩnh trong quái cùng hào tĩnh tương xung. 
++ 4, Hào biến cùng hào biến tương xung. 
+4.1.1.1. Nhật kiến cùng nguyệt kiến tương xung
+Tại trong lục hào đoán quẻ, 
+niên, nguyệt, nhật, thời là hoàn cảnh bên ngoài
+của quẻ
+, giống nhau chỉ luận nhật, nguyệt kiến đối với quẻ hào cụ thể là xung
+khắc sinh hợp tác dụng, KHÔNG xem nhật kiến và nguyệt kiến đem kết hợp hay
+là tương xung, xem nhật nguyệt tương xung đối với đoán quẻ không có nhiều ý
+nghĩa thực tế. 
+12
+/
+44
+ - MTC editor 
+4.1.1.2. Hào động cùng hào động tương xung
++ Kẻ mạnh được, kẻ yếu thua. Như kẻ mạnh thường có quyền sinh khắc, kẻ yếu
+vì xung mà tan không có quyền sinh khắc. 
++ Hai bên đều vượng, tương xung, song phương đều giảm lực, nhưng [chủ khắc]
+giảm lực nhỏ, [bị khắc] giảm lực lớn. Hào Thổ tương xung song phương đều tăng
+lực. 
++ Song phương đều lâm tù, là lưỡng bại câu thương, đều không có quyền sinh
+khắc.
+MTC chú:
++ Cần làm rõ nguyên nhân: Hào Thổ tương xung song phương đều tăng
+lực. Nguyên gốc: 
+土爻相冲双方均增力
+.
+ 
+4.1.1.3. Hào tĩnh cùng hào tĩnh tương xung
+Hào tĩnh cùng hào tĩnh tương xung, tại có hào động hoặc hào ám động trong
+quẻ, giống nhau không luận, vì là nó tĩnh không có phát động không thể tương
+xung, song phương ai cũng xung không được ai, trừ phi một bên đặc biệt yếu.
+P
+hản ánh tại trên nhân sự
+ là: nội bộ, nội tâm mâu thuẫn, bất ổn, tâm trạng và
+sự kiện rối loạn, nhưng không có hành động rõ ràng. 
+4.1.1.4. Hào biến cùng hào biến tương xung.
+Tại trong lục hào đoán quẻ hào biến cùng hào biến tương xung, giống nhau
+không xem, chỉ xem biến hào đối với tác dụng của hào trong chủ quẻ. 
+4.1.2. Hào tầng thứ cao xung hào tầng thứ thấp 
+Hào tầng thứ cao xung hào tầng thứ thấp có sáu loại tình huống:
++ 1, Nhật, nguyệt kiến xung biến hào. 
++ 2, Nhật, nguyệt kiến xung hào động. 
++ 3, Nhật, nguyệt kiến xung hào tĩnh. 
++ 4, Hào biến xung hào tĩnh trong quẻ chủ. 
++ 5, Hào biến xung hào động. 
++ 6, Hào biến xung hào tĩnh.
+4.1.2.1. Nhật, Nguyệt kiến xung hào biến. 
+Nhật, Nguyệt kiến là hào thuộc ĐỆ NHẤT tầng thứ. Hào biến là hào thuộc đệ nhị
+tầng thứ (Lý thuyết này của hào biến là chỉ quẻ chủ hào động nơi biến ra cùng
+hào bản vị). Đây là hào thuộc tầng thứ trên xung hào thuộc tầng thứ dưới có thể
+13
+/
+44
+ - MTC editor 
+đem hào thuộc tầng thứ dưới xung tán, xung thoát mất đi quyền sinh khắc bình
+thường. 
+MTC chú:
++ Ví dụ hào Tý (quẻ chủ) động biến Thân (quẻ biến), thì hào Thân là hào biến.
++ Ví dụ tháng Dần, hào Tý biến Thân, hào biến Thân bị tháng Dần xung tán (tháng Dần
+thuộc tầng đệ nhất, hào biến là tầng đệ nhị, nên bị tầng cao hơn xung tán)
+Ví dụ: ngày Giáp Tuất, tháng Dần, đoán hợp đồng có thể hay không ký thành
+công? Quẻ Sơn lôi di, động hào 4, 5 biến Thiên Lôi Vô Vọng.
+Sơn Lôi Di (họ Tốn - du hồn)
+Thiên Lô Vô Vọng
+--- Dần
+HĐ
+HV
+--- Tuất
+Tài
+-0- Tý
+PM
+Tử - Tị (KV)
+BH
+--- Thân
+QQ
+-0- Tuất
+Tài
+Thế
+ĐX
+--- Ngọ
+Tử
+- - Thìn
+Tài
+Quan - Dậu
+KV
+CTr
+- - Thìn
+Tài
+KV
+- - Dần
+HĐ
+ChT
+- - Dần
+HĐ
+--- Tý
+PM
+Ứng
+ThL
+--- Tý
+PM
+Đoán hợp đồng có thể hay không ký thành, một là xem Thế hào vượng suy, hai là
+xem Ứng hào vượng suy, ba là xem Thế Ứng quan hệ, bốn là xem Phụ mẫu hào
+vượng suy. Tổng hợp bốn phương diện này đến luận đoán việc này có thể thành
+hay không. 
+Vượng suy của 
+hào 
+T
+hế đại biểu thực lực của bản thân
+, đại biểu bản thân đối
+với thái độ ký hợp đồng, nỗ lực trình độ, hào Thế đắc nhật kiến bang phù còn
+phát động, hóa Ngọ hỏa hồi đầu sinh, nói rõ bản thân có thực lực, một phát động
+nói rõ đối với việc này áp dụng tích cực chủ động thái độ, có đủ điều kiện thành
+sự tối thiểu.
+Hào Ứng đại biểu đối phương, tại nguyệt hưu tù, tại nhật thụ khắc, một là có thể
+đối phương không có thực lực, hai là đối phương áp dụng thái độ tiêu cực trong
+việc ký hợp đồng, đối với việc này không có lòng tin, không có thành ý. Tóm lại
+đây là hai phương diện tất có một, đối phương không tích cực việc này sẽ khó
+thành công, chỉ hào Thế một đầu mong mỏi không được. 
+Thế Ứng tương khắc, nói rõ ý kiến không thống nhất.
+Hào 
+P
+hụ mẫu đại biểu bản hợp đồng, hào Ứng lâm hào 
+P
+hụ mẫu đại biểu đối
+phương, hào năm 
+P
+hụ mẫu là hợp đồng, hào 
+P
+hụ mẫu tuy hưu tù, nhưng động
+14
+/
+44
+ - MTC editor 
+hóa hồi đầu sinh, còn sinh hào Ứng 
+P
+hụ mẫu 
+T
+ý thủy, xem ra có hy vọng, nhưng
+không phù hợp nguyệt kiến Dần xung hào biến 
+T
+hân kim, 
+T
+hân kim nguyệt phá,
+không thể sinh 
+P
+hụ mẫu 
+T
+ý thủy, vì vậy quẻ này điều kiện bất 
+lợi
+ quá nhiều, hợp
+đồng ký không thành. 
+Sau quả nhiên không ký được. 
+Nhật nguyệt kiến xung hào biến, hào biến bị xung thoát, xung tán, khiến không
+thể phát huy tác dụng bình thường, đối với động tĩnh trong quẻ chủ không có
+nhiều quyền sinh khắc. 
+4.1.2.2. Nhật, nguyệt xung hào động
+Nhật nguyệt kiến xung hào động trong quẻ, hào động sẽ bị xung tán hoặc xung
+thoát, mất đi quyền sinh khắc bình thường. Là hình ảnh một hàng xe lửa đang
+vận hành bình thường, nếu như nhận được tầng thứ cao hơn nó một lực lượng
+xung kích lớn, sẽ trật đường ray, lệch khỏi quỹ đạo vận hành bình thường, lại
+không thể như thường hướng phía trước chạy. 
+Nhật, Nguyệt kiến xung hào
+động, hào động bất luận vượng suy đều không có quyền sinh khắc
+, trừ khi
+có tầng thứ cao hơn đem hào động này hợp trú, có giải cứu mới có thể lại bình
+thường phát huy tác dụng. Như nguyệt xung, nhật hợp có thể giải, nhưng hào
+phải được vượng tướng. Nhật xung phùng tiến hành lúc này nhật, nguyệt hợp trú
+có thể giải. Hào biến cũng là như vậy giải pháp.
+Nguyệt, Nhật kiến [hào động vượng tướng] gọi là xung thoát, dựa vào giải pháp
+kể trên có thể giải. 
+Nguyệt, Nhật kiến xung [hào động hưu tù] là xung tán, hào động vĩnh vi
+ễ
+n không
+có quyền sinh khắc, không thể giải. 
+Nguyệt kiến xung hào động không luận vượng suy đều là 
+nguyệt phá
+. Nhưng
+hào động vượng tướng hoặc tuy hưu tù nhưng hào động phùng nguyệt xung
+không bị khắc, tại động hào trực nhật, hoặc phùng hợp với nhật, cũng có quyền
+sinh khắc, ra khỏi tháng đó có quyền sinh khắc. Hào biến nguyệt phá cũng giống
+như vậy. 
+Hào động hưu tù, còn bị chế, nguyệt phá vĩnh vi
+ễ
+n không có quyền sinh khắc. 
+4.1.2.3. Nhật, Nguyệt kiến xung hào tĩnh
+(1) 
+Nhật kiến xung hào tĩnh, xem vượng suy của hào tĩnh. 
+15
+/
+44
+ - MTC editor 
+Nhật xung hào tĩnh vượng tướng là ám động, hào tĩnh không những không bị
+thương, ngược lại vì xung mà động, do đó 
+đệ tứ tầng thứ tăng lên là đệ tam
+tầng
+ thứ, cùng hào động trong quái chung một tầng thứ.
+Nhật kiến xung hào tĩnh hưu tù có hai loại tình huống: Một chủng là chỉ xung
+không khắc, một chủng là vừa xung vừa khắc. 
+Hào tĩnh hưu tù (tại nhật nguyệt kiến chỉ hưu tù đều không thụ khắc) nhật kiến chỉ
+xung không khắc, xen vào giữa ám động cùng nhật phá là trạng thái giới hạn,
+đến nỗi là ám động hay là nhật phá, xem trong quái động, biến hào ủng hộ hay
+phản đối. 
+Ví dụ:
+ Mão Nguyệt, Tị Nhật, hào Hợi.
++ Hợi thủy tại nhật, nguyệt hưu tù, nhưng đều không bị khắc, nhật kiến
+xung xen vào giữa ám động cùng nhật phá. Khi trong quẻ có hào động, hào
+biến sinh là ám động, như khi trong quẻ có hào động khắc, tiết, hao hào
+Hợi sẽ là nhật phá, đây là một điểm rất quan trọng. 
+Như hào hưu tù tại nhật, nguyệt một mặt trở lên thụ khắc nhật kiến xung không
+luận là chỉ xung không khắc, còn là vừa xung vừa khắc, hào này là nhật phá
+không có quyền sinh khắc. 
+Ngoài ra hào thổ tương xung là tính đặc thù. 
+Như: Thân ( Dậu ) Nguyệt, Thìn Nhật, hào Tuất.
++ Hào Tuất thổ tại nguyệt chỉ hưu tù không khắc, tại nhật kiến là thổ bang
+phù vượng tướng, hào tuất này là ám động.
+Như: Dần (Mão) nguyệt, Thìn Nhật, hào Tuất.
++ Tuất thổ tại nguyệt hưu tù thụ khắc, tại nhật đắc bang phù tương xung,
+đây là xen vào giữa ám động và nhật phá, cho nên lấy phá luận hay là lấy
+ám động luận, xem trong quẻ hào động, hào biến đối với Tuất thổ là ủng hộ
+hay phản đối. 
+Hào tại nguyệt hưu tù gặp nhật thần vừa xung vừa khắc là nhật phá. 
++ Sửu nguyệt, Dậu Nhật,hào Mão là nhật phá. 
++ Tị nguyệt, Thân nhật, hào Dần là nhật phá.
+Trên sách mệnh lý bất kỳ, không có trạng thái hào bị nhật xung giới hạn giữa ám
+động cùng nhật phá, đều là hoặc cái này hoặc cái kia, không có trạng thái trung
+gian, tại trong hiện thực rất nhiều sự vật đều là có tính hai mặt, trên khách quan
+16
+/
+44
+ - MTC editor 
+đang tồn tại giới hạn trạng thái, lục hào là phản ánh trên thế giới vạn sự vạn vật
+đó, lý của nó chỉ là cùng nhất trí mới có thể khách quan phản ánh hiện thực trạng
+huống, mới có thể dự đoán trên thế giới vạn vật vạn sự. Chỉ thừa nhận trên thế
+giới có giới hạn trạng thái của vật, không thừa nhận quẻ lý cũng có giới hạn trạng
+thái tồn tại, há không phủ nhận quẻ lý cũng là một dự trắc nguyên lý tự nhiên
+sao?
+(2) Nguyệt kiến xung hào tĩnh
+Nguyệt kiến xung hào tĩnh là nguyệt phá, nhưng phân ra tình huống dưới đây:
++ Nguyệt kiến xung [hào tĩnh hưu tù] là triệt để phá, vĩnh vi
+ễ
+n không có
+quyền sinh khắc.
++ Nguyệt kiến xung [hào tĩnh vượng tướng], tại trong tháng là nguyệt phá,
+không có quyền sinh khắc, gặp hợp, trực nhật cùng ra khỏi tháng đó cũng
+sẽ có quyền sinh khắc.
++ Nguyệt kiến xung [hào tĩnh trực nhật], không những không luận phá mà
+còn là ám động.
+Ví dụ:
++ Mão nguyệt, Dậu nhật, hào Dậu là ám động
++ Thân nguyệt, Dần nhật, hào Dần là ám động
++ Thìn nguyệt, Tuất nhật, hào Tuất là ám động.
+MTC chú:
+ [hào tĩnh trực nhật] tức hào tĩnh lâm Nhật kiến, vậy là coi như
+vượng.
+4.1.2.4. Hào biến xung hào động trong quẻ chủ
+Hào biến đối với hào động trong chủ quẻ mà xung, một là xung hào động bản vị,
+hai là xung hào động khác trong chủ quẻ. Do tại 
+hào biến có tầng thứ cao hơn
+so với hào động
+, vì vậy nó có chủ động quyền sinh khắc, đây là do địa vị của nó
+quyết định, mà không phải do lực lượng của nó quyết định. Hào biến có hay
+không năng lực đi xung hào động, quan trọng xem nhật, nguyệt kiến đối với nó
+tác dụng thế nào, nếu như hào biến bị nhật, nguyệt chế trụ, hợp trú, xung tán,
+xung thoát, hào biến sẽ không có quyền lực đi xung bản vị hào động cùng hào
+khác. Khi hào biến có năng lực đi xung bản vị hào động cùng hào khác lúc, phân
+ra tình huống sau đây:
+Hào biến đối với bản vị hào động khi có quan hệ xung, hào biến chỉ cùng bản vị
+hào động phát sinh tác dụng xung, 
+KHÔNG
+ lại cùng hào khác sản sinh ra sinh,
+khắc, xung, hợp tác dụng. Bản vị hào động khi hưu tù, bị hào biến xung, mà xung
+tán, mất đi quyền sinh khắc. Khi bản vị hào động vượng tướng, nếu như hào biến
+đối với hào động chỉ xung không khắc, bản vị hào động giảm lực, nhưng còn có
+17
+/
+44
+ - MTC editor 
+quyền sinh khắc. Biến hào đối với bản vị hào động vừa xung vừa khắc bất luận
+hào động vượng suy, hào động không có quyền sinh khắc. Chỉ có bản vị hào
+động khi lâm nhật, nguyệt kiến, bản vị hào động mới không thụ thương và có
+quyền sinh khắc. 
+Ví dụ: Ngọ nguyệt, Thìn nhật, đoán ra ngoài cầu tài có tiền hay không? Được quẻ
+Lôi Phong Hằng, động hào 2,3 biến Lôi Địa Dự
+Lôi Phong Hằng (họ Chấn)
+Lôi Địa Dự
+- - Tuất
+Tài
+Ứng
+HV
+- - Tuất
+Tài
+- - Thân
+QQ
+BH
+- - Thân
+QQ
+--- Ngọ 
+Tử
+ĐX
+--- Ngọ 
+Tử
+-x- Dậu
+QQ
+Thế
+CTr
+- - 
+Mão
+HĐ
+-x- Hợi 
+PM
+Phục: HĐ - Dần
+ChT
+- - 
+Tị
+Tử
+- - Sửu
+Tài
+ThL
+- - 
+Mùi
+Tài
+Quẻ này hào Thế Dậu kim động hóa hồi đầu xung, Mão đối Dậu chỉ xung không
+khắc, hào Thế Dậu kim chỉ là giảm lực, nhưng cẫn còn có quyền sinh khắc;
+huống chi Nhật thần Thìn thổ sinh hợp Dậu kim, Mão Dậu xung nhường chỗ cho
+Dậu Thìn hợp, này là hợp giải xung, hào Thế vượng tướng, không có mất đi
+quyền sinh khắc, sẽ có điều kiện thành công, sẽ có năng lực đảm nhận tiền bạc.
+Hào hai Phụ mẫu Hợi thủy động biến Tị hỏa hồi đầu xung, tuy chỉ xung không
+khắc, nhưng Hợi thủy tại nguyệt hưu tù tại Nhật nhập mộ thụ khắc, Hợi thủy đã
+không có quyền sinh khắc. Ở đây luận Hợi thủy nhập mộ, chỉ có khi Hợi thủy xuất
+mộ, Tị hỏa mới có thể xung Hợi, Tị hỏa xung Hợi thủy hưu tù, xuất hay không
+xuất mộ thì Hợi thủy đều không có quyền sinh khắc, Hợi thủy là Cừu thần mất đi
+quyền sinh khắc, đối với cầu tài có lợi.
+Trong quẻ hào Ứng Thê tài Tuất thổ, nhật xung là ám động sinh Thế, vì vậy đoán
+cầu tài có thể được, nhưng có phản phúc, vì quái biến phản ngâm, chủ sự thể
+phản phúc. Thực tế người này tại bên ngoài cầu tài phản phản phúc phúc, đến
+đến đi đi, nhiều lần đi qua đi lại, sau cùng còn là được đến một số tiền khổ sở
+kiếm được. 
+Hào biến xung hào khác trong chủ quẻ
+Hào biến đối với bản vị hào có sinh, khắc, hợp, xung tác dụng, sẽ không lại cùng
+hào cái khác trong quẻ chủ phát sinh tác dụng. Đây là đằng trước đã giải thích,
+khi hào biến cùng bản vị hào động không sinh, khắc, hợp tác dụng, hào biến đối
+với cái khác hào động tĩnh trong chủ quẻ cũng có xung khắc tác dụng, hào biến
+18
+/
+44
+ - MTC editor 
+đối với hào bên cạnh vừa xung vừa khắc cùng bản vị hào động tương xung đạo
+lý là giống nhau, tại đây không lại kể lại. 
+4.1.2.5. Hào biến xung hào tĩnh trong chủ quẻ
+Khi hào biến có điều kiện xung hào tĩnh trong chủ quẻ, hào biến xung hào tĩnh
+vượng tướng, hào tĩnh này thành ám động, tiến lên là hào cấp độ tầng thứ ba,
+xung hào tĩnh hưu tù là phá hoặc xem vào giới hạn trạng thái, đồng nghĩa với
+nhật kiến xung hào tĩnh. 
+4.1.2.5. Hào động xung hào tĩnh
+Hào động xung hào tĩnh vượng tướng, hào tĩnh là ám động, là xung khởi; xung
+hào tĩnh hưu tù, đồng nghĩa với nguyệt kiến xung hào tĩnh. Đến nỗi hào động có
+thể hay không có năng lực xung hào tĩnh, cần xem nhật, nguyệt, động, biến đối
+với nó tình huống chế ước, hào động khi có quyền sinh khắc, có thể xung hào
+tĩnh, khi không có quyền sinh khắc, cũng không thể xung hào tĩnh.
+4.2. Hào phùng hợp đối với ảnh hưởng của quyền sinh
+khắc
+Hào gặp hợp chủ yếu là tam hợp, lục hợp. 
+[Hợp cục thành hóa]
+ điều kiện là:
++ Cần phải hai hào lục hợp, ba hào tam hợp đều động hoặc nếu một
+phương là Nhật, Nguyệt hoặc là hào biến (hào biến cùng nhật, nguyệt, hào
+biến cùng bản vị hào động) hình thành tam hợp, lục hợp cục.
++ Cần phải tại Nhật hoặc Nguyệt kiến có hóa thần, và nhật, nguyệt bất kì
+một phương KHÔNG được là khắc thần của hóa thần.
+Tam hợp, lục hợp cục hợp mà KHÔNG HÓA luận là bán trú giảm lực, tạm thời
+mất đi quyền sinh khắc. Cùng tầng thứ hào tác hợp, hợp mà không hóa, hai bên
+đều giảm lực. Nếu như tác hợp một phương đặc biệt vượng, ngoài ra một
+phương không vượng, hoặc là hào cao tầng cùng hào thấp tầng tác hợp, nếu
+không một phương vượng tướng cùng hào tầng thứ thấp một phương khiến mất
+đi quyền sinh khắc. 
+Tại trong quẻ lục hào, hào tĩnh cùng hào tĩnh chỉ có hợp tượng không có hợp lực,
+vì hai bên đều tĩnh mà không động, loại này giống nhau không có lực lượng,
+không luận hợp, nhưng có thể thể hiện một loại tượng tin tức. 
+19
+/
+44
+ - MTC editor 
+Tam hợp, lục hợp hợp hóa thành công sau đó, lấy hợp hóa xuất ra ngũ hành nào
+luận sinh khắc, như hợp mà không hóa, tầng thứ hào thấp hoặc hào suy nhược
+tạm thời mất đi quyền sinh khắc, chờ đợi một tầng thứ hào trên giải hợp lúc, mới
+có thể có quyền sinh khắc, hào tầng trên giải hợp sẽ là gặp được tầng thứ hào
+trên xung khai. 
+4.2.1. Lục hợp
+Lục hợp thành hóa:
++ một: tất phải là trong quẻ hai bên hào đều động, hoặc trong quẻ hào
+động cùng bản vị hào biến là hợp.
++ hai: tất phải nhật hoặc nguyệt kiến là hóa thần, và nhật, nguyệt bất kì một
+phương không thể là khắc ngũ hành của hóa thần. 
+Ví dụ:
++ Mùi nguyệt, Ngọ nhật, trong quẻ 2 hào Tuất, Mão cùng động, Mão Tuất
+hợp hóa Hỏa thành công. 
++ Hợi nguyệt Ngọ nhật, trong quẻ hào Tuất, Mão động, Mão Tuất hợp
+không hóa, hai bên đều giảm. Mão Tuất hợp hóa Hỏa, [Hỏa thần] bị Nguyệt
+Hợi thủy khắc, nên trường hợp này không hóa được.
+Tại trong lục hợp, phàm nhật hoặc nguyệt cùng hào trong quẻ tương hợp đều là
+hợp mà không hóa. Phàm hào động phùng nhật hoặc nguyệt hợp, không luận
+vượng suy đều luận bán trú, tạm thời mất đi quyền sinh khắc. Nhưng hào Dụng
+thần động phùng sinh hợp, bất luận hợp trú, là tăng lực, mà nguyên, kị, cừu,
+nhàn thần không luận sinh hợp, khắc hợp đều là bán trú, tạm thời mất đi quyền
+sinh khắc tương đương với hào tĩnh. 
+Phàm hào tĩnh phùng nhật, nguyệt hợp, có một số sách nói rằng hợp khởi, tác
+giả cho rằng đều không toàn là như vậy, hào tĩnh phùng sinh hợp tại hào tĩnh
+vượng tướng, cái gọi là hợp khởi, tương đương là hào động. Phùng nhật, nguyệt
+cùng hào tĩnh là khắc hợp lúc, không luận hào vượng suy đều không luận hợp
+khởi. Tại trong dự đoán xuất hành, dụng thần không luận động tĩnh, không luận
+vượng suy, không luận sinh hợp hay là khắc hợp, không luận hợp hóa thành
+công hay không, đều có một loại tượng hợp trú. Loại này thời gian, thường
+thường thể hiện là một loại tượng tin tức, là vì sự bán trú, tượng tạm thời không
+thể xuất hành, đến nỗi vì sao có sự bán trú, xem chủ hợp ngũ hành cùng là hào
+nào, như dụng thần bị nhật nguyệt kiến lâm hào phụ mẫu hợp trú, là vì phụ mẫu,
+xe cộ, văn thư mà việc bị bán trú. 
+20
+/
+44
+ - MTC editor 
+Ví dụ:
+ một người phụ nữ đoán con gái vài ngày chưa gọi điện thoại tới vì sao?
+Tình trạng: nữ nhi tại bên ngoài kinh doanh, trước đây ngày ngày có gọi tới cho
+người nhà nói chuyện. Ngày Quý Dậu tháng Mão, lên được quẻ Thiên Thủy
+Tụng.
+Thiên Thủy Tụng (họ Ly - Du hồn)
+--- Tuất
+Tử
+BH
+--- Thân
+Tài
+ĐX
+--- Ngọ 
+HĐ
+Thế
+CTr
+- - Ngọ
+HĐ
+ChT
+--- Thìn
+Tử
+Phục: Quan Hợi | KV
+ThL
+- - Dần
+PM
+Ứng
+HV
+Quẻ này rất dịch hữu đều đoán qua, toàn bộ nói Tử tôn Tuất thổ Dụng thần tại
+nguyệt, nhật hưu tù, còn lâm bạch hổ, và nguyệt kiến hợp khắc tất là có huyết
+quang tai họa cùng sự việc hung họa khác. 
+Tôi tử tế phân tích thử xem tượng quẻ, đoán rằng: con gái của bà ấy tại bên
+ngoài tuyệt không hung hiểm, bình an vô sự, là vì việc liên quan đến tiền tài cùng
+thông tấn vây hãm mà không điện thoại. Hôm nay là ngày Tuất, Tử Tôn dụng
+thần xuất không, còn xung động hào hai Tử Tôn Thìn thổ, tất sẽ có tin tức. Quả
+nhiên, giữa ngọ ngày Tuất, con gái của bà ấy gọi điện về nhà, nói rằng điện thoại
+di động nợ cước, tại nơi khác không có cách nộp tiền, còn về đến thành phố nộp
+phí sau đó vội vã rời đi, giờ mới gọi điện thoại cho gia đình. 
+Là vì sao đoán con gái của bà ấy tại bên ngoài bình an không hung hiểm? vì tôi
+lấy Tử Tôn Tuất thổ là dụng, kiêm xem hào Tử Tôn thìn thổ, Tử Tôn Tuất thổ tại
+nhật, nguyệt tuy hưu tù: nhưng vì Tuần không nên không bị khắc. Đây là thứ
+nhất. Thứ hai, trong quẻ không có hào động khắc hào Tử Tôn, đây là nói rằng,
+bên ngoài nhân tố nhật, nguyệt tuy đối với dụng thần bất lợi, nhưng nhân tố bên
+trong của quẻ không có cho Dụng thần tạo thành thương hại, nguyên nhân bên
+ngoài phải chế ước một hào nào đó, là phải dựa vào yếu tố bên trong khởi lên tác
+dụng, mà quẻ này nguyên thần hào huynh đệ vượng tướng, hào Tử Tôn nguồn
+sinh không đứt, nên đoán người an toàn. 
+Chỉ bằng lục thần cùng tại nhật, nguyệt hưu tù, mà không chú trọng nhân tố bên
+trong của quẻ tổ hợp là đoán quẻ không tốt đó. nếu người đã an toàn, phải xem
+là vì việc gì gây trở ngại không thể gọi điện thoại, nguyệt kiến mão hợp Tử Tôn
+Tuất thổ. Mão là hào phụ mẫu, là điện thoại, thông tấn, văn thư, phòng ốc. Nhật
+kiến dậu hợp Tử Tôn thìn thổ. Dậu là hào tài chủ tiền tài, kinh tế, phí dụng. Hai
+21
+/
+44
+ - MTC editor 
+cái hòa trộn tại cùng một chỗ, liền có thể đoán ra là vì thông tấn, tiền tài sự loại
+mà bán trú. Vì vậy đoán vì điện thoại cầm tay thiếu phí nên thuận lý thành
+chương vậy. 
+Đoán quẻ phải có liên tưởng tư duy, phải giỏi ở nắm tin tức vặt vãnh tổ hợp tại
+cùng một điểm, lấy ra manh mối, dựa vào hiểu biết xã hội, phù hợp sự việc dự
+đoán thực tế tình huống đó là một bộ phận tin tức. Trong ví dụ này, phụ mẫu hợp
+Tử Tôn, phụ mẫu còn đại biểu nhà cửa, xe cộ, nếu như tôi lấy ra nguyên nhân sự
+việc vì xe cộ, nhà ở mà không gọi điện thoại, hiển nhiên là không quá phù hợp
+thực tế, vì là xe cộ, nhà ở phương diện xuất hiện vấn đề không đến nỗi dẫn đến
+không thể gọi điện thoại, mà chỉ là thông tấn phương diện phát sinh vấn đề không
+thể gọi điện càng phù hợp thực tế. 
+Đồng lý, hào tài hợp hào Tử Tôn, dự đoán thiếu phí, càng phù hợp thực tế. Tóm
+lại, chỉ lấy quẻ luận quẻ, xa rời thực tế chỉ nhận quẻ lý, lý luận của bạn trình độ lại
+cao, quẻ lý của bạn cơ sở lại tốt, cũng rất khó dự đoán được chính xác. Vì là
+đoán quẻ không phải là không có điều kiện, phải đoán chuẩn một quẻ, tất phải là
+cần có nhất định điều kiện mới được, phải căn cứ điều kiện đã biết, kết hợp thực
+tế dự đoán, dự trắc của bạn mới có thể đạt đến tinh tế chính xác.
+4.2.2. Tam hợp
+Tam hợp cục tức: Thân Tý Thìn tam hợp cục, Tị Dậu Sửu tam hợp cục, Dần Ngọ
+Tuất tam hợp cục, Hợi Mão Mùi tam hợp cục. 
+Tam hợp cục có hai loại tình huống, một loại là thực hợp cục, sẽ là trong quẻ hình
+thành tam hợp cục của ba hào đều động, hoặc nhật, nguyệt, động, hào biến cùng
+trong quẻ cái khác hào động hình thành tam hợp cục; khác một loại tình huống là
+đãi hợp cục, tức là trong tam hợp cục có một hào không động hoặc phùng
+Không, chờ khi điền thực trực nhật sẽ thành cục.
+Tam hợp cục thiếu một chữ, nhiều một chữ đều không thể thành cục, chờ nhật,
+nguyệt tu bổ chỗ khuyết thiếu đó một chữ sẽ thành cục. Nhiều một chữ tất phải
+đều là động hào, như một tĩnh một động không tính. Nhiều một chữ đợi nhật,
+nguyệt hợp mất chữ thừa ra đó mới có thể thành cục.
+Tam hợp cục thành cục sau đó, đồng dạng cũng có hợp mà không hóa cùng hợp
+hóa thành công hai loại tình huống, tịnh không là ba chữ họp lại đều động, sẽ có
+thể hợp hóa thành công. 
+Tam hợp cục hợp hóa thành công
+ tất phải là tại nhật,
+nguyệt có hóa thần, và nhật nguyệt một phương không thể có ngũ hành khắc hóa
+thần, bằng không luận hợp mà không luận hóa, hợp mà không hóa, luận bán trú,
+22
+/
+44
+ - MTC editor 
+trong quẻ động hào mất đi quyền sinh khắc, chỉ có chờ tầng thứ trên giải hợp lúc
+mới có quyền sinh khắc. 
+Ví dụ: Trần mỗ hỏi kỳ tới có thể hay không lên chức? Thân nguyệt Tân Mão nhật
+(KV: Ngọ Mùi), được quẻ Sơn Thiên Đại Súc, động hào 3,5 biến Phong Trạch
+Trung Phu.
+Trong quẻ hào Thế được nhật kiến sinh phù có khí, nhưng nguyệt xung là nguyệt
+phá. Hào Ứng Tý thủy động, hào ba Thìn thổ động cùng nguyệt kiến Thân hình
+thành Thân Tý Thìn tam hợp cục. Bởi vì tam hợp cục không có hóa thần dẫn hóa
+nên hợp mà không hóa, hào Ứng Tý thủy bị bán trú không thể sinh hào Thế Quan
+quỷ Dần mộc, vì vậy hào Thế Quan quỷ Dần mộc dụng thần nguyệt phá không có
+cứu, đoán trong kỳ tới không có thể được lên chức. Quả nhiên như vậy. 
+Không luận tam hợp, lục hợp hào tầng thứ thấp tam hợp phải nhường chỗ cho
+hào tầng thứ cao hợp. Tại trong lục hào hợp và xung hỗ giải hỗ phá thứ tự là:
+Trước tiên hợp xung của quẻ chủ, quẻ biến có thể giải quẻ chủ này hợp xung;
+hợp xung của hào quẻ biến cùng hào chủ quẻ, nguyệt, nhật có thể giải; hợp xung
+của nguyệt kiến cùng hào biến, hào trong quẻ chủ, nhật kiến có thể giải; nhật kiến
+cùng hào quẻ hợp xung, tiến vào ngày của nhật, nguyệt có thể giải. Tìm ra điều
+23
+/
+44
+ - MTC editor 
+này là một hợp xung hỗ giải hỗ phá thứ tự thập phần quan trọng, độc giả nhất
+thiết phải nhớ kỹ.
+Ví dụ: Vương mỗ hỏi đến đại liên làm việc có thể đi thành công hay không? Tuất
+nguyệt Kỷ Dậu nhật, được quẻ Hỏa Sơn Lữ, động hào 1,4 biến Sơn Hỏa Bí.
+Hỏa Sơn Lữ (họ Ly)
+Sơn Hỏa Bí
+--- 
+Tị
+HĐ
+CTr
+--- Dần 
+PM
+KV
+- - 
+Mùi
+Tử
+ChT
+- - Tý
+QQ
+--- Dậu
+Tài
+Ứng
+TL
+- - Tuất
+Tử
+--- Thân
+Tài
+P: Quan Hợi
+HV
+--- 
+Hợi
+QQ
+- - Ngọ
+HĐ
+BH
+- - 
+Sửu
+Tử
+- - Thìn
+Tử
+Thế
+P: PM Mão
+ĐX
+--- Mão
+PM
+KV
+Đoán xuất hành quan trọng xem hào Thế bị hợp trú hay không, hợp trú là có sự
+bán trú đi không được. Phùng xung là có thể đi thành công, đương nhiên cũng
+cần tham khảo hào Thế vượng suy, có hay không quyền sinh khắc.
+Quẻ này hào Thế động cùng hào Ứng Dậu kim tác hợp bán trú, nhưng nguyệt
+kiến xung hào Thế giải được Dậu Thìn hợp, bất lợi là nhật kiến là Dậu kim, còn
+cùng hào Thế hợp, hợp này đã giải nguyệt kiến cùng hào Thế xung.
+Tại trong hàng loạt hợp xung hỗ giải hỗ phá, cuối cùng là lấy nhật kiến cùng hào
+Thế hợp đến luận, hào Thế bị bán trú, mất đi quyền sinh khắc, và hào Thế còn
+hóa Mão mộc hồi đầu khắc, vì vậy tất vì có vấn đề trói buộc đi không được. Vì
+sao đi không được vậy? Trong quẻ nhật thần Dậu kim hợp trú hào Thế, nhật thần
+là hào tầng thứ cao, là hào Thế tự thân có sự việc khó được giải thoát. Nhật thần
+Dậu kim là hào tài, hào Thế còn hóa Phụ mẫu Mão mộc hồi đầu khắc. Chủ yếu là
+vì hai trở lực lớn này khiến hào Thế đi không được. Hào Tài chủ vấn đề kinh tế,
+hào Phụ mẫu chủ văn thư, chứng kiện, hợp đồng các loại. Vì vậy có thể phán
+đoán chủ yếu là vì vấn đề của phương diện hợp đồng kinh tế, mà bán trú tạm
+thời đi không thành. Thực tế là vì để hoàn thành đúng thời hạn một hạng mục
+hợp đồng kinh tế mà không thể đi khỏi, không đi thành công.
+24
+/
+44
+ - MTC editor 
+4.3. 
+Nhập Mộ đối 
+v
+ới 
+q
+uyền 
+s
+inh 
+k
+hắc ảnh 
+h
+ưởng
+4.3.1. Nhập mộ
+Nhập mộ là trong lục hào một loại đặc thù quy định, hào quẻ bất luận vượng suy,
+phùng cao tầng thứ mộ đều có nhập mộ chi tượng. Hào trong quẻ chỉ nhập mộ ở
+hào tầng thứ cao hơn mình, không nhập mộ tại hào cùng tầng thứ hay tầng thứ
+thấp hơn. 
+Hào quẻ tại trong thời kỳ nhập mộ mất đi quyền sinh khắc, nhưng cũng không
+nhận hào khác sinh và khắc. Hình thức của hào nhập mộ chủ yếu là:
++ 1, Bất cứ hào nào mà nhập mộ ở nhật thần, nguyệt kiến thì đều gọi là
+nhập Mộ.
++ 2, Hào tĩnh chỉ có thể nhập mộ của hào động trong quẻ.
++ 3, Hào động có thể nhập mộ tại hào biến.
+1. Bất luận hào động, biến, tĩnh phùng nhật, nguyệt là mộ, tất nhập mộ.
+Ví dụ: Tháng Kỷ Mùi, ngày Nhâm Tý, được quẻ Sơn Thủy Mông, động hào 6,
+biến Địa Thủy Sư.
+Sơn Thủy Mông (họ Ly)
+Địa Thủy Sư
+--- Dần
+PM
+KV
+BH
+- - Dậu
+Tài
+- - Tý
+QQ
+ĐX
+- - Hợi
+QQ
+- - Tuất
+Tử
+Thế
+P: Thê Dậu
+CTr
+- - Sửu
+Tử
+- - Ngọ
+HĐ
+ChT
+- - Ngọ
+HĐ
+--- Thìn  
+Tử
+TL
+--- 
+Thìn
+Tử
+- - Dần
+PM
+Ứng
+KV
+HV
+- - Dần
+PM
+KV
+MTC chú:
++ hào PM Dần Mộc, vòng TS của Mộc khởi TS ở Hợi, tới Mùi là Mộ. Nguyệt
+kiến là Mùi, nên hào Dần nhập mộ ở Nguyệt kiến.
+Trong quẻ hào thượng Phụ mẫu Dần mộc cùng sơ hào Phụ mẫu Dần mộc đều
+nhập nguyệt mộ, tạm thời mất đi quyền sinh khắc, nhưng cũng không nhận hào
+động biến khác sinh khắc. Như hào thượng Phụ mẫu Dần mộc động hóa Dậu kim
+hồi đầu khắc, hiện Phụ mẫu Dần mộc nhập nguyệt mộ, tạm thời không nhận Dậu
+kim khắc, chờ xuất mộ lúc mới bị khắc.
+25
+/
+44
+ - MTC editor 
+2. Trong quẻ chủ, hào tĩnh có thể nhập mộ của hào động trong quẻ mà
+không nhập mộ của hào tĩnh trong quẻ.
+VD: Ngày Dậu tháng Thìn. Quẻ Hỏa Địa Tấn, động hào 5, biến Thiên Địa Bĩ.
+Quẻ này Thê tài Mão mộc, nhập mộ tại hào năm Phụ mẫu Mùi thổ, mà không
+nhập mộ tại sơ hào Phụ mẫu Mùi thổ. 
+MTC chú:
+ hào 5 là hào động, sơ hào là hào tĩnh.
+Ngoài ra, hào tĩnh tuy có thể nhập mộ tại hào động trong quẻ, nhưng như hào mộ
+này bị hào thượng tầng thứ (nhật, nguyệt, biến) khắc chế thụ thương hoặc hợp,
+xung mất đi quyền sinh khắc lúc, hào tĩnh cũng không nhập mộ tại hào động này.
+(Nói ngắn gọn, hào động tự thân phải có quyền sinh khắc mới có thể thu hào tĩnh
+nhập mộ). 
+Ví dụ: Ngày Bính Dần, tháng Nhâm Dần, quẻ Trạch Thủy Khốn động hào 1,2 biến
+Trạch Lôi Tùy.
+26
+/
+44
+ - MTC editor 
+Hào ứng Tử tôn 
+H
+ợi thủy 
+nhập 
+mộ ở hào Phụ mẫu Thìn thổ, Phụ mẫu Thìn thổ
+tuy động, nhưng do Phụ mẫu Thìn thổ bị nhật, nguyệt, hào động, hào biến khắc
+chế, đã hoàn toàn mất đi quyền sinh khắc, vì vậy Tử tôn 
+H
+ợi thủy không thể nhập
+mộ tại hào Phụ mẫu Thìn thổ. 
+Q
+uẻ này 
+nếu 
+như 
+bỏ điều kiện 
+là Dần nguyệt, Dần nhật, trong quẻ cũng không
+động, hào biến khắc Thìn thổ. 
+Thay bằng điều kiện: 
+có nhật hoặc nguyệt hoặc
+hào động biến là Dậu, đem Phụ mẫu Thìn thổ hợp trú, Phụ mẫu Thìn thổ tương
+đương với hào tĩnh, cũng tạm thời mất đi quyền sinh khắc, Tử tôn 
+H
+ợi thủy cũng
+không nhập mộ tại Phụ mẫu Thìn thổ. 
+3. Hào động có thể nhập mộ tại hào biến, có thể nhập nhật, nguyệt mộ.
+Hào động có thể nhập mộ tại hào biến, nhưng hào động không nhập mộ tại hào
+động, vì là 
+cùng tầng thứ
+ - quyền lực bình đẳng. 
+Hào biến KHÔNG nhập mộ tại hào động; Nhật, nguyệt cũng không nhập mộ tại
+hào động biến.
+Hào động nhập mộ tại hào biến, nó chỉ có thể nhập mộ tại hào biến bản vị, mà
+không thể nhập mộ tại hào biến do hào động khác biến ra.
+Khi hào biến thụ chế mất đi quyền sinh khắc lúc, hào động cũng không thể nhập
+mộ tại hào biến, đồng lý ở hào tĩnh nhập mộ tại hào động. 
+27
+/
+44
+ - MTC editor 
+Ví dụ: Ngày Hợi tháng Tị, quẻ Lôi Thiên Đại Tráng, có 5 hào động, biến Phong
+Sơn Tiệm. 
+Ngày Hợi, tháng Tị
+Lôi Thiên Đại Tráng (họ Khôn - lục xung)
+Phong Sơn Tiệm
+- - 
+Tuất
+HĐ
+--- Mão
+QQ
+- - 
+Thân
+Tử
+--- Tị
+PM
+--- 
+Ngọ 
+PM
+Thế
+- - Mùi
+HĐ
+--- Thìn
+HĐ
+--- Thân
+Tử
+--- Dần
+QQ
+- - Ngọ
+PM
+--- Tý
+Tài
+Ứng
+- - Thìn
+HĐ
+Quẻ này, hào Ứng Thê tài Tý thủy biến Huynh đệ Thìn thổ, Tý thủy nhập mộ tại
+hào biến Thìn thổ. Quan quỷ Dần mộc không nhập mộ tại hào biến Mùi thổ do
+hào Thế Ngọ hỏa biến ra. 
+4.3.2. Xuất mộ
+Bên trên đã trình bày chủ yếu hình thức nhập mộ thông thường,
+ xuất mộ
+ có ba
+loại hình thức: 
+một
+ là xung mộ; 
+hai
+ là xung hào nhập mộ; 
+ba
+ là hợp mộ.
+Có sách nói rằng hào nhập nhật mộ qua tháng sẽ xuất mộ; hào nhập nguyệt mộ
+qua tháng sẽ xuất mộ. Tại thực tế trong dự trắc đều không như vậy, giống nhau
+nói đến hào nhập mộ, tất đợi hợp xung giải mộ, vì là nhập mộ sẽ có để lại nhập
+mộ này một loại nguyên tượng, loại này nguyên tượng tất chờ hợp xung mới có
+thể giải trừ. 
+Do ở hình thức của hào nhập mộ bất đồng, phương thức của giải mộ sẽ bất
+đồng, sau đây đem các loại hình thức nhập mộ cùng giải mộ phương thức từng
+cái tường thuật như sau:
+1. Hào tĩnh, hào động, hào biến nhập nhật, nguyệt mộ cùng phương thức
+phá mộ là xung hào mộ mà không thể xung nhật, nguyệt.
+Ví dụ: đoán bệnh cho bằng hữu vào ngày Kỷ Mùi tháng Thìn, được quẻ Sơn
+Phong Cổ, động hào 3,6, biến Địa Thủy Sư.
+28
+/
+44
+ - MTC editor 
+Đoán bệnh của bằng hữu lấy hào Ứng Huynh đệ Dần mộc là dụng thần, tại
+nguyệt có dư khí, nhập nhật mộ, còn hóa Quan quỷ hồi đầu khắc. Trong quẻ
+nguyên thần hào Phụ mẫu nhập nguyệt mộ, không quyền sinh khắc, dụng thần
+nhập nhật mộ là thời kỳ không bị khắc, không được sinh, chờ khi xuất mộ, liền
+nhận sinh khắc.
+Nên đoán tháng Thân kim xung dụng thần Dần mộc, dụng thần bị xung xuất mà
+thụ khắc, tất bệnh tình nguy kịch!
+Thực tế chính là tại tháng thân qua đời.
+Có độc giả sẽ hỏi: là vì sao không đoán ngày 
+T
+hân dụng thần bị xung xuất mộ là
+thời gian có tai họa vậy? Vì là ngày 
+T
+hân tuy đem dụng thần Dần mộc xung xuất
+bị khắc, tình huống dĩ nhiên không hay, nhưng, một là dụng thần Dần mộc tại
+tháng Thìn có dư khí là một loại có khí chi tượng; hai là kị thần Quan quỷ Dậu kim
+bị nguyệt kiến hợp trú, tạm thời không có quyền sinh khắc, vì vậy dụng thần nguy
+mà có cứu. Tiếp theo đến tháng 
+T
+ị, 
+N
+gọ dụng thần tuy hưu tù, nhưng nhập nhật
+mộ, loại này nguyên tượng còn tồn tại, qua ngày, qua tháng đều không có giải
+mộ, huống hồ 
+K
+ị thần Dậu kim tại tháng 
+T
+ị hỏa hưu tù khắc Dụng thần, lực cũng
+giảm; tháng Mùi dụng thần vẫn còn nhập mộ không bị khắc; 
+t
+háng 
+T
+hân bất
+đồng, 
+T
+hân 
+kim 
+đem Huynh đệ Dần mộc xung xuất, Dần mộc tại tháng 
+T
+hân là
+ngộ 
+T
+uyệt địa, 
+K
+ị thần 
+T
+hân, Dậu kim tại tháng 
+là 
+vượng tướng, vì vậy có thể
+đem Dần mộc chế tử, mà ứng tử vong tai họa.
+29
+/
+44
+ - MTC editor 
+2. Hào tĩnh nhập mộ tại hào động, hợp mộ, xung mộ, xung hào đều có thể
+giải mộ.
+3. 
+Hào động nhập mộ tại hào biến, giải mộ phương thức có ba loại, một là
+xung hào; hai là xung mộ; ba là hợp mộ. 
+Tại trong lục hào chỉ có nhập mộ tại
+hào động, biến, tại khi hợp mộ có thể giải mộ. 
+Ví dụ: Ngày Bính Ngọ tháng Thân, Lưu mỗ đoán đệ đệ ra ngoài vào ngày nào trở
+về? Được quẻ Lôi Hỏa Phong, động hào 3, biến Thuần Chấn.
+Lôi Hỏa Phong (họ Khảm)
+Thuần Chấn
+- - Tuất
+QQ
+ThL
+- - Tuất
+QQ
+- - Thân
+PM
+Thế
+HV
+- - Thân
+PM
+--- Ngọ
+Tài
+BH
+--- Ngọ
+Tài
+--- Hợi
+HĐ
+ĐX
+- - 
+Thìn
+QQ
+- - Sửu
+QQ
+Ứng
+CTr
+- - Dần
+Tử
+KV
+--- Mão 
+Tử
+KV
+ChT
+--- Tý
+HĐ
+Trong quẻ dụng thần Huynh đệ 
+H
+ợi thủy động, nói rõ người đã có suy nghĩ lên
+đường, nhưng động mà hóa mộ, chỉ có khi xuất mộ mới có quyền sinh khắc,
+người cũng sẽ về nhà.
+Ngày 
+N
+gọ, Huynh đệ 
+H
+ợi thủy vẫn còn tại trong mộ ra không được, ngày Mùi,
+cũng vậy; ngày 
+T
+hân, cũng phá không được mộ; ngày Dậu, Dậu Thìn hợp, hợp
+hóa kim, tháng có 
+T
+hân kim dẫn hóa thành công, Thìn trên tính chất của mộ phát
+sinh biến hóa, có thể giải mộ. Nên đoán ngày Dậu người có thể trở về. Thực tế
+chính là ngày này người đã về đến.
+Hào nhập mộ vượng tướng, tại trong nhập mộ kỳ hạn, không luận dụng thần vẫn
+là kị thần đều phát huy không được tác dụng
+, cũng không nhận ngũ hành khắc
+sinh và khắc, chỉ có xuất mộ lúc, mới có thể bình thường phát huy chức năng
+sinh khắc, mới nhận hào khác ngũ hành sinh khắc.
+Hào hưu tù nhập mộ tại trong thời kỳ nhập mộ không được sinh, cũng không bị
+khắc, xuất mộ sẽ nhận sinh khắc. 
+Ví dụ 2: Ngày Quý Tị tháng Mùi, một người nào đó tự dự đoán ngày mai có an
+toàn hay không? Được quẻ Phong Hỏa Gia Nhân động hào 2, biến Phong Thiên
+Tiểu Súc.
+30
+/
+44
+ - MTC editor 
+Hỏi người có an toàn hay không, chủ yếu xem hào Thế là bị khắc hay không, hiện
+quẻ xung hào Thế được nhật sinh, nguyệt xung là phá, nhưng không phải phá
+triệt để, chỉ là so với bình thường tổn một số lực mà thôi. Trong quẻ hào Thế
+động hóa Dần mộc hồi đầu khắc, hiển thị một loại không cát tin tức, phải xem kị
+thần Dần mộc có hay không phát huy tác dụng cùng phát huy tác dụng lớn nhỏ
+thế nào, may mắn Huynh đệ Dần mộc nhập nguyệt mộ, mất đi quyền sinh khắc.
+Ngày mai là ngày Ngọ, Dần mộc cũng ra không được mộ, vì vậy, Huynh đệ Dần
+mộc ngày Ngọ cũng không có quyền sinh khắc. Nên đoán: ngày mai là ngày bình
+an không có hung hiểm. Quả đúng như dự đoán bình an vô sự. 
+Nhập mộ chi tượng có tượng nhập bệnh viện, lao tù, hang động, kho hàng,
+hàm nghĩa là đồ chứa đựng.
+Kết hợp cụ thể với hào vị, hào tượng, lục thần và sự việc để xác định đúng được
+vấn đề cần dự đoán.
+Quay lại ví dụ ở trên.
+Ví dụ: Ngày Bính Ngọ tháng Thân, Lưu mỗ đoán đệ đệ ra ngoài vào ngày nào trở
+về? Được quẻ Lôi Hỏa Phong, động hào 3, biến Thuần Chấn.
+Trong quẻ có thể lấy ra dạng này tượng tin tức là: hào ứng là huynh đệ nơi đi
+đến, địa điểm đi là nơi làm việc, hào ứng là quan quỷ sửu thổ, nói rõ là chính phủ
+đơn vị, quan của sửu thổ là tạp khí, (Tý Ngọ Mão Dậu là chính; Dần Thân Tị Hợi
+31
+/
+44
+ - MTC editor 
+là tá khí; Thìn Tuất Sửu Mùi là tạp), nói rõ đi đơn vị làm việc không phải quốc gia
+sự nghiệp đơn vị, ứng là xí nghiệp đơn vị, đơn vị này kinh doanh hạng mục khá
+tạp, không phải chỉ xuất một loại sản phẩm. Hào Ứng Quan quỷ Sửu thổ lâm Câu
+Trận, Câu Trận là cũ, dẫn lục thân là người quen cũ, người thân. Câu trận còn
+chủ thổ đặc sản, văn thư, khế ước, phòng địa sản. Hào Quan quỷ còn là hào thổ,
+nên đoán anh em địa phương đi là khách hàng cũ của anh em, đã từng thường
+xuyên qua lại, đơn vị này là phòng địa sản hoặc thổ đặc sản xí nghiệp đơn vị.
+Thực tế: là đơn vị khai phá thổ đặc sản.
+Lôi Hỏa Phong (họ Khảm)
+Thuần Chấn
+- - Tuất
+QQ
+ThL
+- - Tuất
+QQ
+- - Thân
+PM
+Thế
+HV
+- - Thân
+PM
+--- Ngọ
+Tài
+BH
+--- Ngọ
+Tài
+--- Hợi
+HĐ
+ĐX
+- - 
+Thìn
+QQ
+- - Sửu
+QQ
+Ứng
+CTr
+- - Dần
+Tử
+KV
+--- Mão 
+Tử
+KV
+ChT
+--- Tý
+HĐ
+Dụng thần Huynh đệ Hợi thủy động hóa mộ, có thể lấy ra tượng của dạng này:
+dụng thần hóa mộc, đây là mộ của hào Quan quỷ, là chính phủ, quốc gia đó,
+không phải tư nhân đó, mộ khố này còn lâm Đằng Xà, Đằng xà có tượng nhỏ và
+dài, hào mộ Quan quỷ Thìn thổ đem dụng thần Huynh đệ Hợi thủy thu nhập trong
+mộ cùng một chỗ động (lấy hào động chi ý) là một loại thế nào tượng vậy? Xe
+hơi, xe lửa, phi cơ, tàu thủy…, những thứ này có khả năng chuyên chở, ký gửi
+người và vật, đều có thể coi là nghĩa rộng của mộ khố. Vì vậy có thể đoán anh
+em của anh ấy là ngồi trên tàu lửa trở về đó (mộ là trong xe lửa của nhà nước).
+Đoán là ngồi xe lửa, cũng là kết hợp Đằng Xà thon và dài hình tượng. Như Phụ
+mẫu hoặc mộ khố của dụng thần tại hào năm, sáu lâm Đằng xà động, thanh long
+động, đó có thể là ngồi phi cơ. Thanh long có phi long chi tượng, rồng tại trên
+trời, mà hào ngũ, lục là hào thiên, là nơi cao, vì vậy có tượng ngồi phi cơ, nhưng
+đoán quẻ cũng phải kết hợp thực tế và ứng kỳ tổng hợp đến xem, không thể
+cứng nhắc.
+Tại đây chỉ đối với một bộ phận quẻ làm ví dụ để lấy ra tượng tin tức, nhưng giới
+hạn trong chủ đề không thể tại đây đối với mỗi một quẻ ví dụ đều từng cái giải
+thích kỹ càng tỉ mỉ, rất nhiều quẻ ví dụ không đề cập tới tượng tin tức của chủ đề,
+cũng không thể chi tiết từng cái tại trong sách. 
+32
+/
+44
+ - MTC editor 
+4.4. Không vong đối với quyền sinh khắc ảnh hưởng
+Không vong cũng là trong lục hào nạp giáp một loại đặc thù quy định, hào Tuần
+Không không luận vượng suy, tại trong thời kỳ Tuần Không thì không có quyền
+sinh khắc, cũng không nhận hào khác sinh và khắc. Chỉ có lúc xuất không, điền
+thực, xung không, mới có quyền sinh khắc; Hào hưu tù phùng không tại trong
+Tuần Không là tị không không bị khắc, chờ khi xuất không bị khắc.
+MTC chú:
++ 
+[giải không]
+ là cách nói gom lại của xuất Không, điền thực, xung Không.
++ xuất Không: ngày Bính Ngọ nằm trong tuần Giáp Ngọ, Dần Mão bị KV, đến hết ngày
+Quý Sửu thì Dần Mão mới xuất không (tức là hết tuần Giáp Thìn)
++ xung Không: 
+ngày Bính 
+Ngọ
+ nằm trong 
+tuần Giáp Ngọ, Dần Mão bị KV, thì ngày Thân
+Dậu xung Dần Mão.
++ điền thực:
+Cổ thư nắm Tuần Không phân làm hai loại: một loại là 
+chân không
+; một loại là
+giả không
+. Cái gọi là chân không tựu là hào hưu tù phùng không, không luận
+xuất hay không xuất không đều không có quyền sinh khắc. Cái gọi là giả không,
+tựu là hào có khí, xuất không sau đó liền sẽ có quyền sinh khắc.
+Không là không thực
+, lạc không, không thật, giả tạo các ý nghĩa ví dụ. Như
+đoán chung vốn làm ăn, hào Ứng phùng không chủ đối phương không thật, hào
+Thế Tuần Không chủ bản thân không thật, tâm lý không có chuẩn bị… 
+MTC chú:
++ lạc không (
+落空
+: hỏng, hụt hẫng, tan vỡ, biến mất)
+Hào Tuần Không, 
+phương thức giải không
+ chỉ có hai loại: một loại là xuất
+không, một loại khác là xung không, tức xung hào Tuần Không, hào Tuần Không
+giống nhau, xung không chỉ có thể phát huy một 
+nửa
+ lực lượng, chỉ có xuất
+không mới có thể toàn bộ phát huy lực lượng. 
+Thông thường dự đoán sự tình xung quanh trong một tháng, là dựa vào ngày
+đoán xuất không, nhưng đoán quẻ quý tại linh hoạt, căn cứ nơi đoán sự dài ngắn
+kỳ, cần tình hình khắc nhau đến xem, ví dụ đoán niên vận, hào nào đó Tuần
+Không, cần dựa vào tháng là đơn vị đoán ra không kỳ. Đoán sự tình trong một
+ngày cũng không thể dựa vào ngày đoán xuất không, mà cần lấy thời thần là đơn
+vị luận xuất không. 
+33
+/
+44
+ - MTC editor 
+Không vong, nhập mộ tại trong lục hào đoán quẻ mười phần trọng yếu, đối với
+phán đoán sự tình cát hung ứng kỳ có tác dụng hết sức quan trọng. Người mới
+học thường thường không xem trọng đối với hai loại đặc thù quy định, tại ý đặc
+biệt này cường điệu, để gây ra chú ý. Kỳ thực không vong, nhập mộ cũng là sinh
+khắc một loại đặc thù hình thức, nó giống bình thường sinh khắc một dạng đều
+ảnh hưởng đến quyền sinh khắc của hào. Đồng thời quyền lực của Tuần Không
+nhập mộ lớn tại sinh khắc, tại điều kiện bằng nhau có Tuần Không, nhập mộ hiện
+tượng, trước tiên phải luận Tuần Không, nhập mộ.
+Do tại hào Tuần Không hình thức bất đồng, nên hình thức 
+[
+giải không]
+ cũng có
+một số khác biệt:
++ 
+Hào tĩnh Tuần Không;
+ chờ khi xung hào tĩnh, hào tĩnh như bản thân
+vượng tướng có khí có thể phát huy một nửa lực lượng, chờ xuất không có
+thể hoàn toàn bình thường phát huy chức năng sinh khắc. 
++ 
+Hào động Tuần Không;
+ khi xung không cũng có thể bình thường phát
+huy chức năng sinh khắc. Xuất không cũng có thể bình thường phát huy
+chức năng sinh khắc. 
++ 
+Hào động bản thân không bị Tuần Không, nhưng hào biến Tuần
+Không;
+ hào động cũng không thể bình thường phát huy quyền sinh khắc,
+chờ khi hào biến xuất không mới có quyền sinh khắc, xung hào động, xung
+hào biến Tuần Không đều không hữu dụng. 
++ 
+Hào động không vong, hào biến cũng phùng không;
+ đợi tới thời gian
+xuất không mới có quyền sinh khắc, xung hào động xung hào biến đều
+không thể bình thường phát huy quyền sinh khắc. 
++ 
+Phục thần Tuần Không
+, như phục thần có khí là giả không, lúc xuất
+không sẽ có giá trị hữu dụng, như phục thần vô khí giá trị cũng vô dụng,
+dù Phục thần phùng không, xung không, xung Phi thần đều vô dụng, giải
+không được không vong, phục thần kéo nhổ cũng không thể ra. 
+Ví dụ: 
+L
+âm mỗ hỏi quan vận. 
+Ngày Giáp Tý tháng Thân, được quẻ Phong Thủy
+Hoán, động hào 3,5,6 được quẻ Địa Phong Thăng.
+MTC chú:
++ Ngày Giáp Tý, KV ở Tuất Hợi.
++ QQ là Thủy Hợi, ở hào gốc QQ là Phục ở  hào 4, bị lâm KV; ở hào biến là hào 2, hào 5,
+đều lâm KV.
+Hào Thế là người hỏi, tại nguyệt hưu tù, tại nhật thụ khắc, tuy trong quẻ có Phụ
+mẫu Mão động mà tương sinh, nhưng Phụ mẫu Mão mộc động hóa hồi đầu khắc.
+34
+/
+44
+ - MTC editor 
+Khi 
+hào Thế vượng tướng, có thể gánh vác được một vị trí, đồng nghĩa là tượng
+có thể đắc quan. 
+K
+hi hào Thế rối loạn, bị 
+hưu 
+tù, quan này sẽ là quỷ, đối với hào
+Thế
+ là một loại uy hiếp không còn là quan khí, 
+chẳng
+ danh vọng.
+Do đó đủ thấy, không những cầu quan khó đắc, ngược lại có nghi ngờ bị giáng
+chức mất quan. Hiện Quan quỷ Hợi thủy Không vong, không khắc hào Thế, chờ
+tháng Hợi Quan quỷ Hợi thủy xuất Không, đây là lúc tất khắc hào Thế, có điềm
+báo mất quan. Quả nhiên tháng Hợi bị cách chức. (Hợi thủy có khí sao phải chờ
+tháng hợi?)
+Phong Thủy Hoán (họ Ly)
+Địa Phong Thăng
+--- Mão
+PM
+HV
+- - Dậu
+Tài
+--- Tị
+HĐ
+Thế
+P: Tài Dậu
+BH
+- - Hợi
+QQ
+KV
+- - Mùi
+Tử
+P: QQ Hợi   |  KV
+ĐX
+- - Sửu
+Tử
+- - 
+Ngọ
+HĐ
+CTr
+--- Dậu
+Tài
+--- 
+Thìn
+Tử
+Ứng
+ChT
+--- Hợi
+QQ
+KV
+- - Dần
+PM
+TL
+- - Sửu
+Tử
+MTC chú: 
++ QQ Hợi Thủy có khí, lại là Phục thần, nên chờ xuất Không mới ứng. Xuất Không ở đây
+có thể là ngày Hợi, tháng Hợi.
+Một người phụ nữ hỏi chồng ra ngoài khi nào về? Ngày Bính Thìn tháng Dậu,
+được quẻ Thủy Trạch Tiết, động hào 3 biến Thủy Thiên Nhu.
+MTC chú:
++ Ngày Bính Thìn, KV ở Tý Sửu.
++ Hỏi chồng, lấy Dụng thần là QQ.
+Thủy Trạch Tiết (họ Khảm)
+Thủy Thiên Nhu
+- - Tý
+HĐ
+TL
+- - Tý
+HĐ
+KV
+--- Tuất
+QQ
+HV
+--- Tuất
+QQ
+- - Thân
+PM
+Ứng
+BH
+- - Thân
+PM
+- - Sửu
+QQ
+KV
+ĐX
+--- 
+Thìn
+QQ
+--- Mão
+Tử
+CTr
+--- Dần
+Tử
+--- Tị
+Tài
+Thế
+ChT
+--- 
+Tý
+HĐ
+KV
+35
+/
+44
+ - MTC editor 
+Trong quẻ Dụng thần lưỡng hiện, lấy hào năm Quan quỷ Tuất thổ là chồng, là
+người cụ thể. Người có an toàn hay không xem Quan quỷ Tuất thổ có hay không
+bị khắc, hiện hào Quan quỷ bị nhật xung là ám động, nói rõ chồng đã có dự định
+khởi hành về nhà, dụng thần không bị khắc nói rõ người bình an vô sự.
+Cần đoán ứng kỳ, kinh nghiệm của tôi là: lấy có bệnh là Quan quỷ Sửu thổ là
+đoán ứng kỳ dụng thần, dụng thần lưỡng hiện hai cái đều có giá trị tham khảo,
+không thể chỉ chọn một cái, vì dụng thần lưỡng hiện sẽ có đạo lý của lưỡng hiện,
+quẻ không hoàn thành bừa, tất có thiên cơ!
+Theo quẻ trên, xem hào động, Quan quỷ Sửu thổ có bệnh, một là Tý Sửu hợp,
+hợp trú Quan quỷ Sửu thổ, còn có nguyệt kiến cùng hào quẻ hình thành Tị Dậu
+Sửu tam hợp. Tại nơi này, lấy tam hợp cục luận, vì hợp trong quẻ phải nhường
+chỗ cho đệ nhất tầng thứ hào hợp. Quan quỷ Sửu thổ có một bệnh khác là Không
+vong. Vì vậy, chồng cô ấy muốn về nhà chỉ có sửu thổ này hai cái mao bệnh toàn
+bộ giải quyết mới là ứng kỳ. Ngày Mùi: Mùi xung Sửu đã phá Tị Dậu Sửu tam
+hợp cục, và hào động phùng Không gặp nhật xung là không còn Không vong, có
+thể bình thường phát huy tác dụng.
+Quả nhiên ngày Mùi chồng cô ấy về nhà. 
+Thông qua hào động Sửu thổ hóa mộ, còn là tiến thần lâm Đằng xà một số
+tượng, không khó dự đoán ra là đi xe lửa trở về. 
+Ví dụ: Lưu mỗ gọi điện thoại hỏi nhà lúc nào có thể bán được? Ngày Tân Mùi
+tháng Dậu, được quẻ Thủy Thiên Nhu, động hào 1,4 biến Trạch Phong Đại Quá.
+MTC chú:
++ Ngày Tân Mùi, KV ở Tuất Hợi
+Ngày Tân Mùi tháng Dậu
+Thủy Thiên Nhu (họ Khôn, quy hồn)
+Trạch Phong Đại Quá
+- - 
+Tý
+Tài
+ĐX
+- - Mùi
+HĐ
+--- Tuất 
+HĐ
+KV
+CTr
+--- Dậu
+Tử
+- - 
+Thân
+Tử
+Thế
+ChT
+--- 
+Hợi
+Tài
+KV
+--- Thìn
+HĐ
+TL
+--- Dậu
+Tử
+--- Dần
+QQ
+P: PM Tị
+HV
+--- Hợi
+Tài
+KV
+--- Tý
+Tài
+Ứng
+BH
+- - Sửu
+HĐ
+Hào Thế đại biểu người hỏi, hào Ứng đại biểu khách mua nhà, hào Ứng Thê tài
+Tý thủy đại biểu nhà muốn bán, có độc giả sẽ hỏi, không phải hào Phụ mẫu đại
+biểu nhà ở sao? bạn là vì sao nói hào Tài đại biểu nhà ở? Vì là hiện tại nhà muốn
+36
+/
+44
+ - MTC editor 
+bán đối với người hỏi đoán đến nói, đã hiển thị không có đủ chức năng bảo hộ
+của nơi cư trú, mà là như hàng hóa trao đổi, thể hiện ra giá trị công năng. Vì vậy
+lấy hào Tài đại biểu nhà ở muốn bán, chỉ có tiền đã đến tay, cũng sẽ đại biểu nhà
+ở bán đi mất. Ở đây là lý lẽ chuyển hoán Dụng thần, tác giả sẽ đem cách sử
+dụng chi tiết trong một chương.
+Muốn bán nhà ở, đầu tiên một điều sẽ là Thế Ứng song phương có thể cấu thành
+một số loại liên hệ, đồng thời hào Tài được hữu dụng cùng hào Thế cấu thành
+một số loại liên hệ, giao dịch mới có thể thành công. Hiện hào Thế Tử tôn Thân
+kim ám động hóa Thê Tài Hợi thủy, nhưng Hợi thủy Tuần Không, nói rõ người hỏi
+tạm thời không có mục tiêu để bán nhà, cùng khách hàng không có cấu thành
+liên hệ. Đây là trong quẻ một cái mao bệnh, chờ ngày Ất Hợi Thê tài Hợi thủy
+xuất Không, vốn ứng vào ngày bán nhà, nhưng khi Hợi thủy xuất Không chính là
+tuần Giáp Tuất, hào Thế Thân kim tại tiến vào lúc phùng không, còn cùng hào
+Ứng, hào Tài không cấu thành liên hệ. Cái gọi là liên hệ sẽ là có thực chất sinh
+khắc xung hợp một số quan hệ này. 
+Tuần không không quyền sinh khắc, sẽ sản sinh không được sinh khắc thực chất,
+vì vậy tại trong Tuần Không này hào Thế cùng khách hàng khó có tính thực chất
+mua bán giao dịch. Quẻ này tuy mao bệnh ban đầu đã được giải quyết, mao
+bệnh mới còn xuất hiện, loại này tình huống rất nhiều dịch hữu đều đã xem nhẹ,
+do đó tôi đoán chỉ có chờ tuần Giáp Thân, ngày Ất Dậu Thân kim xuất Không,
+hào Thế cùng hào Ứng, hào Tài cấu thành liên hệ, tất có thể đem nhà bán ra.
+Quả nhiên người hỏi phản hồi, chính là ngày Ất Dậu đem nhà bán ra.
+37
+/
+44
+ - MTC editor 
+4.5. Phán đoán tiêu chuẩn vượng suy cùng quyền sinh
+khắc của hào quẻ
+Vượng suy của hào cùng quyền sinh khắc, là căn cứ để phán đoán cát hung căn
+bản nhất. Không biết vượng suy, đối với quyền sinh khắc của hào nắm chắc
+không tốt, sẽ không thể đoán quẻ bình thường. Vì vậy tiết này là ưu tiên hàng
+đầu trong học lục hào, độc giả nhất thiết phải cẩn thận lĩnh hội, linh hoạt nắm
+vững, tuyệt đối đừng cưỡi ngựa ngắm hoa.
+Phán đoán vượng suy của quẻ hào chủ yếu là căn cứ nhật nguyệt đến đánh giá
+đó. Chúng ta hiểu, nhật, nguyệt đều là hào đệ nhất tầng thứ. Nhật, nguyệt kiến
+đồng công đồng quyền. Một cái cụ thể quẻ hào có hay không quyền sinh khắc,
+nhật, nguyệt kiến cùng tự thân trạng thái của hào là nhân tố chủ yếu. Tuần
+không, nhập mộ, phùng hợp, phùng xung mà mất đi quyền sinh khắc là tính tạm
+thời. 
+4.5.1. X
+ác định hào tĩnh trong quẻ có hay không quyền sinh 
+khắc. 
+Hào tĩnh trong quẻ là tầng thứ thấp nhất, nó chỉ có thể tại cùng hào ở tầng thứ
+giữa phát sinh sinh khắc, mà không thể đi sinh khắc hào động. 
+1. Hào tĩnh tại nhật, nguyệt hai phương đều hưu tù liền không có quyền
+sinh khắc. 
+VD: Ngày Dần tháng Mão, lên quẻ Phong Thiên Tiểu Súc, PM trì Thế ở hào
+sơ Tý Thủy. Hào Thế là hào tĩnh. 
+Thế Phụ mẫu 
+T
+ý thủy tại nhật, nguyệt hai
+nơi đều hưu tù vô khí, hào 
+T
+hế không có quyền sinh khắc, sẽ không có đủ
+điều kiện chủ yếu nhất, cơ bản nhất để thành sự. 
+2. 
+Hào tĩnh tại nhật, nguyệt một phương thụ khắc, một phương hưu tù
+không có quyền sinh khắc.
+3. 
+Hào tĩnh tại nhật, nguyệt song phương đều thụ khắc càng không có
+quyền sinh khắc. 
+4. 
+Hào tĩnh tại nhật, nguyệt một phương được sinh một phương bị khắc, ở
+tại giới hạn trạng thái, có hay không quyền sinh khắc quan trọng xem trong
+quẻ hào động có ủng hộ hay phản đối, chú ý lý thuyết này là bị khắc mà
+không phải vừa xung vừa khắc.
+VD: Ngày Mão tháng Tý, lên quẻ XXX. 
+Hào hai 
+PM T
+ị hỏa tại nguyệt thụ
+khắc, tại nhật được mão mộc sinh, ở vào trạng thái giới hạn. 
+N
+hư trong quẻ
+38
+/
+44
+ - MTC editor 
+có 
+S
+ửu động hoặc hào 
+T
+ài 
+H
+ợi thủy động, khắc hao tiết lực lượng của Phụ
+mẫu 
+T
+ị hỏa, Phụ mẫu 
+T
+ị hỏa sẽ không có quyền sinh khắc. 
+N
+hư trong quẻ
+có 
+M
+ão mộc động mà sinh nó, 
+T
+ị hỏa sẽ có quyền sinh khắc. Nếu như
+nguyệt lệnh 
+T
+ý thủy thay thế bằng 
+H
+ợi thủy, nhật thần không thay đổi, Phụ
+mẫu 
+T
+ị hỏa đó là bị nguyệt lệnh vừa xung vừa khắc, đó sẽ là nguyệt phá,
+càng không có quyền sinh khắc.
+5. 
+Hào tĩnh nhập mộ tại nhật, nguyệt, hào động tạm thời không có quyền
+sinh khắc. 
+Còn về 
+xuất mộ sau đó
+ có hay không quyền sinh khắc, quan trọng
+xem hào tĩnh tại nhật, nguyệt trạng thái (không xem trạng thái trong quẻ lý), là tại
+trạng thái giới hạn thượng tuyến hay là hạ tuyến, tại trạng thái giới hạn thượng
+tuyến xuất mộ sau đó có quyền sinh khắc, tại hạ tuyến sẽ không có quyền sinh
+khắc. 
+6. 
+Hào tĩnh tuần không, tạm không có quyền sinh khắc.
+ 
+Còn về 
+xuất không,
+xung không sau đó có hay không quyền sinh khắc, quan trọng là xem hào tĩnh
+này là tại trạng thái giới hạn thượng tuyến hay là hạ tuyến. 
+7. 
+Hào tĩnh bị nhật hoặc nguyệt bị một phương hợp trú, như là sinh hợp
+hào tĩnh có tượng hợp khởi, lực lượng của nó tương đương ở hào động.
+Như là khắc hợp hào này tạm thời không có quyền sinh khắc, đến nỗi chờ tiến
+vào khi nhật, nguyệt giải hợp sau đó có hay không quyền sinh khắc, cũng là xem
+hào này là tại trạng thái giới hạn thượng tuyến hay là hạ tuyến. 
+8. 
+Hào tĩnh bị hào động hợp trú, không luận sinh hợp hay là khắc hợp
+, tạm
+thời mất đi quyền sinh khắc, chờ hào thượng tầng thứ giải hợp sau đó, có hay
+không quyền sinh khắc quan trọng là xem hào này là tại trạng thái giới hạn
+thượng tuyến hay là hạ tuyến.
+Tóm lại mà nói, hào tĩnh có hay không quyền sinh khắc quan trọng là xem nhật,
+nguyệt kiến đối với nó có ủng hộ hay phản đối. 
+Một sinh một khắc là giới hạn
+trạng thái; 
+một phương sinh một phương chỉ là hưu tù, mà không bị khắc, hào
+tĩnh có quyền sinh khắc; song phương đều phù càng là có quyền sinh khắc; một
+phương khắc một lâm trì
+, hào tĩnh cũng có quyền sinh khắc. 
+VD: Ngày Mão tháng Thân, lên quẻ Sơn Hỏa Bí. Hào Thế Quan quỷ Mão
+mộc tại nguyệt bị khắc, nhật phùng Mão là lâm trị, hào Thế Quan quỷ mão
+mộc vượng tướng, nên có quyền sinh khắc. 
+Hào 6 Quan quỷ Dần mộc tại tháng Thân, là vừa xung vừa khắc, là nguyệt
+phá, không có quyền sinh khắc.
+Nếu như nhật thần là Dần, tất Quan quỷ Dần mộc là trị nhật (lâm nhật
+kiến), cùng nguyệt lệnh đồng lực đồng quyền, nguyệt kiến xung không bại
+39
+/
+44
+ - MTC editor 
+Dần mộc, Dần mộc không những có quyền sinh khắc, mà còn là ám động
+tăng lên là hào đệ tam tầng thứ.
+4.5.2. Phán định hào động trong quẻ có hay không quyền 
+sinh khắc
+1. Hào động có hay không quyền sinh khắc ở trạng thái giới hạn, hào động
+ở vào trạng thái trung hòa, nó có hay không quyền sinh khắc xem trong quẻ
+hào khác ủng hộ hay phản đối.
+T
+rạng thái giới hạn là:
+ Hào động tại nhật nguyệt song phương đều hưu
+tù, nhưng không bị khắc.
+MTC:
+ hào động lại Nhật hưu tù nhưng nguyệt bình hòa thì lực của hào
+động sẽ ở trên mức giới hạn - bình tuyến, được nguyệt sinh là lực lớn hơn
+nữa, ở cao thêm so với mức giới hạn - thượng tuyến)
+VD: Ngày Sửu tháng Sửu, lên quẻ Phong Thiên Tiểu Súc, động hào 6 biến
+Thủy Thiên Nhu.
+Phong Thiên Tiểu Súc (họ Tốn)
+Thủy Thiên Nhu
+--- Mão
+HĐ
+- - 
+Tý
+PM
+--- Tị
+Tử
+--- 
+Tuất
+Tài
+- - Mùi
+Tài 
+Ứng
+- - 
+Thân
+QQ
+--- Thìn
+Tài
+P: Quan Dậu
+--- Thìn
+Tài
+--- Dần
+HĐ
+--- Dần
+HĐ
+--- Tý 
+PM
+Thế
+--- Tý 
+PM
+MTC chú:
++ hào HĐ Mão Mộc, nên khởi TS ở Hợi, tới Sửu là Quan đới. Có thể tác giả cho rằng lực
+của Quan đới là hưu tù?
+Hào thượng Huynh đệ Mão mộc tại nhật, nguyệt hưu tù không bị khắc, ở tại trạng
+thái trung hòa, còn có đủ một điểm quyền sinh khắc, nhưng động hóa Ngọ hỏa
+tiết khí,
+ đã không có lực kiếp tài, đương nhiên đây là nguyên quái một loại trạng
+thái, gặp tiến vào lúc mão mộc lâm vượng địa lúc liền có thể kiếp tài, phùng tị,
+ngọ, mùi, thân, tuất sẽ mất đi quyền sinh khắc, vô lực kiếp tài. (Cũng thế mà nói
+trong quẻ Huynh đệ động việc tất ứng phá tài không thể tránh, ngày nào phá tài?
+Tất tại Huynh đệ trị vượng chi nhật). 
+40
+/
+44
+ - MTC editor 
+2. 
+Hào động bị hào biến hoặc nhật, nguyệt hợp trú, hợp mà không hóa, tạm
+mất quyền sinh khắc. 
+Còn về 
+giải hợp sau đó có hay không quyền sinh khắc,
+quan trọng xem hào động này tại trong quẻ ở vào trạng thái giới hạn thượng
+tuyến hay là hạ tuyến. Ngoài ra cũng đáng chú ý là, ngoài dự đoán xuất hành, đi
+lại bên ngoài, dụng thần phùng sinh hợp có quyền sinh khắc. Nhưng 
+N
+guyên, 
+K
+ị,
+ C 
+ừu, 
+N
+hàn thần
+ không luận sinh hợp, hay là khắc hợp đều là tạm thời mất đi
+quyền sinh khắc. 
+3. Hào động bị nhật, nguyệt, hào biến xung phá không có quyền sinh khắc. 
+4. 
+Hào động nhập mộ tại hào biến, nhập mộ tại nhật nguyệt, tạm thời không
+có quyền sinh khắc
+, lúc xuất mộ có hay không quyền sinh khắc, quan trọng xem
+hào này tại trạng thái giới hạn thượng truyến hay là hạ tuyến 
+5. 
+Hào động phùng 
+K
+hông, tại thời kỳ 
+T
+uần không tạm không có quyền sinh
+khắc;
+ xuất không sau đó có hay không quyền sinh khắc, cần xem hào này là tại
+trạng thái giới hạn thượng tuyến hay là hạ tuyến. 
+6. Hào động tại nhật, nguyệt hai nơi chỉ là hưu tù, không bị khắc, nhưng
+hóa thoái, hóa tiết, hóa tuyệt sinh khắc quyền giảm nhẹ, hóa hồi đầu khắc,
+không có quyền sinh khắc, như hóa hồi đầu sinh, hóa tiến thần có quyền
+sinh khắc. 
+7. Hào động tại nhật, nguyệt một phương nhận sinh, một phương thụ khắc,
+hào động có quyền sinh khắc. 
+8. Hào động tại nhật, nguyệt hai phương đều được sinh phù, càng có quyền
+sinh khắc. 
+9. Hào động tại nhật, nguyệt một phương hưu tù, một phương thụ khắc,
+hoặc cùng tại song phương đều bị xung khắc, đều không có quyền sinh
+khắc. 
+(Hào động tĩnh chỉ cần tại nhật nguyệt một phương hưu tù một phương thụ khắc
+trở lên sẽ không có quyền sinh khắc, hai phương hưu tù tại trạng thái giới hạn
+(hào động còn chút có quyền sinh khắc), một phương nhận sinh một phương thụ
+khắc hào động có quyền sinh khắc, hào tĩnh tại giới hạn).
+4.5.3. Phán đoán quyền sinh khắc của hào biến
+Hào biến có thể sinh khắc hợp xung với bất kỳ một hào nào trong chủ quẻ,
+nhưng khi hào biến đối với bản vị hào động có sinh khắc xung hợp tác dụng, đối
+với hào bên cạnh nó quyền sinh khắc có thể không tính. 
+41
+/
+44
+ - MTC editor 
+MTC chú: 
+Có thể bởi bì hào biến đã bị mất lực (như nguyên lý tham sinh
+quên khắc, tham hợp quên sinh,…) nên không còn tính tới quyền sinh
+khắc. Như vậy, thứ tự ưu tiên tác động của hào biến là: (1) là hào động bản
+vị, (2) các hào trong chủ quẻ.
+1. Hào biến khi lâm giới hạn trạng thái là: tại nhật nguyệt một phương thụ
+khắc, một phương hưu tù, là ở trạng thái trung hòa, tức trạng thái giới hạn.
+MTC chú: 
+ở đây lại định nghĩa trạng thái giới hạn (hay trạng thái trung
+hòa): hào bị nhật nguyệt 1 phương thục khắc, 1 phương hưu tù. Vì vậy cần
+tổng hợp hoặc xem lại cách định nghĩa của tác giả.
+2. Hào biến tại nhật, nguyệt chỉ có khi song phương đều bị khắc mới không
+có quyền sinh khắc. 
+MTC:
+ hào bị 2 thần khắc thì mất hết lực, tức là ở phần hạ tuyến. Mất lực,
+tức không có sức mạnh đi gây chiến hoặc hỗ trợ đối tượng khác.
+3. 
+Hào biến nhập mộ tại nhật, nguyệt, tạm thời không có quyền sinh khắc;
+lúc xuất mộ có hay không quyền sinh khắc, cần xem hào biến ở tại giới hạn trạng
+thái thượng tuyến hay là hạ tuyến. 
+4. 
+Hào biến 
+lâm T
+uần không, trong thời gian 
+T
+uần không tạm không có
+quyền sinh khắc;
+ lúc phùng xung, xuất không có hay không quyền sinh khắc,
+cần xem hào biến ở tại trạng thái giới hạn thượng tuyến hay hạ tuyến. 
+5. 
+Hào biến bị nhật, nguyệt hợp trú, tạm không có quyền sinh khắc;
+ lúc giải
+hợp có hay không quyền sinh khắc, cần xem hào biến ở tại trạng thái giới hạn
+thượng tuyến hay là hạ tuyến. 
+6. Hào biến bị nguyệt phá, chỉ cần không phải triệt để phá, ra khỏi tháng
+hoặc trị nhật, liền có quyền sinh khắc, hào biến bị nhật phá vĩnh viễn không
+có quyền sinh khắc. 
+Quyền sinh khắc của hào biến là lớn-hay-nhỏ cùng có-hay-không, chỉ bởi (nhận)
+nhật, nguyệt đến chế ước. Không nhận hào khác trong quẻ chủ, biến chế ước. 
+42
+/
+44
+ - MTC editor 
+Xác định nguyên hào quyền sinh khắc, không những chỉ xem nhật, nguyệt kiến,
+còn phải kết hợp hào động, hào biến khác trong quẻ đến xem. Hào bị chế trụ, bất
+luận là dụng thần, nguyên thần hay là kị thần cừu thần, đều mất đi quyền sinh
+khắc, như dụng thần, nguyên thần bị chế, việc mong muốn không thành. Chế trụ
+biểu hiện trong quẻ là:
++ (1) Thượng tầng thứ đối với hạ tầng thứ xung khắc có thể đạt đến trình độ chế. 
++ (2) Nhiều hơn cùng tầng thứ khắc một hào đơn độc, có thể đạt đến chế. 
++ (3) Thông qua hợp cục lực lượng khắc một hào đơn độc có thể đạt đến chế. 
++ (4) Cùng tầng thứ một cái đối với một cái xung, là khắc không thương, là một
+loại kiềm chế, song phương đều giảm lực, chủ khắc phương giảm lực nhỏ, bị
+khắc phương giảm lực lớn hơn chút, nhưng hai cái như cũ vẫn có quyền sinh
+khắc, chế là khiến đối phương hoàn toàn mất đi năng lực sinh khắc.
+Ví dụ: 
+Thang mỗ hỏi cầu tài, ngày Mậu Tý tháng Mùi được quẻ Địa Thiên Thái,
+động hào 5 ra quẻ Thủy Thiên Nhu.
+Địa Thiên Thái (họ Khôn, lục hợp)
+Thủy Thiên Nhu
+- - Dậu 
+Tử
+Ứng
+ChT
+- - Tý
+Tài
+- - Hợi  
+Tài
+TL
+--- 
+Tuất
+HĐ
+- - Sửu 
+HĐ
+HV
+- - Thân
+Tử
+--- Thìn
+HĐ
+Thế
+BH
+--- Thìn
+HĐ
+--- Dần
+QQ
+P: PM Tị
+ĐX
+--- Dần
+QQ
+--- Tý 
+Tài
+CTr
+--- Tý 
+Tài
+Hào năm Thê tài Hợi thủy là tiền mong muốn có, Hợi thủy hào Tài lâm nhật,
+nguyệt một bên thụ khắc, một bên được trợ còn phát động, hào Tài có quyền sinh
+khắc, nhưng bất lợi là, hào Tài hợi thủy động hóa Tuất thổ là hồi đầu khắc,
+nguyệt kiến cùng hào biến Tuất thổ là hào tầng thứ trên của hào Tài hợi thủy, hợp
+lực đem hào Tài Hợi thủy chế phục, khiến hào Tài mất đi quyền sinh khắc, không
+những cầu không được tài, ngược lại còn bị họa phá tài. Sau đó quả nhiên bị phá
+tài, mà là phá tài lớn, hào Dụng thần tại lâm nhật hoặc nguyệt vượng tướng bị
+chế phục là họa lớn, dụng thần hưu tù bị chế phục là họa nhỏ, như quẻ cầu tài
+hào tài vượng vướng, bị Huynh đệ chế phục, là phải phá tài lớn, như hưu tù bị
+khắc nói rõ số tiền nhìn không lớn .
+MTC chú:
+43
+/
+44
+ - MTC editor 
++ HĐ chủ phá tài, là Kị thần. 1 Sửu HĐ bị nguyệt phá, 1 Thìn HĐ lâm Mộ ở
+Nhật thần. 1 Tuất HĐ (hào biến) bị hào Thế xung. Nên bản thân HĐ có phá
+tài thì cũng chỉ là ít mà thôi (bị hào Thế xung tức tượng là mình khắc chế
+khiến không có bị mất nhiều).
+Tóm lại mà nói, quyền sinh khắc của hào lớn nhỏ cùng có hay không, là phán
+đoán cát hung quan trọng. Đối với vượng suy của hào tiêu chuẩn phán đoán
+quyền sinh khắc, tác giả tại 
+phía trên 
+đã có tường tận trình bày. Độc giả nhất thiết
+phải từng cái hiểu rõ kỹ càng. Đây là lợi dụng ngũ hành nguyên lý đoán quẻ tối
+cơ bản tối trọng yếu là một hạng ngạnh công phu.
+44
+/
+44
+ - MTC editor 

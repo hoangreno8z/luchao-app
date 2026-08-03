@@ -1,0 +1,30 @@
+const fs = require('fs');
+const path = require('path');
+
+const outputFile = path.join(__dirname, 'vuong_hoa_giai_rules.json');
+
+const rules = [
+    {
+        vector: 'THO_KHAC_THUY',
+        giai_phap: 'Sử dụng ngũ hành KIM để thông quan: Nên đeo trang sức bằng vàng hoặc bạc, đặt các vật phẩm bằng kim loại tròn ở hướng Tây hoặc Tây Bắc của phòng làm việc để hóa giải áp lực.'
+    },
+    {
+        vector: 'KIM_KHAC_MOC',
+        giai_phap: 'Sử dụng ngũ hành THỦY để thông quan: Đặt một bình nước sạch hoặc phong thủy luân (thác nước nhỏ) ở hướng Bắc để kích hoạt dòng chảy tài lộc, làm dịu sự xung đột.'
+    },
+    {
+        vector: 'MOC_KHAC_THO',
+        giai_phap: 'Sử dụng ngũ hành HỎA để thông quan: Bật đèn sáng tại khu vực phía Nam, tăng cường sử dụng tông màu đỏ, hồng hoặc tím để chuyển hóa lực cản thành động lực phát triển.'
+    },
+    {
+        vector: 'HOA_KHAC_KIM',
+        giai_phap: 'Sử dụng ngũ hành THỔ để thông quan: Sử dụng các vật phẩm bằng gốm sứ, đất nung hoặc đá thạch anh vàng tại khu vực Đông Bắc hoặc Tây Nam để tạo bệ đỡ vững chắc cho công việc.'
+    },
+    {
+        vector: 'THUY_KHAC_HOA',
+        giai_phap: 'Sử dụng ngũ hành MỘC để thông quan: Đặt chậu cây cảnh xanh tốt hoặc sử dụng các đồ dùng bằng gỗ tự nhiên ở phía Đông hoặc Đông Nam để hút bớt tà khí và sinh trợ bản mệnh.'
+    }
+];
+
+fs.writeFileSync(outputFile, JSON.stringify(rules, null, 2), 'utf-8');
+console.log('Đã tạo thành công quy tắc hóa giải phong thủy Vương Hổ Ứng!');
