@@ -663,14 +663,23 @@ footer a:hover {
     margin-bottom: 3px;
     line-height: 1.4;
     color: #000000;
-    font-size: 15px; /* Giảm cỡ chữ */
+    font-size: 15px;
 }
 #captureTarget .info-line strong {
-    color: #000000;
+    color: #555 !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px;
+}
+#captureTarget .info-line span {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #000;
 }
 #captureTarget .highlight {
     color: #e60000;
     font-weight: 700;
+    font-size: 14.5px;
 }
 #captureTarget .hex-visual-section {
     display: flex;
@@ -753,19 +762,35 @@ footer a:hover {
     text-align: center;
     white-space: nowrap;
     color: #000000;
+    font-size: 15px;
+}
+#captureTarget td:first-child {
+    font-weight: 700;
+    font-size: 18px; /* Tượng Hào —, --, O, X to và rõ */
+    color: #111;
+}
+#captureTarget td:nth-child(3),
+#captureTarget td.sep-col {
+    font-weight: 700; /* Lục Thân chính và biến in đậm, rõ nét */
+    color: #b30000; /* Màu đỏ sẫm đặc trưng */
+}
+#captureTarget td:nth-child(4),
+#captureTarget td:nth-child(8) {
+    font-weight: 600; /* Can chi in đậm vừa phải */
+    color: #000;
 }
 #captureTarget th {
     background: #e2e2cc;
     font-weight: 700;
     color: #1a1a1a;
-    font-size: 16px;
+    font-size: 14.5px;
     padding: 10px 4px;
     border-bottom: 1px solid #bbb;
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
 #captureTarget .sep-col {
-    border-left: 1px solid rgba(0, 0, 0, 0.25);
+    border-left: 1px solid rgba(0, 0, 0, 0.25) !important;
 }
 #captureTarget .row-moving td {
     color: #e60000;

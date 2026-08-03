@@ -595,11 +595,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${sym}</td>
                 <td>${marker}</td>
                 <td>${line.relation}</td>
-                <td><span class="tian-can-abbr">${getAbbreviatedCan(line.can)}</span>${line.chi}-${line.hanh}</td>
+                <td><span class="tian-can-abbr">${getAbbreviatedCan(line.can)}</span>${line.chi}</td>
                 <td>${phucHtml}</td>
                 <td>${isTK}</td>
                 <td class="sep-col">${line.changed.relation}</td>
-                <td>${line.isMoving ? `<span class="tian-can-abbr">${getAbbreviatedCan(line.changed.can)}</span>${line.changed.branch}-${line.changed.hanh}` : '-'}</td>
+                <td><span class="tian-can-abbr">${getAbbreviatedCan(line.changed.can)}</span>${line.changed.branch}</td>
                 <td>${line.lucThu}</td>
                 <td>${isCTK}</td>
             </tr>`;
@@ -611,9 +611,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" />
             <div class="info-header">
                 <div class="info-content">
-                    <div class="info-line"><strong>Ngày giờ gieo:</strong> ${data.formattedDate}</div>
-                    <div class="info-line"><strong>Can chi ngày giờ:</strong> ${dateInfo.fullCanChi}</div>
-                    <div class="info-line"><strong>Hào tâm niệm:</strong> ${dateInfo.haoTamText || 'Không'} &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
+                    <div class="info-line"><strong>Ngày giờ gieo:</strong> <span>${data.formattedDate}</span></div>
+                    <div class="info-line"><strong>Can chi ngày giờ:</strong> <span>${dateInfo.fullCanChi}</span></div>
+                    <div class="info-line"><strong>Hào tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
                     <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>
                 </div>
             </div>
