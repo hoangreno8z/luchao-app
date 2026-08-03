@@ -1003,3 +1003,36 @@ footer a:hover {
 .toss-progress-line:hover {
     background: rgba(223, 177, 91, 0.05);
 }
+
+/* =========================================================================
+   HIỆU ỨNG SẤM SÉT NHẤP NHÁY (LIGHTNING STRIKE FLICKER)
+   ========================================================================= */
+#lightning-strike-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('lightning_bg.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.lightning-flash-active {
+    animation: lightning-strike-anim 1.5s ease-out forwards;
+}
+
+@keyframes lightning-strike-anim {
+    0% { opacity: 0; filter: brightness(1); }
+    4% { opacity: 0.9; filter: brightness(2.8); }
+    8% { opacity: 0.15; filter: brightness(0.7); }
+    12% { opacity: 0.95; filter: brightness(3.2); }
+    20% { opacity: 0.2; filter: brightness(1); }
+    30% { opacity: 0.8; filter: brightness(2.2); }
+    45% { opacity: 0.1; filter: brightness(0.8); }
+    60% { opacity: 0.5; filter: brightness(1.6); }
+    75% { opacity: 0.05; filter: brightness(1); }
+    100% { opacity: 0; filter: brightness(1); }
+}

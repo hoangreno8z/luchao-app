@@ -355,6 +355,19 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             if (currentStep >= 6) return;
 
+            // Kích hoạt hiệu ứng toàn cảnh sấm sét chớp nháy nhẹ
+            const lightningOverlay = document.getElementById('lightning-strike-overlay');
+            if (lightningOverlay) {
+                lightningOverlay.classList.remove('lightning-flash-active');
+                void lightningOverlay.offsetWidth; // Trigger reflow to restart css animation
+                lightningOverlay.classList.add('lightning-flash-active');
+                
+                // Gỡ class sau khi kết thúc animation (1.5 giây)
+                setTimeout(() => {
+                    lightningOverlay.classList.remove('lightning-flash-active');
+                }, 1500);
+            }
+
             // Vô hiệu hoá nút để chờ tung xu
             tossTriggerBtn.disabled = true;
             tossTriggerBtn.innerText = "ĐANG TUNG XU...";
@@ -386,8 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (currentStep === 6) {
                     tossTriggerBtn.style.display = 'none';
-                    if (finishContainer) {
-                        finishContainer.classList.remove('hidden');
+                    
+                    // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ:
+                    // Không cần người dùng bấm thêm nút Hoàn tất nào nữa
+                    const autoFinishBtn = document.getElementById('finish-btn');
+                    if (autoFinishBtn) {
+                        autoFinishBtn.click();
                     }
                 }
             });
