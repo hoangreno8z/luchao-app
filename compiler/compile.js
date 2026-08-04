@@ -61,7 +61,7 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
     }
     
     // Sao chép các tệp giao diện tĩnh của phân hệ Kinh Dịch
-    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share_v2.png', 'lightning_bg.jpg'];
+    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share_v2.png', 'lightning_bg.jpg', 'robots.txt', 'sitemap.xml'];
     staticFiles.forEach(file => {
         const src = path.join(projectRoot, file);
         const dest = path.join(publicDir, file);
