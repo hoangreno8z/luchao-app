@@ -808,6 +808,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // 8. TẢI ẢNH VỀ MÁY
     // -------------------------------------------------------------------------
+    function isZaloOrFbBrowser() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera || "";
+        return /Zalo|FBAN|FBAV|Messenger/i.test(ua);
+    }
+
     function showZaloImageModal(imgData) {
         let modal = document.getElementById('zalo-img-modal');
         if (!modal) {
@@ -817,7 +822,24 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.appendChild(modal);
         }
 
-        modal.innerHTML = '<div style="width: 100%; max-width: 500px; text-align: center; position: relative;"><button id="close-zalo-modal" style="position: absolute; top: -45px; right: 0; background: #e74c3c; color: #fff; border: none; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; cursor: pointer;">✕ ĐÓNG</button><h4 style="color: var(--gold); margin: 0 0 10px 0; font-family: var(--font-ancient); font-size: 1.05rem;">☯ ÁNH QUẺ LỤC HÀO HD (ZALO / MESSENGER)</h4><div style="width: 100%; max-height: 70vh; overflow-y: auto; border-radius: 8px; border: 1.5px solid var(--gold); box-shadow: 0 8px 30px rgba(0,0,0,0.8);"><img src="' + imgData + '" alt="Ảnh Quẻ Dịch" style="width: 100%; height: auto; display: block; -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important; pointer-events: auto !important;" /></div><p style="margin: 12px 0 8px 0; font-size: 0.85rem; color: #fff; background: rgba(223, 177, 91, 0.15); padding: 10px 12px; border-radius: 6px; border: 1px solid rgba(223, 177, 91, 0.4); line-height: 1.5;">💡 <strong>Mẹo Zalo / Messenger:</strong> Chạm & <strong>GIỮ NGÓN TAY 1-2 GIÂY TRỰC TIẾP LÊN HÌNH ÁNH TRÊN</strong> ➔ Chọn <strong>"Lưu hình ảnh"</strong> (Save Image) để lưu về máy!</p></div>';
+        modal.innerHTML = `
+            <div style="width: 100%; max-width: 520px; text-align: center; position: relative; background: #0f0a05; border: 2px solid var(--gold); border-radius: 12px; padding: 20px 15px; box-sizing: border-box;">
+                <button id="close-zalo-modal" style="position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">✕ ĐÓNG</button>
+                <h4 style="color: var(--gold); margin: 0 0 12px 0; font-family: var(--font-ancient); font-size: 1.05rem; border-bottom: 1px dashed rgba(223, 177, 91, 0.3); padding-bottom: 8px;">📍 LƯU Ý KHI DÙNG ZALO / MESSENGER</h4>
+                
+                <div style="text-align: left; background: rgba(223, 177, 91, 0.08); border: 1px solid rgba(223, 177, 91, 0.3); border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; font-size: 0.88rem; line-height: 1.6; color: #ebd9c5;">
+                    <p style="margin: 0 0 8px 0; color: #fff;">Bạn đang sử dụng trình duyệt nội bộ của <strong>Zalo / Messenger</strong>. Trình duyệt này không hỗ trợ tải ảnh trực tiếp.</p>
+                    <p style="margin: 0 0 4px 0; color: var(--gold); font-weight: bold;">👉 Cách 1:</p>
+                    <p style="margin: 0 0 8px 12px; color: #fff;">Hãy <strong>GIỮ NGÓN TAY VÀO BỨC ÁNH BÊN DƯỚI 2 GIÂY</strong> và chọn <strong>'Lưu hình ảnh'</strong>.</p>
+                    <p style="margin: 0 0 4px 0; color: var(--gold); font-weight: bold;">👉 Cách 2:</p>
+                    <p style="margin: 0; color: #fff;">Bấm nút <strong>[...]</strong> ở góc phải màn hình ➔ Chọn <strong>'Mở bằng trình duyệt (Safari/Chrome)'</strong> để tải ảnh tự động.</p>
+                </div>
+
+                <div style="width: 100%; max-height: 50vh; overflow-y: auto; border-radius: 8px; border: 1px solid var(--gold); box-shadow: 0 8px 30px rgba(0,0,0,0.8);">
+                    <img src="${imgData}" alt="Ảnh Quẻ Dịch" style="width: 100%; height: auto; display: block; pointer-events: auto !important; user-select: none !important; -webkit-user-select: none !important; -webkit-touch-callout: default !important; touch-action: manipulation !important;" />
+                </div>
+            </div>
+        `;
 
         modal.style.display = 'flex';
         document.getElementById('close-zalo-modal').onclick = function() {
@@ -832,9 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const isZaloOrFB = /Zalo|FBAN|FBAV|Messenger/i.test(navigator.userAgent);
-
-        if (isZaloOrFB) {
+        if (isZaloOrFbBrowser()) {
             showZaloImageModal(imgData);
         } else {
             const link = document.createElement('a');
@@ -850,4 +870,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 100);
         }
     });
+
+    // Top Sticky Zalo Notification Banner (Option 1 & Requirement 3 UX)
+    if (isZaloOrFbBrowser()) {
+        const banner = document.createElement("div");
+        banner.id = "zalo-top-sticky-banner";
+        banner.style.cssText = "position: sticky; top: 0; left: 0; width: 100%; background: linear-gradient(90deg, #8a6414, #d4af37); color: #000; font-weight: bold; text-align: center; padding: 10px 15px; font-size: 0.85rem; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); box-sizing: border-box; line-height: 1.4;";
+        banner.innerHTML = '🌐 <strong>Đang mở trên Zalo / Messenger:</strong> Hãy GIỮ NGÓN TAY vào bức ảnh quẻ 2s để "Lưu hình ảnh", hoặc bấm <strong>[...]</strong> ở góc màn hình ➔ Chọn <strong>"Mở bằng trình duyệt (Safari/Chrome)"</strong> để tải ảnh tự động.';
+        document.body.insertBefore(banner, document.body.firstChild);
+    }
+});
 });
