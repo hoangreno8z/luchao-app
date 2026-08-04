@@ -1,20 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThaiAtMode } from '@/lib/validations/thaiAtSchema';
 import ModeNavTabs from './ModeNavTabs';
 import TimeControlsForm from './TimeControlsForm';
 import SaBanImageOutput from './SaBanImageOutput';
 import { generateThaiAtPNG } from '@/lib/utils/pngExporter';
 
+const THAIAT_STORAGE_KEY = 'thaiat_app_state_v2';
+
+interface SavedThaiAtState {
+  mode: ThaiAtMode;
+  date: string;
+  time: string;
+}
+
 export default function ThaiAtContainer() {
   const [currentMode, setCurrentMode] = useState<ThaiAtMode>('tue');
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // Restore saved state from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(THAIAT_STORAGE_KEY);
+      if (saved) {
+        const parsed: SavedThaiAtState = JSON.parse(saved);
+        if (parsed.mode) setCurrentMode(parsed.mode);
+      }
+    } catch (e) {
+      console.warn('Lỗi khôi phục trạng thái Thái Ất:', e);
+    }
+  }, []);
+
   const handleCastChart = async (dateStr: string, timeStr: string) => {
     setIsLoading(true);
     setImgSrc(null);
+
+    // Save to localStorage
+    try {
+      const stateToSave: SavedThaiAtState = {
+        mode: currentMode,
+        date: dateStr,
+        time: timeStr,
+      };
+      localStorage.setItem(THAIAT_STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (e) {
+      console.warn('Lỗi lưu trạng thái Thái Ất:', e);
+    }
 
     try {
       const generatedImg = await generateThaiAtPNG();
@@ -33,7 +66,7 @@ export default function ThaiAtContainer() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-6" role="region" aria-label="Hệ thống Thái Ất Thần Số">
       <ModeNavTabs currentMode={currentMode} onSelectMode={handleModeChange} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 items-start">
@@ -42,7 +75,7 @@ export default function ThaiAtContainer() {
       </div>
 
       {/* Hidden off-screen rendering element for html2canvas */}
-      <div className="fixed left-[-9999px] top-0 w-[1200px] opacity-0 pointer-events-none overflow-hidden">
+      <div className="fixed left-[-9999px] top-0 w-[1200px] opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div id="thai-at-chart-capture" className="w-[1200px] p-6 bg-[#050711] rounded-2xl border-2 border-[#d4af37]">
           <div className="text-center font-bold text-lg text-[#ffd700] mb-4">
             ☯ NĂM THÁNG NGÀY GIỜ LẬP QUẺ THÁI ẤT
