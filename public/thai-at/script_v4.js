@@ -235,6 +235,11 @@ const PHAN_DA_CUU_CUNG = {
 
     // Render Vận Quái Thái Ất / Quẻ Dịch / Bàn Nhân Mệnh
     renderVanQuaiSection(data);
+
+    // Tự động tạo ảnh PNG HD và cập nhật thẻ <img> trực tiếp cho mobile & PC
+    if (typeof generateThaiAtPNG === "function") {
+        generateThaiAtPNG();
+    }
     } catch (err) {
         console.error("Lỗi khi render sa bàn Thái Ất:", err);
         alert("Có lỗi xảy ra khi tính toán dữ liệu sa bàn Thái Ất!");

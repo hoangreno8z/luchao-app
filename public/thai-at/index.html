@@ -61,9 +61,6 @@
                         <span class="btn-text">⚡ KHỞI QUẺ THÁI ẤT</span>
                     </button>
                 </form>
-                <button type="button" class="btn-export" id="btn-export-png" onclick="exportChartToPNG()">
-                    📸 TẢI ẢNH SA BÀN (PNG)
-                </button>
                 <div class="info-card">
                     <h3>Thông Số Quẻ</h3>
                     <ul class="info-details">
@@ -78,12 +75,32 @@
 
             <!-- Right: Chart Display Panel -->
             <section class="chart-display-area">
-                <div id="thai-at-chart-capture" class="chart-container">
-                    <!-- Top Header: Năm Tháng Ngày Giờ Lập Quẻ -->
-                    <div class="chart-header-line">
-                        <span class="header-icon">☯</span>
-                        <span id="chart-datetime-header">NĂM THÁNG NGÀY GIỜ LẬP QUẺ</span>
+                <!-- Khu vực hiển thị Ảnh PNG HD trực tiếp cho Mobile touch-hold & PC Right-click -->
+                <div class="chart-image-section">
+                    <div id="chart-img-loader" class="chart-img-loader" style="display: none;">
+                        <span class="spinner"></span> <span>Đang khởi tạo ảnh Sa Bàn HD...</span>
                     </div>
+
+                    <img id="thai-at-chart-img" class="chart-image-output" alt="Sa Bàn Thái Ất Thần Số PNG" style="display: none;">
+
+                    <div class="chart-action-row">
+                        <a id="btn-download-direct" href="#" download="SaBan_ThaiAt.png" class="btn-direct-download" style="display: none;">
+                            💾 TẢI ẢNH SA BÀN (PNG)
+                        </a>
+                    </div>
+                    <p class="download-tip-text">
+                        💡 <strong>Mẹo lưu ảnh:</strong> Chạm & giữ 1-2 giây trực tiếp lên hình ảnh sa bàn (trên điện thoại/iPad) hoặc click chuột phải (trên máy tính) để lưu về máy.
+                    </p>
+                </div>
+
+                <!-- Khung DOM Render 1200px chuẩn HD để HTML2Canvas chụp ảnh -->
+                <div id="captureArea" style="position: absolute; left: -9999px; top: 0; width: 1200px; overflow: hidden; opacity: 0.01; pointer-events: none;">
+                    <div id="thai-at-chart-capture" class="chart-container" style="width: 1200px; box-sizing: border-box;">
+                        <!-- Top Header: Năm Tháng Ngày Giờ Lập Quẻ -->
+                        <div class="chart-header-line">
+                            <span class="header-icon">☯</span>
+                            <span id="chart-datetime-header">NĂM THÁNG NGÀY GIỜ LẬP QUẺ</span>
+                        </div>
 
                     <!-- 
                         Sa Bàn Ma Trận: 16 Ô vòng ngoài bao quanh Trung Cung
@@ -154,6 +171,7 @@
                         <div class="cell-box" id="cell-kien" data-than="kien"></div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Thẻ Phân Tích & Luận Giải Chuyên Sâu (Dạng Nút Xổ Xuống Tối Ưu Không Gian) -->
                 <section id="analysis-accordion-section" style="margin-top: 20px;">
@@ -238,15 +256,15 @@
         </main>
     </div>
 
-    <script src="js/lunar_solar.js?v=14.1.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=14.1.0"></script>
-    <script src="js/thai_at_reference.js?v=14.1.0"></script>
-    <script src="js/phan_da_map.js?v=14.1.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=14.1.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=14.1.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=14.1.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=14.1.0"></script>
-    <script src="js/png_exporter.js?v=14.1.0"></script>
-    <script src="script_v4.js?v=14.1.0"></script>
+    <script src="js/lunar_solar.js?v=15.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=15.0.0"></script>
+    <script src="js/thai_at_reference.js?v=15.0.0"></script>
+    <script src="js/phan_da_map.js?v=15.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=15.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=15.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=15.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=15.0.0"></script>
+    <script src="js/png_exporter.js?v=15.0.0"></script>
+    <script src="script_v4.js?v=15.0.0"></script>
 </body>
 </html>
