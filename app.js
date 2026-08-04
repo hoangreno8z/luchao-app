@@ -516,61 +516,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-btn');
 
     finishBtn.addEventListener('click', () => {
-        // Tắt đếm giờ thực
-        if (liveClockTimer) clearInterval(liveClockTimer);
+        try {
+            // Tắt đếm giờ thực
+            if (liveClockTimer) clearInterval(liveClockTimer);
 
-        loadingOverlay.classList.add('visible');
+            loadingOverlay.classList.add('visible');
 
-        const dVal = document.getElementById('current-date-time').value;
-        const calendarData = CALENDAR.calculateCanChi(dVal);
-        const formattedDate = formatDate(dVal);
+            const dVal = document.getElementById('current-date-time').value || new Date().toISOString().slice(0, 16);
+            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const formattedDate = formatDate(dVal);
 
-        // Gọi logic tính quẻ dịch
-        const hexData = ICHING.calculateHexagramData(hexLines, calendarData, "Lục hào", formattedDate);
+            // Gọi logic tính quẻ dịch
+            const hexData = ICHING.calculateHexagramData(hexLines, calendarData, "Lục hào", formattedDate);
 
-        // Tạo giao diện trong captureTarget
-        renderCaptureHTML(hexData);
+            // Tạo giao diện trong captureTarget
+            renderCaptureHTML(hexData);
 
-        // Chờ vẽ và lấy ảnh
-        setTimeout(() => {
-            const captureArea = document.getElementById('captureArea');
-            const target = document.getElementById('captureTarget');
+            // Chờ vẽ và lấy ảnh
+            setTimeout(() => {
+                const captureArea = document.getElementById('captureArea');
+                const target = document.getElementById('captureTarget');
 
-            captureArea.style.position = 'fixed';
-            captureArea.style.left = '0';
-            captureArea.style.top = '0';
-            captureArea.style.zIndex = '-1';
-            captureArea.style.opacity = '0.01';
+                captureArea.style.position = 'fixed';
+                captureArea.style.left = '0';
+                captureArea.style.top = '0';
+                captureArea.style.zIndex = '-1';
+                captureArea.style.opacity = '0.01';
 
-            html2canvas(target, {
-                scale: window.innerWidth < 768 ? 1 : 1.5,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                captureArea.style.position = 'absolute';
-                captureArea.style.left = '-9999px';
-                captureArea.style.opacity = '1';
+                html2canvas(target, {
+                    scale: window.innerWidth < 768 ? 1 : 1.5,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    captureArea.style.position = 'absolute';
+                    captureArea.style.left = '-9999px';
+                    captureArea.style.opacity = '1';
 
-                const imgData = canvas.toDataURL('image/png');
-                hexagramImg.src = imgData;
+                    const imgData = canvas.toDataURL('image/png');
+                    hexagramImg.src = imgData;
 
-                // Cập nhật kết luận giải thích
-                displayInterpretation(hexData);
+                    // Cập nhật kết luận giải thích
+                    displayInterpretation(hexData);
 
-                // Ẩn khu gieo và hiện khu kết quả
-                castingStage.classList.add('hidden');
-                resultArea.classList.remove('hidden');
-                loadingOverlay.classList.remove('visible');
+                    // Ẩn khu gieo và hiện khu kết quả
+                    castingStage.classList.add('hidden');
+                    resultArea.classList.remove('hidden');
+                    loadingOverlay.classList.remove('visible');
 
-                // Cuộn mượt đến đầu kết quả
-                resultArea.scrollIntoView({ behavior: 'smooth' });
+                    // Cuộn mượt đến đầu kết quả
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
 
-            }).catch(err => {
-                console.error(err);
-                loadingOverlay.classList.remove('visible');
-                alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch!");
-            });
-        }, 300);
+                }).catch(err => {
+                    console.error(err);
+                    loadingOverlay.classList.remove('visible');
+                    alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch: " + (err.message || err));
+                });
+            }, 300);
+        } catch (err) {
+            console.error("Lỗi lập quẻ dịch:", err);
+            loadingOverlay.classList.remove('visible');
+            alert("Có lỗi xảy ra khi tính toán bản đồ quẻ dịch! Vui lòng thử lại.");
+        }
     });
 
     // Thêm sự kiện quay lại sửa đổi hào mà không mất dữ liệu đã nhập

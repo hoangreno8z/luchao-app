@@ -79,8 +79,9 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         }
         const entries = fs.readdirSync(src, { withFileTypes: true });
         for (let entry of entries) {
-            // Bỏ qua các thư mục phát triển không cần thiết
-            if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.gitignore' || entry.name === 'scratch') {
+            // Bỏ qua các thư mục & tệp phát triển không cần thiết
+            const ignoredNames = ['node_modules', '.git', '.gitignore', 'scratch', 'docs', 'README.md', 'ThaiAt_ToanThu.md', '.DS_Store'];
+            if (ignoredNames.includes(entry.name)) {
                 continue;
             }
             const srcPath = path.join(src, entry.name);

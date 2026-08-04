@@ -31,22 +31,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function castChart() {
-    const dInput = document.getElementById("input-date").value;
-    const tInput = document.getElementById("input-time").value;
-    if (!dInput || !tInput) return;
-    const [y, m, d] = dInput.split("-").map(Number);
-    const h = parseInt(tInput.split(":")[0]);
-    render(y, m, d, h);
+    try {
+        const dInput = document.getElementById("input-date").value;
+        const tInput = document.getElementById("input-time").value;
+        if (!dInput || !tInput) return;
+        const [y, m, d] = dInput.split("-").map(Number);
+        const h = parseInt(tInput.split(":")[0]) || 0;
+        render(y, m, d, h);
+    } catch (err) {
+        console.error("Lỗi khởi quẻ Thái Ất:", err);
+        alert("Có lỗi xảy ra khi khởi quẻ Thái Ất. Vui lòng kiểm tra lại ngày giờ!");
+    }
 }
 
 function renderWithDate(dObj) {
     const tInput = document.getElementById("input-time").value || "12:00";
-    const h = parseInt(tInput.split(":")[0]);
+    const h = parseInt(tInput.split(":")[0]) || 0;
     render(dObj.getFullYear(), dObj.getMonth() + 1, dObj.getDate(), h);
 }
 
 function render(year, month, day, hour) {
-    const data = calculateThaiAtChart(currentMode, year, month, day, hour);
+    try {
+        const data = calculateThaiAtChart(currentMode, year, month, day, hour);
 
     // Update header line
     document.getElementById("chart-datetime-header").innerHTML =
@@ -229,6 +235,10 @@ const PHAN_DA_CUU_CUNG = {
 
     // Render Vận Quái Thái Ất / Quẻ Dịch / Bàn Nhân Mệnh
     renderVanQuaiSection(data);
+    } catch (err) {
+        console.error("Lỗi khi render sa bàn Thái Ất:", err);
+        alert("Có lỗi xảy ra khi tính toán dữ liệu sa bàn Thái Ất!");
+    }
 }
 
 function renderHexagramGraphic(title, subtitle, hexName, lines6, haoDong, accentColor) {

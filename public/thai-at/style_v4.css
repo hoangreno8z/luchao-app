@@ -360,6 +360,17 @@ h1 {
     .tc-body { font-size: 0.7rem; }
     .chart-header-line { font-size: 0.7rem; }
 }
+@media (max-width: 420px) {
+    .matrix-grid { gap: 2px; }
+    .cell-box { padding: 2px; min-height: 75px; font-size: 0.55rem; }
+    .palace-title { font-size: 0.6rem !important; }
+    .palace-khi { font-size: 0.52rem !important; padding: 1px 2px; }
+    .cell-line-2 { font-size: 0.55rem; }
+    .star-tag { font-size: 0.52rem; padding: 1px 2px; }
+    .trung-cung-block { padding: 0.3rem; min-height: 160px; }
+    .tc-header h2 { font-size: 0.82rem; }
+    .tc-body { font-size: 0.62rem; line-height: 1.35; }
+}
 
 /* Fixed aux-stars wrap */
 .aux-stars {
