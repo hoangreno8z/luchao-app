@@ -398,20 +398,13 @@ function showZaloImageModalThaiAt(imgData) {
     modal.innerHTML = `
         <div style="width: 100%; max-width: 550px; text-align: center; position: relative; background: #050711; border: 2px solid #ffd700; border-radius: 12px; padding: 20px 15px; box-sizing: border-box;">
             <button id="close-zalo-modal-thaiat" style="position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">✕ ĐÓNG</button>
-            <h4 style="color: #ffd700; margin: 0 0 12px 0; font-family: Cinzel, serif; font-size: 1.05rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 8px;">📍 LƯU Ý KHI DÙNG ZALO / MESSENGER</h4>
+            <h4 style="color: #ffd700; margin: 0 0 12px 0; font-family: Cinzel, serif; font-size: 1.05rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 8px;">📍 CẢNH BÁO TRÌNH DUYỆT</h4>
             
-            <div style="text-align: left; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; font-size: 0.88rem; line-height: 1.6; color: #ebd9c5;">
-                <p style="margin: 0 0 8px 0; color: #fff;">Bạn đang sử dụng trình duyệt nội bộ của <strong>Zalo / Messenger</strong>.</p>
-                
-                <button id="btn-open-ext-browser-thaiat" style="width: 100%; background: linear-gradient(90deg, #d4af37, #f39c12); color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(212,175,55,0.4);">
-                    🚀 MỞ NGHẤT TRÊN SAFARI / CHROME ĐỂ TẢI TỰ ĐỘNG
-                </button>
-
-                <p style="margin: 0 0 4px 0; color: #ffd700; font-weight: bold;">👉 Hoặc Lưu Ảnh Tại Đây:</p>
-                <p style="margin: 0 0 4px 8px; color: #fff;">Chạm & <strong>GIỮ NGÓN TAY VÀO BỨC ÁNH BÊN DƯỚI 2 GIÂY</strong> ➔ Chọn <strong>'Lưu hình ảnh'</strong>.</p>
+            <div style="background: rgba(231, 76, 60, 0.15); border: 1.5px solid #e74c3c; border-radius: 8px; padding: 12px; margin-bottom: 12px; color: #ff6b6b; font-weight: bold; font-size: 0.95rem; line-height: 1.5;">
+                ⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.
             </div>
 
-            <div style="width: 100%; max-height: 45vh; overflow-y: auto; border-radius: 8px; border: 1px solid #ffd700; box-shadow: 0 8px 30px rgba(0,0,0,0.8);">
+            <div style="width: 100%; max-height: 50vh; overflow-y: auto; border-radius: 8px; border: 1px solid #ffd700; box-shadow: 0 8px 30px rgba(0,0,0,0.8);">
                 <img src="${imgData}" alt="Sa Bàn Thái Ất HD" style="width: 100%; height: auto; display: block; pointer-events: auto !important; user-select: none !important; -webkit-user-select: none !important; -webkit-touch-callout: default !important; touch-action: manipulation !important;" />
             </div>
         </div>
@@ -420,9 +413,6 @@ function showZaloImageModalThaiAt(imgData) {
     modal.style.display = "flex";
     document.getElementById("close-zalo-modal-thaiat").onclick = function() {
         modal.style.display = "none";
-    };
-    document.getElementById("btn-open-ext-browser-thaiat").onclick = function() {
-        openInExternalBrowserThaiAt();
     };
 }
 
@@ -455,12 +445,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (isZaloOrFbBrowser()) {
         const banner = document.createElement("div");
         banner.id = "zalo-top-sticky-banner-thaiat";
-        banner.style.cssText = "position: sticky; top: 0; left: 0; width: 100%; background: linear-gradient(90deg, #8a6414, #d4af37); color: #000; font-weight: bold; text-align: center; padding: 10px 15px; font-size: 0.85rem; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); box-sizing: border-box; line-height: 1.4; display: flex; justify-content: space-between; align-items: center;";
-        banner.innerHTML = '<span>🌐 <strong>Zalo Browser:</strong> Bấm để mở Safari/Chrome tải ảnh tự động!</span> <button id="btn-banner-open-ext-thaiat" style="background: #000; color: #ffd700; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">MỞ CHROME/SAFARI ➔</button>';
+        banner.style.cssText = "position: sticky; top: 0; left: 0; width: 100%; background: #e74c3c; color: #fff; font-weight: bold; text-align: center; padding: 12px 15px; font-size: 0.95rem; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); box-sizing: border-box; line-height: 1.4;";
+        banner.innerHTML = '⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.';
         document.body.insertBefore(banner, document.body.firstChild);
-        document.getElementById("btn-banner-open-ext-thaiat").onclick = function() {
-            openInExternalBrowserThaiAt();
-        };
     }
 });
 
