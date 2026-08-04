@@ -348,19 +348,51 @@ function generateThaiAtPNG(data) {
     }
 }
 
-// Attach direct download click handler on DOM load
+// Attach direct download click handler on DOM load (Tối ưu hóa riêng cho Zalo & Messenger In-App Browser)
 document.addEventListener("DOMContentLoaded", () => {
     const downloadBtn = document.getElementById("btn-download-direct");
     if (downloadBtn) {
         downloadBtn.addEventListener("click", (e) => {
             const imgElement = document.getElementById("thai-at-chart-img");
             if (imgElement && imgElement.src && imgElement.src.startsWith("data:image")) {
+                const isZaloOrFB = /Zalo|FBAN|FBAV|Messenger/i.test(navigator.userAgent);
+                if (isZaloOrFB) {
+                    try {
+                        const win = window.open();
+                        if (win) {
+                            win.document.write(`
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>Sa Bàn Thái Ất HD - Nhấn giữ để lưu</title>
+                                    <style>
+                                        body { margin: 0; background: #050711; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; color: #ffd700; font-family: sans-serif; padding: 10px; box-sizing: border-box; }
+                                        img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); -webkit-touch-callout: default !important; }
+                                        p { margin-top: 15px; font-size: 14px; text-align: center; color: #fff; background: rgba(212,175,55,0.15); padding: 10px 15px; border-radius: 6px; border: 1px solid #ffd700; line-height: 1.5; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <img src="${imgElement.src}" alt="Sa Bàn Thái Ất HD" />
+                                    <p>💡 <strong>Mẹo Zalo/Messenger:</strong> Chạm & giữ ngón tay 1-2 giây lên hình ảnh trên ➔ Chọn "Lưu hình ảnh" (Save Image)</p>
+                                </body>
+                                </html>
+                            `);
+                            win.document.close();
+                            e.preventDefault();
+                            return;
+                        }
+                    } catch (err) {}
+                }
+
                 const a = document.createElement("a");
                 a.href = imgElement.src;
                 a.download = "SaBan_ThaiAt_HD.png";
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
+                setTimeout(() => {
+                    if (document.body.contains(a)) document.body.removeChild(a);
+                }, 100);
                 e.preventDefault();
             }
         });
