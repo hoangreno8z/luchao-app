@@ -439,9 +439,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 100);
                 e.preventDefault();
             }
-        });
+    if (isZaloOrFbBrowser()) {
+        const downloadTip = document.querySelector('.download-tip-text');
+        if (downloadTip) {
+            downloadTip.innerHTML = '<span style="color: #ff6b6b; font-weight: bold; font-size: 0.95rem;">⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.</span>';
+        }
     }
-
 });
 
 // Backward compatibility alias
