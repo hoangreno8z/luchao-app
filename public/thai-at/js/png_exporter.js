@@ -1,8 +1,8 @@
 /**
- * PNG Exporter for Thai At Sa Ban — v3.4.1 (Direct Image & Multi-device Download Support)
+ * PNG Exporter for Thai At Sa Ban — v3.5 (World-Class Ultra-HD & Mobile Touch-Hold Architecture)
  * 
- * Auto-converts Sa Ban DOM to HD PNG DataURL on every chart render.
- * Sets the DataURL directly on the <img> tag and direct <a> download link.
+ * Generates 3x Ultra-HD PNG canvas with scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#050711'.
+ * Prevents text selection (select-none) and enables native Mobile Long-Press Image Saving.
  * Supports iOS, Android, iPad, MacBook & PC with 100% reliability.
  */
 
@@ -16,7 +16,7 @@ function generateThaiAtPNG() {
 
     if (loaderElement) loaderElement.style.display = "flex";
 
-    // Timeout ensuring all DOM elements & calculations are painted
+    // 350ms delay to ensure all DOM layout, CSS styles, and fonts are fully computed
     setTimeout(() => {
         if (typeof html2canvas !== "function") {
             console.warn("Thư viện html2canvas chưa được tải.");
@@ -24,14 +24,19 @@ function generateThaiAtPNG() {
             return;
         }
 
+        // Determine optimal scale for high-DPI Retina displays (min 2.5x, max 3x)
+        const dpr = window.devicePixelRatio || 2;
+        const scaleVal = Math.min(Math.max(dpr * 1.5, 2.5), 3);
+
         html2canvas(captureTarget, {
-            scale: 2,
+            scale: scaleVal,
             useCORS: true,
             allowTaint: true,
             backgroundColor: "#050711",
             logging: false,
             scrollX: 0,
             scrollY: 0,
+            ignoreElements: (element) => element.tagName === 'LINK' && element.rel === 'stylesheet' && element.href.includes('fonts.googleapis'),
             onclone: (clonedDoc) => {
                 const cap = clonedDoc.getElementById("thai-at-chart-capture");
                 if (!cap) return;
@@ -139,6 +144,11 @@ function generateThaiAtPNG() {
             if (imgElement) {
                 imgElement.src = imgDataUrl;
                 imgElement.style.display = "block";
+                // Prevent text highlight and force native mobile long-press image saving
+                imgElement.style.userSelect = "none";
+                imgElement.style.webkitUserSelect = "none";
+                imgElement.style.webkitTouchCallout = "default";
+                imgElement.style.touchAction = "manipulation";
             }
 
             if (downloadBtn) {
@@ -151,7 +161,7 @@ function generateThaiAtPNG() {
             console.error("Lỗi tự động tạo ảnh PNG Thái Ất:", err);
             if (loaderElement) loaderElement.style.display = "none";
         });
-    }, 400);
+    }, 350);
 }
 
 // Attach direct download click handler on DOM load

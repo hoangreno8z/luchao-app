@@ -310,8 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 captureArea.style.opacity = '0.01';
 
                 html2canvas(target, {
-                    scale: window.innerWidth < 768 ? 1 : 1.5,
+                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
                     useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#0f0a05',
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -320,6 +322,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const imgData = canvas.toDataURL('image/png');
                     hexagramImg.src = imgData;
+                    hexagramImg.style.userSelect = 'none';
+                    hexagramImg.style.webkitUserSelect = 'none';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.touchAction = 'manipulation';
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);
@@ -544,8 +550,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 captureArea.style.opacity = '0.01';
 
                 html2canvas(target, {
-                    scale: window.innerWidth < 768 ? 1 : 1.5,
+                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
                     useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#0f0a05',
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -554,6 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const imgData = canvas.toDataURL('image/png');
                     hexagramImg.src = imgData;
+                    hexagramImg.style.userSelect = 'none';
+                    hexagramImg.style.webkitUserSelect = 'none';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.touchAction = 'manipulation';
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);
