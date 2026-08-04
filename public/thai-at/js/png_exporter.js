@@ -1,5 +1,5 @@
 /**
- * PNG Exporter for Thai At Sa Ban — v3.4 (Direct Image & Zero-Popup Architecture)
+ * PNG Exporter for Thai At Sa Ban — v3.4.1 (Direct Image & Multi-device Download Support)
  * 
  * Auto-converts Sa Ban DOM to HD PNG DataURL on every chart render.
  * Sets the DataURL directly on the <img> tag and direct <a> download link.
@@ -16,7 +16,7 @@ function generateThaiAtPNG() {
 
     if (loaderElement) loaderElement.style.display = "flex";
 
-    // 400ms delay ensuring all DOM elements, fonts & Can Chi calculations are fully painted
+    // Timeout ensuring all DOM elements & calculations are painted
     setTimeout(() => {
         if (typeof html2canvas !== "function") {
             console.warn("Thư viện html2canvas chưa được tải.");
@@ -30,7 +30,6 @@ function generateThaiAtPNG() {
             allowTaint: true,
             backgroundColor: "#050711",
             logging: false,
-            windowWidth: 1200,
             scrollX: 0,
             scrollY: 0,
             onclone: (clonedDoc) => {
@@ -154,6 +153,25 @@ function generateThaiAtPNG() {
         });
     }, 400);
 }
+
+// Attach direct download click handler on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+    const downloadBtn = document.getElementById("btn-download-direct");
+    if (downloadBtn) {
+        downloadBtn.addEventListener("click", (e) => {
+            const imgElement = document.getElementById("thai-at-chart-img");
+            if (imgElement && imgElement.src && imgElement.src.startsWith("data:image")) {
+                const a = document.createElement("a");
+                a.href = imgElement.src;
+                a.download = "SaBan_ThaiAt.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                e.preventDefault();
+            }
+        });
+    }
+});
 
 // Backward compatibility alias
 function exportChartToPNG() {
