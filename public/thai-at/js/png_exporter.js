@@ -317,6 +317,7 @@ function draw5x5ThaiAtSaBan(data) {
 }
 
 function generateThaiAtPNG(data) {
+    const chartData = data || window.lastCalculatedThaiAtData;
     const imgElement = document.getElementById("thai-at-chart-img");
     const downloadBtn = document.getElementById("btn-download-direct");
     const loaderElement = document.getElementById("chart-img-loader");
@@ -324,7 +325,7 @@ function generateThaiAtPNG(data) {
     if (loaderElement) loaderElement.style.display = "flex";
 
     try {
-        const imgDataUrl = draw5x5ThaiAtSaBan(data);
+        const imgDataUrl = draw5x5ThaiAtSaBan(chartData);
         if (imgDataUrl) {
             if (imgElement) {
                 imgElement.src = imgDataUrl;

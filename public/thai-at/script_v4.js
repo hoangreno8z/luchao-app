@@ -53,6 +53,7 @@ function renderWithDate(dObj) {
 function render(year, month, day, hour) {
     try {
         const data = calculateThaiAtChart(currentMode, year, month, day, hour);
+        window.lastCalculatedThaiAtData = data;
 
     // Update header line
     document.getElementById("chart-datetime-header").innerHTML =
