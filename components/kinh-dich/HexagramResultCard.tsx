@@ -21,7 +21,7 @@ export default function HexagramResultCard({ data, onReset }: HexagramResultCard
 
       const html2canvasModule = (await import('html2canvas')).default;
       const canvas = await html2canvasModule(target, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         backgroundColor: '#0f0a05',
         logging: false,

@@ -18,8 +18,9 @@ export async function generateThaiAtPNG(
   try {
     const html2canvasModule = (await import('html2canvas')).default;
 
+    // Scale 3x for ultra-sharp Retina resolution on iPhone/MacBook/4K displays
     const canvas = await html2canvasModule(captureTarget, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
       backgroundColor: '#050711',
       logging: false,
@@ -145,7 +146,7 @@ export async function generateThaiAtPNG(
     if (loaderElement) loaderElement.style.display = 'none';
     return imgDataUrl;
   } catch (err) {
-    console.error('Lỗi khi xuất ảnh HD Sa Bàn Thái Ất:', err);
+    console.error('Lỗi khi xuất ảnh HD Sa Bàn Thái Ất (Retina 3x):', err);
     if (loaderElement) loaderElement.style.display = 'none';
     return null;
   }
