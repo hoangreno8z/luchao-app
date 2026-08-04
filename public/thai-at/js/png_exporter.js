@@ -1,8 +1,8 @@
 /**
- * PNG Exporter for Thai At Sa Ban — v3.5 (World-Class Ultra-HD & Mobile Touch-Hold Architecture)
+ * PNG Exporter for Thai At Sa Ban — v3.6 (Direct High-Fidelity 5x5 Matrix Capture)
  * 
- * Generates 3x Ultra-HD PNG canvas with scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#050711'.
- * Prevents text selection (select-none) and enables native Mobile Long-Press Image Saving.
+ * Captures exact 16-cell Sa Ban + Trung Cung DOM using html2canvas.
+ * Sets the DataURL directly on the <img> tag and direct <a> download link.
  * Supports iOS, Android, iPad, MacBook & PC with 100% reliability.
  */
 
@@ -24,7 +24,6 @@ function generateThaiAtPNG() {
             return;
         }
 
-        // Determine optimal scale for high-DPI Retina displays (min 2.5x, max 3x)
         const dpr = window.devicePixelRatio || 2;
         const scaleVal = Math.min(Math.max(dpr * 1.5, 2.5), 3);
 
@@ -49,87 +48,6 @@ function generateThaiAtPNG() {
                 cap.style.borderRadius = "16px";
                 cap.style.border = "2px solid rgba(212, 175, 55, 0.4)";
                 cap.style.overflow = "visible";
-
-                // Convert CSS Grid -> Flexbox for html2canvas compatibility on WebKit / Mobile Safari
-                const grid = clonedDoc.querySelector(".matrix-grid");
-                if (grid && grid.style.display !== "none") {
-                    grid.style.display = "flex";
-                    grid.style.flexDirection = "column";
-                    grid.style.gap = "5px";
-
-                    const cells = Array.from(grid.children);
-                    const cellMap = {};
-                    let trungCungEl = null;
-
-                    cells.forEach(c => {
-                        if (c.classList.contains("trung-cung-block")) {
-                            trungCungEl = c;
-                        } else if (c.id) {
-                            const id = c.id.replace("cell-", "");
-                            cellMap[id] = c;
-                        }
-                    });
-
-                    grid.innerHTML = "";
-
-                    const ROW_DEFS = [
-                        ["ton", "ty_chi", "ngo", "mui", "khon"],
-                        ["thin", "__TC__", "__TC__", "__TC__", "than"],
-                        ["mao", "__TC__", "__TC__", "__TC__", "dau"],
-                        ["dan", "__TC__", "__TC__", "__TC__", "tuat"],
-                        ["can", "suu", "ty", "hoi", "kien"]
-                    ];
-
-                    const row1 = clonedDoc.createElement("div");
-                    row1.style.display = "flex"; row1.style.gap = "5px"; row1.style.width = "100%";
-                    ROW_DEFS[0].forEach(id => {
-                        if (cellMap[id]) { cellMap[id].style.flex = "1"; row1.appendChild(cellMap[id]); }
-                    });
-
-                    const middleBlock = clonedDoc.createElement("div");
-                    middleBlock.style.display = "flex"; middleBlock.style.gap = "5px"; middleBlock.style.width = "100%";
-
-                    const leftCol = clonedDoc.createElement("div");
-                    leftCol.style.flex = "1"; leftCol.style.display = "flex"; leftCol.style.flexDirection = "column"; leftCol.style.gap = "5px";
-                    ["thin", "mao", "dan"].forEach(id => {
-                        if (cellMap[id]) { cellMap[id].style.flex = "1"; leftCol.appendChild(cellMap[id]); }
-                    });
-
-                    const rightCol = clonedDoc.createElement("div");
-                    rightCol.style.flex = "1"; rightCol.style.display = "flex"; rightCol.style.flexDirection = "column"; rightCol.style.gap = "5px";
-                    ["than", "dau", "tuat"].forEach(id => {
-                        if (cellMap[id]) { cellMap[id].style.flex = "1"; rightCol.appendChild(cellMap[id]); }
-                    });
-
-                    middleBlock.appendChild(leftCol);
-                    if (trungCungEl) {
-                        trungCungEl.style.flex = "3";
-                        trungCungEl.style.minHeight = "auto";
-                        middleBlock.appendChild(trungCungEl);
-                    }
-                    middleBlock.appendChild(rightCol);
-
-                    const row5 = clonedDoc.createElement("div");
-                    row5.style.display = "flex"; row5.style.gap = "5px"; row5.style.width = "100%";
-                    ROW_DEFS[4].forEach(id => {
-                        if (cellMap[id]) { cellMap[id].style.flex = "1"; row5.appendChild(cellMap[id]); }
-                    });
-
-                    grid.appendChild(row1);
-                    grid.appendChild(middleBlock);
-                    grid.appendChild(row5);
-                }
-
-                // High-resolution styling for cell boxes
-                clonedDoc.querySelectorAll(".cell-box").forEach(cell => {
-                    cell.style.padding = "10px 8px";
-                    cell.style.minHeight = "140px";
-                    cell.style.backgroundColor = "rgba(18, 24, 52, 0.95)";
-                    cell.style.border = "1.5px solid rgba(212, 175, 55, 0.35)";
-                    cell.style.borderRadius = "8px";
-                    cell.style.display = "flex";
-                    cell.style.flexDirection = "column";
-                });
 
                 clonedDoc.querySelectorAll("*").forEach(el => {
                     if (el.style) {
