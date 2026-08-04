@@ -306,19 +306,8 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.textAlign = "center";
     ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);
 
-    // Convert Canvas to Blob & DataURL
-    if (typeof canvas.toBlob === "function") {
-        canvas.toBlob(blob => {
-            if (blob) {
-                const blobUrl = URL.createObjectURL(blob);
-                if (callback) callback(blobUrl);
-            } else {
-                if (callback) callback(canvas.toDataURL("image/png"));
-            }
-        }, "image/png");
-    } else {
-        if (callback) callback(canvas.toDataURL("image/png"));
-    }
+    // Return synchronous DataURL immediately
+    return canvas.toDataURL("image/png");
 }
 
 function generateThaiAtPNG(data) {
@@ -330,28 +319,27 @@ function generateThaiAtPNG(data) {
     if (loaderElement) loaderElement.style.display = "flex";
 
     try {
-        draw5x5ThaiAtSaBan(chartData, function(imgSrc) {
-            if (imgSrc) {
-                if (imgElement) {
-                    imgElement.src = imgSrc;
-                    imgElement.style.display = "block";
-                    imgElement.style.userSelect = "auto";
-                    imgElement.style.webkitUserSelect = "auto";
-                    imgElement.style.webkitUserDrag = "auto";
-                    imgElement.style.webkitTouchCallout = "default";
-                    imgElement.style.pointerEvents = "auto";
-                    imgElement.style.touchAction = "auto";
-                }
-
-                if (downloadBtn) {
-                    downloadBtn.href = imgSrc;
-                    downloadBtn.style.display = "inline-flex";
-                }
+        const syncImgSrc = draw5x5ThaiAtSaBan(chartData);
+        if (syncImgSrc) {
+            if (imgElement) {
+                imgElement.src = syncImgSrc;
+                imgElement.style.display = "block";
+                imgElement.style.userSelect = "auto";
+                imgElement.style.webkitUserSelect = "auto";
+                imgElement.style.webkitUserDrag = "auto";
+                imgElement.style.webkitTouchCallout = "default";
+                imgElement.style.pointerEvents = "auto";
+                imgElement.style.touchAction = "auto";
             }
-            if (loaderElement) loaderElement.style.display = "none";
-        });
+
+            if (downloadBtn) {
+                downloadBtn.href = syncImgSrc;
+                downloadBtn.style.display = "inline-flex";
+            }
+        }
     } catch (err) {
         console.error("Lỗi vẽ Sa Bàn 5x5 Canvas:", err);
+    } finally {
         if (loaderElement) loaderElement.style.display = "none";
     }
 }

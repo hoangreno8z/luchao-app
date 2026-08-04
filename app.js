@@ -320,21 +320,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     captureArea.style.left = '-9999px';
                     captureArea.style.opacity = '1';
 
-                    canvas.toBlob(blob => {
-                        let imgSrc = '';
-                        if (blob) {
-                            imgSrc = URL.createObjectURL(blob);
-                        } else {
-                            imgSrc = canvas.toDataURL('image/png');
-                        }
-                        hexagramImg.src = imgSrc;
-                        hexagramImg.style.userSelect = 'auto';
-                        hexagramImg.style.webkitUserSelect = 'auto';
-                        hexagramImg.style.webkitUserDrag = 'auto';
-                        hexagramImg.style.webkitTouchCallout = 'default';
-                        hexagramImg.style.pointerEvents = 'auto';
-                        hexagramImg.style.touchAction = 'auto';
-                    }, 'image/png');
+                    const syncDataUrl = canvas.toDataURL('image/png');
+                    hexagramImg.src = syncDataUrl;
+                    hexagramImg.style.userSelect = 'auto';
+                    hexagramImg.style.webkitUserSelect = 'auto';
+                    hexagramImg.style.webkitUserDrag = 'auto';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.pointerEvents = 'auto';
+                    hexagramImg.style.touchAction = 'auto';
+
+                    try {
+                        canvas.toBlob(blob => {
+                            if (blob) {
+                                hexagramImg.src = URL.createObjectURL(blob);
+                            }
+                        }, 'image/png');
+                    } catch (e) {}
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);
@@ -569,21 +570,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     captureArea.style.left = '-9999px';
                     captureArea.style.opacity = '1';
 
-                    canvas.toBlob(blob => {
-                        let imgSrc = '';
-                        if (blob) {
-                            imgSrc = URL.createObjectURL(blob);
-                        } else {
-                            imgSrc = canvas.toDataURL('image/png');
-                        }
-                        hexagramImg.src = imgSrc;
-                        hexagramImg.style.userSelect = 'auto';
-                        hexagramImg.style.webkitUserSelect = 'auto';
-                        hexagramImg.style.webkitUserDrag = 'auto';
-                        hexagramImg.style.webkitTouchCallout = 'default';
-                        hexagramImg.style.pointerEvents = 'auto';
-                        hexagramImg.style.touchAction = 'auto';
-                    }, 'image/png');
+                    const syncDataUrl = canvas.toDataURL('image/png');
+                    hexagramImg.src = syncDataUrl;
+                    hexagramImg.style.userSelect = 'auto';
+                    hexagramImg.style.webkitUserSelect = 'auto';
+                    hexagramImg.style.webkitUserDrag = 'auto';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.pointerEvents = 'auto';
+                    hexagramImg.style.touchAction = 'auto';
+
+                    try {
+                        canvas.toBlob(blob => {
+                            if (blob) {
+                                hexagramImg.src = URL.createObjectURL(blob);
+                            }
+                        }, 'image/png');
+                    } catch (e) {}
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);
