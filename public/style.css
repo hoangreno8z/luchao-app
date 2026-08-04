@@ -464,8 +464,12 @@ header p {
     width: 100%;
     height: auto;
     display: block;
-    user-select: none;
-    -webkit-user-drag: none;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -webkit-user-drag: auto !important;
+    -webkit-touch-callout: default !important;
+    pointer-events: auto !important;
+    touch-action: auto !important;
 }
 
 .hexagram-canvas-hidden {
