@@ -238,7 +238,7 @@ const PHAN_DA_CUU_CUNG = {
 
     // Tự động tạo ảnh PNG HD và cập nhật thẻ <img> trực tiếp cho mobile & PC
     if (typeof generateThaiAtPNG === "function") {
-        generateThaiAtPNG();
+        generateThaiAtPNG(data);
     }
     } catch (err) {
         console.error("Lỗi khi render sa bàn Thái Ất:", err);
