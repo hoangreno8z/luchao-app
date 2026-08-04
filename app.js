@@ -908,14 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Top Red Warning Banner & Sticky Guidance for Zalo/FB Browser
     if (isZaloOrFbBrowser()) {
-        const banner = document.createElement("div");
-        banner.id = "zalo-top-sticky-banner";
-        banner.style.cssText = "position: sticky; top: 0; left: 0; width: 100%; background: #e74c3c; color: #fff; font-weight: bold; text-align: center; padding: 12px 15px; font-size: 0.95rem; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); box-sizing: border-box; line-height: 1.4;";
-        banner.innerHTML = '⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.';
-        document.body.insertBefore(banner, document.body.firstChild);
-
         const downloadTip = document.querySelector('.download-tip');
         if (downloadTip) {
             downloadTip.innerHTML = '<span style="color: #ff6b6b; font-weight: bold; font-size: 0.95rem;">⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.</span>';

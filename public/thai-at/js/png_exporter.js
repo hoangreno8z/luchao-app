@@ -442,13 +442,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    if (isZaloOrFbBrowser()) {
-        const banner = document.createElement("div");
-        banner.id = "zalo-top-sticky-banner-thaiat";
-        banner.style.cssText = "position: sticky; top: 0; left: 0; width: 100%; background: #e74c3c; color: #fff; font-weight: bold; text-align: center; padding: 12px 15px; font-size: 0.95rem; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); box-sizing: border-box; line-height: 1.4;";
-        banner.innerHTML = '⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.';
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
 });
 
 // Backward compatibility alias
