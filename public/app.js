@@ -930,4 +930,3 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 });
-});
