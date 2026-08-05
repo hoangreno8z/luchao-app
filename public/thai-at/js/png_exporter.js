@@ -439,6 +439,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 100);
                 e.preventDefault();
             }
+        });
+    }
+
     if (isZaloOrFbBrowser()) {
         const downloadTip = document.querySelector('.download-tip-text');
         if (downloadTip) {
