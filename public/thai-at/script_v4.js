@@ -529,7 +529,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(payload)
                 });
                 
-                if (!response.ok) throw new Error("Lỗi kết nối Hệ thống AI.");
+                if (!response.ok) {
+                    let errText = await response.text();
+                    try { errText = JSON.parse(errText).error || errText; } catch(e){}
+                    throw new Error("Lỗi API: " + errText);
+                }
                 const data = await response.json();
                 
                 aiContent.innerHTML = data.html || `<div style="color:white;">${data.text.replace(/\\n/g, '<br/>')}</div>`;
