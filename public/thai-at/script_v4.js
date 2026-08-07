@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (btnAi && aiModal && aiContent) {
         btnAi.addEventListener("click", async () => {
-            if (!window.currentThaiAtData) {
+            if (!window.lastCalculatedThaiAtData) {
                 alert("Vui lòng khởi quẻ trước khi luận giải AI!");
                 return;
             }
@@ -508,16 +508,16 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 // Prepare minimal payload
                 const payload = {
-                    mode: window.currentThaiAtData.modeName,
-                    khoiSo: window.currentThaiAtData.khoiSo,
-                    tinhChatKhoi: window.currentThaiAtData.tinhChatKhoi,
-                    batMon: window.currentThaiAtData.batMon,
-                    cuuTinh: window.currentThaiAtData.cuuTinh,
-                    donCucName: window.currentThaiAtData.donCucName,
-                    toanDinh: window.currentThaiAtData.toanDinhGoc,
-                    toanChu: window.currentThaiAtData.luanDoanData?.toanChu,
-                    toanKhach: window.currentThaiAtData.luanDoanData?.toanKhach,
-                    stars: Object.entries(window.currentThaiAtData.placement).map(([cung, stars]) => ({
+                    mode: window.lastCalculatedThaiAtData.modeName,
+                    khoiSo: window.lastCalculatedThaiAtData.khoiSo,
+                    tinhChatKhoi: window.lastCalculatedThaiAtData.tinhChatKhoi,
+                    batMon: window.lastCalculatedThaiAtData.batMon,
+                    cuuTinh: window.lastCalculatedThaiAtData.cuuTinh,
+                    donCucName: window.lastCalculatedThaiAtData.donCucName,
+                    toanDinh: window.lastCalculatedThaiAtData.toanDinhGoc,
+                    toanChu: window.lastCalculatedThaiAtData.luanDoanData?.toanChu,
+                    toanKhach: window.lastCalculatedThaiAtData.luanDoanData?.toanKhach,
+                    stars: Object.entries(window.lastCalculatedThaiAtData.placement).map(([cung, stars]) => ({
                         cung,
                         stars: stars.map(s => s.name)
                     })).filter(c => c.stars.length > 0)
