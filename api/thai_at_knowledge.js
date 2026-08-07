@@ -82,4 +82,4 @@ Dựa vào các thông số Sa Bàn hiện tại, hãy luận giải theo các y
 1. Xác định SỰ KIỆN: Xem Cách cục hiện tại là gì (Tù, Yểm, Bách, Chặn...)? Các sao quan trọng (Thái Ất, Văn Xương, Thủy Kích, Đại Du, Ngũ Phúc) đang nằm ở đâu, đóng cửa gì, ngũ hành tương sinh hay tương khắc. 
 2. Luận THỜI GIAN và PHƯƠNG VỊ: Cung nào có Hung tinh thì phương vị đó (Đông, Tây, Nam, Bắc...) sẽ xảy ra tai họa vào thời điểm đó (Năm/Tháng ứng với Cung đó). Cung nào có Cát tinh thì phương vị đó phát đạt, thịnh vượng.
 3. Liên hệ THỜI SỰ (Kinh tế, Chính trị, Thiên tai): Nếu có Đại Du/Địa Ất thì dự báo đứt gãy chuỗi cung ứng, suy thoái kinh tế, dịch bệnh. Nếu có Phi Phù thì dự báo hacker, cháy nổ, sụp đổ chớp nhoáng. Nếu có Ngũ Phúc thì dự báo có quỹ cứu trợ, chính sách tốt.
-\`;
+`;

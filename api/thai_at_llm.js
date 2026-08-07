@@ -1,4 +1,5 @@
 import { THAI_AT_KNOWLEDGE } from './thai_at_knowledge.js';
+export const maxDuration = 60; // Set max execution time to 60 seconds
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
