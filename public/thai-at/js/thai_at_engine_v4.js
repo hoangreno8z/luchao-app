@@ -59,6 +59,10 @@ class ThaiAtBaseEngine {
         // Cục Số (72)
         this.cucNum = (this.tueTich % 72) || 72;
         
+        // 144 Khối Âm/Dương (tự động tính dựa vào Kỷ Dư theo công thức: (Kỷ Dư - 1) % 72 + 1)
+        this.khoiSo = ((this.kyDu - 1) % 72 + 72) % 72 + 1;
+        this.tinhChatKhoi = this.isDuongDon ? "Dương Độn" : "Âm Độn";
+        
         // Tích Trung Cổ Giáp Dần (Dành riêng cho Tuế Kể - Tam Cơ & Đại Du & Ngũ Phúc)
         const yearVal = this.tueTich > 10000000 ? (this.tueTich - THUONG_CO_EPOCH) : this.tueTich;
         this.tichTrungCo = yearVal + 12607;
@@ -861,7 +865,9 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         batHung: evalBatHung(),
         verdict: luanDoanNguHanh(vxEl, tkEl),
         movingStars: movingStars,
-        luanDoanData: luanDoanData
+        luanDoanData: luanDoanData,
+        khoiSo: factory.khoiSo,
+        tinhChatKhoi: factory.tinhChatKhoi
     };
 }
 

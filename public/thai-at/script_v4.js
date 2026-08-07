@@ -63,6 +63,7 @@ function render(year, month, day, hour) {
     document.getElementById("info-mode-name").textContent = data.modeName;
     document.getElementById("info-solar-term").textContent = data.solarTerm;
     document.getElementById("info-cuc-name").textContent = data.donCucName;
+    document.getElementById("info-khoi-name").textContent = (data.khoiSo !== undefined ? "Khối " + data.khoiSo + " (" + data.tinhChatKhoi + ")" : "-");
     document.getElementById("info-mon-name").textContent = data.batMon;
     document.getElementById("info-tinh-name").textContent = data.cuuTinh;
 
@@ -488,4 +489,54 @@ function renderReferenceTables() {
 // Gọi khi DOM sẵn sàng
 document.addEventListener("DOMContentLoaded", () => {
     setTimeout(renderReferenceTables, 100);
+    
+    // Nút AI Luận Giải
+    const btnAi = document.getElementById("btn-ai-luan-giai");
+    const aiModal = document.getElementById("ai-luan-giai-modal");
+    const aiContent = document.getElementById("ai-luan-giai-content");
+    
+    if (btnAi && aiModal && aiContent) {
+        btnAi.addEventListener("click", async () => {
+            if (!window.currentThaiAtData) {
+                alert("Vui lòng khởi quẻ trước khi luận giải AI!");
+                return;
+            }
+            
+            aiModal.style.display = "flex";
+            aiContent.innerHTML = `<div style="text-align:center; padding:40px;"><span class="spinner" style="border-top-color:var(--gold); display:inline-block; margin-bottom:15px;"></span><br/><strong style="color:var(--gold); font-size:1.1rem;">Hệ thống AI đang xem xét thiên tượng, tính toán điểm rơi...</strong><br/><span style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Quá trình này kết hợp tìm kiếm tin tức thời sự hiện tại để dự báo vĩ mô, vui lòng chờ khoảng 10-15 giây.</span></div>`;
+            
+            try {
+                // Prepare minimal payload
+                const payload = {
+                    mode: window.currentThaiAtData.modeName,
+                    khoiSo: window.currentThaiAtData.khoiSo,
+                    tinhChatKhoi: window.currentThaiAtData.tinhChatKhoi,
+                    batMon: window.currentThaiAtData.batMon,
+                    cuuTinh: window.currentThaiAtData.cuuTinh,
+                    donCucName: window.currentThaiAtData.donCucName,
+                    toanDinh: window.currentThaiAtData.toanDinhGoc,
+                    toanChu: window.currentThaiAtData.luanDoanData?.toanChu,
+                    toanKhach: window.currentThaiAtData.luanDoanData?.toanKhach,
+                    stars: Object.entries(window.currentThaiAtData.placement).map(([cung, stars]) => ({
+                        cung,
+                        stars: stars.map(s => s.name)
+                    })).filter(c => c.stars.length > 0)
+                };
+                
+                const response = await fetch('/api/thai_at_llm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error("Lỗi kết nối Hệ thống AI.");
+                const data = await response.json();
+                
+                aiContent.innerHTML = data.html || `<div style="color:white;">${data.text.replace(/\\n/g, '<br/>')}</div>`;
+                
+            } catch (err) {
+                aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">Lỗi: ${err.message}. Vui lòng thử lại sau.</div>`;
+            }
+        });
+    }
 });

@@ -67,6 +67,7 @@
                         <li><strong>Chế độ:</strong> <span id="info-mode-name">Tuế Kể</span></li>
                         <li><strong>Tiết Khí:</strong> <span id="info-solar-term">-</span></li>
                         <li><strong>Cục Số:</strong> <span id="info-cuc-name">-</span></li>
+                        <li><strong>Khối:</strong> <span id="info-khoi-name">-</span></li>
                         <li><strong>Bát Môn:</strong> <span id="info-mon-name">-</span></li>
                         <li><strong>Cửu Tinh:</strong> <span id="info-tinh-name">-</span></li>
                     </ul>
@@ -90,6 +91,9 @@
                         <a id="btn-download-direct" href="#" download="SaBan_ThaiAt.png" class="btn-direct-download" style="display: none;">
                             💾 TẢI ẢNH SA BÀN (PNG)
                         </a>
+                        <button type="button" id="btn-ai-luan-giai" class="btn-primary" style="background: #e67e22; border-color: #d35400; width: auto; padding: 10px 22px; font-size: 0.85rem; margin-top: 0; display: none;">
+                            🤖 AI LUẬN GIẢI
+                        </button>
                     </div>
                     <p class="download-tip-text">💡 <strong>Mẹo lưu ảnh:</strong> Bạn có thể bấm nút Tải ảnh sa bàn hoặc chạm giữ/click chuột phải để lưu về máy.</p>
                 </div>
@@ -255,6 +259,19 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- AI Luận Giải Modal -->
+    <div id="ai-luan-giai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100000; justify-content: center; align-items: center;">
+        <div style="background: var(--surface); border: 1px solid var(--gold); border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1);">
+                <h3 style="margin: 0; color: var(--gold); font-family: var(--font-ancient); letter-spacing: 1px;">🤖 HỆ THỐNG AI LUẬN GIẢI SA BÀN THÁI ẤT</h3>
+                <button onclick="document.getElementById('ai-luan-giai-modal').style.display='none';" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="ai-luan-giai-content" style="padding: 20px; overflow-y: auto; color: var(--text-color); line-height: 1.6; font-size: 0.95rem;">
+                <!-- Nội dung AI sẽ render ở đây -->
+            </div>
+        </div>
     </div>
 
     <script src="js/lunar_solar.js?v=15.0.0"></script>

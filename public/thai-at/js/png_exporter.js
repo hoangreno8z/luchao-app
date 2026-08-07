@@ -336,6 +336,10 @@ function generateThaiAtPNG(data) {
                 downloadBtn.href = syncImgSrc;
                 downloadBtn.style.display = "inline-flex";
             }
+            const aiBtn = document.getElementById("btn-ai-luan-giai");
+            if (aiBtn) {
+                aiBtn.style.display = "inline-flex";
+            }
         }
     } catch (err) {
         console.error("Lỗi vẽ Sa Bàn 5x5 Canvas:", err);
