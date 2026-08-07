@@ -1008,7 +1008,7 @@ III. CHI TIẾT SỰ VIỆC BÊN NGOÀI (Thần sát Dịch mã, Đào hoa, Lụ
 IV. LỜI KHUYÊN DỊCH LÝ & HÓA GIẢI PHONG THỦY (Lời khuyên hành sự kết hợp với Bí pháp thông quan Vương Hổ Ứng)`;
 
             const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
