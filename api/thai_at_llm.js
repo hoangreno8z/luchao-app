@@ -45,6 +45,7 @@ LƯU Ý ĐẶC BIỆT:
 1. BẠN CHỈ ĐƯỢC PHÉP LUẬN GIẢI DỰA TRÊN KIẾN THỨC BÊN DƯỚI, TUYỆT ĐỐI KHÔNG ĐƯỢC BỊA ĐẶT (HALLUCINATE) HOẶC SÁNG TẠO THÊM NỘI DUNG NÀO KHÁC VỀ THÁI ẤT.
 2. VỊ TRÍ CÁC SAO ĐÃ ĐƯỢC CỐ ĐỊNH, BẠN KHÔNG ĐƯỢC PHÉP THAY ĐỔI VỊ TRÍ HAY NHẦM LẪN GIỮA CÁC CUNG (Ví dụ: Cung Cấn và Cung Càn/Kiền là khác nhau).
 3. "Kiền" chính là "Càn", hai tên gọi này là một. Nếu dữ liệu ghi là Kiền, hãy hiểu đó là Càn.
+4. QUAN TRỌNG: "Cục" và "Khối" LÀ MỘT. (Ví dụ: Cục 55 chính là Khối 55). Khi luận giải, bạn PHẢI TÌM ĐỌC nội dung của Khối tương ứng trong tài liệu 72 Khối và diễn giải CỤ THỂ ra (ví dụ Toán chủ hòa hay bất hòa, Đại Chủ phát, xuất quân hướng nào, v.v.). Nếu trong tài liệu không có hoặc bị thiếu chữ, HÃY SỬ DỤNG KIẾN THỨC SÂU RỘNG CỦA CHÍNH BẠN VỀ THÁI ẤT THẦN SỐ để điền vào chỗ trống và luận giải chi tiết cho Khối/Cục đó.
 
 --- KIẾN THỨC CỐT LÕI THÁI ẤT ---
 ${THAI_AT_KNOWLEDGE}
@@ -69,7 +70,7 @@ ${starPositions}
 
 PHẦN 1: ☯️ THẾ TRẬN 72 KHỐI DƯƠNG/ÂM
 - Tra cứu trong "Kiến thức 72 Khối" ở trên xem Khối Số hiện tại (ví dụ Dương Độn Cục 55) có đặc điểm gì?
-- Chỉ viết những gì tài liệu cung cấp. KHÔNG ĐƯỢC TỰ BỊA ĐẶT THÊM NỘI DUNG NẾU TÀI LIỆU KHÔNG GHI. Nếu tài liệu không có, chỉ cần nêu Tên Khối và Cục.
+- Phân tích chi tiết: Toán chủ hòa hay bất hòa? Đại Chủ phát thế nào? Đối trận lợi phát động trước hay sau? Xuất quân hướng nào? Phục binh giờ nào? Bên Khách bị yểm hay tù? (Nếu tài liệu cung cấp thiếu, hãy dùng kiến thức Thái Ất của bạn để bổ sung trọn vẹn).
 
 PHẦN 2: 🌟 CÁT HUNG CỦA THÁI ẤT
 - Thái Ất đang ở cung nào? Ngũ hành cung đó sinh hay khắc Thái Ất (Mộc)?
