@@ -1,4 +1,5 @@
 import { THAI_AT_KNOWLEDGE } from './thai_at_knowledge.js';
+import { THAI_AT_KNOWLEDGE_72 } from './thai_at_knowledge_pdf.js';
 export const maxDuration = 60;
 
 // List of models to try in order (free-tier friendly first)
@@ -23,6 +24,9 @@ HÃY DỰA VÀO KIẾN THỨC THÁI ẤT BÊN DƯỚI VÀ THÔNG SỐ SA BÀN HI
 --- KIẾN THỨC CỐT LÕI THÁI ẤT ---
 ${THAI_AT_KNOWLEDGE}
 
+--- KIẾN THỨC BỔ SUNG: 72 KHỐI DƯƠNG VÀ CÁC THẾ TRẬN ---
+${THAI_AT_KNOWLEDGE_72}
+
 --- THÔNG SỐ SA BÀN HIỆN TẠI ---
 - Chế độ: ${payload.mode}
 - Khối Số: ${payload.khoiSo || 'Chưa xác định'} (${payload.tinhChatKhoi || 'Chưa xác định'})
@@ -36,29 +40,33 @@ ${THAI_AT_KNOWLEDGE}
 Vị trí các Thần Tinh trên 16 Cung:
 ${(payload.stars || []).map(c => `- Cung ${c.cung}: ${c.stars.join(', ')}`).join('\n')}
 
---- YÊU CẦU LUẬN GIẢI (BẮT BUỘC TUÂN THỦ) ---
-Hãy luận giải SA BÀN trên một cách RÕ RÀNG, CỤ THỂ, KHÔNG NÓI CHUNG CHUNG. Chia thành các phần:
+--- YÊU CẦU LUẬN GIẢI (BẮT BUỘC TUÂN THỦ THEO TRÌNH TỰ ƯU TIÊN SAU) ---
+Hãy luận giải SA BÀN trên một cách RÕ RÀNG, CỤ THỂ, KHÔNG NÓI CHUNG CHUNG. Chia thành các phần theo thứ tự ưu tiên:
 
-1. 🔍 SỰ KIỆN CHÍNH: 
-   - Cách cục hiện tại là gì (Tù, Yểm, Bách, Chặn, Kích...)?
-   - Sao nào đóng cửa nào? Tốt cái gì, xấu cái gì? Vì sao?
-   - Chủ thắng hay Khách thắng? (dựa vào Toán dài/ngắn, Hòa/Bất Hòa)
+1. ☯️ THẾ TRẬN 72 KHỐI DƯƠNG:
+   - Sa bàn này ứng với Khối Số nào trong 72 Khối Dương? 
+   - Đánh giá tổng quan thế trận Cát/Hung của khối này dựa theo nguyên lý 72 Khối.
 
-2. ⏰ THỜI GIAN:
-   - Tai họa hay thịnh vượng sẽ xảy ra vào khoảng thời gian nào?
-   - Luận theo Khối, theo Toán, theo Cung.
+2. 🌟 CÁT HUNG CỦA THÁI ẤT:
+   - Thái Ất đang ở cung nào? Thuộc tính Ngũ hành, Vượng hay Suy?
+   - Cát hung của Thái Ất đối với tình hình hiện tại (quốc gia/cá nhân/doanh nghiệp).
 
-3. 🧭 PHƯƠNG VỊ:
-   - Phương hướng nào nguy hiểm? Phương nào an toàn, phát đạt?
-   - Hướng tốt để hóa giải là hướng nào?
+3. 🚪 THÁI ẤT SO VỚI BÁT MÔN (8 CỬA):
+   - Thái Ất đang rơi vào cửa Sinh, Khai, Hưu (Cát) hay Đỗ, Thương, Tử, Kinh (Hung)?
+   - Tác động của cửa này đến sinh lộ hay tử lộ của sự việc.
 
-4. 📊 LIÊN HỆ THỰC TẾ VĨ MÔ:
-   - Dựa trên kiến thức chung về tình hình kinh tế, chính trị, thiên tai, xuất nhập khẩu trong nước và thế giới hiện nay, kết hợp với Sa Bàn để đưa ra DỰ BÁO XU HƯỚNG TƯƠNG LAI thực tế.
-   - Khuyên người dùng nên làm gì, tránh gì.
+4. ⚔️ TOÁN CHỦ - KHÁCH VÀ THẮNG THUA:
+   - Đánh giá Toán Chủ và Toán Khách (Dài hay Ngắn? Hòa hay Bất Hòa?).
+   - Bên nào có lợi thế hơn? Chủ (phòng thủ) thắng hay Khách (tấn công) thắng?
 
-5. 💡 LỜI KHUYÊN HÓA GIẢI:
-   - Nếu quẻ xấu: cách hóa giải, phương vị nên tránh.
-   - Nếu quẻ tốt: cách tận dụng cơ hội, thời điểm hành động.
+5. ♟️ TƯỚNG, THỦY KÍCH, VĂN XƯƠNG PHỐI HỢP CÙNG CÁC SAO KHÁC:
+   - Phân tích vị trí của Đại/Tiểu Tướng Chủ, Đại/Tiểu Tướng Khách, Văn Xương, Thủy Kích.
+   - Có xảy ra các cách cục bất thường không (Yểm, Kích, Ép, Cách, Tù, Chặn, Đối, Cắp)?
+   - Luận giải sự phối hợp của chúng để đưa ra kết luận chuyên sâu cuối cùng (Ai được lợi, ai chịu thiệt, thời gian ứng nghiệm).
+
+6. 💡 LỜI KHUYÊN HÓA GIẢI:
+   - Lời khuyên hành sự: Nên Tiến hay Thoái? Đánh hay Thủ?
+   - Phương vị nào tốt để mưu sự, phương vị nào hung cần tránh?
 
 ĐỊNH DẠNG: Trả lời bằng HTML (dùng <h3>, <p>, <ul>, <li>, <strong>) với style:
 - Tiêu đề dùng màu vàng gold: style="color:#d4af37"
