@@ -494,6 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnAi = document.getElementById("btn-ai-luan-giai");
     const aiModal = document.getElementById("ai-luan-giai-modal");
     const aiContent = document.getElementById("ai-luan-giai-content");
+    const btnCopy = document.getElementById("btn-copy-luan-giai");
     
     if (btnAi && aiModal && aiContent) {
         btnAi.addEventListener("click", async () => {
@@ -503,7 +504,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             aiModal.style.display = "flex";
-            aiContent.innerHTML = `<div style="text-align:center; padding:40px;"><span class="spinner" style="border-top-color:var(--gold); display:inline-block; margin-bottom:15px;"></span><br/><strong style="color:var(--gold); font-size:1.1rem;">Hệ thống AI đang xem xét thiên tượng, tính toán điểm rơi...</strong><br/><span style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Quá trình này kết hợp tìm kiếm tin tức thời sự hiện tại để dự báo vĩ mô, vui lòng chờ khoảng 10-15 giây.</span></div>`;
+            if (btnCopy) btnCopy.style.display = "none";
+            aiContent.innerHTML = `<div style="text-align:center; padding:40px;"><span class="spinner" style="border-top-color:var(--gold); display:inline-block; margin-bottom:15px;"></span><br/><strong style="color:var(--gold); font-size:1.1rem;">Hệ thống AI đang xem xét thiên tượng, tính toán điểm rơi...</strong><br/><span style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Quá trình này kết hợp tìm kiếm tin tức thời sự hiện tại để dự báo vĩ mô, vui lòng chờ khoảng 10-20 giây.</span></div>`;
             
             try {
                 // Prepare minimal payload
@@ -536,11 +538,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const data = await response.json();
                 
-                aiContent.innerHTML = data.html || `<div style="color:white;">${data.text.replace(/\\n/g, '<br/>')}</div>`;
+                aiContent.innerHTML = data.html || (data.text ? `<div style="color:white;">${data.text.replace(/\\n/g, '<br/>')}</div>` : "Không có dữ liệu trả về.");
+                
+                if (btnCopy) btnCopy.style.display = "block";
                 
             } catch (err) {
-                aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">Lỗi: ${err.message}. Vui lòng thử lại sau.</div>`;
+                aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">Lỗi: ${err.message}. <br/><br/><button onclick="document.getElementById('btn-ai-luan-giai').click()" style="padding:8px 16px; background:var(--gold); color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:10px;">Thử lại</button></div>`;
             }
         });
+        
+        // Copy logic
+        if (btnCopy) {
+            btnCopy.addEventListener("click", async () => {
+                try {
+                    const textToCopy = aiContent.innerText || aiContent.textContent;
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(textToCopy);
+                    } else {
+                        const textArea = document.createElement("textarea");
+                        textArea.value = textToCopy;
+                        textArea.style.position = "absolute";
+                        textArea.style.left = "-999999px";
+                        document.body.prepend(textArea);
+                        textArea.select();
+                        document.execCommand("copy");
+                        textArea.remove();
+                    }
+                    const originalText = btnCopy.innerHTML;
+                    btnCopy.innerHTML = "✅ Đã chép!";
+                    btnCopy.style.color = "#51cf66";
+                    btnCopy.style.borderColor = "#51cf66";
+                    setTimeout(() => {
+                        btnCopy.innerHTML = originalText;
+                        btnCopy.style.color = "var(--gold)";
+                        btnCopy.style.borderColor = "var(--gold)";
+                    }, 2000);
+                } catch (err) {
+                    alert("Không thể sao chép văn bản. Trình duyệt không hỗ trợ.");
+                }
+            });
+        }
     }
 });
