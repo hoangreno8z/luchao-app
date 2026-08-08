@@ -1,34 +1,50 @@
 import { THAI_AT_KNOWLEDGE } from './thai_at_knowledge.js';
-import { THAI_AT_KNOWLEDGE_72 } from './thai_at_knowledge_pdf.js';
 export const maxDuration = 60;
 
-// List of models to try in order (free-tier friendly first)
+// List of models to try in order — all free-tier eligible, no models below 3.5
 const MODELS = [
     'gemini-3.5-flash-lite',
-    'gemini-3.6-flash',
     'gemini-3.5-flash',
+    'gemini-3.6-flash',
 ];
 
 export default async function handler(req, res) {
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
     try {
         const payload = req.body;
-        
-        // Construct the prompt
-        let promptText = `BẠN LÀ MỘT ĐẠI SƯ THÁI ẤT THẦN SỐ CÓ 40 NĂM KINH NGHIỆM LUẬN GIẢI SA BÀN.
-HÃY DỰA VÀO KIẾN THỨC THÁI ẤT BÊN DƯỚI VÀ THÔNG SỐ SA BÀN HIỆN TẠI ĐỂ LUẬN GIẢI CHI TIẾT.
+        if (!payload || !payload.mode) {
+            return res.status(400).json({ error: "Thiếu dữ liệu sa bàn. Vui lòng khởi quẻ trước." });
+        }
+
+        const geminiKey = process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
+            return res.status(500).json({ error: "Chưa cấu hình API Key trên máy chủ." });
+        }
+
+        // Build star positions string safely
+        let starPositions = 'Không có dữ liệu';
+        if (payload.stars && Array.isArray(payload.stars) && payload.stars.length > 0) {
+            starPositions = payload.stars
+                .map(c => `- Cung ${c.cung}: ${(c.stars || []).join(', ')}`)
+                .join('\n');
+        }
+
+        // Construct the prompt with priority order
+        const promptText = `BẠN LÀ MỘT ĐẠI SƯ THÁI ẤT THẦN SỐ CÓ 40 NĂM KINH NGHIỆM LUẬN GIẢI SA BÀN.
 
 --- KIẾN THỨC CỐT LÕI THÁI ẤT ---
 ${THAI_AT_KNOWLEDGE}
 
---- KIẾN THỨC BỔ SUNG: 72 KHỐI DƯƠNG VÀ CÁC THẾ TRẬN ---
-${THAI_AT_KNOWLEDGE_72}
-
 --- THÔNG SỐ SA BÀN HIỆN TẠI ---
-- Chế độ: ${payload.mode}
+- Chế độ: ${payload.mode || 'N/A'}
 - Khối Số: ${payload.khoiSo || 'Chưa xác định'} (${payload.tinhChatKhoi || 'Chưa xác định'})
 - Bát Môn: ${payload.batMon || 'Chưa xác định'}
 - Cửu Tinh: ${payload.cuuTinh || 'Chưa xác định'}
@@ -38,58 +54,45 @@ ${THAI_AT_KNOWLEDGE_72}
 - Toán Định: ${payload.toanDinh || 'Không có'}
 
 Vị trí các Thần Tinh trên 16 Cung:
-${(payload.stars || []).map(c => `- Cung ${c.cung}: ${c.stars.join(', ')}`).join('\n')}
+${starPositions}
 
---- YÊU CẦU LUẬN GIẢI (BẮT BUỘC TUÂN THỦ THEO TRÌNH TỰ ƯU TIÊN SAU) ---
-Hãy luận giải SA BÀN trên một cách RÕ RÀNG, CỤ THỂ, KHÔNG NÓI CHUNG CHUNG. Chia thành các phần theo thứ tự ưu tiên:
+--- YÊU CẦU LUẬN GIẢI (TUÂN THỦ TRÌNH TỰ ƯU TIÊN) ---
 
 1. ☯️ THẾ TRẬN 72 KHỐI DƯƠNG:
-   - Sa bàn này ứng với Khối Số nào trong 72 Khối Dương? 
-   - Đánh giá tổng quan thế trận Cát/Hung của khối này dựa theo nguyên lý 72 Khối.
+   - Sa bàn này ứng với Khối Số nào trong 72 Khối Dương?
+   - Đánh giá tổng quan thế trận Cát/Hung của khối này.
 
 2. 🌟 CÁT HUNG CỦA THÁI ẤT:
-   - Thái Ất đang ở cung nào? Thuộc tính Ngũ hành, Vượng hay Suy?
-   - Cát hung của Thái Ất đối với tình hình hiện tại (quốc gia/cá nhân/doanh nghiệp).
+   - Thái Ất đang ở cung nào? Ngũ hành, Vượng hay Suy?
+   - Cát hung đối với tình hình hiện tại.
 
 3. 🚪 THÁI ẤT SO VỚI BÁT MÔN (8 CỬA):
-   - Thái Ất đang rơi vào cửa Sinh, Khai, Hưu (Cát) hay Đỗ, Thương, Tử, Kinh (Hung)?
-   - Tác động của cửa này đến sinh lộ hay tử lộ của sự việc.
+   - Thái Ất rơi vào cửa nào? Sinh lộ hay tử lộ?
 
-4. ⚔️ TOÁN CHỦ - KHÁCH VÀ THẮNG THUA:
-   - Đánh giá Toán Chủ và Toán Khách (Dài hay Ngắn? Hòa hay Bất Hòa?).
-   - Bên nào có lợi thế hơn? Chủ (phòng thủ) thắng hay Khách (tấn công) thắng?
+4. ⚔️ TOÁN CHỦ - KHÁCH THẮNG THUA:
+   - Toán Chủ/Khách dài hay ngắn? Hòa hay Bất Hòa?
+   - Bên nào có lợi thế?
 
-5. ♟️ TƯỚNG, THỦY KÍCH, VĂN XƯƠNG PHỐI HỢP CÙNG CÁC SAO KHÁC:
-   - Phân tích vị trí của Đại/Tiểu Tướng Chủ, Đại/Tiểu Tướng Khách, Văn Xương, Thủy Kích.
-   - Có xảy ra các cách cục bất thường không (Yểm, Kích, Ép, Cách, Tù, Chặn, Đối, Cắp)?
-   - Luận giải sự phối hợp của chúng để đưa ra kết luận chuyên sâu cuối cùng (Ai được lợi, ai chịu thiệt, thời gian ứng nghiệm).
+5. ♟️ TƯỚNG, THỦY KÍCH, VĂN XƯƠNG PHỐI HỢP:
+   - Vị trí Đại/Tiểu Tướng Chủ-Khách, Văn Xương, Thủy Kích.
+   - Cách cục bất thường (Yểm, Kích, Ép, Cách, Tù, Chặn, Đối, Cắp)?
+   - Kết luận chuyên sâu: Ai được lợi, ai chịu thiệt, thời gian ứng nghiệm.
 
 6. 💡 LỜI KHUYÊN HÓA GIẢI:
-   - Lời khuyên hành sự: Nên Tiến hay Thoái? Đánh hay Thủ?
-   - Phương vị nào tốt để mưu sự, phương vị nào hung cần tránh?
+   - Nên Tiến hay Thoái? Đánh hay Thủ?
+   - Phương vị tốt/hung?
 
-ĐỊNH DẠNG: Trả lời bằng HTML (dùng <h3>, <p>, <ul>, <li>, <strong>) với style:
-- Tiêu đề dùng màu vàng gold: style="color:#d4af37"
-- Điểm xấu/hung: style="color:#ff4444" 
-- Điểm tốt/cát: style="color:#4CAF50"
-- Thông tin quan trọng: dùng <strong>
-
-BẮT ĐẦU LUẬN GIẢI NGAY, KHÔNG CẦN CHÀO HỎI HAY GIỚI THIỆU.`;
-
-        const geminiKey = process.env.GEMINI_API_KEY;
-        if (!geminiKey) {
-            throw new Error("Missing GEMINI_API_KEY environment variable");
-        }
+ĐỊNH DẠNG: HTML (dùng <h3>, <p>, <ul>, <li>, <strong>) với style:
+- Tiêu đề: style="color:#d4af37"
+- Hung: style="color:#ff4444"
+- Cát: style="color:#4CAF50"
+BẮT ĐẦU LUẬN GIẢI NGAY.`;
 
         const requestBody = {
-            contents: [
-                {
-                    parts: [{ text: promptText }]
-                }
-            ],
+            contents: [{ parts: [{ text: promptText }] }],
             generationConfig: {
                 temperature: 0.75,
-                maxOutputTokens: 3000,
+                maxOutputTokens: 4000,
             }
         };
 
@@ -97,51 +100,71 @@ BẮT ĐẦU LUẬN GIẢI NGAY, KHÔNG CẦN CHÀO HỎI HAY GIỚI THIỆU.`;
         let lastError = null;
         for (const model of MODELS) {
             try {
+                console.log(`Trying model: ${model}`);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 50000); // 50s timeout
+
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
+                        body: JSON.stringify(requestBody),
+                        signal: controller.signal
                     }
                 );
+                clearTimeout(timeout);
 
                 if (response.status === 429 || response.status === 404) {
-                    // Quota exceeded or model not found, try next model
                     const errText = await response.text();
-                    lastError = `Model ${model}: ${response.status} - ${errText}`;
+                    lastError = `Model ${model}: ${response.status}`;
                     console.log(`Model ${model} failed (${response.status}), trying next...`);
                     continue;
                 }
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error(`Gemini API Error: ${response.status} - ${errorText}`);
+                    lastError = `Model ${model}: ${response.status} - ${errorText}`;
+                    console.log(`Model ${model} failed: ${response.status}`);
+                    continue; // Try next model instead of throwing
                 }
 
                 const responseData = await response.json();
-                
-                let outputText = "";
-                if (responseData.candidates && responseData.candidates[0]?.content?.parts?.[0]?.text) {
-                    outputText = responseData.candidates[0].content.parts[0].text;
-                } else {
-                    throw new Error("Không thể lấy nội dung luận giải từ AI.");
-                }
-                
-                // Remove markdown code blocks if AI wraps its HTML output
-                outputText = outputText.replace(/^```html\s*\n?/i, '').replace(/^```\s*\n?/i, '').replace(/\n?```\s*$/i, '');
 
-                return res.status(200).json({ html: outputText, model: model });
+                // Safely extract text
+                const candidate = responseData?.candidates?.[0];
+                if (!candidate?.content?.parts?.[0]?.text) {
+                    lastError = `Model ${model}: Empty response`;
+                    console.log(`Model ${model}: no text in response`);
+                    continue;
+                }
+
+                let outputText = candidate.content.parts[0].text;
+
+                // Remove markdown code fences if AI wraps its HTML
+                outputText = outputText
+                    .replace(/^```html\s*\n?/i, '')
+                    .replace(/^```\s*\n?/i, '')
+                    .replace(/\n?```\s*$/i, '');
+
+                console.log(`SUCCESS with model: ${model}`);
+                return res.status(200).json({ html: outputText, model });
 
             } catch (modelErr) {
-                lastError = modelErr.message;
-                console.log(`Model ${model} error: ${modelErr.message}`);
+                if (modelErr.name === 'AbortError') {
+                    lastError = `Model ${model}: Timeout (>50s)`;
+                } else {
+                    lastError = modelErr.message;
+                }
+                console.log(`Model ${model} error: ${lastError}`);
                 continue;
             }
         }
 
         // All models failed
-        throw new Error(`Tất cả mô hình AI đều thất bại. Lỗi cuối: ${lastError}`);
+        return res.status(503).json({
+            error: `Tất cả mô hình AI đều không khả dụng lúc này. Vui lòng thử lại sau vài phút. (${lastError})`
+        });
 
     } catch (error) {
         console.error("API Error:", error);
