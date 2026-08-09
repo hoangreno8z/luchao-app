@@ -122,11 +122,12 @@ h1 {
     left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: #050711;
     background-image: url('images/thai_at_transition_bg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: 999999;
+    z-index: 9999999;
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
@@ -136,30 +137,30 @@ h1 {
 
 .transition-overlay.active {
     visibility: visible;
-    animation: thaiAtZoomBlur 0.22s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    animation: thaiAtZoomBlur 0.45s ease-out forwards;
 }
 
 @keyframes thaiAtZoomBlur {
     0% {
         opacity: 0.95;
-        filter: blur(14px);
+        filter: blur(10px);
         transform: scale(1.0);
     }
-    40% {
-        opacity: 0.9;
-        filter: blur(5px);
-        transform: scale(1.12);
+    50% {
+        opacity: 0.85;
+        filter: blur(3px);
+        transform: scale(1.1);
     }
     100% {
         opacity: 0;
         filter: blur(0px);
-        transform: scale(1.25);
+        transform: scale(1.2);
         visibility: hidden;
     }
 }
 
 /* =========================================================
-   IVORY-WHITE 3D OVAL PILL BUTTON SYSTEM (HIGH LEGIBILITY)
+   DARK SUBTLE 3D OVAL BUTTON SYSTEM (HIGH READABILITY & NO GLARE)
    ========================================================= */
 .btn-glossy,
 .btn-primary,
@@ -172,32 +173,32 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 24px !important;
+    padding: 9px 22px !important;
     border-radius: 9999px !important; /* Perfect oval / capsule pill shape */
     font-family: 'Cinzel', 'Quicksand', -apple-system, sans-serif;
-    font-weight: 800 !important;
+    font-weight: 600 !important; /* Reduced thickness for maximum sharp clarity */
     font-size: 0.88rem;
     letter-spacing: 0.5px;
     cursor: pointer;
     text-decoration: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease-in-out;
     overflow: hidden;
     
-    /* Base Ivory White Pill with Bold Black Text */
-    background: linear-gradient(180deg, #ffffff 0%, #fffef7 30%, #f5f0e1 75%, #ebdcb9 100%) !important;
-    color: #050711 !important;
-    border: 2px solid #d4af37 !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    /* Dark, Subtle Rich Background - No Glare! */
+    background: linear-gradient(180deg, #241d13 0%, #140f09 100%) !important;
+    color: #f5f0e1 !important; /* Crisp Ivory-Cream text */
+    border: 1px solid #d4af37 !important; /* Elegant gold rim */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important; /* Sharp contrast, no blur! */
     
     box-shadow: 
-        0 4px 14px rgba(0, 0, 0, 0.6),
-        inset 0 3px 5px rgba(255, 255, 255, 0.95),
-        inset 0 -3px 5px rgba(184, 134, 11, 0.35) !important;
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Top Glass Highlight Overlay */
+/* Subtle Top Glass Reflection Overlay */
 .btn-glossy::before,
 .btn-primary::before,
 .btn-export::before,
@@ -207,11 +208,11 @@ h1 {
     content: '';
     position: absolute;
     top: 1px;
-    left: 6%;
-    right: 6%;
-    height: 44%;
-    border-radius: 9999px 9999px 40% 40%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.25) 100%);
+    left: 8%;
+    right: 8%;
+    height: 40%;
+    border-radius: 9999px 9999px 35% 35%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
     pointer-events: none;
     z-index: 1;
 }
@@ -223,13 +224,14 @@ h1 {
 .btn-direct-download:hover,
 .nav-btn:hover,
 #btn-copy-luan-giai:hover {
-    transform: translateY(-2px) scale(1.03);
-    background: linear-gradient(180deg, #ffffff 0%, #fffde7 30%, #f7eece 100%) !important;
-    color: #000000 !important;
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, #32281a 0%, #1a140b 100%) !important;
+    color: #ffffff !important;
+    border-color: #ffe082 !important;
     box-shadow: 
-        0 8px 22px rgba(212, 175, 55, 0.5),
-        inset 0 4px 6px rgba(255, 255, 255, 1),
-        inset 0 -3px 5px rgba(184, 134, 11, 0.4) !important;
+        0 6px 16px rgba(212, 175, 55, 0.4),
+        inset 0 1px 3px rgba(255, 255, 255, 0.25),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.6) !important;
 }
 
 .btn-glossy:active,
@@ -238,36 +240,49 @@ h1 {
 .btn-direct-download:active,
 .nav-btn:active,
 #btn-copy-luan-giai:active {
-    transform: translateY(1px) scale(0.98);
+    transform: translateY(1px);
     box-shadow: 
-        0 2px 6px rgba(0, 0, 0, 0.7),
-        inset 0 3px 6px rgba(0, 0, 0, 0.4) !important;
+        0 2px 6px rgba(0, 0, 0, 0.6),
+        inset 0 2px 4px rgba(0, 0, 0, 0.8) !important;
 }
 
-/* Color Accent Variants (Ivory Body with Distinct 3D Rim Borders) */
+/* Button Color Variants (Dark Metallic Tones) */
+
+/* Primary / AI Button: Dark Gold/Amber */
 .btn-primary, #btn-ai-luan-giai {
+    background: linear-gradient(180deg, #2b2111 0%, #150f07 100%) !important;
+    color: #ffe082 !important;
     border-color: #d4af37 !important;
 }
 
+/* Export HD / PNG Download: Dark Emerald */
 .btn-export, button[onclick="generateThaiAtPNG();"], .btn-direct-download {
+    background: linear-gradient(180deg, #132a1e 0%, #0a1710 100%) !important;
+    color: #a5d6a7 !important;
     border-color: #27ae60 !important;
 }
 
-/* Navigation Tabs */
-.nav-btn {
-    background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%) !important;
-    color: #f0f2f5 !important;
-    border-color: rgba(212, 175, 55, 0.3) !important;
-    text-shadow: 0 1px 2px #000 !important;
+/* Copy Button: Dark Slate Blue */
+#btn-copy-luan-giai {
+    background: linear-gradient(180deg, #152238 0%, #0a1220 100%) !important;
+    color: #80deea !important;
+    border-color: #2980b9 !important;
 }
 
+/* Navigation Tabs: Dark Slate */
+.nav-btn {
+    background: linear-gradient(180deg, #161c2e 0%, #0c0f1a 100%) !important;
+    color: #a0aab8 !important;
+    border-color: rgba(212, 175, 55, 0.25) !important;
+}
+
+/* Active Navigation Tab: Dark Gold Glow */
 .nav-btn.active {
-    background: linear-gradient(180deg, #ffffff 0%, #fffef7 30%, #f5f0e1 75%, #ebdcb9 100%) !important;
-    color: #050711 !important;
-    border-color: #d4af37 !important;
-    font-weight: 900 !important;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.8), inset 0 3px 5px rgba(255, 255, 255, 1) !important;
+    background: linear-gradient(180deg, #2c2211 0%, #151007 100%) !important;
+    color: #ffd700 !important;
+    border-color: #ffd700 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.2) !important;
 }
 
 .info-card {

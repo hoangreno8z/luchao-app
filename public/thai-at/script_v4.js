@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
     castChart();
 });
 
+// Preload transition background image to prevent blank load delays
+const transitionBgImg = new Image();
+transitionBgImg.src = "images/thai_at_transition_bg.jpg";
+
 function triggerTransitionAnimation() {
     const overlay = document.getElementById("thai-at-transition-overlay");
     if (!overlay) return;
@@ -38,7 +42,7 @@ function triggerTransitionAnimation() {
     overlay.classList.add("active");
     setTimeout(() => {
         overlay.classList.remove("active");
-    }, 220);
+    }, 460);
 }
 
 function castChart(skipAnim = false) {
