@@ -37,12 +37,14 @@ transitionBgImg.src = "images/thai_at_transition_bg.jpg";
 function triggerTransitionAnimation() {
     const overlay = document.getElementById("thai-at-transition-overlay");
     if (!overlay) return;
+    overlay.style.display = "block";
     overlay.classList.remove("active");
     void overlay.offsetWidth; // Force reflow
     overlay.classList.add("active");
     setTimeout(() => {
         overlay.classList.remove("active");
-    }, 460);
+        overlay.style.display = "none";
+    }, 500);
 }
 
 function castChart(skipAnim = false) {
