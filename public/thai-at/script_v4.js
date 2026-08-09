@@ -514,6 +514,60 @@ document.addEventListener("DOMContentLoaded", () => {
     const aiContent = document.getElementById("ai-luan-giai-content");
     const btnCopy = document.getElementById("btn-copy-luan-giai");
     
+    // Universal Mobile & Desktop Copy Function (iOS Safari / Android / iPad / PC)
+    async function copyTextToClipboardUniversal(text) {
+        let copied = false;
+
+        // Strategy 1: Try navigator.clipboard if in secure context
+        if (navigator.clipboard && window.isSecureContext) {
+            try {
+                await navigator.clipboard.writeText(text);
+                copied = true;
+            } catch (err) {
+                console.warn("navigator.clipboard.writeText failed, switching to mobile fallback...", err);
+            }
+        }
+
+        // Strategy 2: iOS Safari & Android Compatible Textarea Fallback
+        if (!copied) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.fontSize = "16px"; // Prevent iOS zoom
+            textarea.style.border = "0";
+            textarea.style.padding = "0";
+            textarea.style.margin = "0";
+            textarea.style.position = "absolute";
+            textarea.style.left = "-9999px";
+            textarea.style.top = (window.pageYOffset || document.documentElement.scrollTop || 0) + "px";
+            textarea.setAttribute("readonly", "");
+
+            document.body.appendChild(textarea);
+
+            if (navigator.userAgent.match(/ipad|iphone|ipod|android/i)) {
+                const range = document.createRange();
+                range.selectNodeContents(textarea);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                textarea.setSelectionRange(0, 999999);
+            } else {
+                textarea.focus();
+                textarea.select();
+            }
+
+            try {
+                copied = document.execCommand("copy");
+            } catch (err) {
+                console.error("execCommand copy error:", err);
+                copied = false;
+            }
+
+            document.body.removeChild(textarea);
+        }
+
+        return copied;
+    }
+
     // Copy button logic
     if (btnCopy && aiContent) {
         btnCopy.addEventListener("click", async () => {
@@ -528,31 +582,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                // Try modern clipboard API first, fallback to legacy
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(plainText);
-                } else {
-                    const textarea = document.createElement("textarea");
-                    textarea.value = plainText;
-                    textarea.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0;";
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand("copy");
-                    document.body.removeChild(textarea);
-                }
+                const ok = await copyTextToClipboardUniversal(plainText);
                 
-                // Visual feedback
-                const originalText = btnCopy.innerHTML;
-                btnCopy.innerHTML = "✅ Đã chép!";
-                btnCopy.style.background = "rgba(76,175,80,0.3)";
-                btnCopy.style.borderColor = "#4CAF50";
-                btnCopy.style.color = "#4CAF50";
-                setTimeout(() => {
-                    btnCopy.innerHTML = originalText;
-                    btnCopy.style.background = "rgba(212,175,55,0.15)";
-                    btnCopy.style.borderColor = "var(--gold)";
-                    btnCopy.style.color = "var(--gold)";
-                }, 2000);
+                if (ok) {
+                    // Visual feedback
+                    const originalText = btnCopy.innerHTML;
+                    btnCopy.innerHTML = "✅ Đã chép!";
+                    btnCopy.style.background = "rgba(76,175,80,0.3)";
+                    btnCopy.style.borderColor = "#4CAF50";
+                    btnCopy.style.color = "#4CAF50";
+                    setTimeout(() => {
+                        btnCopy.innerHTML = originalText;
+                        btnCopy.style.background = "";
+                        btnCopy.style.borderColor = "";
+                        btnCopy.style.color = "";
+                    }, 2200);
+                } else {
+                    alert("Không thể tự động sao chép. Vui lòng đè giữ chọn văn bản để sao chép thủ công.");
+                }
             } catch (e) {
                 alert("Không thể sao chép. Vui lòng chọn văn bản và sao chép thủ công.");
             }
