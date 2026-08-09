@@ -231,16 +231,33 @@ h1 {
     to { transform: rotate(0deg); }
 }
 
-.trans-taiji-center {
-    font-size: 5rem;
-    color: #ffd700;
-    text-shadow: 0 0 30px #ffd700, 0 0 60px #ff9800;
-    animation: transPulse 1.0s ease-in-out infinite alternate;
+.trans-bagua-img {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.95)) drop-shadow(0 0 50px rgba(255, 152, 0, 0.7));
+    animation: transBaguaRotate 1.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, transPulse 1.0s ease-in-out infinite alternate;
+}
+
+@keyframes transBaguaRotate {
+    0% {
+        transform: scale(0.2) rotate(-180deg);
+        opacity: 0;
+    }
+    40% {
+        transform: scale(1.1) rotate(90deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.0) rotate(360deg);
+        opacity: 1;
+    }
 }
 
 @keyframes transPulse {
-    from { transform: scale(0.9); filter: drop-shadow(0 0 10px #ffd700); }
-    to { transform: scale(1.15); filter: drop-shadow(0 0 35px #ffe082); }
+    from { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 30px rgba(255, 152, 0, 0.5)); }
+    to { filter: drop-shadow(0 0 35px rgba(255, 224, 130, 1.0)) drop-shadow(0 0 70px rgba(255, 152, 0, 0.9)); }
 }
 
 /* Layer 3: Particle Canvas */
