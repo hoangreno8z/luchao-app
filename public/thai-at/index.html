@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_v4.css?v=14.0.1">
+    <link rel="stylesheet" href="style_v4.css?v=20.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -85,13 +85,13 @@
                     <img id="thai-at-chart-img" class="chart-image-output" alt="Sa Bàn Thái Ất Thần Số PNG" style="display: none;">
 
                     <div class="chart-action-row" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 10px 0;">
-                        <button type="button" onclick="generateThaiAtPNG();" class="btn-primary" style="width: auto; padding: 10px 22px; font-size: 0.85rem; margin-top: 0;">
+                        <button type="button" onclick="generateThaiAtPNG();" class="btn-export">
                             📸 XUẤT ÁNH SA BÀN HD
                         </button>
                         <a id="btn-download-direct" href="#" download="SaBan_ThaiAt.png" class="btn-direct-download" style="display: none;">
                             💾 TẢI ẢNH SA BÀN (PNG)
                         </a>
-                        <button type="button" id="btn-ai-luan-giai" class="btn-primary" style="background: #e67e22; border-color: #d35400; width: auto; padding: 10px 22px; font-size: 0.85rem; margin-top: 0; display: none;">
+                        <button type="button" id="btn-ai-luan-giai" class="btn-primary" style="display: none;">
                             🤖 AI LUẬN GIẢI
                         </button>
                     </div>
@@ -278,15 +278,15 @@
     <!-- Fullscreen Blur/Zoom Transition Overlay -->
     <div id="thai-at-transition-overlay" class="transition-overlay"></div>
 
-    <script src="js/lunar_solar.js?v=16.0.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=16.0.0"></script>
-    <script src="js/thai_at_reference.js?v=16.0.0"></script>
-    <script src="js/phan_da_map.js?v=16.0.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=16.0.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=16.0.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=16.0.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=16.0.0"></script>
-    <script src="js/png_exporter.js?v=16.0.0"></script>
-    <script src="script_v4.js?v=16.0.0"></script>
+    <script src="js/lunar_solar.js?v=20.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=20.0.0"></script>
+    <script src="js/thai_at_reference.js?v=20.0.0"></script>
+    <script src="js/phan_da_map.js?v=20.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=20.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=20.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=20.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=20.0.0"></script>
+    <script src="js/png_exporter.js?v=20.0.0"></script>
+    <script src="script_v4.js?v=20.0.0"></script>
 </body>
 </html>
