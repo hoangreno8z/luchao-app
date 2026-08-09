@@ -262,27 +262,30 @@
     </div>
 
     <!-- AI Luận Giải Modal -->
-    <div id="ai-luan-giai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100000; justify-content: center; align-items: center;">
-        <div style="background: var(--surface); border: 1px solid var(--gold); border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
-            <div style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1);">
-                <h3 style="margin: 0; color: var(--gold); font-family: var(--font-ancient); letter-spacing: 1px;">🤖 HỆ THỐNG AI LUẬN GIẢI SA BÀN THÁI ẤT</h3>
-                <button onclick="document.getElementById('ai-luan-giai-modal').style.display='none';" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    <div id="ai-luan-giai-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 100000; justify-content: center; align-items: center;">
+        <div style="background: #1a1a2e; border: 1px solid var(--gold); border-radius: 8px; width: 92%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div style="padding: 8px 15px; border-bottom: 1px solid rgba(212,175,55,0.3); display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.08); flex-shrink: 0;">
+                <span style="margin: 0; color: var(--gold); font-size: 0.75rem; letter-spacing: 0.5px;">🤖 AI LUẬN GIẢI</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button id="btn-copy-luan-giai" title="Sao chép nội dung" style="background: rgba(212,175,55,0.15); border: 1px solid var(--gold); color: var(--gold); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; display: none;">📋 Sao chép</button>
+                    <button onclick="document.getElementById('ai-luan-giai-modal').style.display='none';" style="background: none; border: none; color: #aaa; font-size: 1.3rem; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
             </div>
-            <div id="ai-luan-giai-content" style="padding: 20px; overflow-y: auto; color: var(--text-color); line-height: 1.6; font-size: 0.95rem;">
+            <div id="ai-luan-giai-content" style="padding: 18px; overflow-y: auto; color: #f5f0e1; line-height: 1.8; font-size: 0.9rem;">
                 <!-- Nội dung AI sẽ render ở đây -->
             </div>
         </div>
     </div>
 
-    <script src="js/lunar_solar.js?v=15.0.1"></script>
-    <script src="js/thai_at_luan_doan.js?v=15.0.1"></script>
-    <script src="js/thai_at_reference.js?v=15.0.1"></script>
-    <script src="js/phan_da_map.js?v=15.0.1"></script>
-    <script src="js/thai_at_engine_v4.js?v=15.0.1"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=15.0.1"></script>
-    <script src="js/thai_at_nhat_engine.js?v=15.0.1"></script>
-    <script src="js/thai_at_thoi_engine.js?v=15.0.1"></script>
-    <script src="js/png_exporter.js?v=15.0.1"></script>
-    <script src="script_v4.js?v=15.0.1"></script>
+    <script src="js/lunar_solar.js?v=16.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=16.0.0"></script>
+    <script src="js/thai_at_reference.js?v=16.0.0"></script>
+    <script src="js/phan_da_map.js?v=16.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=16.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=16.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=16.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=16.0.0"></script>
+    <script src="js/png_exporter.js?v=16.0.0"></script>
+    <script src="script_v4.js?v=16.0.0"></script>
 </body>
 </html>

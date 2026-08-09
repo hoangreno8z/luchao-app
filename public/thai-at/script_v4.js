@@ -496,6 +496,51 @@ document.addEventListener("DOMContentLoaded", () => {
     const aiContent = document.getElementById("ai-luan-giai-content");
     const btnCopy = document.getElementById("btn-copy-luan-giai");
     
+    // Copy button logic
+    if (btnCopy && aiContent) {
+        btnCopy.addEventListener("click", async () => {
+            try {
+                // Extract plain text from the HTML content
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = aiContent.innerHTML;
+                const plainText = tempDiv.innerText || tempDiv.textContent || "";
+                
+                if (!plainText.trim()) {
+                    alert("Không có nội dung để sao chép.");
+                    return;
+                }
+
+                // Try modern clipboard API first, fallback to legacy
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(plainText);
+                } else {
+                    const textarea = document.createElement("textarea");
+                    textarea.value = plainText;
+                    textarea.style.cssText = "position:fixed;left:-9999px;top:-9999px;opacity:0;";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textarea);
+                }
+                
+                // Visual feedback
+                const originalText = btnCopy.innerHTML;
+                btnCopy.innerHTML = "✅ Đã chép!";
+                btnCopy.style.background = "rgba(76,175,80,0.3)";
+                btnCopy.style.borderColor = "#4CAF50";
+                btnCopy.style.color = "#4CAF50";
+                setTimeout(() => {
+                    btnCopy.innerHTML = originalText;
+                    btnCopy.style.background = "rgba(212,175,55,0.15)";
+                    btnCopy.style.borderColor = "var(--gold)";
+                    btnCopy.style.color = "var(--gold)";
+                }, 2000);
+            } catch (e) {
+                alert("Không thể sao chép. Vui lòng chọn văn bản và sao chép thủ công.");
+            }
+        });
+    }
+
     if (btnAi && aiModal && aiContent) {
         btnAi.addEventListener("click", async () => {
             if (!window.lastCalculatedThaiAtData) {
@@ -503,80 +548,85 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             
-            aiModal.style.display = "flex";
+            // Hide copy button while loading
             if (btnCopy) btnCopy.style.display = "none";
-            aiContent.innerHTML = `<div style="text-align:center; padding:40px;"><span class="spinner" style="border-top-color:var(--gold); display:inline-block; margin-bottom:15px;"></span><br/><strong style="color:var(--gold); font-size:1.1rem;">Hệ thống AI đang xem xét thiên tượng, tính toán điểm rơi...</strong><br/><span style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Quá trình này kết hợp tìm kiếm tin tức thời sự hiện tại để dự báo vĩ mô, vui lòng chờ khoảng 10-20 giây.</span></div>`;
+            
+            aiModal.style.display = "flex";
+            aiContent.innerHTML = `<div style="text-align:center; padding:40px;">
+                <span class="spinner" style="border-top-color:var(--gold); display:inline-block; margin-bottom:15px;"></span><br/>
+                <strong style="color:var(--gold); font-size:1.1rem;">Hệ thống AI đang phân tích sa bàn...</strong><br/>
+                <span style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Đang luận giải theo 72 Khối Dương, Bát Môn, Toán Chủ-Khách. Chờ khoảng 15-30 giây.</span>
+            </div>`;
             
             try {
-                // Prepare minimal payload
+                const d = window.lastCalculatedThaiAtData;
+                
+                // Build star positions safely
+                let stars = [];
+                if (d.placement && typeof d.placement === 'object') {
+                    stars = Object.entries(d.placement)
+                        .map(([cung, starArr]) => ({
+                            cung,
+                            stars: Array.isArray(starArr) ? starArr.map(s => s.name || s) : []
+                        }))
+                        .filter(c => c.stars.length > 0);
+                }
+
                 const payload = {
-                    mode: window.lastCalculatedThaiAtData.modeName,
-                    khoiSo: window.lastCalculatedThaiAtData.khoiSo,
-                    tinhChatKhoi: window.lastCalculatedThaiAtData.tinhChatKhoi,
-                    batMon: window.lastCalculatedThaiAtData.batMon,
-                    cuuTinh: window.lastCalculatedThaiAtData.cuuTinh,
-                    donCucName: window.lastCalculatedThaiAtData.donCucName,
-                    toanDinh: window.lastCalculatedThaiAtData.toanDinhGoc,
-                    toanChu: window.lastCalculatedThaiAtData.luanDoanData?.toanChu,
-                    toanKhach: window.lastCalculatedThaiAtData.luanDoanData?.toanKhach,
-                    stars: Object.entries(window.lastCalculatedThaiAtData.placement).map(([cung, stars]) => ({
-                        cung,
-                        stars: stars.map(s => s.name)
-                    })).filter(c => c.stars.length > 0)
+                    mode: d.modeName || 'Tuế Kế',
+                    khoiSo: d.khoiSo,
+                    tinhChatKhoi: d.tinhChatKhoi,
+                    batMon: d.batMon,
+                    cuuTinh: d.cuuTinh,
+                    donCucName: d.donCucName,
+                    toanDinh: d.toanDinhGoc,
+                    toanChu: d.luanDoanData?.toanChu,
+                    toanKhach: d.luanDoanData?.toanKhach,
+                    stars
                 };
+                
+                // Fetch with timeout
+                const controller = new AbortController();
+                const fetchTimeout = setTimeout(() => controller.abort(), 55000);
                 
                 const response = await fetch('/api/thai_at_llm', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                clearTimeout(fetchTimeout);
+                
+                const result = await response.json().catch(() => null);
                 
                 if (!response.ok) {
-                    let errText = await response.text();
-                    try { errText = JSON.parse(errText).error || errText; } catch(e){}
-                    throw new Error("Lỗi API: " + errText);
+                    const errMsg = result?.error || `HTTP ${response.status}`;
+                    throw new Error(errMsg);
                 }
-                const data = await response.json();
                 
-                aiContent.innerHTML = data.html || (data.text ? `<div style="color:white;">${data.text.replace(/\\n/g, '<br/>')}</div>` : "Không có dữ liệu trả về.");
+                if (!result || !result.html) {
+                    throw new Error("AI không trả về kết quả. Vui lòng thử lại.");
+                }
                 
-                if (btnCopy) btnCopy.style.display = "block";
+                aiContent.innerHTML = result.html;
+                
+                // Show copy button after successful load
+                if (btnCopy) btnCopy.style.display = "inline-block";
                 
             } catch (err) {
-                aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">Lỗi: ${err.message}. <br/><br/><button onclick="document.getElementById('btn-ai-luan-giai').click()" style="padding:8px 16px; background:var(--gold); color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:10px;">Thử lại</button></div>`;
+                let msg = err.message;
+                if (err.name === 'AbortError') {
+                    msg = "Quá thời gian chờ (>55 giây). Máy chủ AI đang quá tải, vui lòng thử lại sau.";
+                }
+                aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">
+                    <strong>⚠️ Lỗi</strong><br/><br/>
+                    <span style="font-size:0.9rem;">${msg}</span><br/><br/>
+                    <button onclick="document.getElementById('btn-ai-luan-giai').click(); document.getElementById('ai-luan-giai-modal').style.display='none';" 
+                            style="background:rgba(212,175,55,0.2); border:1px solid var(--gold); color:var(--gold); padding:8px 20px; border-radius:4px; cursor:pointer; margin-top:10px;">
+                        🔄 Thử lại
+                    </button>
+                </div>`;
             }
         });
-        
-        // Copy logic
-        if (btnCopy) {
-            btnCopy.addEventListener("click", async () => {
-                try {
-                    const textToCopy = aiContent.innerText || aiContent.textContent;
-                    if (navigator.clipboard && window.isSecureContext) {
-                        await navigator.clipboard.writeText(textToCopy);
-                    } else {
-                        const textArea = document.createElement("textarea");
-                        textArea.value = textToCopy;
-                        textArea.style.position = "absolute";
-                        textArea.style.left = "-999999px";
-                        document.body.prepend(textArea);
-                        textArea.select();
-                        document.execCommand("copy");
-                        textArea.remove();
-                    }
-                    const originalText = btnCopy.innerHTML;
-                    btnCopy.innerHTML = "✅ Đã chép!";
-                    btnCopy.style.color = "#51cf66";
-                    btnCopy.style.borderColor = "#51cf66";
-                    setTimeout(() => {
-                        btnCopy.innerHTML = originalText;
-                        btnCopy.style.color = "var(--gold)";
-                        btnCopy.style.borderColor = "var(--gold)";
-                    }, 2000);
-                } catch (err) {
-                    alert("Không thể sao chép văn bản. Trình duyệt không hỗ trợ.");
-                }
-            });
-        }
     }
 });

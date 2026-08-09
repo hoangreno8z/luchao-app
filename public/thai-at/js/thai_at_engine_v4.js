@@ -553,8 +553,8 @@ class NguyetKeEngine {
         this.kyDu = kyDuThang;
 
         // 2. Định Âm Cục và Dương Cục:
-        // Nguyệt Cục luôn đồng bộ với thuộc tính Tuế Cục (Can năm Dương -> Dương Độn, Can năm Âm -> Âm Độn)
-        this.isDuongDon = (this.namCanIdx % 2 === 0);
+        // Theo chuẩn Thái Ất Thần Kinh, Tuế Kế, Nguyệt Kế, Nhật Kế LUÔN DÙNG DƯƠNG ĐỘN (Âm Độn 72 khối chỉ dành cho Thời Kế).
+        this.isDuongDon = true;
 
         this.tueTich = this.tichThang;
         this.tueTichThuongCo = tueTichDongChi;
@@ -608,11 +608,8 @@ class NhatKeEngine {
         }
 
         // Âm Độn / Dương Độn cho Nhật Kể:
-        // Từ Đông Chí (21/12) đến trước Hạ Chí (21/6) là Dương Độn, sau Hạ Chí là Âm Độn
+        // Theo chuẩn Thái Ất Thần Kinh, Nhật Kế LUÔN DÙNG DƯƠNG ĐỘN (Âm Độn 72 khối chỉ dành cho Thời Kế).
         this.isDuongDon = true;
-        if ((month > 6 && month < 12) || (month === 6 && day >= 21) || (month === 12 && day < 21)) {
-            this.isDuongDon = false;
-        }
 
         this.namCanIdx = this.tuTru.year.canIdx;
         this.tueTich = this.soNgayTuGiapTy;
