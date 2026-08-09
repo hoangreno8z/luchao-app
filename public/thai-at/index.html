@@ -8,12 +8,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_v4.css?v=21.0.0">
+    <link rel="stylesheet" href="style_v4.css?v=23.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-    <!-- Fullscreen Blur/Zoom Transition Overlay -->
-    <div id="thai-at-transition-overlay" class="transition-overlay"></div>
+    <!-- Fullscreen Dynamic Cinematic Transition Overlay -->
+    <div id="thai-at-transition-overlay" class="transition-overlay">
+        <div class="trans-bg-image"></div>
+        <div class="trans-matrix-wrapper">
+            <div class="trans-bagua-ring outer-ring"></div>
+            <div class="trans-bagua-ring inner-ring"></div>
+            <div class="trans-taiji-center">☯</div>
+        </div>
+        <canvas id="trans-particle-canvas"></canvas>
+        <div class="trans-shockwave"></div>
+        <div class="trans-title-box">
+            <div class="trans-title-kanji">太乙神數</div>
+            <div class="trans-title-sub">KHỞI TRẬN BÀN THÁI ẤT</div>
+        </div>
+    </div>
     <noscript>
         <div style="background:#8b0000; color:#fff; text-align:center; padding:15px; font-weight:bold; position:relative; z-index:99999;">
             ⚠️ Vui lòng bật JavaScript trên trình duyệt của bạn để sử dụng ứng dụng Thái Ất Thần Số.
@@ -279,15 +292,15 @@
         </div>
     </div>
 
-    <script src="js/lunar_solar.js?v=22.0.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=22.0.0"></script>
-    <script src="js/thai_at_reference.js?v=22.0.0"></script>
-    <script src="js/phan_da_map.js?v=22.0.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=22.0.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=22.0.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=22.0.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=22.0.0"></script>
-    <script src="js/png_exporter.js?v=22.0.0"></script>
-    <script src="script_v4.js?v=22.0.0"></script>
+    <script src="js/lunar_solar.js?v=23.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=23.0.0"></script>
+    <script src="js/thai_at_reference.js?v=23.0.0"></script>
+    <script src="js/phan_da_map.js?v=23.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=23.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=23.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=23.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=23.0.0"></script>
+    <script src="js/png_exporter.js?v=23.0.0"></script>
+    <script src="script_v4.js?v=23.0.0"></script>
 </body>
 </html>

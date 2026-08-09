@@ -34,17 +34,74 @@ document.addEventListener("DOMContentLoaded", () => {
 const transitionBgImg = new Image();
 transitionBgImg.src = "images/thai_at_transition_bg.jpg";
 
+function runTransitionParticles() {
+    const canvas = document.getElementById("trans-particle-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 3 + 1,
+            color: Math.random() > 0.3 ? "#ffd700" : "#ffffff",
+            vx: (Math.random() - 0.5) * 3,
+            vy: -Math.random() * 3 - 1,
+            alpha: Math.random() * 0.8 + 0.2
+        });
+    }
+
+    let animId;
+    const startTime = Date.now();
+
+    function animate() {
+        const elapsed = Date.now() - startTime;
+        if (elapsed > 1350) {
+            cancelAnimationFrame(animId);
+            return;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.006;
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = "#ffd700";
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        });
+
+        animId = requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
 function triggerTransitionAnimation() {
     const overlay = document.getElementById("thai-at-transition-overlay");
     if (!overlay) return;
-    overlay.style.display = "block";
+    overlay.style.display = "flex";
     overlay.classList.remove("active");
     void overlay.offsetWidth; // Force reflow
     overlay.classList.add("active");
+
+    runTransitionParticles();
+
     setTimeout(() => {
         overlay.classList.remove("active");
         overlay.style.display = "none";
-    }, 500);
+    }, 1350);
 }
 
 function castChart(skipAnim = false) {
