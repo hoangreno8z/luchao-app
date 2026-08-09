@@ -30,8 +30,20 @@ document.addEventListener("DOMContentLoaded", () => {
     castChart();
 });
 
-function castChart() {
+function triggerTransitionAnimation() {
+    const overlay = document.getElementById("thai-at-transition-overlay");
+    if (!overlay) return;
+    overlay.classList.remove("active");
+    void overlay.offsetWidth; // Force reflow
+    overlay.classList.add("active");
+    setTimeout(() => {
+        overlay.classList.remove("active");
+    }, 220);
+}
+
+function castChart(skipAnim = false) {
     try {
+        if (!skipAnim) triggerTransitionAnimation();
         const dInput = document.getElementById("input-date").value;
         const tInput = document.getElementById("input-time").value;
         if (!dInput || !tInput) return;
