@@ -1,4 +1,4 @@
-﻿export const THAI_AT_KNOWLEDGE = `
+export const THAI_AT_KNOWLEDGE = `
 [THÃ”NG TIN Dá»® LIá»†U ÄÆ¯á»¢C CUNG Cáº¤P VÃ€ Xá»¬ LÃ THEO MÃ” HÃŒNH TOÃN Há»ŒC - Sá»¬ Dá»¤NG LÃ€M TÃ€I LIá»†U LUáº¬N GIáº¢I]
 
 Há»† THá»NG THUáº¬T TOÃN VÃ€ Cáº¤U TRÃšC SA BÃ€N THÃI áº¤T
@@ -82,7 +82,8 @@ Dá»±a vÃ o cÃ¡c thÃ´ng sá»‘ Sa BÃ n hiá»‡n táº¡i, hÃ£y l
 1. XÃ¡c Ä‘á»‹nh Sá»° KIá»†N: Xem CÃ¡ch cá»¥c hiá»‡n táº¡i lÃ  gÃ¬ (TÃ¹, Yá»ƒm, BÃ¡ch, Cháº·n...)? CÃ¡c sao quan trá»ng (ThÃ¡i áº¤t, VÄƒn XÆ°Æ¡ng, Thá»§y KÃ­ch, Äáº¡i Du, NgÅ© PhÃºc) Ä‘ang náº±m á»Ÿ Ä‘Ã¢u, Ä‘Ã³ng cá»­a gÃ¬, ngÅ© hÃ nh tÆ°Æ¡ng sinh hay tÆ°Æ¡ng kháº¯c. 
 2. Luáº­n THá»œI GIAN vÃ  PHÆ¯Æ NG Vá»Š: Cung nÃ o cÃ³ Hung tinh thÃ¬ phÆ°Æ¡ng vá»‹ Ä‘Ã³ (ÄÃ´ng, TÃ¢y, Nam, Báº¯c...) sáº½ xáº£y ra tai há»a vÃ o thá»i Ä‘iá»ƒm Ä‘Ã³ (NÄƒm/ThÃ¡ng á»©ng vá»›i Cung Ä‘Ã³). Cung nÃ o cÃ³ CÃ¡t tinh thÃ¬ phÆ°Æ¡ng vá»‹ Ä‘Ã³ phÃ¡t Ä‘áº¡t, thá»‹nh vÆ°á»£ng.
 3. LiÃªn há»‡ THá»œI Sá»° (Kinh táº¿, ChÃ­nh trá»‹, ThiÃªn tai): Náº¿u cÃ³ Äáº¡i Du/Äá»‹a áº¤t thÃ¬ dá»± bÃ¡o Ä‘á»©t gÃ£y chuá»—i cung á»©ng, suy thoÃ¡i kinh táº¿, dá»‹ch bá»‡nh. Náº¿u cÃ³ Phi PhÃ¹ thÃ¬ dá»± bÃ¡o hacker, chÃ¡y ná»•, sá»¥p Ä‘á»• chá»›p nhoÃ¡ng. Náº¿u cÃ³ NgÅ© PhÃºc thÃ¬ dá»± bÃ¡o cÃ³ quá»¹ cá»©u trá»£, chÃ­nh sÃ¡ch tá»‘t.
-`
+
+
 --- KIẾN THỨC BỔ SUNG QUAN TRỌNG VỀ TOÁN VÀ HÒA/BẤT HÒA ---
 
 1. Toán Vô Thiên, Vô Địa, Vô Nhân:
@@ -116,4 +117,4 @@ Dá»±a vÃ o cÃ¡c thÃ´ng sá»‘ Sa BÃ n hiá»‡n táº¡i, hÃ£y l
 
 --- KIẾN THỨC MẪU VỀ CÁC KHỐI/CỤC (Để AI tham chiếu) ---
 Khối 55: Thái Ất trợ chủ. Toán chủ hòa. Đại Chủ phát, lợi thuộc về chủ. Đối trận lợi phát động sau, nên xuất quân hướng chính Tây, đánh lợi hướng chính Đông. Lợi thế trận vuông, phất cờ trắng. Mây từ hướng Tây kéo lại chủ thắng. Nghe tin địch nên phòng bị hướng Tây Nam, kỳ binh hướng Tây Nam, phục binh lợi các giờ Dần - Mão - Thìn. Bên Khách: Khách Mục Yếm. Toán khách bất hòa. Đại Tướng Tù, bất lợi thuộc về khách, nên cố thủ. Nghe tin địch nên phòng bị hướng Đông Bắc.
-;
+`;
