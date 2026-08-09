@@ -113,21 +113,125 @@ h1 {
 .timeline-box input[type="range"] { width: 100%; accent-color: var(--gold); margin: 0.4rem 0; }
 .slider-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); }
 
-.btn-primary {
-    width: 100%; padding: 0.7rem; border: none; border-radius: 6px;
-    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    color: #050711; font-family: 'Cinzel', serif; font-weight: 700;
-    font-size: 0.9rem; cursor: pointer; transition: all 0.3s; margin-top: 0.3rem;
+/* =========================================================
+   GLOSSY 3D OVAL PILL BUTTON SYSTEM (MATCHING USER REFERENCE)
+   ========================================================= */
+.btn-glossy,
+.btn-primary,
+.btn-export,
+.btn-direct-download,
+.nav-btn,
+#btn-copy-luan-giai {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px !important;
+    border-radius: 9999px !important; /* Perfect oval / capsule pill shape */
+    font-family: 'Cinzel', 'Quicksand', -apple-system, sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    
+    /* 3D Border & Deep Inset Glass Shadow */
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 
+        0 4px 14px rgba(0, 0, 0, 0.6),
+        inset 0 3px 5px rgba(255, 255, 255, 0.65),
+        inset 0 -4px 6px rgba(0, 0, 0, 0.45) !important;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--gold-glow); }
 
-.btn-export {
-    width: 100%; padding: 0.7rem; border: none; border-radius: 6px;
-    background: linear-gradient(135deg, #16a085, #2ecc71);
-    color: #fff; font-family: 'Cinzel', serif; font-weight: 700;
-    font-size: 0.85rem; cursor: pointer; margin-top: 0.6rem; transition: all 0.3s;
+/* Top Glass Highlight Overlay (Lens Reflection) */
+.btn-glossy::before,
+.btn-primary::before,
+.btn-export::before,
+.btn-direct-download::before,
+.nav-btn::before,
+#btn-copy-luan-giai::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 8%;
+    right: 8%;
+    height: 44%;
+    border-radius: 9999px 9999px 40% 40%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.15) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
-.btn-export:hover { box-shadow: 0 4px 12px rgba(46,204,113,0.4); transform: translateY(-2px); }
+
+/* Hover & Active Effects */
+.btn-glossy:hover,
+.btn-primary:hover,
+.btn-export:hover,
+.btn-direct-download:hover,
+.nav-btn:hover,
+#btn-copy-luan-giai:hover {
+    transform: translateY(-2px) scale(1.03);
+    filter: brightness(1.1);
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.7),
+        inset 0 4px 6px rgba(255, 255, 255, 0.85),
+        inset 0 -4px 6px rgba(0, 0, 0, 0.45) !important;
+}
+
+.btn-glossy:active,
+.btn-primary:active,
+.btn-export:active,
+.btn-direct-download:active,
+.nav-btn:active,
+#btn-copy-luan-giai:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.7),
+        inset 0 3px 6px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Color Variants based on User Reference Image */
+
+/* Gold Glossy Pill (Main AI Button & Khởi Sa Bàn) */
+.btn-primary,
+.btn-glossy-gold,
+#btn-ai-luan-giai {
+    background: linear-gradient(180deg, #ffe082 0%, #ffd54f 20%, #d4af37 60%, #b8860b 100%) !important;
+    color: #1a0f00 !important;
+    border-color: #ffe57f !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+/* Emerald Green Glossy Pill (Export HD & PNG Download) */
+.btn-export,
+.btn-direct-download,
+.btn-glossy-green,
+button[onclick="generateThaiAtPNG();"] {
+    background: linear-gradient(180deg, #a5d6a7 0%, #4caf50 25%, #2e7d32 65%, #1b5e20 100%) !important;
+    color: #ffffff !important;
+    border-color: #a5d6a7 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Dark Metallic Glossy Pill (Inactive Navigation Tabs) */
+.nav-btn {
+    background: linear-gradient(180deg, #cfd8dc 0%, #546e7a 25%, #263238 65%, #102027 100%) !important;
+    color: #eceff1 !important;
+    border-color: #90a4ae !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Active Navigation Tab */
+.nav-btn.active {
+    background: linear-gradient(180deg, #ffe082 0%, #ffd54f 20%, #d4af37 60%, #b8860b 100%) !important;
+    color: #1a0f00 !important;
+    border-color: #ffe57f !important;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.8), inset 0 3px 5px rgba(255, 255, 255, 0.8) !important;
+}
 
 .info-card {
     margin-top: 1.2rem; background: rgba(5,7,17,0.6); border-radius: 6px;

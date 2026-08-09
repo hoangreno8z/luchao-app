@@ -211,7 +211,7 @@ class ThaiAtLuanDoan {
 }
 
 /**
- * BÁO CÁO LUẬN GIẢI CHUYÊN SÂU CỤC DIỆN SA BÀN THÁI ẤT
+ * BÁO CÁO LUẬN GIẢI CHUYÊN SÂU CỤC DIỆN SA BÀN THÁI ẤT (TỰ ĐỘNG THEO THUẬT TOÁN)
  */
 function generateDetailedAnalysisReport(data) {
     if (!data || !data.placement) return "<p style='color: var(--text-muted);'>Chưa có dữ liệu sa bàn.</p>";
@@ -260,80 +260,172 @@ function generateDetailedAnalysisReport(data) {
 
     const taBietSo = CUNG_BIET_SO[taPalace] || 0;
     
-    // Thái Ất vị thế
+    // 1. Thái Ất vị thế
     let taVitheText = "";
     if ([1, 8, 4, 3].includes(taBietSo)) {
-        taVitheText = `Thái Ất đang đóng ở cung <strong>${taName}</strong> (mang biệt số ${taBietSo}) là thế <strong>"Trợ Chủ"</strong>. Theo sách xưa, thế này tạo ra cục diện trợ giúp cho phe Chủ (tức phe phòng thủ/bên trong).`;
+        taVitheText = `Thái Ất đang đóng ở cung <strong>${taName}</strong> (mang biệt số ${taBietSo}) là thế <span style="color:#51cf66; font-weight:bold;">"Trợ Chủ"</span>. Theo sách Thái Ất Thần Kinh, thế này tạo ra cục diện trợ giúp cho phe Chủ (tức phe phòng thủ/bên trong). Đại Chủ phát, lợi thuộc về Chủ. Tiến công phe Khách bị suy kém.`;
     } else if ([9, 2, 7, 6].includes(taBietSo)) {
-        taVitheText = `Thái Ất đang đóng ở cung <strong>${taName}</strong> (mang biệt số ${taBietSo}) là thế <strong>"Trợ Khách"</strong>. Theo sách xưa, thế này tạo ra cục diện trợ giúp cho phe Khách (tức phe tiến công/bên ngoài).`;
+        taVitheText = `Thái Ất đang đóng ở cung <strong>${taName}</strong> (mang biệt số ${taBietSo}) là thế <span style="color:#ff922b; font-weight:bold;">"Trợ Khách"</span>. Theo sách Thái Ất Thần Kinh, thế này tạo ra cục diện trợ giúp cho phe Khách (tức phe tiến công/bên ngoài). Đại Khách phát, lợi thuộc về Khách.`;
     } else {
-        taVitheText = `Thái Ất đang tọa tại cung <strong>${taName}</strong> là thế <strong>"Trung Hòa"</strong>, âm dương điều hòa.`;
+        taVitheText = `Thái Ất đang tọa tại cung <strong>${taName}</strong> là thế <strong>"Trung Hòa"</strong>, âm dương cân bằng, lực lượng hai bên tương đương.`;
     }
 
-    // Toán Số
+    // 2. Phân Tích Chuyên Sâu Toán Số (Toán Chủ, Toán Khách, Toán Định)
     const tcGoc = data.toanChuGoc || data.toanChu || 1;
     const tkGoc = data.toanKhachGoc || data.toanKhach || 1;
     const tdGoc = data.toanDinhGoc || data.toanDinh || 1;
 
-    let tcText = `Số ${tcGoc} là Toán Chủ. `;
-    if (tcGoc % 2 !== 0) tcText += `Thuộc khí Đơn Dương, khí vận phát động.`;
-    else tcText += `Thuộc khí Đơn Âm, khí vận thu quái.`;
+    // Hàm phân tích chi tiết Toán Tam Tài & Cát Hung 5 Cấp Độ
+    function analyzeToanDetail(num, roleName, palaceKey) {
+        let items = [];
+        const isDuongCung = ["can", "mao", "ton", "ty"].includes(palaceKey) || [1, 8, 3, 4, 9].includes(CUNG_BIET_SO[palaceKey]);
+        const hangDonVi = num % 10;
 
-    let tkText = `Số ${tkGoc} là Toán Khách. `;
-    if (tkGoc % 10 === 5) {
-        tkText += `<strong>Cửa đóng (Không cửa)</strong>. Theo quy luật vận hành của Thái Ất thức, các sao không nhập Trung cung mang biệt số 5. Toán Khách đuôi 5 khiến Đại/Tiểu Tướng Khách không thể tiến vào Trung cung để hành sự, bế tắc mất phương hướng hành động.`;
-    } else {
-        tkText += `Hàng đơn vị khác 5, phe Khách hành sự thông suốt.`;
+        // a. Tam Tài (Thiên - Địa - Nhân)
+        if (num < 10) {
+            items.push(`<span style="color:#ff6b6b; font-weight:bold;">[VÔ THIÊN - Thiếu 10]</span> Kết quả ${num} thuộc hàng đơn vị (< 10). Tượng trưng cho sự thiếu hụt sinh khí từ Trời. Thống tướng phe ${roleName} chịu thiệt thòi, lo âu, hành sự gian nan.`);
+        }
+        if (hangDonVi > 0 && hangDonVi < 5) {
+            items.push(`<span style="color:#ffa94d; font-weight:bold;">[VÔ ĐỊA - Thiếu 5]</span> Hàng đơn vị là ${hangDonVi} (< 5). Tượng trưng cho sự bất ổn của Đất. Phó tướng phe ${roleName} không có lợi, nền tảng bất ổn, đừng cầu hưng sự.`);
+        }
+        if (hangDonVi === 0) {
+            items.push(`<span style="color:#ff4757; font-weight:bold;">[VÔ NHÂN - Thiếu 1]</span> Hàng đơn vị là 0 (kết quả ${num}). Tượng trưng cho sự suy đồi, thất bại của con người. Ra quân sĩ tốt tổn hại ngắc ngư. Bất lợi cho cả Thống tướng, Phó tướng và Sĩ tốt.`);
+        }
+        if (items.length === 0) {
+            items.push(`<span style="color:#51cf66; font-weight:bold;">[ĐỦ TAM TÀI]</span> Toán số hội tụ đủ Thiên (10), Địa (5), Nhân (1). Sinh khí dồi dào, thuận thời và hợp nhân tâm.`);
+        }
+
+        // b. Phân loại Khí Vận
+        let classification = "";
+        if ([3, 9].includes(num)) classification = "Thuần Dương (Khí bộc phát)";
+        else if ([33, 39].includes(num)) classification = "Trùng Dương (Khí cực thịnh trùng điệp)";
+        else if ([2, 6].includes(num)) classification = "Thuần Âm (Khí tích tụ thu liễm)";
+        else if ([22, 26].includes(num)) classification = "Trùng Âm (Khí tích tụ trùng điệp)";
+        else if ([13, 19, 31, 37].includes(num)) classification = "Tạp Trùng Dương (Mưu sâu kế hiểm sắp sẵn bên trong)";
+        else if ([24, 28].includes(num)) classification = "Tạp Trùng Âm (Mưu sâu kế hiểm giăng sẵn bên ngoài)";
+        else if (num % 2 !== 0) classification = "Đơn Dương (Khí vận phát động)";
+        else classification = "Đơn Âm (Khí vận thu quái)";
+
+        // c. Hòa / Bất Hòa
+        const isEven = (num % 2 === 0);
+        let isHoa = isDuongCung ? isEven : !isEven;
+        let hoaText = isHoa 
+            ? `<span style="color:#51cf66; font-weight:bold;">HÒA (Khí Thuận - Âm Dương tương hợp, tốt lành)</span>`
+            : `<span style="color:#ff6b6b; font-weight:bold;">BẤT HÒA (Khí Nghịch - Trở ngại bế tắc)</span>`;
+
+        // d. 5 Cấp Độ Cát Hung
+        let capDo = "";
+        if ((isDuongCung && [33, 39].includes(num)) || (!isDuongCung && [22, 26].includes(num))) {
+            capDo = `<span style="color:#ff4757; font-weight:bold;">THÁI QUÁ (Thời Bạo Chúa - Quá đà hung hiểm)</span>`;
+        } else if ((!isDuongCung && [3, 9].includes(num)) || (isDuongCung && [2, 6].includes(num))) {
+            capDo = `<span style="color:#ff0000; font-weight:bold;">BẤT CẬP (ĐẠI HUNG - Cực Kỳ Hung Hiểm)</span>`;
+        } else if ([13, 19, 31, 37, 24, 28].includes(num)) {
+            capDo = `<span style="color:#ff922b; font-weight:bold;">THỨ HUNG (Mưu Sâu Kế Hiểm)</span>`;
+        } else if ([1, 3, 14, 18, 33, 4, 8].includes(num)) {
+            capDo = `<span style="color:#51cf66; font-weight:bold;">THƯỢNG HÒA (ĐẠI CÁT TƯỜNG - Cát Lành May Mắn)</span>`;
+        } else {
+            capDo = `<span style="color:#339af0; font-weight:bold;">THỨ HÒA (TIỂU CÁT - An Ổn Tiến Bước)</span>`;
+        }
+
+        return { items, classification, hoaText, capDo };
     }
 
-    // Cách cục & Thể thức
+    const tcAnalysis = analyzeToanDetail(tcGoc, "Chủ", vxPalace);
+    const tkAnalysis = analyzeToanDetail(tkGoc, "Khách", tkPalace);
+
+    let tkExtraMsg = "";
+    if (tkGoc % 10 === 5) {
+        tkExtraMsg = `<br/><span style="color:#ff4757; font-weight:bold;">⚠️ CỬA ĐÓNG (KHÔNG CỬA):</span> Toán Khách đuôi 5 khiến Khách Mục và Tướng Khách bế tắc, không có cửa tiến vào Trung Cung hành sự!`;
+    }
+
+    // 3. Phân tích Khối / Cục hiện tại
+    const khoiNum = data.khoiSo || 1;
+    let khoiText = `Khối ${khoiNum} (${data.tinhChatKhoi || 'Dương Độn'}): `;
+    if (khoiNum === 55) {
+        khoiText += `<strong>Thái Ất trợ Chủ. Toán Chủ hòa.</strong> Đại Chủ phát, lợi thuộc về Chủ. Đối trận lợi phát động sau, nên xuất quân hướng chính Tây, đánh lợi hướng chính Đông. Lợi thế trận vuông, phất cờ trắng. Mây từ hướng Tây kéo lại thì Chủ thắng. Nghe tin địch nên phòng bị hướng Tây Nam; kỳ binh hướng Tây Nam; phục binh lợi các giờ Dần - Mão - Thìn.<br/><em>Bên Khách:</em> Khách Mục Yểm. Toán Khách bất hòa. Đại Tướng Tù, bất lợi thuộc về Khách, nên cố thủ. Nghe tin địch nên phòng bị hướng Đông Bắc.`;
+    } else {
+        khoiText += `Đang vận hành tại Cục/Khối số ${khoiNum} thuộc sa bàn Thái Ất. Cần đối chiếu thế Thái Ất (${taName}), phối hợp Toán Chủ (${tcGoc}) và Toán Khách (${tkGoc}) để định hướng tiến thủ hoặc phòng thủ.`;
+    }
+
+    // 4. Cách Cục & Thể Thức & Bát Hung
     let cachCucItems = [];
     if (dtcPalace && dtcPalace === taPalace) {
-        cachCucItems.push(`<strong>Đại Tướng Chủ bị Tù (Thể thức Tù)</strong>: Đại Tướng Chủ đóng cùng cung ${taName} với Thái Ất nên bị Tù. Mang ý nghĩa bất lợi, chủ về việc kẻ dưới phạm thượng hoặc đánh lại.`);
+        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THỂ THỨC TÙ - Đại Tướng Chủ Bị Tù]</span> Đại Tướng Chủ đóng cùng cung <strong>${taName}</strong> với Thái Ất. Mang ý nghĩa bất lợi lớn cho phe Chủ, chủ về kẻ dưới phạm thượng, nội bộ mâu thuẫn hoặc tướng sĩ bị cầm chân.`);
     }
     if (dtkPalace && dtkPalace === taPalace) {
-        cachCucItems.push(`<strong>Đại Tướng Khách bị Tù (Thể thức Tù)</strong>: Đại Tướng Khách đóng cùng cung ${taName} với Thái Ất nên bị Tù, bế tắc tiến công.`);
+        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THỂ THỨC TÙ - Đại Tướng Khách Bị Tù]</span> Đại Tướng Khách đóng cùng cung <strong>${taName}</strong> với Thái Ất. Phe Khách bị bế tắc tiến công, tướng quân sa lầy.`);
+    }
+    if (vxPalace && vxPalace === taPalace) {
+        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THỂ THỨC YỂM - Chủ Mục Bị Yểm]</span> Văn Xương đóng cùng cung Thái Ất, mưu sĩ bị che mắt, trù tính kế sách gặp sai lầm.`);
+    }
+    if (tkPalace && tkPalace === taPalace) {
+        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THỂ THỨC YỂM - Khách Mục Bị Yểm]</span> Thủy Kích đóng cùng cung Thái Ất, phó tướng Khách bị khống chế vision, trinh sát bế tắc.`);
     }
     if (data.batHung && data.batHung !== "Không thuộc Bát Hung.") {
-        cachCucItems.push(`<strong>Biến động Bát Hung:</strong> ${data.batHung}`);
+        cachCucItems.push(`<strong>[BIẾN ĐỘNG BÁT HUNG]:</strong> ${data.batHung} — Tác động trực tiếp lên vận khí Tinh Bàn, cần cẩn trọng các nguy cơ đột biến.`);
     }
     if (cachCucItems.length === 0) {
-        cachCucItems.push("Không có thể thức hung hiểm đặc biệt.");
+        cachCucItems.push("<span style='color:#51cf66;'>Không có thể thức hung hiểm đặc biệt (Tù, Yểm, Bách, Kích). Cục diện ổn định.</span>");
     }
 
-    // Phương vị
+    // 5. Phương vị & Khuyến cáo
     const huongChu = CUNG_HUONG[vxPalace] || CUNG_HUONG[taPalace] || "Đông Bắc";
     const huongKhach = CUNG_HUONG[tkPalace] || "Chính Nam";
 
     return `
     <div class="luan-doan-report-card">
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">1. Phân Tích Thuật Ngữ Vị Thế & Thần Tinh</h4>
+            <h4 class="luan-doan-section-title">1. Phân Tích Vị Thế Thần Tinh & Tướng Soái</h4>
             <p class="luan-doan-item"><strong>Thái Ất Vị Thế:</strong> ${taVitheText}</p>
-            <p class="luan-doan-item"><strong>Chủ Mục (Văn Xương):</strong> Chủ Mục là tên gọi khác của sao Văn Xương, đóng vai trò phụ tướng phò tá Thái Ất, trù tính kế sách nơi màn trướng và nắm quyền sinh sát. Trong lá số này, Văn Xương đóng tại cung <strong>${vxName}</strong>.</p>
-            <p class="luan-doan-item"><strong>Khách Mục (Thủy Kích):</strong> Khách Mục là tên gọi khác của sao Thủy Kích (Địa Mục), đóng vai trò phó tướng phía Khách, quan sát trận địa và chỉ huy tác chiến. Trong lá số này, Thủy Kích đóng tại cung <strong>${tkName}</strong>.</p>
-            <p class="luan-doan-item"><strong>Đại Tướng Chủ / Đại Tướng Khách:</strong> Đại Tướng Chủ đóng tại cung <strong>${dtcName}</strong>; Đại Tướng Khách đóng tại cung <strong>${dtkName}</strong>.</p>
+            <p class="luan-doan-item"><strong>Chủ Mục (Văn Xương - Phụ Tướng Phe Chủ):</strong> Đóng tại cung <strong>${vxName}</strong> (${CUNG_HUONG[vxPalace] || ''}), giữ vai trò trù tính kế sách nơi màn trướng và nắm quyền sinh sát.</p>
+            <p class="luan-doan-item"><strong>Khách Mục (Thủy Kích - Phụ Tướng Phe Khách):</strong> Đóng tại cung <strong>${tkName}</strong> (${CUNG_HUONG[tkPalace] || ''}), quan sát trận địa và chỉ huy lực lượng tiến công.</p>
+            <p class="luan-doan-item"><strong>Đại Tướng Chủ & Khách:</strong> Đại Tướng Chủ tọa tại <strong>${dtcName}</strong>; Đại Tướng Khách tọa tại <strong>${dtkName}</strong>.</p>
         </div>
 
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">2. Phân Tích Cách Cục & Toán Số</h4>
-            <p class="luan-doan-item"><strong>Toán Chủ (${tcGoc}):</strong> ${tcText}</p>
-            <p class="luan-doan-item"><strong>Toán Khách (${tkGoc}):</strong> ${tkText}</p>
-            <p class="luan-doan-item"><strong>Toán Định (${tdGoc}):</strong> Toán Định đạt số ${tdGoc}, biểu thị nhịp vận định sẵn giữa nhân sự và thiên thời.</p>
-            <div class="luan-doan-item"><strong>Cách Cục & Thể Thức:</strong>
-                <ul style="padding-left: 20px; margin-top: 5px;">
-                    ${cachCucItems.map(c => `<li style="margin-bottom: 4px;">${c}</li>`).join("")}
+            <h4 class="luan-doan-section-title">2. Phân Tích Thuật Toán Tam Tài & Cát Hung Toán Số</h4>
+            
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #e74c3c;">
+                <p style="margin-bottom:4px;"><strong>🔴 TOÁN CHỦ (Kết quả: ${tcGoc}):</strong> Phân loại: ${tcAnalysis.classification} | Trạng thái: ${tcAnalysis.hoaText} | Cấp độ: ${tcAnalysis.capDo}</p>
+                <ul style="padding-left: 18px; font-size: 0.88rem; color: #dedede;">
+                    ${tcAnalysis.items.map(it => `<li>${it}</li>`).join("")}
                 </ul>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #3498db;">
+                <p style="margin-bottom:4px;"><strong>🔵 TOÁN KHÁCH (Kết quả: ${tkGoc}):</strong> Phân loại: ${tkAnalysis.classification} | Trạng thái: ${tkAnalysis.hoaText} | Cấp độ: ${tkAnalysis.capDo}${tkExtraMsg}</p>
+                <ul style="padding-left: 18px; font-size: 0.88rem; color: #dedede;">
+                    ${tkAnalysis.items.map(it => `<li>${it}</li>`).join("")}
+                </ul>
+            </div>
+
+            <p class="luan-doan-item"><strong>🟢 TOÁN ĐỊNH (Kết quả: ${tdGoc}):</strong> Toán Định đạt số ${tdGoc}, biểu thị nhịp vận định sẵn giữa nhân sự và thiên thời, làm cầu nối dung hòa giữa Chủ và Khách.</p>
+        </div>
+
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">3. Luận Giải Đặc Điểm KHỐI / CỤC SỐ SA BÀN</h4>
+            <div style="background: rgba(212, 175, 55, 0.08); padding: 12px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.3); font-size: 0.9rem;">
+                ${khoiText}
             </div>
         </div>
 
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">3. Phân Tích Phương Vị & Khuyến Cáo Cục Diện</h4>
-            <p class="luan-doan-item"><strong>Hướng Phòng Bị Phe Chủ:</strong> Phe Chủ nên chú ý phòng bị tại <strong>Hướng ${huongChu}</strong> (tương ứng cung ${vxName} nơi Chủ Mục tọa thủ).</p>
-            <p class="luan-doan-item"><strong>Hướng Phòng Bị Phe Khách:</strong> Phe Khách nên trọng tâm quan sát <strong>Hướng ${huongKhach}</strong> (tương ứng cung ${tkName} nơi Khách Mục tọa thủ).</p>
-            <div class="luan-doan-summary-box">
-                <strong>📌 Tóm Tắt Cục Diện Tác Chiến:</strong>
-                <p style="margin-top: 6px;">${(tkGoc % 10 === 5 || (dtcPalace === taPalace)) ? "Cả 2 bên Chủ và Khách đều gặp điểm bất lợi hoặc bế tắc thế trận. Chiến lược tối ưu nhất là cố thủ phòng ngự, không nên vội vã tiến công." : "Cục diện đang có sự phân định rõ ràng giữa phe Chủ và phe Khách, cần nương theo vị thế Thái Ất và Bát Môn để nắm giữ thế chủ động."}</p>
+            <h4 class="luan-doan-section-title">4. Phân Tích Thể Thức Hung Hiểm & Bát Hung</h4>
+            <ul style="padding-left: 20px; margin-top: 5px;">
+                ${cachCucItems.map(c => `<li style="margin-bottom: 6px;">${c}</li>`).join("")}
+            </ul>
+        </div>
+
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">5. Phương Vị Tác Chiến & Chiến Lược Cục Diện</h4>
+            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Chủ:</strong> Phòng bị tại <strong>Hướng ${huongChu}</strong> (ứng với cung ${vxName} nơi Chủ Mục đóng giữ).</p>
+            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Khách:</strong> Tiến công / Quan sát tại <strong>Hướng ${huongKhach}</strong> (ứng với cung ${tkName} nơi Khách Mục đóng giữ).</p>
+            
+            <div class="luan-doan-summary-box" style="margin-top: 10px;">
+                <strong>📌 KHUYẾN CÁO TỔNG QUAN BẢN TIN TÁC CHIẾN:</strong>
+                <p style="margin-top: 6px;">${(tkGoc % 10 === 5 || (dtcPalace === taPalace)) 
+                    ? "<span style='color:#ff6b6b; font-weight:bold;'>[THẾ THỦ]</span> Phe Khách bế tắc hoặc Đại Tướng Chủ bị tù. Cả 2 bên nên giằng co phòng ngự, giữ vững trận địa, tuyệt đối không vội vã liều lĩnh." 
+                    : "<span style='color:#51cf66; font-weight:bold;'>[THẾ TIẾN]</span> Cục diện phân định rõ ràng. Bên nào nắm được Toán Hòa và nương theo Bát Môn Sinh/Khai sẽ chiếm ưu thế tuyệt đối trên sa bàn."}</p>
             </div>
         </div>
     </div>`;
