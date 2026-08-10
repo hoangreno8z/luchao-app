@@ -346,18 +346,90 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.fillStyle = "#c0392b";
     ctx.fillText(data ? (data.batHung || '-') : '-', col2X + 80, py2);
 
-    // Luận Đoán Verdict Box
-    const vBoxY = tcY + 250;
+    // SECTION A: Trung Cung Stars & Tướng Bất Xuất Alert Banner
+    const tcStarsY = tcY + 232;
+    const tcStars = (data && data.placement && data.placement["trung_cung"]) ? data.placement["trung_cung"] : [];
+    
+    ctx.fillStyle = "#8B0000";
+    ctx.font = "bold 13px 'Inter', sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):", tcX + 30, tcStarsY);
+
+    let starStrY = tcStarsY + 20;
+    if (tcStars.length > 0) {
+        let sx = tcX + 30;
+        tcStars.forEach(st => {
+            const stName = `• ${st.name}  `;
+            ctx.fillStyle = getStarColorCanvas(st.class, "thu-tich-co");
+            ctx.font = "bold 12px 'Inter', sans-serif";
+            const w = ctx.measureText(stName).width;
+            if (sx + w > tcX + tcW - 30) {
+                sx = tcX + 30;
+                starStrY += 18;
+            }
+            ctx.fillText(stName, sx, starStrY);
+            sx += w;
+        });
+        starStrY += 22;
+    } else {
+        ctx.fillStyle = "#888888";
+        ctx.font = "italic 12px 'Inter', sans-serif";
+        ctx.fillText("Không có thần tinh trú ngụ", tcX + 30, starStrY);
+        starStrY += 22;
+    }
+
+    // Check for Tướng Bất Xuất Alerts (Toán Chủ % 10 === 5 or Toán Khách % 10 === 5)
+    const toanChuVal = data ? parseInt(data.toanChuGoc ?? data.toanChu, 10) : NaN;
+    const toanKhachVal = data ? parseInt(data.toanKhachGoc ?? data.toanKhach, 10) : NaN;
+
+    if (!isNaN(toanChuVal) && toanChuVal % 10 === 5) {
+        ctx.fillStyle = "rgba(231, 76, 60, 0.12)";
+        ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
+        ctx.strokeStyle = "#c0392b";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+
+        ctx.fillStyle = "#c0392b";
+        ctx.font = "bold 12px 'Inter', sans-serif";
+        ctx.fillText("🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
+
+        ctx.fillStyle = "#332211";
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.fillText(`Toán Chủ = ${data.toanChuGoc || toanChuVal} (đuôi 5): Đại Tướng Chủ & Tham Tướng Chủ đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
+        starStrY += 48;
+    }
+
+    if (!isNaN(toanKhachVal) && toanKhachVal % 10 === 5) {
+        ctx.fillStyle = "rgba(41, 128, 185, 0.12)";
+        ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
+        ctx.strokeStyle = "#2980b9";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+
+        ctx.fillStyle = "#2980b9";
+        ctx.font = "bold 12px 'Inter', sans-serif";
+        ctx.fillText("🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
+
+        ctx.fillStyle = "#332211";
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.fillText(`Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
+        starStrY += 48;
+    }
+
+    // SECTION B: Luận Đoán Verdict Box (Dynamically rebalanced!)
+    const vBoxY = Math.max(starStrY + 4, tcY + 345);
+    const vBoxH = Math.max(65, tcY + tcH - vBoxY - 32);
+
     ctx.fillStyle = "rgba(139, 69, 19, 0.08)";
-    ctx.fillRect(tcX + 25, vBoxY, tcW - 50, 160);
+    ctx.fillRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
     ctx.strokeStyle = "rgba(139, 69, 19, 0.3)";
     ctx.lineWidth = 1;
-    ctx.strokeRect(tcX + 25, vBoxY, tcW - 50, 160);
+    ctx.strokeRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
 
     ctx.fillStyle = "#8B0000";
     ctx.font = "bold 13px 'Inter', sans-serif";
     ctx.textAlign = "left";
-    ctx.fillText("☯ LUẬN ĐOÁN CỤC DIỆN THÁI ẤT:", tcX + 35, vBoxY + 24);
+    ctx.fillText("☯ LUẬN ĐOÁN CỤC DIỆN THÁI ẤT:", tcX + 35, vBoxY + 22);
 
     ctx.fillStyle = "#332211";
     ctx.font = "12px 'Inter', sans-serif";
@@ -366,7 +438,7 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const maxW = tcW - 80;
     const words = verdictText.split(" ");
     let line = "";
-    let vy = vBoxY + 50;
+    let vy = vBoxY + 42;
 
     for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + " ";
@@ -374,19 +446,18 @@ function draw5x5ThaiAtSaBan(data, callback) {
         if (metrics.width > maxW && n > 0) {
             ctx.fillText(line, tcX + 35, vy);
             line = words[n] + " ";
-            vy += 20;
-            if (vy > vBoxY + 145) break;
+            vy += 18;
+            if (vy > vBoxY + vBoxH - 8) break;
         } else {
             line = testLine;
         }
     }
-    if (vy <= vBoxY + 145) {
+    if (vy <= vBoxY + vBoxH - 8) {
         ctx.fillText(line, tcX + 35, vy);
     }
 
     ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 13px 'Cinzel', serif";
-    ctx.font = "12px 'Inter', sans-serif";
+    ctx.font = "bold 12px 'Cinzel', serif";
     ctx.textAlign = "center";
     ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);
 
