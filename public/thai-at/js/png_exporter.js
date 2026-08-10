@@ -32,7 +32,104 @@ const THAN_GRID_DEF = {
     kien:    { row: 4, col: 4, name: "KIỀN",  alias: "Âm Đức",    khi: "Âm Tuyệt",    phanDa: "Ký Châu" }
 };
 
+const THEME_PALETTES_CANVAS = {
+    "thu-tich-co": {
+        bg: "#FDF6E3",
+        outerBorder: "#8B4513",
+        innerBorder: "#A0522D",
+        headerTitle: "#8B0000",
+        headerSub: "#553311",
+        cellBg: "#F9F6F0",
+        cellBorder: "#A0522D",
+        palaceTitle: "#8B0000",
+        palaceKhi: "#2F4F4F",
+        divider: "rgba(160, 82, 45, 0.2)",
+        tcBg: "#F4EEDD",
+        tcBorder: "#8B4513",
+        tcTitle: "#8B0000",
+        textColor: "#332211",
+        textMuted: "#553311",
+        accentGold: "#8B4513"
+    },
+    "bach-ngoc": {
+        bg: "#F4FAFA",
+        outerBorder: "#4682B4",
+        innerBorder: "rgba(70, 130, 180, 0.5)",
+        headerTitle: "#000080",
+        headerSub: "#2C3E50",
+        cellBg: "#FFFFFF",
+        cellBorder: "#4682B4",
+        palaceTitle: "#000080",
+        palaceKhi: "#D2691E",
+        divider: "rgba(70, 130, 180, 0.2)",
+        tcBg: "#EBF5F7",
+        tcBorder: "#4682B4",
+        tcTitle: "#000080",
+        textColor: "#2C3E50",
+        textMuted: "#4682B4",
+        accentGold: "#000080"
+    },
+    "moc-tra": {
+        bg: "#EADDCA",
+        outerBorder: "#556B2F",
+        innerBorder: "rgba(85, 107, 47, 0.5)",
+        headerTitle: "#5C4033",
+        headerSub: "#4A3B32",
+        cellBg: "#F4EBE1",
+        cellBorder: "#556B2F",
+        palaceTitle: "#5C4033",
+        palaceKhi: "#556B2F",
+        divider: "rgba(85, 107, 47, 0.2)",
+        tcBg: "#DFD2C0",
+        tcBorder: "#556B2F",
+        tcTitle: "#5C4033",
+        textColor: "#1A1A1A",
+        textMuted: "#4A3B32",
+        accentGold: "#5C4033"
+    },
+    "huyen-khong": {
+        bg: "#050711",
+        outerBorder: "#d4af37",
+        innerBorder: "rgba(212, 175, 55, 0.4)",
+        headerTitle: "#ffd700",
+        headerSub: "#ffffff",
+        cellBg: "rgba(18, 24, 52, 0.95)",
+        cellBorder: "rgba(212, 175, 55, 0.35)",
+        palaceTitle: "#ffd700",
+        palaceKhi: "rgba(212, 175, 55, 0.85)",
+        divider: "rgba(255,255,255,0.1)",
+        tcBg: "rgba(10, 14, 30, 0.95)",
+        tcBorder: "#d4af37",
+        tcTitle: "#ffd700",
+        textColor: "#f0f2f5",
+        textMuted: "#d4af37",
+        accentGold: "#ffd700"
+    }
+};
+
+function getStarColorCanvas(cls, themeKey) {
+    const isLight = themeKey !== "huyen-khong";
+    switch (cls) {
+        case "thai-at": return "#c0392b";
+        case "van-xuong": return isLight ? "#1a5276" : "#2980b9";
+        case "thuy-kich": return "#d35400";
+        case "chu-tuong": return isLight ? "#196f3d" : "#27ae60";
+        case "khach-tuong": return isLight ? "#b7950b" : "#f39c12";
+        case "ke-than": return "#7d3c98";
+        case "quan-co": return isLight ? "#78281f" : "#e74c3c";
+        case "than-co": return isLight ? "#117864" : "#16a085";
+        case "dan-co": return isLight ? "#4a235a" : "#8e44ad";
+        case "ngu-phuc": return "#8e44ad";
+        case "dai-du": return isLight ? "#935116" : "#e67e22";
+        case "tieu-du": return isLight ? "#283747" : "#5d6d7e";
+        default: return isLight ? "#2c3e50" : "#bdc3c7";
+    }
+}
+
 function draw5x5ThaiAtSaBan(data, callback) {
+    const activeThemeKey = window.currentSaBanTheme || localStorage.getItem("thai_at_saban_theme") || "thu-tich-co";
+    const pal = THEME_PALETTES_CANVAS[activeThemeKey] || THEME_PALETTES_CANVAS["thu-tich-co"];
+
     const canvas = document.createElement("canvas");
     canvas.width = 1200 * 2; // 2x HD Resolution: 2400px width
     canvas.height = 1050 * 2; // 2100px height
@@ -42,31 +139,31 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.scale(2, 2);
 
     // Background
-    ctx.fillStyle = "#050711";
+    ctx.fillStyle = pal.bg;
     ctx.fillRect(0, 0, 1200, 1050);
 
-    // Outer Gold Double Border
-    ctx.strokeStyle = "#d4af37";
+    // Outer Double Border
+    ctx.strokeStyle = pal.outerBorder;
     ctx.lineWidth = 4;
     ctx.strokeRect(15, 15, 1170, 1020);
 
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.strokeStyle = pal.innerBorder;
     ctx.lineWidth = 1;
     ctx.strokeRect(20, 20, 1160, 1010);
 
     // Header Title
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = pal.headerTitle;
     ctx.font = "bold 26px 'Cinzel', serif, Georgia";
     ctx.textAlign = "center";
     ctx.fillText("☯ THÁI ẤT THẦN SỐ — SA BÀN 16 CUNG ☯", 600, 52);
 
     // Subtitle / Tứ Trụ Date
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = pal.headerSub;
     ctx.font = "bold 14px 'Inter', sans-serif";
     const tuTruStr = (data && data.tuTru && data.tuTru.fullString) ? data.tuTru.fullString : "Năm Bính Ngọ - Tháng Ất Mùi - Ngày Mậu Tý - Giờ Nhâm Tuất";
     ctx.fillText(`Tứ Trụ Can Chi: ${tuTruStr}`, 600, 78);
 
-    ctx.fillStyle = "#d4af37";
+    ctx.fillStyle = pal.textMuted;
     ctx.font = "13px 'Inter', sans-serif";
     const modeText = `Chế Độ: ${data ? (data.modeName || 'Tuế Kể') : 'Tuế Kể'}  |  Tiết Khí: ${data ? (data.solarTerm || '-') : '-'}  |  Cục Số: ${data ? (data.donCucName || '-') : '-'}`;
     ctx.fillText(modeText, 600, 100);
@@ -86,25 +183,25 @@ function draw5x5ThaiAtSaBan(data, callback) {
         const cy = startY + def.row * (cellH + gapY);
 
         // Cell Box Background
-        ctx.fillStyle = "rgba(18, 24, 52, 0.95)";
+        ctx.fillStyle = pal.cellBg;
         ctx.fillRect(cx, cy, cellW, cellH);
-        ctx.strokeStyle = "rgba(212, 175, 55, 0.35)";
+        ctx.strokeStyle = pal.cellBorder;
         ctx.lineWidth = 1;
         ctx.strokeRect(cx, cy, cellW, cellH);
 
         // Cell Header Line 1
-        ctx.fillStyle = "#ffd700";
+        ctx.fillStyle = pal.palaceTitle;
         ctx.font = "bold 13px 'Cinzel', serif, Georgia";
         ctx.textAlign = "left";
         ctx.fillText(def.name, cx + 8, cy + 20);
 
-        ctx.fillStyle = "rgba(212, 175, 55, 0.85)";
+        ctx.fillStyle = pal.palaceKhi;
         ctx.font = "11px 'Inter', sans-serif";
         ctx.textAlign = "right";
         ctx.fillText(def.khi, cx + cellW - 8, cy + 20);
 
         // Divider
-        ctx.strokeStyle = "rgba(255,255,255,0.1)";
+        ctx.strokeStyle = pal.divider;
         ctx.beginPath();
         ctx.moveTo(cx + 8, cy + 26);
         ctx.lineTo(cx + cellW - 8, cy + 26);

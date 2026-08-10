@@ -555,10 +555,284 @@ h1 {
     max-width: 700px;
 }
 
+/* Theme Selector Buttons */
+.theme-select-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'Quicksand', -apple-system, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+    color: #dcdde1;
+    transition: all 0.22s ease-in-out;
+}
+
+.theme-select-btn:hover {
+    transform: translateY(-1px);
+    border-color: #ffd700;
+    color: #ffffff;
+}
+
+.theme-select-btn.active {
+    background: linear-gradient(180deg, #d4af37 0%, #b8860b 100%) !important;
+    color: #050711 !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5) !important;
+}
+
+/* =========================================================
+   SA BÀN THEME PALETTES
+   ========================================================= */
+
+/* Default / Theme 1: Thư Tịch Cổ (Giấy Dó #FDF6E3) */
+#thai-at-chart-capture,
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] {
+    background: #FDF6E3 !important;
+    border: 3px solid #8B4513 !important;
+    box-shadow: 0 10px 30px rgba(139, 69, 19, 0.25) !important;
+    color: #332211 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .chart-header-line {
+    color: #553311 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .cell-box {
+    background: #F9F6F0 !important;
+    border: 1px solid #A0522D !important;
+    box-shadow: inset 0 0 8px rgba(160, 82, 45, 0.08) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .cell-line-1 .palace-title {
+    color: #8B0000 !important; /* Đỏ bã trầu */
+    font-weight: 800 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .cell-line-1 .palace-khi {
+    color: #2F4F4F !important; /* Xanh rêu đậm */
+    background: rgba(47, 79, 79, 0.1) !important;
+    border-color: rgba(47, 79, 79, 0.3) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .cell-line-2 {
+    color: #4F4F4F !important; /* Xám chì */
+    border-bottom: 1px solid rgba(160, 82, 45, 0.2) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .trung-cung-block {
+    background: #F4EEDD !important;
+    border: 2px solid #8B4513 !important;
+    color: #332211 !important;
+    box-shadow: inset 0 0 15px rgba(139, 69, 19, 0.1) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .tc-header h2 {
+    color: #8B0000 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .tc-subtitle {
+    color: #553311 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .tc-body p {
+    color: #332211 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .tc-body p strong {
+    color: #5C2C0C !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .tc-author-footer {
+    color: #553311 !important;
+    background: rgba(139, 69, 19, 0.08) !important;
+    border-top: 1px solid rgba(139, 69, 19, 0.25) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .author-name {
+    color: #8B0000 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="thu-tich-co"] .author-zalo {
+    color: #332211 !important;
+}
+
+/* Theme 2: Bạch Ngọc Thanh Tịnh */
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] {
+    background: #F4FAFA !important;
+    border: 3px solid #4682B4 !important;
+    box-shadow: 0 10px 30px rgba(70, 130, 180, 0.2) !important;
+    color: #2C3E50 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .chart-header-line {
+    color: #2C3E50 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .cell-box {
+    background: #FFFFFF !important;
+    border: 1px solid #4682B4 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .cell-line-1 .palace-title {
+    color: #000080 !important; /* Xanh Navy sẫm */
+    font-weight: 800 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .cell-line-1 .palace-khi {
+    color: #D2691E !important; /* Nâu cam đất */
+    background: rgba(210, 105, 30, 0.1) !important;
+    border-color: rgba(210, 105, 30, 0.3) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .cell-line-2 {
+    color: #4682B4 !important;
+    border-bottom: 1px solid rgba(70, 130, 180, 0.2) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .trung-cung-block {
+    background: #EBF5F7 !important;
+    border: 2px solid #4682B4 !important;
+    color: #2C3E50 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .tc-header h2 {
+    color: #000080 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .tc-subtitle {
+    color: #4682B4 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .tc-body p {
+    color: #2C3E50 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .tc-body p strong {
+    color: #000080 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .tc-author-footer {
+    color: #2C3E50 !important;
+    background: rgba(70, 130, 180, 0.08) !important;
+    border-top: 1px solid rgba(70, 130, 180, 0.25) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .author-name {
+    color: #000080 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="bach-ngoc"] .author-zalo {
+    color: #2C3E50 !important;
+}
+
+/* Theme 3: Mộc Trà Cổ Điển */
+#thai-at-chart-capture[data-chart-theme="moc-tra"] {
+    background: #EADDCA !important;
+    border: 3px solid #556B2F !important;
+    box-shadow: 0 10px 30px rgba(85, 107, 47, 0.2) !important;
+    color: #1A1A1A !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .chart-header-line {
+    color: #4A3B32 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .cell-box {
+    background: #F4EBE1 !important;
+    border: 1px solid #556B2F !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .cell-line-1 .palace-title {
+    color: #5C4033 !important; /* Nâu đất sẫm */
+    font-weight: 800 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .cell-line-1 .palace-khi {
+    color: #556B2F !important;
+    background: rgba(85, 107, 47, 0.1) !important;
+    border-color: rgba(85, 107, 47, 0.3) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .cell-line-2 {
+    color: #4A3B32 !important;
+    border-bottom: 1px solid rgba(85, 107, 47, 0.2) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .trung-cung-block {
+    background: #DFD2C0 !important;
+    border: 2px solid #556B2F !important;
+    color: #1A1A1A !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .tc-header h2 {
+    color: #5C4033 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .tc-subtitle {
+    color: #4A3B32 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .tc-body p {
+    color: #1A1A1A !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .tc-body p strong {
+    color: #5C4033 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .tc-author-footer {
+    color: #1A1A1A !important;
+    background: rgba(85, 107, 47, 0.08) !important;
+    border-top: 1px solid rgba(85, 107, 47, 0.25) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .author-name {
+    color: #5C4033 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="moc-tra"] .author-zalo {
+    color: #1A1A1A !important;
+}
+
+/* Theme 4: Huyền Không Vũ Trụ (Tối) */
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] {
+    background: #050711 !important;
+    border: 2px solid #d4af37 !important;
+    color: #f0f2f5 !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] .chart-header-line {
+    color: var(--text-muted) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] .cell-box {
+    background: rgba(18, 24, 52, 0.9) !important;
+    border: 1px solid rgba(212, 175, 55, 0.25) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] .cell-line-1 .palace-title {
+    color: var(--gold) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] .cell-line-1 .palace-khi {
+    color: #e0e6ed !important;
+    background: rgba(212, 175, 55, 0.15) !important;
+    border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+#thai-at-chart-capture[data-chart-theme="huyen-khong"] .trung-cung-block {
+    background: rgba(10, 14, 30, 0.95) !important;
+    border: 2px solid #d4af37 !important;
+    color: #f0f2f5 !important;
+}
+
 /* ========== CHART CONTAINER ========== */
 .chart-container {
-    padding: 1.2rem; background: #050711; border-radius: 14px;
-    border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.2);
+    padding: 1.2rem;
+    border-radius: 14px;
+    box-sizing: border-box;
 }
 
 .chart-header-line {

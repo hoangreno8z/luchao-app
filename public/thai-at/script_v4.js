@@ -4,8 +4,35 @@
  */
 
 let currentMode = "tue";
+window.currentSaBanTheme = localStorage.getItem("thai_at_saban_theme") || "thu-tich-co";
+
+function switchSaBanTheme(themeKey, skipPNGRefresh = false) {
+    const validThemes = ["thu-tich-co", "bach-ngoc", "moc-tra", "huyen-khong"];
+    if (!validThemes.includes(themeKey)) themeKey = "thu-tich-co";
+
+    window.currentSaBanTheme = themeKey;
+    localStorage.setItem("thai_at_saban_theme", themeKey);
+
+    const captureWrapper = document.getElementById("thai-at-chart-capture");
+    if (captureWrapper) {
+        captureWrapper.setAttribute("data-chart-theme", themeKey);
+    }
+
+    document.querySelectorAll(".theme-select-btn").forEach(btn => {
+        if (btn.getAttribute("data-theme") === themeKey) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    if (!skipPNGRefresh && window.lastCalculatedThaiAtData && typeof generateThaiAtPNG === "function") {
+        generateThaiAtPNG(true);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
+    switchSaBanTheme(window.currentSaBanTheme, true);
     const now = new Date();
     document.getElementById("input-date").value = now.toISOString().split("T")[0];
     document.getElementById("input-time").value = now.toTimeString().substring(0, 5);
