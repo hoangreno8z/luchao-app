@@ -239,26 +239,26 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const tcW = cellW * 3 + gapX * 2;
     const tcH = cellH * 3 + gapY * 2;
 
-    ctx.fillStyle = "rgba(10, 14, 30, 0.98)";
+    ctx.fillStyle = "#F4EEDD";
     ctx.fillRect(tcX, tcY, tcW, tcH);
-    ctx.strokeStyle = "#d4af37";
+    ctx.strokeStyle = "#8B4513";
     ctx.lineWidth = 2;
     ctx.strokeRect(tcX, tcY, tcW, tcH);
 
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.2)";
+    ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
     ctx.lineWidth = 1;
     ctx.strokeRect(tcX + 4, tcY + 4, tcW - 8, tcH - 8);
 
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B0000";
     ctx.font = "bold 20px 'Cinzel', serif, Georgia";
     ctx.textAlign = "center";
     ctx.fillText("TRUNG CUNG THÁI ẤT", tcX + tcW / 2, tcY + 32);
 
-    ctx.fillStyle = "#a0aec0";
+    ctx.fillStyle = "#553311";
     ctx.font = "12px 'Cinzel', serif";
     ctx.fillText("Thái Cực — Hoàng Cực — Bàn Luận", tcX + tcW / 2, tcY + 52);
 
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.3)";
+    ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
     ctx.beginPath();
     ctx.moveTo(tcX + 30, tcY + 62);
     ctx.lineTo(tcX + tcW - 30, tcY + 62);
@@ -272,94 +272,94 @@ function draw5x5ThaiAtSaBan(data, callback) {
     let py1 = tcY + 90;
     const dy = 24;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Tứ Trụ: `, col1X, py1);
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B0000";
     ctx.fillText(data ? (data.tuTru ? data.tuTru.fullString : '-') : '-', col1X + 65, py1);
     py1 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Cục Số: `, col1X, py1);
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B0000";
     ctx.fillText(data ? (data.donCucName || '-') : '-', col1X + 65, py1);
     py1 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Tiết Khí: `, col1X, py1);
-    ctx.fillStyle = "#e0e6ed";
+    ctx.fillStyle = "#332211";
     ctx.fillText(data ? (data.solarTerm || '-') : '-', col1X + 75, py1);
     py1 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Kế Đại (Tích): `, col1X, py1);
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B4513";
     ctx.fillText(data && data.keDai !== undefined ? data.keDai.toLocaleString('vi-VN') : '-', col1X + 115, py1);
     py1 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Kế Tiểu (Dư): `, col1X, py1);
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B4513";
     ctx.fillText(data && data.keTieu !== undefined ? String(data.keTieu) : '-', col1X + 110, py1);
     py1 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Kế Định: `, col1X, py1);
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B4513";
     ctx.fillText(data && data.keDinh !== undefined ? String(data.keDinh) : '-', col1X + 75, py1);
 
     // Right Column
     const col2X = tcX + 360;
     let py2 = tcY + 90;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Bát Môn: `, col2X, py2);
-    ctx.fillStyle = "#2ecc71";
+    ctx.fillStyle = "#196f3d";
     ctx.fillText(data ? (data.batMon || '-') : '-', col2X + 80, py2);
     py2 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Cửu Tinh: `, col2X, py2);
-    ctx.fillStyle = "#2ecc71";
+    ctx.fillStyle = "#1a5276";
     ctx.fillText(data ? (data.cuuTinh || '-') : '-', col2X + 85, py2);
     py2 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Toán Chủ: `, col2X, py2);
-    ctx.fillStyle = "#e74c3c";
+    ctx.fillStyle = "#c0392b";
     ctx.fillText(data ? (data.toanChuGoc !== undefined ? `${data.toanChu} (Nguyên: ${data.toanChuGoc})` : String(data.toanChu || '-')) : '-', col2X + 85, py2);
     py2 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Toán Khách: `, col2X, py2);
-    ctx.fillStyle = "#3498db";
+    ctx.fillStyle = "#2980b9";
     ctx.fillText(data ? (data.toanKhachGoc !== undefined ? `${data.toanKhach} (Nguyên: ${data.toanKhachGoc})` : String(data.toanKhach || '-')) : '-', col2X + 100, py2);
     py2 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Toán Định: `, col2X, py2);
-    ctx.fillStyle = "#e67e22";
+    ctx.fillStyle = "#d35400";
     ctx.fillText(data ? (data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên: ${data.toanDinhGoc})` : String(data.toanDinh || '-')) : '-', col2X + 90, py2);
     py2 += dy;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#5C2C0C";
     ctx.fillText(`• Bát Hung: `, col2X, py2);
-    ctx.fillStyle = "#ff6b6b";
+    ctx.fillStyle = "#c0392b";
     ctx.fillText(data ? (data.batHung || '-') : '-', col2X + 80, py2);
 
     // Luận Đoán Verdict Box
     const vBoxY = tcY + 250;
-    ctx.fillStyle = "rgba(212, 175, 55, 0.08)";
+    ctx.fillStyle = "rgba(139, 69, 19, 0.08)";
     ctx.fillRect(tcX + 25, vBoxY, tcW - 50, 160);
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.35)";
+    ctx.strokeStyle = "rgba(139, 69, 19, 0.3)";
     ctx.lineWidth = 1;
     ctx.strokeRect(tcX + 25, vBoxY, tcW - 50, 160);
 
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B0000";
     ctx.font = "bold 13px 'Inter', sans-serif";
     ctx.textAlign = "left";
     ctx.fillText("☯ LUẬN ĐOÁN CỤC DIỆN THÁI ẤT:", tcX + 35, vBoxY + 24);
 
-    ctx.fillStyle = "#e0e6ed";
+    ctx.fillStyle = "#332211";
     ctx.font = "12px 'Inter', sans-serif";
     const verdictText = data ? (data.verdict || 'Thái Ất Tọa Cung, Vận Quái Thông Suốt.') : 'Thái Ất Tọa Cung';
     
@@ -384,12 +384,8 @@ function draw5x5ThaiAtSaBan(data, callback) {
         ctx.fillText(line, tcX + 35, vy);
     }
 
-    ctx.fillStyle = "#ffd700";
+    ctx.fillStyle = "#8B0000";
     ctx.font = "bold 13px 'Cinzel', serif";
-    ctx.textAlign = "right";
-    ctx.fillText("Nguyễn Huy Hoàng — Zalo: 0933116860", tcX + tcW - 30, tcY + tcH - 18);
-
-    ctx.fillStyle = "#8a94a8";
     ctx.font = "12px 'Inter', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);

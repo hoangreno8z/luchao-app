@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_v4.css?v=26.0.0">
+    <link rel="stylesheet" href="style_v4.css?v=27.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -99,27 +99,6 @@
 
                     <img id="thai-at-chart-img" class="chart-image-output" alt="Sa Bàn Thái Ất Thần Số PNG" style="display: none;">
 
-                    <!-- Theme Switcher Bar for Thai At Sa Ban -->
-                    <div class="theme-switcher-container" style="margin: 10px 0; padding: 10px 14px; background: rgba(15, 20, 42, 0.65); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
-                        <div style="font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 6px;">
-                            <span>🎨</span> CHỦ ĐỀ GIAO DIỆN SA BÀN:
-                        </div>
-                        <div class="theme-btn-group" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            <button type="button" class="theme-select-btn active" data-theme="thu-tich-co" onclick="switchSaBanTheme('thu-tich-co');">
-                                📜 Thư Tịch Cổ (Giấy Dó)
-                            </button>
-                            <button type="button" class="theme-select-btn" data-theme="bach-ngoc" onclick="switchSaBanTheme('bach-ngoc');">
-                                ☯ Bạch Ngọc Thanh Tịnh
-                            </button>
-                            <button type="button" class="theme-select-btn" data-theme="moc-tra" onclick="switchSaBanTheme('moc-tra');">
-                                🪵 Mộc Trà Cổ Điển
-                            </button>
-                            <button type="button" class="theme-select-btn" data-theme="huyen-khong" onclick="switchSaBanTheme('huyen-khong');">
-                                🌌 Huyền Không Vũ Trụ
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="chart-action-row" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 10px 0;">
                         <button type="button" onclick="generateThaiAtPNG();" class="btn-export">
                             📸 XUẤT ÁNH SA BÀN HD
@@ -131,7 +110,7 @@
                             🤖 AI LUẬN GIẢI
                         </button>
                     </div>
-                    <p class="download-tip-text">💡 <strong>Mẹo lưu ảnh:</strong> Bạn có thể chọn chủ đề màu sa bàn ở trên, sau đó bấm Tải ảnh sa bàn hoặc chạm giữ/click chuột phải để lưu về máy.</p>
+                    <p class="download-tip-text">💡 <strong>Mẹo lưu ảnh:</strong> Bạn có thể bấm Tải ảnh sa bàn hoặc chạm giữ / click chuột phải vào sa bàn để lưu về máy.</p>
                 </div>
 
                 <!-- Hidden DOM Data Binding Wrapper for Thai At Engine -->
@@ -181,8 +160,8 @@
                                 <p><strong>Toán Chủ:</strong> <span id="tc-toan-chu" style="color:var(--color-hoa); font-weight:bold;">-</span></p>
                                 <p><strong>Toán Khách:</strong> <span id="tc-toan-khach" style="color:var(--color-thuy); font-weight:bold;">-</span></p>
                                 <p><strong>Toán Định:</strong> <span id="tc-toan-dinh" style="color:var(--color-tho); font-weight:bold;">-</span></p>
-                                <div class="tc-stars-container" style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(212,175,55,0.35); border-radius: 6px;">
-                                    <div style="font-size: 0.82rem; font-weight: bold; color: var(--gold); margin-bottom: 6px;">⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):</div>
+                                <div class="tc-stars-container">
+                                    <div style="font-size: 0.82rem; font-weight: bold; color: #8B0000; margin-bottom: 6px;">⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):</div>
                                     <div id="tc-stars-list" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 24px;">-</div>
                                     <div id="tc-special-banner" style="margin-top: 8px; display: none;"></div>
                                 </div>
@@ -317,15 +296,15 @@
         </div>
     </div>
 
-    <script src="js/lunar_solar.js?v=26.0.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=26.0.0"></script>
-    <script src="js/thai_at_reference.js?v=26.0.0"></script>
-    <script src="js/phan_da_map.js?v=26.0.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=26.0.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=26.0.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=26.0.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=26.0.0"></script>
-    <script src="js/png_exporter.js?v=26.0.0"></script>
-    <script src="script_v4.js?v=26.0.0"></script>
+    <script src="js/lunar_solar.js?v=27.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=27.0.0"></script>
+    <script src="js/thai_at_reference.js?v=27.0.0"></script>
+    <script src="js/phan_da_map.js?v=27.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=27.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=27.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=27.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=27.0.0"></script>
+    <script src="js/png_exporter.js?v=27.0.0"></script>
+    <script src="script_v4.js?v=27.0.0"></script>
 </body>
 </html>
