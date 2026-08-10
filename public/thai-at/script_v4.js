@@ -115,9 +115,11 @@ function runTransitionParticles() {
     animate();
 }
 
+let _transitionTimeoutId = null;
 function triggerTransitionAnimation() {
     const overlay = document.getElementById("thai-at-transition-overlay");
     if (!overlay) return;
+    if (_transitionTimeoutId) clearTimeout(_transitionTimeoutId);
     overlay.style.display = "flex";
     overlay.classList.remove("active");
     void overlay.offsetWidth; // Force reflow
@@ -125,9 +127,10 @@ function triggerTransitionAnimation() {
 
     runTransitionParticles();
 
-    setTimeout(() => {
+    _transitionTimeoutId = setTimeout(() => {
         overlay.classList.remove("active");
         overlay.style.display = "none";
+        _transitionTimeoutId = null;
     }, 1350);
 }
 
@@ -159,7 +162,7 @@ function render(year, month, day, hour) {
 
     // Update header line
     document.getElementById("chart-datetime-header").innerHTML =
-        `Năm Tháng Ngày Giờ (Dương Lịch): <span style="font-weight:normal">${data.tuTru.solarDate}</span>`;
+        `Năm Tháng Ngày Giờ (Dương Lịch): <span style="font-weight:normal">${data?.tuTru?.solarDate || 'Không xác định'}</span>`;
 
     // Update sidebar info
     document.getElementById("info-mode-name").textContent = data.modeName;
@@ -193,7 +196,7 @@ function render(year, month, day, hour) {
     if (tcToanDinh) tcToanDinh.textContent = data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên số: ${data.toanDinhGoc})` : (data.toanDinh || '-');
     
     // Render Trung Cung stars & Tướng Bất Xuất Banner
-    const tcStars = data.placement["trung_cung"] || [];
+    const tcStars = data?.placement?.["trung_cung"] || [];
     const tcStarsListEl = document.getElementById("tc-stars-list");
     if (tcStarsListEl) {
         tcStarsListEl.innerHTML = tcStars.length > 0 
@@ -205,10 +208,10 @@ function render(year, month, day, hour) {
     const bannerEl = document.getElementById("tc-special-banner");
     if (bannerEl) {
         let bannerMsgs = [];
-        const toanChuVal = data.toanChu;
-        const toanKhachVal = data.toanKhach;
+        const toanChuVal = parseInt(data.toanChuGoc ?? data.toanChu, 10);
+        const toanKhachVal = parseInt(data.toanKhachGoc ?? data.toanKhach, 10);
 
-        if (toanChuVal % 10 === 5) {
+        if (!isNaN(toanChuVal) && toanChuVal % 10 === 5) {
             bannerMsgs.push(`
                 <div style="background: rgba(255, 71, 87, 0.18); border: 1px solid #ff4757; color: #ff6b6b; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
                     <strong>🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
@@ -219,7 +222,7 @@ function render(year, month, day, hour) {
             `);
         }
 
-        if (toanKhachVal % 10 === 5) {
+        if (!isNaN(toanKhachVal) && toanKhachVal % 10 === 5) {
             bannerMsgs.push(`
                 <div style="background: rgba(52, 152, 219, 0.18); border: 1px solid #3498db; color: #54a0ff; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
                     <strong>🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
@@ -331,7 +334,7 @@ const PHAN_DA_CUU_CUNG = {
     // Populate Future Predictions
     const predContent = document.getElementById("future-predictions-content");
     if (predContent) {
-        if (data.movingStars && data.movingStars.length > 0) {
+        if (Array.isArray(data.movingStars) && data.movingStars.length > 0) {
             const nextTimeStr = currentMode === "tue" ? "1 năm" : currentMode === "nguyet" ? "1 tháng" : currentMode === "nhat" ? "1 ngày" : currentMode === "thoi" ? "1 canh giờ" : "";
             if (nextTimeStr) {
                 let predHtml = `<p>Trong <strong>${nextTimeStr} tiếp theo</strong>, các sao sau đây sẽ thay đổi quỹ đạo:</p><ul style="margin-top: 5px; margin-left: 20px;">`;
@@ -798,7 +801,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     throw new Error("AI không trả về kết quả. Vui lòng thử lại.");
                 }
                 
-                aiContent.innerHTML = result.html;
+                // Sanitize AI response to prevent XSS
+                const sanitizeHtml = (html) => {
+                    const tmp = document.createElement('div');
+                    tmp.innerHTML = html;
+                    tmp.querySelectorAll('script,iframe,object,embed,form,input,link,meta').forEach(el => el.remove());
+                    tmp.querySelectorAll('*').forEach(el => {
+                        [...el.attributes].forEach(attr => {
+                            if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().startsWith('javascript:')) {
+                                el.removeAttribute(attr.name);
+                            }
+                        });
+                    });
+                    return tmp.innerHTML;
+                };
+                aiContent.innerHTML = sanitizeHtml(result.html);
                 
                 // Show copy button after successful load
                 if (btnCopy) btnCopy.style.display = "inline-block";
@@ -808,9 +825,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (err.name === 'AbortError') {
                     msg = "Quá thời gian chờ (>55 giây). Máy chủ AI đang quá tải, vui lòng thử lại sau.";
                 }
+                const safeMsg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 aiContent.innerHTML = `<div style="color:#ff4444; padding:20px; text-align:center;">
                     <strong>⚠️ Lỗi</strong><br/><br/>
-                    <span style="font-size:0.9rem;">${msg}</span><br/><br/>
+                    <span style="font-size:0.9rem;">${safeMsg}</span><br/><br/>
                     <button onclick="document.getElementById('btn-ai-luan-giai').click(); document.getElementById('ai-luan-giai-modal').style.display='none';" 
                             style="background:rgba(212,175,55,0.2); border:1px solid var(--gold); color:var(--gold); padding:8px 20px; border-radius:4px; cursor:pointer; margin-top:10px;">
                         🔄 Thử lại

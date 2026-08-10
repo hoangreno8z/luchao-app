@@ -218,23 +218,14 @@ function draw5x5ThaiAtSaBan(data, callback) {
         let sy = cy + 58;
 
         if (stars.length === 0) {
-            ctx.fillStyle = "#555";
+            ctx.fillStyle = activeThemeKey === "huyen-khong" ? "#555" : "#999";
             ctx.font = "italic 11px 'Inter', sans-serif";
             ctx.fillText("(Không có sao)", cx + 8, sy);
         } else {
             ctx.font = "bold 11px 'Inter', sans-serif";
             stars.forEach((st, idx) => {
                 if (sy <= cy + cellH - 12) {
-                    if (["thai-at", "van-xuong", "thuy-kich"].includes(st.class)) {
-                        ctx.fillStyle = "#ffd700"; // Gold
-                    } else if (["chu-tuong", "khach-tuong"].includes(st.class)) {
-                        ctx.fillStyle = "#ff6b6b"; // Red
-                    } else if (["quan-co", "than-co", "dan-co", "ngu-phuc", "dai-du", "tieu-du"].includes(st.class)) {
-                        ctx.fillStyle = "#74b9ff"; // Blue
-                    } else {
-                        ctx.fillStyle = "#e0e6ed"; // White
-                    }
-
+                    ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
                     ctx.fillText(`• ${st.name}`, cx + 8, sy);
                     sy += 16;
                 }

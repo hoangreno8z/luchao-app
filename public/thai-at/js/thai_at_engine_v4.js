@@ -49,12 +49,13 @@ function getThanName(thanIdx) {
 // 2. BASE CALCULATOR ENGINE
 // ==========================================
 class ThaiAtBaseEngine {
-    constructor(tueTich, kyDu, isDuongDon, namCanIdx, tuTru) {
+    constructor(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, mode) {
         this.tueTich = tueTich;
         this.kyDu = kyDu;
         this.isDuongDon = isDuongDon;
         this.namCanIdx = namCanIdx;
         this.tuTru = tuTru;
+        this.mode = mode || null;
         
         // Cục Số (72)
         this.cucNum = (this.tueTich % 72) || 72;
@@ -303,7 +304,7 @@ class ThaiAtBaseEngine {
     // ------ NHÓM CỬU TINH (VĂN XƯƠNG & TRỰC PHÙ) ------
     calcCuuTinh() {
         const res = [];
-        const CUNG_TO_THAN_IDX = [-1, 3, 13, 7, 9, -1, 1, 15, 5, 11];
+        const CUU_TINH_PATH = [-1, 3, 13, 7, 9, -1, 1, 15, 5, 11];
 
         // 1. Cửu Tinh Trực Phù (900/90/10 năm, Lục Can -> Cung Gốc)
         const TP_SAO_NAMES = ["Thiên Bồng", "Thiên Nhuế", "Thiên Xung", "Thiên Phụ", "Thiên Cầm", "Thiên Tâm", "Thiên Trụ", "Thiên Nhậm", "Thiên Ương"];
@@ -344,7 +345,7 @@ class ThaiAtBaseEngine {
     // ------ NHÓM QUÝ THẦN & KHÁC ------
     calcOtherStars() {
         const res = [];
-        const CUNG_TO_THAN_IDX = [-1, 5, 15, 9, 11, -1, 3, 1, 7, 13];
+        // Use global CUNG_TO_THAN_IDX (defined at file top)
         
         // --- CÁC SAO PHỤ ---
         // Helper đếm bước lưu toán

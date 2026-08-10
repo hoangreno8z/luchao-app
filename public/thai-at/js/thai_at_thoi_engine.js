@@ -1,7 +1,7 @@
 // thai_at_thoi_engine.js
 class RealThoiKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, soGio, tuTru) {
-        super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru);
+        super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'thoi');
         this.soGio = soGio;
     }
     

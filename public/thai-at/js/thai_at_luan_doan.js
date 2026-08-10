@@ -278,7 +278,7 @@ function generateDetailedAnalysisReport(data) {
     // Hàm phân tích chi tiết Toán Tam Tài & Cát Hung 5 Cấp Độ
     function analyzeToanDetail(num, roleName, palaceKey) {
         let items = [];
-        const isDuongCung = ["can", "mao", "ton", "ty"].includes(palaceKey) || [1, 8, 3, 4, 9].includes(CUNG_BIET_SO[palaceKey]);
+        const isDuongCung = [1, 8, 3, 4, 9].includes(CUNG_BIET_SO[palaceKey]);
         const hangDonVi = num % 10;
 
         // a. Tam Tài (Thiên - Địa - Nhân)
@@ -404,7 +404,7 @@ function generateDetailedAnalysisReport(data) {
             </div>
 
             <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #3498db;">
-                <p style="margin-bottom:4px;"><strong>🔵 TOÁN KHÁCH (Kết quả: ${tkGoc}):</strong> Phân loại: ${tkAnalysis.classification} | Trạng thái: ${tkAnalysis.hoaText} | Cấp độ: ${tkAnalysis.capDo}${tkExtraMsg}</p>
+                <p style="margin-bottom:4px;"><strong>🔵 TOÁN KHÁCH (Kết quả: ${tkGoc}):</strong> Phân loại: ${tkAnalysis.classification} | Trạng thái: ${tkAnalysis.hoaText} | Cấp độ: ${tkAnalysis.capDo}</p>
                 <ul style="padding-left: 18px; font-size: 0.88rem; color: #dedede;">
                     ${tkAnalysis.items.map(it => `<li>${it}</li>`).join("")}
                 </ul>

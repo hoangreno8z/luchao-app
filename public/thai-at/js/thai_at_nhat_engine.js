@@ -1,7 +1,7 @@
 // thai_at_nhat_engine.js
 class RealNhatKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, jdInt, soNgay, tuTru) {
-        super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru);
+        super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'nhat');
         this.jdInt = jdInt;
         this.soNgay = soNgay;
     }
