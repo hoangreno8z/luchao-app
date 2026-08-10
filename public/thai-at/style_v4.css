@@ -763,6 +763,8 @@ h1 {
 .star-tag.than-co { background: #138d75; color: #ffffff; }
 .star-tag.dan-co { background: #6c7a89; color: #ffffff; }
 .star-tag.ngu-phuc { background: #8e44ad; color: #ffffff; }
+.star-tag.bat-mon-truc-su { background: #196f3d; color: #ffffff; font-weight: bold; border: 1px solid #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
+.star-tag.bat-mon-phu { background: rgba(139, 69, 19, 0.12); color: #553311; border: 1px solid rgba(139, 69, 19, 0.3); font-weight: 600; }
 
 /* ========== TRUNG CUNG STYLES ========== */
 .tc-header { text-align: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.4rem; }

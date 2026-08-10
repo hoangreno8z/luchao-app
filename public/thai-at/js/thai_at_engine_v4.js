@@ -256,15 +256,12 @@ class ThaiAtBaseEngine {
         const THANH_LONG_PATH = [4, 5, 6, 8, 9, 10, 12, 13, 14, 0, 1, 2];
         const tlIdx = THANH_LONG_PATH[r12_tl - 1];
         
-        // 2. Thái Âm: luôn đứng sau Thái Tuế 2 cung (Thái Tuế - 2)
-        let thaiTueChiIdx = 6; // Mặc định Ngọ
-        if (this.tuTru) {
-            if (this.tuTru.hour && this.tuTru.hour.chiIdx !== undefined && this.mode === 'thoi') thaiTueChiIdx = this.tuTru.hour.chiIdx;
-            else if (this.tuTru.day && this.tuTru.day.chiIdx !== undefined && this.mode === 'nhat') thaiTueChiIdx = this.tuTru.day.chiIdx;
-            else if (this.tuTru.month && this.tuTru.month.chiIdx !== undefined && this.mode === 'nguyet') thaiTueChiIdx = this.tuTru.month.chiIdx;
-            else if (this.tuTru.year && this.tuTru.year.chiIdx !== undefined) thaiTueChiIdx = this.tuTru.year.chiIdx;
+        // 2. Thái Âm: luôn đứng sau Thái Tuế CỦA NĂM 2 cung (Nghịch lùi 2 cung Chi từ Chi Năm)
+        let thaiTueYearChiIdx = 0; // Mặc định Tý (0)
+        if (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) {
+            thaiTueYearChiIdx = this.tuTru.year.chiIdx;
         }
-        const thaiAmChiIdx = (thaiTueChiIdx - 2 + 12) % 12;
+        const thaiAmChiIdx = (thaiTueYearChiIdx - 2 + 12) % 12;
         const taIdx = CHI_TO_THAN_IDX[thaiAmChiIdx];
         
         // 3. Phi Phù: Kỷ Dư % 72 / 3 + 1, đếm theo vòng 12 cung Dương/Âm Độn
@@ -462,6 +459,50 @@ class ThaiAtBaseEngine {
         return res;
     }
 
+    // ------ BÁT MÔN (8 CỬA AN LÊN 8 CUNG BÁT QUÁI) ------
+    calcBatMon8() {
+        const res = [];
+        const BAT_MON_LIST = ["Khai", "Hưu", "Sinh", "Thương", "Đỗ", "Cảnh", "Tử", "Kinh"];
+        
+        // 8 Cung Bát Quái trên Sa Bàn Thái Ất (thứ tự Càn, Khảm, Cấn, Chấn, Tốn, Ly, Khôn, Đoài)
+        const BAT_QUAI_PALACES = [
+            { thanIdx: 3,  id: "kien", name: "Càn" },
+            { thanIdx: 5,  id: "ty",   name: "Khảm" },
+            { thanIdx: 7,  id: "can",  name: "Cấn" },
+            { thanIdx: 9,  id: "mao",  name: "Chấn" },
+            { thanIdx: 11, id: "ton",  name: "Tốn" },
+            { thanIdx: 13, id: "ngo",  name: "Ly" },
+            { thanIdx: 15, id: "khon", name: "Khôn" },
+            { thanIdx: 1,  id: "dau",  name: "Đoài" }
+        ];
+
+        // Tính bước Trực Sự: Chu kỳ 240, 30 đơn vị 1 cung
+        let tichVal = this.tueTich;
+        if (this.mode === 'nguyet' && this.tichThang !== undefined) tichVal = this.tichThang;
+        else if (this.mode === 'nhat' && this.soNgay !== undefined) tichVal = this.soNgay;
+        else if (this.mode === 'thoi' && this.soGio !== undefined) tichVal = this.soGio;
+
+        const batMonStep = Math.floor(((tichVal !== undefined ? tichVal : this.tueTich) % 240) / 30);
+        const trucSuGateIdx = batMonStep % 8; // 0..7
+
+        for (let i = 0; i < 8; i++) {
+            const pal = BAT_QUAI_PALACES[i];
+            const gateIdx = (trucSuGateIdx + i) % 8;
+            const gateName = BAT_MON_LIST[gateIdx];
+            const isTrucSu = (gateIdx === trucSuGateIdx);
+
+            res.push({
+                thanIdx: pal.thanIdx,
+                name: isTrucSu ? `Cửa ${gateName} (Trực Sự)` : `Cửa ${gateName}`,
+                class: isTrucSu ? "bat-mon-truc-su" : "bat-mon-phu",
+                gateName: gateName,
+                isTrucSu: isTrucSu
+            });
+        }
+
+        return res;
+    }
+
     getAllStars() {
         const thaiAt = this.calcThaiAt();
         const vanXuong = this.calcVanXuong();
@@ -477,7 +518,8 @@ class ThaiAtBaseEngine {
             ...this.calcCoPhucDu(),
             ...this.calcTuThanKy(),
             ...this.calcCuuTinh(),
-            ...this.calcOtherStars()
+            ...this.calcOtherStars(),
+            ...this.calcBatMon8()
         ];
         
         // Populate Placement Map

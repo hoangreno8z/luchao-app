@@ -33,12 +33,11 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         return { thanIdx, class: 'thai-tue', name: 'Thái Tuế' };
     }
 
-    // Thái Âm đứng sau Thái Tuế 2 cung (Chi tháng - 2)
+    // Thái Âm đứng sau Thái Tuế CỦA NĂM 2 cung (Chi Năm - 2)
     calcThaiAm() {
-        const thangChiIdx = (this.tuTru && this.tuTru.month) ? this.tuTru.month.chiIdx : 0;
-        const thaiAmChiIdx = (thangChiIdx - 2 + 12) % 12;
-        const chiToThan = [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14];
-        const thanIdx = chiToThan[thaiAmChiIdx];
+        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
+        const thaiAmChiIdx = (namChiIdx - 2 + 12) % 12;
+        const thanIdx = CHI_TO_THAN_IDX[thaiAmChiIdx];
         return { thanIdx, class: 'thai-am', name: 'Thái Âm' };
     }
     

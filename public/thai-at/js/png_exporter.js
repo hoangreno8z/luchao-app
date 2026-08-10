@@ -122,6 +122,8 @@ function getStarColorCanvas(cls, themeKey) {
         case "ngu-phuc": return "#8e44ad";
         case "dai-du": return isLight ? "#935116" : "#e67e22";
         case "tieu-du": return isLight ? "#283747" : "#5d6d7e";
+        case "bat-mon-truc-su": return "#196f3d";
+        case "bat-mon-phu": return isLight ? "#5c4033" : "#a0aec0";
         default: return isLight ? "#2c3e50" : "#bdc3c7";
     }
 }
