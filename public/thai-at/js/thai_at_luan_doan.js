@@ -333,9 +333,20 @@ function generateDetailedAnalysisReport(data) {
     const tcAnalysis = analyzeToanDetail(tcGoc, "Chủ", vxPalace);
     const tkAnalysis = analyzeToanDetail(tkGoc, "Khách", tkPalace);
 
-    let tkExtraMsg = "";
+    let toanTrungCungMsg = "";
+    if (tcGoc % 10 === 5) {
+        toanTrungCungMsg += `<div style="margin-top:8px; padding:10px; background:rgba(255,71,87,0.15); border-left:4px solid #ff4757; border-radius:4px;">
+            <strong style="color:#ff6b6b;">🔒 THẾ TRẬN "ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA" (CỬA ĐÓNG - TƯỚNG BẤT XUẤT):</strong><br/>
+            Toán Chủ = ${tcGoc} có hàng đơn vị là 5. Theo quy tắc Thái Ất, Đại Tướng Chủ lập tức nhập Trung Cung (Cung số 5). Phái sinh Tham Tướng Chủ (5 × 3 = 15 => đuôi 5) cũng bị hút vào Trung Cung cùng lúc.<br/>
+            <em>Ý nghĩa Binh Pháp:</em> Trung Cung là nơi tù túng, tĩnh lặng nhất. Tướng Soái phe Chủ rơi vào đây coi như bị giam lỏng ở trung tâm, kẹt cứng tiến thoái lưỡng nan, hoàn toàn bất lợi cho việc xuất binh giao chiến!
+        </div>`;
+    }
     if (tkGoc % 10 === 5) {
-        tkExtraMsg = `<br/><span style="color:#ff4757; font-weight:bold;">⚠️ CỬA ĐÓNG (KHÔNG CỬA):</span> Toán Khách đuôi 5 khiến Khách Mục và Tướng Khách bế tắc, không có cửa tiến vào Trung Cung hành sự!`;
+        toanTrungCungMsg += `<div style="margin-top:8px; padding:10px; background:rgba(52,152,219,0.15); border-left:4px solid #3498db; border-radius:4px;">
+            <strong style="color:#54a0ff;">🔒 THẾ TRẬN "ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA" (CỬA ĐÓNG - TƯỚNG BẤT XUẤT):</strong><br/>
+            Toán Khách = ${tkGoc} có hàng đơn vị là 5. Theo quy tắc Thái Ất, Đại Tướng Khách lập tức nhập Trung Cung (Cung số 5). Phái sinh Tham Tướng Khách (5 × 3 = 15 => đuôi 5) cũng bị hút vào Trung Cung cùng lúc.<br/>
+            <em>Ý nghĩa Binh Pháp:</em> Tướng Soái phe Khách kẹt cứng ở Trung Cung, bị vây lỏng không thể bộc phát lực lượng ra các cung xung quanh, tiến công thất bại, nên cố thủ.
+        </div>`;
     }
 
     // 3. Phân tích Khối / Cục hiện tại
@@ -400,6 +411,7 @@ function generateDetailedAnalysisReport(data) {
             </div>
 
             <p class="luan-doan-item"><strong>🟢 TOÁN ĐỊNH (Kết quả: ${tdGoc}):</strong> Toán Định đạt số ${tdGoc}, biểu thị nhịp vận định sẵn giữa nhân sự và thiên thời, làm cầu nối dung hòa giữa Chủ và Khách.</p>
+            ${toanTrungCungMsg}
         </div>
 
         <div class="luan-doan-section">

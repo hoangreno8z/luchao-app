@@ -149,7 +149,8 @@ class ThaiAtBaseEngine {
     calcDaiTuongAndThamTuong(taIdx, vxIdx, tkIdx) {
         const MAIN_PALACE_BIET_SO = { 3: 1, 13: 2, 7: 3, 9: 4, 1: 6, 15: 7, 5: 8, 11: 9 };
         const GIAN_THAN_IDXS = [0, 2, 4, 6, 8, 10, 12, 14];
-        const PALACE_TO_THAN_IDX = [-1, 3, 13, 7, 9, -1, 1, 15, 5, 11];
+        // Index 1..9 corresponding to Palace 1..9 (Khảm, Khôn, Chấn, Tốn, Trung Cung, Càn, Đoài, Cấn, Ly)
+        const PALACE_TO_THAN_IDX = [-1, 5, 15, 9, 11, -1, 3, 1, 7, 13];
         
         const getToan = (startIdx) => {
             if (startIdx === taIdx) return { raw: 1, val: 1 };

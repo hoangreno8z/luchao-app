@@ -165,11 +165,52 @@ function render(year, month, day, hour) {
     const tcToanDinh = document.getElementById("tc-toan-dinh");
     if (tcToanDinh) tcToanDinh.textContent = data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên số: ${data.toanDinhGoc})` : (data.toanDinh || '-');
     
-    // Render Trung Cung stars
+    // Render Trung Cung stars & Tướng Bất Xuất Banner
     const tcStars = data.placement["trung_cung"] || [];
-    document.getElementById("tc-stars").innerHTML = tcStars.length > 0 
-        ? tcStars.map(s => `<span class="star-tag ${s.class}">${s.name}</span>`).join(" ") 
-        : "-";
+    const tcStarsListEl = document.getElementById("tc-stars-list");
+    if (tcStarsListEl) {
+        tcStarsListEl.innerHTML = tcStars.length > 0 
+            ? tcStars.map(s => `<span class="star-tag ${s.class}">${s.name}</span>`).join(" ") 
+            : `<span style="color:#aaa; font-style:italic;">Không có thần tinh trú ngụ</span>`;
+    }
+    
+    // Tướng Bất Xuất (Cửa Đóng) special alerts
+    const bannerEl = document.getElementById("tc-special-banner");
+    if (bannerEl) {
+        let bannerMsgs = [];
+        const toanChuVal = data.toanChu;
+        const toanKhachVal = data.toanKhach;
+
+        if (toanChuVal % 10 === 5) {
+            bannerMsgs.push(`
+                <div style="background: rgba(255, 71, 87, 0.18); border: 1px solid #ff4757; color: #ff6b6b; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
+                    <strong>🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
+                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
+                        Toán Chủ = ${data.toanChuGoc || toanChuVal} (đuôi 5): Đại Tướng Chủ & Tham Tướng Chủ (5×3=15) đồng thời bị hút vào Trung Cung (Cửa Đóng). Tướng soái phe Chủ bị giam lỏng ở trung tâm, tiến thoái lưỡng nan!
+                    </div>
+                </div>
+            `);
+        }
+
+        if (toanKhachVal % 10 === 5) {
+            bannerMsgs.push(`
+                <div style="background: rgba(52, 152, 219, 0.18); border: 1px solid #3498db; color: #54a0ff; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
+                    <strong>🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
+                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
+                        Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách (5×3=15) đồng thời bị hút vào Trung Cung (Cửa Đóng). Tướng soái phe Khách bị kẹt cứng ở trung tâm, hoàn toàn bất lợi ra quân!
+                    </div>
+                </div>
+            `);
+        }
+
+        if (bannerMsgs.length > 0) {
+            bannerEl.innerHTML = bannerMsgs.join("");
+            bannerEl.style.display = "block";
+        } else {
+            bannerEl.style.display = "none";
+            bannerEl.innerHTML = "";
+        }
+    }
         
     document.getElementById("tc-bat-hung").textContent = data.batHung;
     document.getElementById("tc-verdict").textContent = data.verdict;

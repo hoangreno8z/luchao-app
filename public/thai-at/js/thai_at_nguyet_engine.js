@@ -50,7 +50,7 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         const tueTichThuongCo = this.fullTueTich;
         
         const pushStar = (thanIdx, cls, name) => {
-            if (thanIdx !== undefined && thanIdx !== null && thanIdx !== -1) {
+            if (thanIdx !== undefined && thanIdx !== null) {
                 stars.push({ thanIdx, class: cls, name });
             }
         };

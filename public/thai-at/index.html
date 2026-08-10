@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_v4.css?v=24.0.0">
+    <link rel="stylesheet" href="style_v4.css?v=25.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -160,7 +160,11 @@
                                 <p><strong>Toán Chủ:</strong> <span id="tc-toan-chu" style="color:var(--color-hoa); font-weight:bold;">-</span></p>
                                 <p><strong>Toán Khách:</strong> <span id="tc-toan-khach" style="color:var(--color-thuy); font-weight:bold;">-</span></p>
                                 <p><strong>Toán Định:</strong> <span id="tc-toan-dinh" style="color:var(--color-tho); font-weight:bold;">-</span></p>
-                                <p><strong>Trung Cung:</strong> <span id="tc-stars">-</span></p>
+                                <div class="tc-stars-container" style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(212,175,55,0.35); border-radius: 6px;">
+                                    <div style="font-size: 0.82rem; font-weight: bold; color: var(--gold); margin-bottom: 6px;">⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):</div>
+                                    <div id="tc-stars-list" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 24px;">-</div>
+                                    <div id="tc-special-banner" style="margin-top: 8px; display: none;"></div>
+                                </div>
                                 <div class="tc-verdict-box">
                                     <p><strong>Bát Hung:</strong> <span id="tc-bat-hung">-</span></p>
                                     <p><strong>Luận Đoán:</strong> <span id="tc-verdict">-</span></p>
@@ -292,15 +296,15 @@
         </div>
     </div>
 
-    <script src="js/lunar_solar.js?v=24.0.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=24.0.0"></script>
-    <script src="js/thai_at_reference.js?v=24.0.0"></script>
-    <script src="js/phan_da_map.js?v=24.0.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=24.0.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=24.0.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=24.0.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=24.0.0"></script>
-    <script src="js/png_exporter.js?v=24.0.0"></script>
-    <script src="script_v4.js?v=24.0.0"></script>
+    <script src="js/lunar_solar.js?v=25.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=25.0.0"></script>
+    <script src="js/thai_at_reference.js?v=25.0.0"></script>
+    <script src="js/phan_da_map.js?v=25.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=25.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=25.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=25.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=25.0.0"></script>
+    <script src="js/png_exporter.js?v=25.0.0"></script>
+    <script src="script_v4.js?v=25.0.0"></script>
 </body>
 </html>
