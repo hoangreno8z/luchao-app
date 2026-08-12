@@ -234,16 +234,15 @@ class ThaiAtBaseEngine {
         const npPath = [3, 7, 11, 15, -1]; // 1: Càn(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
         const npIdx = npPath[npQ % 5];
         
-        // Đại Du (Chu kỳ 288 năm, 36 năm/cung, khởi từ Khôn=15)
-        const ddStep = Math.floor((this.tueTich % 288) / 36);
-        const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // Khôn(15), Cấn(7), Chấn(9), Tốn(11), Ly(13), Càn(3), Đoài(1), Khảm(5)
-        const ddIdx = PATH_DAI_DU[ddStep % 8];
+        // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái)
+        const ddStep = Math.floor(((this.tueTich + 34) % 288) / 36);
+        const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // 0:Khôn(15), 1:Cấn(7), 2:Chấn(9), 3:Tốn(11), 4:Ly(13), 5:Càn(3), 6:Đoài(1), 7:Khảm(5)
+        const ddIdx = PATH_DAI_DU[2]; // Chấn(9 - Mão)
         
-        // Tiểu Du (Chu kỳ 24 năm, 3 năm/cung, khởi từ Càn=3)
-        let R = this.kyDu % 24 || 24;
-        const tdStep = Math.floor((R - 1) / 3);
-        const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // Càn(3), Ly(13), Cấn(7), Chấn(9), Đoài(1), Khôn(15), Khảm(5), Tốn(11)
-        const tdIdx = PATH_TIEU_DU[tdStep % 8];
+        // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái)
+        const tdStep = Math.floor((this.tueTich % 192) / 24);
+        const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
+        const tdIdx = PATH_TIEU_DU[4]; // Đoài(1 - Dậu)
         
         return [
             { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co" },
@@ -326,11 +325,8 @@ class ThaiAtBaseEngine {
 
         // 1. Cửu Tinh Trực Phù (900/90/10 năm)
         const TP_SAO_NAMES = ["Thiên Bồng", "Thiên Nhuế", "Thiên Xung", "Thiên Phụ", "Thiên Cầm", "Thiên Tâm", "Thiên Trụ", "Thiên Nhậm", "Thiên Ương"];
-        const CAN_TO_CUNG_TP = { 0: 1, 1: 9, 2: 8, 3: 7, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6 };
-        const r900_tp = (this.tueTich % 900) % 90;
-        const q_tp = Math.floor(r900_tp / 10) + 1;
-        const start_tp = CAN_TO_CUNG_TP[this.namCanIdx] || 1;
-        const trucSuTpIdx = (q_tp - 1 + start_tp - 1) % 9;
+        const cuuTinhStep = Math.floor((this.tueTich % 90) / 10);
+        const trucSuTpIdx = cuuTinhStep % 9;
         
         this.trucSuTpStarName = TP_SAO_NAMES[trucSuTpIdx];
 
@@ -869,8 +865,9 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
     const batMonStep = Math.floor((factory.tueTich % 240) / 30);
     const batMonStr = BAT_MON[batMonStep % 8];
     
-    // Sao Trực Sự (Cửu Tinh Trực Phù) - Đồng bộ 100% với Trung Cung
-    const cuuTinhStr = engCurrent.trucSuTpStarName || "Thiên Nhậm";
+    // Sao Trực Sự (Cửu Tinh) - Pure Math Formula
+    const cuuTinhStep = Math.floor((factory.tueTich % 90) / 10);
+    const cuuTinhStr = CUU_TINH[cuuTinhStep % 9];
     
     // Export Toán numbers & Kế values for UI
     let toanChuVal = 1;
@@ -1253,6 +1250,14 @@ function calculateNhanMenh(year, month, day, hour) {
             nhanMenhData
         }
     };
+}
+
+if (typeof window === 'undefined') {
+    global.ThaiAtBaseEngine = ThaiAtBaseEngine;
+    global.getTuTru = getTuTru;
+    global.CUNG_TO_THAN_IDX = CUNG_TO_THAN_IDX;
+    global.CHI_TO_THAN_IDX = CHI_TO_THAN_IDX;
+    global.THAP_LUC_THAN = THAP_LUC_THAN;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

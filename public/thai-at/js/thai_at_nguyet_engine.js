@@ -1,4 +1,3 @@
-// thai_at_nguyet_engine.js
 class RealNguyetKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, fullTueTich, tuTru) {
         // tueTich here is the Nguyệt Tích Đặc Biệt or Nguyệt Tích
@@ -160,4 +159,8 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
 
         return stars;
     }
+}
+
+if (typeof window === 'undefined') {
+    global.RealNguyetKeEngine = RealNguyetKeEngine;
 }
