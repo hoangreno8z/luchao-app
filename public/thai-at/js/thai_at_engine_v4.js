@@ -44,6 +44,12 @@ function getThanName(thanIdx) {
     return THAP_LUC_THAN[thanIdx] ? THAP_LUC_THAN[thanIdx].name : "N/A";
 }
 
+function rotateArray(arr, indexToFront) {
+    if (!arr || arr.length === 0) return [];
+    const idx = ((indexToFront % arr.length) + arr.length) % arr.length;
+    return arr.slice(idx).concat(arr.slice(0, idx));
+}
+
 
 // ==========================================
 // 2. BASE CALCULATOR ENGINE
@@ -228,22 +234,24 @@ class ThaiAtBaseEngine {
         const npPath = [3, 7, 11, 15, -1]; // 1: Càn(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
         const npIdx = npPath[npQ % 5];
         
-        // Đại Du (Dùng Tích Trung Cổ)
-        const ddStep = Math.floor(((this.tichTrungCo + 34) % 288) / 36);
-        const ddCung = [7, 8, 9, 1, 2, 3, 4, 6][ddStep % 8];
+        // Đại Du (Chu kỳ 288 năm, 36 năm/cung, khởi từ Khôn=15)
+        const ddStep = Math.floor((this.tueTich % 288) / 36);
+        const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // Khôn(15), Cấn(7), Chấn(9), Tốn(11), Ly(13), Càn(3), Đoài(1), Khảm(5)
+        const ddIdx = PATH_DAI_DU[ddStep % 8];
         
-        // Tiểu Du (Dùng Kỷ Dư Thượng Cổ)
+        // Tiểu Du (Chu kỳ 24 năm, 3 năm/cung, khởi từ Càn=3)
         let R = this.kyDu % 24 || 24;
         const tdStep = Math.floor((R - 1) / 3);
-        const tdCung = [1, 2, 3, 4, 6, 7, 8, 9][tdStep % 8];
+        const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // Càn(3), Ly(13), Cấn(7), Chấn(9), Đoài(1), Khôn(15), Khảm(5), Tốn(11)
+        const tdIdx = PATH_TIEU_DU[tdStep % 8];
         
         return [
             { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co" },
             { thanIdx: thanCoIdx, name: "Thần Cơ", class: "than-co" },
             { thanIdx: danCoIdx, name: "Dân Cơ", class: "dan-co" },
             { thanIdx: npIdx, name: "Ngũ Phúc", class: "ngu-phuc" },
-            { thanIdx: CUNG_TO_THAN_IDX[ddCung], name: "Đại Du", class: "dai-du" },
-            { thanIdx: CUNG_TO_THAN_IDX[tdCung], name: "Tiểu Du", class: "tieu-du" }
+            { thanIdx: ddIdx, name: "Đại Du", class: "dai-du" },
+            { thanIdx: tdIdx, name: "Tiểu Du", class: "tieu-du" }
         ];
     }
     
@@ -313,10 +321,8 @@ class ThaiAtBaseEngine {
     // ------ NHÓM CỬU TINH (3 VÒNG SAO LẠC THƯ PHI TINH) ------
     calcCuuTinh() {
         const res = [];
-        // Trajectory order of 9 Palaces in Lac Thu Square ($1 \rightarrow 2 \rightarrow 3 \rightarrow 4 \rightarrow 5 \rightarrow 6 \rightarrow 7 \rightarrow 8 \rightarrow 9$):
-        // Palace 1=Khảm(5), 2=Khôn(15), 3=Chấn(9), 4=Tốn(11), 5=Trung(-1), 6=Càn(3), 7=Đoài(1), 8=Cấn(7), 9=Ly(13)
         const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
-        const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8]; // Lạc Thư indices excluding 4 (Trung Cung index 4)
+        const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 1. Cửu Tinh Trực Phù (900/90/10 năm)
         const TP_SAO_NAMES = ["Thiên Bồng", "Thiên Nhuế", "Thiên Xung", "Thiên Phụ", "Thiên Cầm", "Thiên Tâm", "Thiên Trụ", "Thiên Nhậm", "Thiên Ương"];
@@ -326,22 +332,22 @@ class ThaiAtBaseEngine {
         const start_tp = CAN_TO_CUNG_TP[this.namCanIdx] || 1;
         const trucSuTpIdx = (q_tp - 1 + start_tp - 1) % 9;
         
-        // Trực Sự nhập Trung Cung (Cung 5 - index 4 trong LAC_THU_THAN_IDXS)
+        this.trucSuTpStarName = TP_SAO_NAMES[trucSuTpIdx];
+
+        const rotatedTp = rotateArray(TP_SAO_NAMES, trucSuTpIdx);
         res.push({
             thanIdx: -1,
-            name: TP_SAO_NAMES[trucSuTpIdx] + " (TP)",
+            name: rotatedTp[0] + " (TP)",
             class: "truc-phu",
-            unique: 'TP_' + TP_SAO_NAMES[trucSuTpIdx]
+            unique: 'TP_' + rotatedTp[0]
         });
-        // 8 sao còn lại phi tinh ra 8 cung Bát Quái
         for (let i = 0; i < 8; i++) {
-            const starIdx = (trucSuTpIdx + 1 + i) % 9;
             const palIdx = OTHER_PALACE_OFFSETS[i];
             res.push({
                 thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: TP_SAO_NAMES[starIdx] + " (TP)",
+                name: rotatedTp[i + 1] + " (TP)",
                 class: "truc-phu",
-                unique: 'TP_' + TP_SAO_NAMES[starIdx]
+                unique: 'TP_' + rotatedTp[i + 1]
             });
         }
 
@@ -353,22 +359,20 @@ class ThaiAtBaseEngine {
         const start_vx = CAN_TO_CUNG_VX[this.namCanIdx] || 1;
         const trucSuVxIdx = (q_vx - 1 + start_vx - 1) % 9;
 
-        // Trực Sự nhập Trung Cung
+        const rotatedVx = rotateArray(VX_SAO_NAMES, trucSuVxIdx);
         res.push({
             thanIdx: -1,
-            name: VX_SAO_NAMES[trucSuVxIdx] + " (VX)",
+            name: rotatedVx[0] + " (VX)",
             class: "van-xuong-9",
-            unique: 'VX_' + VX_SAO_NAMES[trucSuVxIdx]
+            unique: 'VX_' + rotatedVx[0]
         });
-        // 8 sao còn lại phi tinh ra 8 cung
         for (let i = 0; i < 8; i++) {
-            const starIdx = (trucSuVxIdx + 1 + i) % 9;
             const palIdx = OTHER_PALACE_OFFSETS[i];
             res.push({
                 thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: VX_SAO_NAMES[starIdx] + " (VX)",
+                name: rotatedVx[i + 1] + " (VX)",
                 class: "van-xuong-9",
-                unique: 'VX_' + VX_SAO_NAMES[starIdx]
+                unique: 'VX_' + rotatedVx[i + 1]
             });
         }
 
@@ -472,25 +476,22 @@ class ThaiAtBaseEngine {
         const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
         const r_qt = (kVal + 3) % 9 || 9;
-
         const trucSuQtIdx = (r_qt - 1) % 9;
-        // Trực Sự nhập Trung Cung
+
+        const rotatedQt = rotateArray(QT_SAO_NAMES, trucSuQtIdx);
         res.push({
             thanIdx: -1,
-            name: QT_SAO_NAMES[trucSuQtIdx] + " (QT)",
+            name: rotatedQt[0] + " (QT)",
             class: "quy-than",
-            unique: 'QT_' + QT_SAO_NAMES[trucSuQtIdx]
+            unique: 'QT_' + rotatedQt[0]
         });
-
-        // 8 sao còn lại phi tinh Lạc Thư
         for (let i = 0; i < 8; i++) {
-            const starIdx = (trucSuQtIdx + 1 + i) % 9;
             const palIdx = OTHER_PALACE_OFFSETS[i];
             res.push({
                 thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: QT_SAO_NAMES[starIdx] + " (QT)",
+                name: rotatedQt[i + 1] + " (QT)",
                 class: "quy-than",
-                unique: 'QT_' + QT_SAO_NAMES[starIdx]
+                unique: 'QT_' + rotatedQt[i + 1]
             });
         }
         
@@ -868,9 +869,8 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
     const batMonStep = Math.floor((factory.tueTich % 240) / 30);
     const batMonStr = BAT_MON[batMonStep % 8];
     
-    // Sao Trực Sự (Cửu Tinh) - Chu kỳ 90 năm, 10 năm 1 sao
-    const cuuTinhStep = Math.floor((factory.tueTich % 90) / 10);
-    const cuuTinhStr = CUU_TINH[cuuTinhStep % 9];
+    // Sao Trực Sự (Cửu Tinh Trực Phù) - Đồng bộ 100% với Trung Cung
+    const cuuTinhStr = engCurrent.trucSuTpStarName || "Thiên Nhậm";
     
     // Export Toán numbers & Kế values for UI
     let toanChuVal = 1;
