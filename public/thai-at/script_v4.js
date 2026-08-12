@@ -4,6 +4,7 @@
  */
 
 let currentMode = "tue";
+let currentEngineType = "classic"; // 'classic' or 'astronomical'
 window.currentSaBanTheme = localStorage.getItem("thai_at_saban_theme") || "thu-tich-co";
 
 function switchSaBanTheme(themeKey, skipPNGRefresh = false) {
@@ -36,6 +37,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
     document.getElementById("input-date").value = now.toISOString().split("T")[0];
     document.getElementById("input-time").value = now.toTimeString().substring(0, 5);
+
+    // Dual Engine Navigation Tab Buttons
+    document.querySelectorAll(".engine-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".engine-tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentEngineType = btn.getAttribute("data-engine");
+
+            const astroBanner = document.getElementById("astronomical-calibration-banner");
+            if (astroBanner) {
+                astroBanner.style.display = currentEngineType === "astronomical" ? "block" : "none";
+            }
+
+            castChart();
+        });
+    });
 
     // 6 Mode Navigation Tab Buttons
     document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -157,7 +174,33 @@ function renderWithDate(dObj) {
 
 function render(year, month, day, hour) {
     try {
-        const data = calculateThaiAtChart(currentMode, year, month, day, hour);
+        let data = calculateThaiAtChart(currentMode, year, month, day, hour);
+
+        // NASA Astronomical Auto-Calibration Overlay
+        if (currentEngineType === "astronomical" && typeof ThaiYiCalibrator !== "undefined") {
+            const jd = ThaiYiCalibrator.dateToJD(year, month, day, hour);
+            const calib = ThaiYiCalibrator.calibrateYearTichNien(year, data.keDaiVal || 10155943, month, day);
+            const solarLong = ThaiYiCalibrator.getTrueSolarLongitude(year, month, day, hour);
+            
+            // Update NASA Calibration Banner UI
+            const jdEl = document.getElementById("astro-jd-val");
+            if (jdEl) jdEl.textContent = jd.toLocaleString('vi-VN');
+            const offsetEl = document.getElementById("astro-offset-val");
+            if (offsetEl) offsetEl.textContent = `-${calib.deltaDYear}`;
+            const tichEl = document.getElementById("astro-tich-val");
+            if (tichEl) tichEl.textContent = calib.calibratedTichNien.toLocaleString('vi-VN');
+            const solarEl = document.getElementById("astro-solar-val");
+            if (solarEl) solarEl.textContent = solarLong.toFixed(2);
+
+            // Override display Tích & Kỷ Dư with Astronomical Calibration
+            data = {
+                ...data,
+                keDai: calib.calibratedTichNien,
+                keTieu: calib.calibratedKyDu,
+                modeName: `${data.modeName} (NASA Auto-Calibrated)`
+            };
+        }
+
         window.lastCalculatedThaiAtData = data;
 
     // Update header line

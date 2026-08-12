@@ -49,6 +49,33 @@
             <p class="subtitle">Hệ Thống Lập Quẻ Tự Động — Thái Ất Thần Kinh (Trạng Trình Nguyễn Bỉnh Khiêm)</p>
         </header>
 
+        <!-- Primary Dual-Engine Selection Tabs -->
+        <nav class="engine-tab-nav glass">
+            <button class="engine-tab-btn active" data-engine="classic">📜 Sa Bàn Thái Ất Cổ Điển (Nguyên Bản)</button>
+            <button class="engine-tab-btn" data-engine="astronomical">🚀 Sa Bàn Thiên Văn Thực Tế (NASA Auto-Calibrated)</button>
+        </nav>
+
+        <!-- NASA Astronomical Auto-Calibration Banner (Hidden by default) -->
+        <div id="astronomical-calibration-banner" class="astro-banner glass" style="display: none; margin-bottom: 15px; padding: 12px 18px; border: 1px solid #00f2fe; background: rgba(0, 242, 254, 0.08); border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">🛰️</span>
+                    <div>
+                        <strong style="color: #00f2fe; font-size: 0.95rem;">HỆ THỐNG BÙ TRỪ ĐỘNG LỰC HỌC THIÊN VĂN NASA (J2000.0)</strong>
+                        <div style="font-size: 0.82rem; color: #e0e0e0; margin-top: 2px;">
+                            Bù trượt pha Sao Mộc (11.8618 năm) & Vector Tuế Sai trục Trái Đất (50.3"/năm)
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; font-size: 0.82rem; color: #ffd700; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 6px;">
+                    <div>JD: <span id="astro-jd-val">-</span></div>
+                    <div>Bù Sao Mộc: <span id="astro-offset-val">-</span> năm</div>
+                    <div>Tích Niên Thiên Văn: <span id="astro-tich-val">-</span></div>
+                    <div>Kinh độ MT: <span id="astro-solar-val">-</span>°</div>
+                </div>
+            </div>
+        </div>
+
         <!-- 6 Mode Navigation Tabs -->
         <nav class="mode-nav glass">
             <button class="nav-btn active" data-mode="tue">Quẻ Năm (Tuế Kể)</button>
@@ -304,6 +331,7 @@
     <script src="js/thai_at_nguyet_engine.js?v=30.0.0"></script>
     <script src="js/thai_at_nhat_engine.js?v=30.0.0"></script>
     <script src="js/thai_at_thoi_engine.js?v=30.0.0"></script>
+    <script src="js/thai_at_astronomical_engine.js?v=30.0.0"></script>
     <script src="js/png_exporter.js?v=30.0.0"></script>
     <script src="script_v4.js?v=30.0.0"></script>
 </body>
