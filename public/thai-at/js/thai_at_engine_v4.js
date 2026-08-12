@@ -550,8 +550,17 @@ class ThaiAtBaseEngine {
         const thuyKich = this.calcThuyKich(vanXuong.thanIdx, keThan.thanIdx);
         const tuongStars = this.calcDaiTuongAndThamTuong(thaiAt.thanIdx, vanXuong.thanIdx, thuyKich.thanIdx);
         
+        // Add Thái Tuế and Thần Hợp explicitly
+        const THAN_HOP_MAP = { 0:12, 1:10, 2:9, 3:15, 4:8, 5:6, 6:5, 7:11, 8:4, 9:2, 10:1, 11:7, 12:0, 13:14, 14:13, 15:3 };
+        const thanHopIdx = THAN_HOP_MAP[thaiTueIdx] !== undefined ? THAN_HOP_MAP[thaiTueIdx] : thaiTueIdx;
+        const thaiTueName = (this.tuTru && this.tuTru.year && this.tuTru.year.chiName) ? `Thái Tuế (${this.tuTru.year.chiName})` : "Thái Tuế";
+
+        const thaiTueStar = { thanIdx: thaiTueIdx, name: thaiTueName, class: "other-stars", unique: "thai_tue" };
+        const thanHopStar = { thanIdx: thanHopIdx, name: "Thần Hợp", class: "other-stars", unique: "than_hop" };
+
         const all = [
             thaiAt, vanXuong, keThan, keDinh, thuyKich,
+            thaiTueStar, thanHopStar,
             ...tuongStars,
             ...this.calcCoPhucDu(),
             ...this.calcTuThanKy(),
@@ -560,12 +569,23 @@ class ThaiAtBaseEngine {
             ...this.calcBatMon8()
         ];
         
-        // Populate Placement Map
+        // Populate Placement Map with strict deduplication per palace
         const placement = { "trung_cung": [] };
         THAP_LUC_THAN.forEach(t => placement[t.id] = []);
+        const seenInPalace = {};
+        
         all.forEach(s => {
-            if (s.thanIdx === -1) placement["trung_cung"].push(s);
-            else if (THAP_LUC_THAN[s.thanIdx]) placement[THAP_LUC_THAN[s.thanIdx].id].push(s);
+            if (!s || s.thanIdx === undefined) return;
+            const targetKey = s.thanIdx === -1 ? "trung_cung" : (THAP_LUC_THAN[s.thanIdx] ? THAP_LUC_THAN[s.thanIdx].id : null);
+            if (!targetKey) return;
+            
+            if (!seenInPalace[targetKey]) seenInPalace[targetKey] = new Set();
+            const starKey = s.unique || s.name;
+            
+            if (!seenInPalace[targetKey].has(starKey) || s.name.startsWith("Cửa ")) {
+                seenInPalace[targetKey].add(starKey);
+                placement[targetKey].push(s);
+            }
         });
         
         return {
@@ -580,6 +600,40 @@ class ThaiAtBaseEngine {
 // ==========================================
 // 3. MODE IMPLEMENTATIONS
 // ==========================================
+function evaluateThaiAtVerdict(taIdx, vxIdx, tkIdx, toanChuVal, toanKhachVal, batHungStr) {
+    if (batHungStr && batHungStr.includes("Yểm")) {
+        return "YỂM — Giặc đánh úp, âm thịnh dương suy, mặt trời bị che lấp!";
+    }
+    if (batHungStr && batHungStr.includes("Kích")) {
+        return "KÍCH — Bề tôi phản nghịch, quân địch áp sát!";
+    }
+    if (batHungStr && batHungStr.includes("Tù")) {
+        return "TÙ — Quân vương bị giam lỏng, nguy cơ cướp ngôi!";
+    }
+
+    const DUONG_CUNGS = [3, 7, 9, 11]; // Càn, Cấn, Chấn, Tốn
+    const AM_CUNGS = [13, 15, 1, 5];    // Ly, Khôn, Đoài, Khảm
+
+    const isTaDuong = DUONG_CUNGS.includes(taIdx);
+    const isTaToanOdd = (toanChuVal % 2 !== 0);
+    const isTaHoa = isTaDuong ? !isTaToanOdd : isTaToanOdd;
+
+    const isVxAm = AM_CUNGS.includes(vxIdx);
+    const isTkToanEven = (toanKhachVal % 2 === 0);
+    const isNmHoa = isVxAm ? !isTkToanEven : isTkToanEven;
+
+    if (!isTaHoa && !isNmHoa) {
+        return "BẤT HÒA — Khí nghịch, âm dương đối lập, vạn sự trái với lẽ tự nhiên.";
+    }
+    if (!isTaHoa) {
+        return "THÁI ẤT BẤT HÒA — Vận khí bị trệ, cần thận trọng tích trữ lực lượng.";
+    }
+    if (!isNmHoa) {
+        return "NHỊ MỤC BẤT HÒA — Kế sách mưu lược có trở ngại, phe Khách hành sự trái nghịch.";
+    }
+    return "HÒA HỢP — Âm dương điều hòa, vạn sự hanh thông.";
+}
+
 function luanDoanNguHanh(chuElement, khachElement) {
     const KHAC = { moc: "tho", hoa: "kim", tho: "thuy", kim: "moc", thuy: "hoa" };
     const SINH = { moc: "hoa", hoa: "tho", tho: "kim", kim: "thuy", thuy: "moc" };
@@ -941,7 +995,7 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         keDinh: keDinhValStr,
         placement: currRes.placement,
         batHung: evalBatHung(),
-        verdict: luanDoanNguHanh(vxEl, tkEl),
+        verdict: evaluateThaiAtVerdict(currRes.core.taIdx, currRes.core.vxIdx, currRes.core.tkIdx, toanChuVal, toanKhachVal, evalBatHung()),
         movingStars: movingStars,
         luanDoanData: luanDoanData,
         khoiSo: factory.khoiSo,
