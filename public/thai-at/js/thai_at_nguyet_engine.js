@@ -41,6 +41,33 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         return { thanIdx, class: 'thai-tue', name: 'Thái Tuế' };
     }
 
+    // 3b. Văn Xương Nguyệt Kế: Khởi Thân (idx 0), đi thuận 16 thần, lưu 2 toán ở Kiền(3) và Khôn(15)
+    calcVanXuong() {
+        const R = (this.kyDuThang % 18) || 18;
+        let current = 0; // Thân idx=0
+        let stepCount = 1;
+        const pauseArr = [3, 15]; // Kiền, Khôn
+        if (R <= 1) return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
+        let safety = 0;
+        while (stepCount < R && safety < 100) {
+            safety++;
+            if (pauseArr.includes(current)) {
+                stepCount++;
+                if (stepCount >= R) return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
+            }
+            current = (current + 1) % 16;
+            stepCount++;
+        }
+        return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
+    }
+
+    // 3c. Kế Thần Nguyệt Kế: Khởi Dần (Chi Dần = 2), đi nghịch 12 địa chi
+    calcKeThan() {
+        const targetChiIdx = (2 - (this.kyDuThang % 12) + 120) % 12;
+        const thanIdx = CHI_TO_THAN_IDX[targetChiIdx];
+        return { thanIdx, name: "Kế Thần", class: "ke-than" };
+    }
+
     // Thái Âm đứng sau Thái Tuế CỦA NĂM 2 cung (Chi Năm - 2)
     calcThaiAm() {
         const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;

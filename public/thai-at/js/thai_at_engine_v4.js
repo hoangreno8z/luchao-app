@@ -509,14 +509,13 @@ class ThaiAtBaseEngine {
         else if (this.mode === 'nhat' && this.soNgay !== undefined) tichVal = this.soNgay;
         else if (this.mode === 'thoi' && this.soGio !== undefined) tichVal = this.soGio;
 
-        const batMonStep = Math.floor(((tichVal !== undefined ? tichVal : this.tueTich) % 240) / 30);
-        const trucSuGateIdx = batMonStep % 8; // 0..7
+        const batMonStep = Math.floor(((tichVal - 1 + 240) % 240) / 30);
+        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep % 8);
 
         for (let i = 0; i < 8; i++) {
             const pal = BAT_QUAI_PALACES[i];
-            const gateIdx = (trucSuGateIdx + i) % 8;
-            const gateName = BAT_MON_LIST[gateIdx];
-            const isTrucSu = (gateIdx === trucSuGateIdx);
+            const gateName = rotatedDoors[i];
+            const isTrucSu = (i === 0);
 
             res.push({
                 thanIdx: pal.thanIdx,
@@ -1260,7 +1259,13 @@ function calculateNhanMenh(year, month, day, hour) {
 
 if (typeof window === 'undefined') {
     global.ThaiAtBaseEngine = ThaiAtBaseEngine;
-    global.getTuTru = getTuTru;
+    global.NguyetKeEngine = NguyetKeEngine;
+    global.TueKeEngine = TueKeEngine;
+    global.NhatKeEngine = NhatKeEngine;
+    global.ThoiKeEngine = ThoiKeEngine;
+    global.calculateThaiAtChart = calculateThaiAtChart;
+    global.rotateArray = rotateArray;
+    global.getTuTru = (typeof getTuTru !== 'undefined') ? getTuTru : null;
     global.CUNG_TO_THAN_IDX = CUNG_TO_THAN_IDX;
     global.CHI_TO_THAN_IDX = CHI_TO_THAN_IDX;
     global.THAP_LUC_THAN = THAP_LUC_THAN;

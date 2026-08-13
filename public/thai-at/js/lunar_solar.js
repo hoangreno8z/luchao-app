@@ -160,3 +160,13 @@ function getTuTru(year, month, day, hour) {
         solarDate: `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year} — ${String(hour).padStart(2,'0')}:00`
     };
 }
+
+if (typeof window === 'undefined') {
+    global.getTuTru = getTuTru;
+    global.getCanChiYear = getCanChiYear;
+    global.getCanChiMonth = getCanChiMonth;
+    global.getCanChiDay = getCanChiDay;
+    global.getCanChiHour = getCanChiHour;
+    global.getJulianDay = getJulianDay;
+    global.getExactSolarTerm = (typeof getExactSolarTerm !== 'undefined') ? getExactSolarTerm : function() { return { name: "Thanh Minh" }; };
+}
