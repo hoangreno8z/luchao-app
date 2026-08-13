@@ -195,8 +195,11 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
             { thanIdx: 1,  id: "dau",  name: "Đoài" }
         ];
 
-        const batMonStep = ((this.cucNum - 1) % 8 + 8) % 8;
-        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep);
+        const tichVal = this.tichThang || (this.kyDuThang ? this.kyDuThang : 3966);
+        const du240 = tichVal % 240;
+        const batMonStep = Math.floor(du240 / 30);
+        const soThangTrucSu = (du240 % 30) || 30;
+        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep % 8);
 
         for (let i = 0; i < 8; i++) {
             const pal = BAT_QUAI_PALACES[i];
@@ -205,10 +208,11 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
 
             res.push({
                 thanIdx: pal.thanIdx,
-                name: isTrucSu ? `Cửa ${gateName} (Trực Sự)` : `Cửa ${gateName}`,
+                name: isTrucSu ? `Cửa ${gateName} (Trực Sự - ${soThangTrucSu} tháng)` : `Cửa ${gateName}`,
                 class: isTrucSu ? "bat-mon-truc-su" : "bat-mon-phu",
                 gateName: gateName,
-                isTrucSu: isTrucSu
+                isTrucSu: isTrucSu,
+                soThangTrucSu: isTrucSu ? soThangTrucSu : null
             });
         }
 
