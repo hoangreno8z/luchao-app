@@ -367,6 +367,33 @@ class ThaiAtBaseEngine {
         const dpPath = (this.isDuongDon !== false) ? DE_PHU_DUONG : DE_PHU_AM;
         const dePhuIdx = dpPath[du20_dp - 1];
 
+        // 10. Phi Điểu: Kỷ Dư % 9 (nếu 0 thì = 9)
+        // Dương độn: Kiền(3) -> Ly(13) -> Cấn(7) -> Chấn(9) -> Trung(-1) -> Đoài(1) -> Khôn(15) -> Khảm(5) -> Tốn(11)
+        // Âm độn: Tốn(11) -> Khảm(5) -> Khôn(15) -> Đoài(1) -> Trung(-1) -> Chấn(9) -> Cấn(7) -> Ly(13) -> Kiền(3)
+        const du9_pd = (kVal % 9) || 9;
+        const PHI_DIEU_DUONG = [3, 13, 7, 9, -1, 1, 15, 5, 11];
+        const PHI_DIEU_AM = [11, 5, 15, 1, -1, 9, 7, 13, 3];
+        const pdPath = (this.isDuongDon !== false) ? PHI_DIEU_DUONG : PHI_DIEU_AM;
+        const phiDieuIdx = pdPath[du9_pd - 1];
+
+        // 11. Năm Hành (Ngũ Hành): Kỷ Dư % 5 (nếu 0 thì = 5)
+        // Dương độn: Kiền(3) -> Khảm(5) -> Cấn(7) -> Tốn(11) -> Khôn(15)
+        // Âm độn: Tốn(11) -> Ly(13) -> Khôn(15) -> Kiền(3) -> Cấn(7)
+        const du5_nh = (kVal % 5) || 5;
+        const NGU_HANH_DUONG = [3, 5, 7, 11, 15];
+        const NGU_HANH_AM = [11, 13, 15, 3, 7];
+        const nhPath = (this.isDuongDon !== false) ? NGU_HANH_DUONG : NGU_HANH_AM;
+        const nguHanhIdx = nhPath[du5_nh - 1];
+
+        // 12. Tam Phong: Kỷ Dư % 9 (nếu 0 thì = 9)
+        // Dương độn: Cấn(7) -> Khôn(15) -> Ly(13) -> Đoài(1) -> Kiền(3) -> Trung(-1) -> Tốn(11) -> Chấn(9) -> Khảm(5)
+        // Âm độn: Khôn(15) -> Cấn(7) -> Khảm(5) -> Chấn(9) -> Tốn(11) -> Trung(-1) -> Kiền(3) -> Đoài(1) -> Ly(13)
+        const du9_tp = (kVal % 9) || 9;
+        const TAM_PHONG_DUONG = [7, 15, 13, 1, 3, -1, 11, 9, 5];
+        const TAM_PHONG_AM = [15, 7, 5, 9, 11, -1, 3, 1, 13];
+        const tpPath = (this.isDuongDon !== false) ? TAM_PHONG_DUONG : TAM_PHONG_AM;
+        const tamPhongIdx = tpPath[du9_tp - 1];
+
         return [
             { thanIdx: tuThanIdx, name: "Tứ Thần", class: "tu-than" },
             { thanIdx: thienAtIdx, name: "Thiên Ất", class: "tu-than" },
@@ -379,6 +406,9 @@ class ThaiAtBaseEngine {
             { thanIdx: thienHoangIdx, name: "Thiên Hoàng", class: "tu-than" },
             { thanIdx: thienThoiIdx, name: "Thiên Thời", class: "tu-than" },
             { thanIdx: dePhuIdx, name: "Đế Phù", class: "tu-than" },
+            { thanIdx: phiDieuIdx, name: "Phi Điểu", class: "tu-than" },
+            { thanIdx: nguHanhIdx, name: "Ngũ Hành", class: "tu-than" },
+            { thanIdx: tamPhongIdx, name: "Tam Phong", class: "tu-than" },
             { thanIdx: xkIdx, name: "Xích Kỳ (Cờ Đỏ)", class: "co-khac" },
             { thanIdx: hkIdx, name: "Hắc Kỳ (Cờ Đen)", class: "co-khac" }
         ];
