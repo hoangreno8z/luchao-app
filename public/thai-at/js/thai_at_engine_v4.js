@@ -101,11 +101,11 @@ class ThaiAtBaseEngine {
     }
     
     calcVanXuong() {
-        // Dương độn: Khởi Thân(đi thuận 16 thần, gặp Kiền Khôn lưu 2 toán)
-        const R = this.kyDu % 18 || 18;
-        let current = 0; // Thân idx=0
+        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
+        const R = kyDuVal % 18 || 18;
+        let current = this.isDuongDon ? 0 : 8; // Dương: Thân(0), Âm: Dần(8)
         let stepCount = 1;
-        const pauseArr = this.isDuongDon ? [3, 15] : [7, 11]; // Kiền,Khôn vs Cấn,Tốn
+        const pauseArr = this.isDuongDon ? [3, 15] : [7, 11]; // Dương: Kiền(3),Khôn(15) vs Âm: Cấn(7),Tốn(11)
         if (R <= 1) return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
         let safety = 0;
         while (stepCount < R && safety < 100) {
