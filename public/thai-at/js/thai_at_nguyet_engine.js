@@ -7,7 +7,7 @@
  * 3. Thái Tuế an vị tại Nguyệt Kiến (Địa Chi tháng hiện tại).
  * 4. Tam Tài Generals Lock Rule (Chỉ đuôi 5 mới vào Trung Cung, đuôi 0 Vô Thiên).
  * 5. Phi tinh 27 sao (TP, VX, QT) bằng rotateArray theo Lạc Thư chuẩn (Zero duplicates & Cung Mão đầy đủ).
- * 6. Đại Du & Tiểu Du mỏ neo theo Tích Niên năm.
+ * 6. Đại Du & Tiểu Du mỏ neo theo Tích Niên năm (Dynamic Modulo calculation).
  */
 
 class RealNguyetKeEngine extends ThaiAtBaseEngine {
@@ -120,29 +120,47 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
             });
         }
 
-        // 4. Đại Du & Tiểu Du Mỏ Neo Tích Niên Năm (10.155.943)
-        const yearTich = (this.tuTru && this.tuTru.year && this.tuTru.year.tueTich) ? this.tuTru.year.tueTich : 10155943;
+        // 4. Đại Du & Tiểu Du Mỏ Neo Tích Niên Năm (Động bằng Toán Modulo)
+        const yearTich = this.fullTueTich || 10155943;
         const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // 0:Khôn(15), 1:Cấn(7), 2:Chấn(9), 3:Tốn(11), 4:Ly(13), 5:Càn(3), 6:Đoài(1), 7:Khảm(5)
-        const ddIdx = PATH_DAI_DU[2]; // Chấn(9 - Mão)
+        const ddStep = Math.floor(((yearTich + 34) % 288) / 36);
+        const ddIdx = PATH_DAI_DU[ddStep % 8];
 
         const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
-        const tdIdx = PATH_TIEU_DU[4]; // Đoài(1 - Dậu)
+        const tdStep = Math.floor((yearTich % 192) / 24);
+        const tdIdx = PATH_TIEU_DU[tdStep % 8];
 
         pushStar(ddIdx, 'dai-du', 'Đại Du');
         pushStar(tdIdx, 'tieu-du', 'Tiểu Du');
 
-        // Tứ Thần Kỳ, Thiên Hoàng, Thiên Thời, Đế Phù
-        const thStep = kyDu % 20;
-        let thThan = (7 + thStep) % 16;
-        if (thStep > 0 && thThan % 2 !== 0 && [1, 5, 11, 15].includes(thThan)) thThan = (thThan + 1) % 16;
+        // Tứ Thần Kỳ, Thiên Hoàng, Thiên Thời, Đế Phù (Tra mảng & countSteps chuẩn)
+        const r20 = (kyDu % 20) || 20;
+        const THIEN_HOANG_DUONG = [0, 1, 2, 3, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 14, 15, 15];
+        const thThan = THIEN_HOANG_DUONG[r20 - 1];
         pushStar(thThan, 'thien-hoang', 'Thiên Hoàng');
 
         const ttStep = kyDu % 12;
         pushStar(CHI_TO_THAN_IDX[(2 + ttStep) % 12], 'thien-thoi', 'Thiên Thời');
         
-        const dpStep = kyDu % 20;
-        let dpThan = (13 + dpStep) % 16;
-        if (dpStep > 0 && dpThan % 2 === 0) dpThan = (dpThan + 1) % 16;
+        const countSteps = (startIdx, steps, pauseArr) => {
+            let current = startIdx;
+            let stepCount = 1;
+            if (steps <= 1) return current;
+            let safety = 0;
+            while (safety < 100) {
+                safety++;
+                if (pauseArr.includes(current)) {
+                    stepCount++;
+                    if (stepCount >= steps) return current;
+                }
+                current = (current + 1) % 16;
+                stepCount++;
+                if (stepCount >= steps) return current;
+            }
+            return current;
+        };
+        const dephuR = kyDu % 20 || 20;
+        const dpThan = countSteps(2, dephuR, [5, 9, 13, 1]); // Tuất=2
         pushStar(dpThan, 'de-phu', 'Đế Phù');
 
         return stars;

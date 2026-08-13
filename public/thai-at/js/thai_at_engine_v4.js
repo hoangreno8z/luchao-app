@@ -249,12 +249,12 @@ class ThaiAtBaseEngine {
         // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái)
         const ddStep = Math.floor(((this.tueTich + 34) % 288) / 36);
         const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // 0:Khôn(15), 1:Cấn(7), 2:Chấn(9), 3:Tốn(11), 4:Ly(13), 5:Càn(3), 6:Đoài(1), 7:Khảm(5)
-        const ddIdx = PATH_DAI_DU[2]; // Chấn(9 - Mão)
+        const ddIdx = PATH_DAI_DU[ddStep % 8]; // Động: Ánh xạ Modulo vào mảng quỹ đạo
         
         // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái)
         const tdStep = Math.floor((this.tueTich % 192) / 24);
         const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
-        const tdIdx = PATH_TIEU_DU[4]; // Đoài(1 - Dậu)
+        const tdIdx = PATH_TIEU_DU[tdStep % 8]; // Động: Ánh xạ Modulo vào mảng quỹ đạo
         
         return [
             { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co" },
