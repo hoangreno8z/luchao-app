@@ -331,6 +331,24 @@ class ThaiAtBaseEngine {
         const HAC_KY_PATH = [4, 2, 1, 0, 14, 13, 12, 10, 9, 8, 6, 5];
         const hkIdx = HAC_KY_PATH[(P_hk - 1) % 12];
         
+        // 6. Thiên Tôn: Kỷ Dư % 4 (nếu 0 thì = 4)
+        // Dương độn: Khảm(5) -> Đoài(1) -> Ly(13) -> Chấn(9)
+        // Âm độn: Chấn(9) -> Ly(13) -> Đoài(1) -> Khảm(5)
+        const du4_tt = (kVal % 4) || 4;
+        const THIEN_TON_DUONG = [5, 1, 13, 9];
+        const THIEN_TON_AM = [9, 13, 1, 5];
+        const ttPath = (this.isDuongDon !== false) ? THIEN_TON_DUONG : THIEN_TON_AM;
+        const thienTonIdx = ttPath[du4_tt - 1];
+
+        // 7. Thiên Hoàng: Kỷ Dư % 20 (nếu 0 thì = 20)
+        // Dương độn: Thân(0), Dậu(1), Tuất(2), Kiền(3), Kiền(3), Hợi(4), Tý(5), Sửu(6), Cấn(7), Cấn(7), Dần(8), Mão(9), Thìn(10), Tốn(11), Tốn(11), Tị(12), Ngọ(13), Mùi(14), Khôn(15), Khôn(15)
+        // Âm độn: Dần(8), Cấn(7), Cấn(7), Sửu(6), Tý(5), Hợi(4), Kiền(3), Kiền(3), Tuất(2), Dậu(1), Thân(0), Khôn(15), Khôn(15), Mùi(14), Ngọ(13), Tị(12), Tốn(11), Tốn(11), Thìn(10), Mão(9)
+        const du20_th = (kVal % 20) || 20;
+        const THIEN_HOANG_DUONG = [0, 1, 2, 3, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 14, 15, 15];
+        const THIEN_HOANG_AM = [8, 7, 7, 6, 5, 4, 3, 3, 2, 1, 0, 15, 15, 14, 13, 12, 11, 11, 10, 9];
+        const thPath = (this.isDuongDon !== false) ? THIEN_HOANG_DUONG : THIEN_HOANG_AM;
+        const thienHoangIdx = thPath[du20_th - 1];
+
         return [
             { thanIdx: tuThanIdx, name: "Tứ Thần", class: "tu-than" },
             { thanIdx: thienAtIdx, name: "Thiên Ất", class: "tu-than" },
@@ -339,6 +357,8 @@ class ThaiAtBaseEngine {
             { thanIdx: tlIdx, name: "Thanh Long (Cờ Xanh)", class: "tu-than" },
             { thanIdx: taIdx, name: "Thái Âm", class: "tu-than" },
             { thanIdx: phiPhuIdx, name: "Phi Phù", class: "tu-than" },
+            { thanIdx: thienTonIdx, name: "Thiên Tôn", class: "tu-than" },
+            { thanIdx: thienHoangIdx, name: "Thiên Hoàng", class: "tu-than" },
             { thanIdx: xkIdx, name: "Xích Kỳ (Cờ Đỏ)", class: "co-khac" },
             { thanIdx: hkIdx, name: "Hắc Kỳ (Cờ Đen)", class: "co-khac" }
         ];
