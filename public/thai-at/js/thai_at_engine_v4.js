@@ -228,11 +228,15 @@ class ThaiAtBaseEngine {
         // Dân Cơ: Chi + 10 (Tý cho Dần=2)
         const danCoIdx = CHI_TO_THAN_IDX[(cucChiIdx + 10) % 12];
         
-        // Ngũ Phúc (Dùng Tích Trung Cổ Giáp Dần % 225 / 45 -> Càn, Cấn, Tốn, Khôn, Trung)
+        // Ngũ Phúc (Dùng Tích Trung Cổ Giáp Dần % 225 / 45 -> Kiền, Cấn, Tốn, Khôn, Trung)
         const npR = this.tichTrungCo % 225;
         const npQ = Math.floor(npR / 45);
-        const npPath = [3, 7, 11, 15, -1]; // 1: Càn(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
+        const npRem = (npR % 45) || 45;
+        const npPath = [3, 7, 11, 15, -1]; // 1: Kiền(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
+        const npNames = ["Kiền", "Cấn", "Tốn", "Khôn", "Trung Cung"];
         const npIdx = npPath[npQ % 5];
+        const npCungName = npNames[npQ % 5];
+        const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
         
         // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái: Khôn, Khảm, Tốn, Kiền, Ly, Cấn, Chấn, Đoài)
         const yearNum = (this.tuTru && this.tuTru.year && this.tuTru.year.yearNum) ? this.tuTru.year.yearNum : null;
@@ -250,7 +254,7 @@ class ThaiAtBaseEngine {
             { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co", unique: "quan_co" },
             { thanIdx: thanCoIdx, name: "Thần Cơ", class: "than-co", unique: "than_co" },
             { thanIdx: danCoIdx, name: "Dân Cơ", class: "dan-co", unique: "dan_co" },
-            { thanIdx: npIdx, name: "Ngũ Phúc", class: "ngu-phuc", unique: "ngu_phuc" },
+            { thanIdx: npIdx, name: `Ngũ Phúc (Cung ${npCungName} - ${npRem} ${unitName})`, class: "ngu-phuc", unique: "ngu_phuc" },
             { thanIdx: ddIdx, name: "Đại Du", class: "dai-du", unique: "dai_du" },
             { thanIdx: tdIdx, name: "Tiểu Du", class: "tieu-du", unique: "tieu_du" }
         ];
