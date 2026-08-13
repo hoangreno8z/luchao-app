@@ -75,14 +75,29 @@ class ThaiAtBaseEngine {
     
     // ------ NHÓM KỶ DƯ (MOD 360/24/18/12) ------
     calcThaiAt() {
-        let R = this.kyDu % 24 || 24;
-        const palaceIndex = Math.floor((R - 1) / 3);
-        const yearInPalace = ((R - 1) % 3) + 1;
-        // Dương độn: Càn(1)→Ly(2)→Cấn(3)→Chấn(4)→Đoài(6)→Khôn(7)→Khảm(8)→Tốn(9)
-        // Âm độn: Tốn(9)→Khảm(8)→Khôn(7)→Đoài(6)→Chấn(4)→Cấn(3)→Ly(2)→Càn(1)
-        const path = this.isDuongDon ? [3, 13, 7, 9, 1, 15, 5, 11] : [11, 5, 15, 1, 9, 7, 13, 3];
-        const thanIdx = path[palaceIndex];
-        return { thanIdx, name: `Thái Ất (Cung ${palaceIndex + 1}, Năm ${yearInPalace})`, class: "thai-at" };
+        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
+        const du24 = kyDuVal % 24;
+        const step = Math.floor(du24 / 3);
+        const rem = (du24 % 3) || 3;
+
+        const PATH_DUONG = [3, 13, 7, 9, 1, 15, 5, 11]; // Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn
+        const PATH_AM = [11, 5, 15, 1, 9, 7, 13, 3];    // Tốn, Khảm, Khôn, Đoài, Chấn, Cấn, Ly, Kiền
+        const PATH_NAMES_DUONG = ["Kiền", "Ly", "Cấn", "Chấn", "Đoài", "Khôn", "Khảm", "Tốn"];
+        const PATH_NAMES_AM = ["Tốn", "Khảm", "Khôn", "Đoài", "Chấn", "Cấn", "Ly", "Kiền"];
+
+        const path = this.isDuongDon ? PATH_DUONG : PATH_AM;
+        const namePath = this.isDuongDon ? PATH_NAMES_DUONG : PATH_NAMES_AM;
+        const thanIdx = path[step % 8];
+        const cungName = namePath[step % 8];
+        const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
+
+        return {
+            thanIdx,
+            cungName,
+            soNamAnToa: rem,
+            name: `Thái Ất (Cung ${cungName} - ${rem} ${unitName})`,
+            class: "thai-at"
+        };
     }
     
     calcVanXuong() {
