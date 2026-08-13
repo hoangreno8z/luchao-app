@@ -368,7 +368,8 @@ class ThaiAtBaseEngine {
         const ddCungName = NAMES_DAI_DU[ddStep % 8];
         
         // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái: Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn)
-        const tdStep = Math.floor(((yearTich + 10) % 192) / 24);
+        const yTichVal = this.tueTich || (this.tichTrungCo ? (this.tichTrungCo + 10143297) : (1987 + 10153917));
+        const tdStep = Math.floor(((yTichVal + 10) % 192) / 24);
         const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
         const tdIdx = PATH_TIEU_DU[tdStep % 8];
         
@@ -427,6 +428,7 @@ class ThaiAtBaseEngine {
         const xkIdx = XICH_KY_PATH[r4_xk - 1];
         
         // 5. Hắc Kỳ: (Kỷ Dư + 25) % 36 / 3, khởi Hợi nghịch 12 địa chi
+        const unitName = (this.mode === 'nguyet') ? "tháng" : ((this.mode === 'nhat') ? "ngày" : ((this.mode === 'thoi') ? "giờ" : "năm"));
         const r36_hk = (kVal + 25) % 36;
         const P_hk = Math.floor(r36_hk / 3);
         const hkRem = (r36_hk % 3) || 3;
@@ -1273,10 +1275,10 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         batHung: evalBatHung(),
         verdict: evaluateThaiAtVerdict(currRes.core.taIdx, currRes.core.vxIdx, currRes.core.tkIdx, toanChuVal, toanKhachVal, evalBatHung()),
         toanProperties: {
-            chu: ThaiAtEngineV4.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.ctIdx : -1, 'chu_toan'),
-            khach: ThaiAtEngineV4.analyzeToanFull(toanKhachRawVal, currRes.core ? currRes.core.ktIdx : -1, 'khach_toan'),
-            dinh: ThaiAtEngineV4.analyzeToanFull(toanDinhRawVal, keDinhIdx, 'dinh_toan'),
-            thaiAt: ThaiAtEngineV4.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.taIdx : -1, 'thai_at')
+            chu: ThaiAtBaseEngine.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.ctIdx : -1, 'chu_toan'),
+            khach: ThaiAtBaseEngine.analyzeToanFull(toanKhachRawVal, currRes.core ? currRes.core.ktIdx : -1, 'khach_toan'),
+            dinh: ThaiAtBaseEngine.analyzeToanFull(toanDinhRawVal, keDinhIdx, 'dinh_toan'),
+            thaiAt: ThaiAtBaseEngine.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.taIdx : -1, 'thai_at')
         },
         luanDoanData: luanDoanData,
         khoiSo: factory.khoiSo,
