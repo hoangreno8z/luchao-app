@@ -616,6 +616,16 @@ class ThaiAtBaseEngine {
 // ==========================================
 // 3. MODE IMPLEMENTATIONS
 // ==========================================
+function isPalaceHarmony(palaceIdx, toanVal) {
+    const DUONG_CUNGS = [3, 7, 9, 11]; // Càn(3), Cấn(7), Chấn(9), Tốn(11)
+    const isDuongCung = DUONG_CUNGS.includes(palaceIdx);
+    const isToanChan = (toanVal % 2 === 0);
+
+    if (isDuongCung && !isToanChan) return false; // BẤT HÒA
+    if (!isDuongCung && isToanChan) return false; // BẤT HÒA
+    return true; // HÒA
+}
+
 function evaluateThaiAtVerdict(taIdx, vxIdx, tkIdx, toanChuVal, toanKhachVal, batHungStr) {
     if (batHungStr && batHungStr.includes("Yểm")) {
         return "YỂM — Giặc đánh úp, âm thịnh dương suy, mặt trời bị che lấp!";
@@ -627,16 +637,8 @@ function evaluateThaiAtVerdict(taIdx, vxIdx, tkIdx, toanChuVal, toanKhachVal, ba
         return "TÙ — Quân vương bị giam lỏng, nguy cơ cướp ngôi!";
     }
 
-    const DUONG_CUNGS = [3, 7, 9, 11]; // Càn, Cấn, Chấn, Tốn
-    const AM_CUNGS = [13, 15, 1, 5];    // Ly, Khôn, Đoài, Khảm
-
-    const isTaDuong = DUONG_CUNGS.includes(taIdx);
-    const isTaToanOdd = (toanChuVal % 2 !== 0);
-    const isTaHoa = isTaDuong ? !isTaToanOdd : isTaToanOdd;
-
-    const isVxAm = AM_CUNGS.includes(vxIdx);
-    const isTkToanEven = (toanKhachVal % 2 === 0);
-    const isNmHoa = isVxAm ? !isTkToanEven : isTkToanEven;
+    const isTaHoa = isPalaceHarmony(taIdx, toanChuVal);
+    const isNmHoa = isPalaceHarmony(vxIdx, toanKhachVal);
 
     if (!isTaHoa && !isNmHoa) {
         return "BẤT HÒA — Khí nghịch, âm dương đối lập, vạn sự trái với lẽ tự nhiên.";
