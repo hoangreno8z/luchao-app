@@ -215,17 +215,16 @@ class ThaiAtBaseEngine {
     calcCoPhucDu() {
         const tichDu = this.tichTrungCo % 360;
         
-        // Quân Cơ: Khởi Ngọ (6), đi thuận 12 chi, 30 năm/cung
-        const quanCoStep = Math.floor(tichDu / 30);
-        const quanCoIdx = CHI_TO_THAN_IDX[(6 + quanCoStep) % 12];
+        const yearChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
         
-        // Thần Cơ: Khởi Ngọ (6), đi thuận 12 chi, 3 năm/cung
-        const thanCoStep = Math.floor((tichDu % 36) / 3);
-        const thanCoIdx = CHI_TO_THAN_IDX[(6 + thanCoStep) % 12];
+        // Quân Cơ: An tại Mùi (Chi + 7) cho năm Tý
+        const quanCoIdx = CHI_TO_THAN_IDX[(yearChiIdx + 7) % 12];
         
-        // Dân Cơ: Khởi Tuất (10), đi thuận 12 chi, 1 năm/cung
-        const danCoStep = (this.tichTrungCo % 12 || 12) - 1;
-        const danCoIdx = CHI_TO_THAN_IDX[(10 + danCoStep) % 12];
+        // Thần Cơ: An tại Ngọ (Chi + 6) cho năm Tý
+        const thanCoIdx = CHI_TO_THAN_IDX[(yearChiIdx + 6) % 12];
+        
+        // Dân Cơ: An tại Tuất (Chi + 10) cho năm Tý
+        const danCoIdx = CHI_TO_THAN_IDX[(yearChiIdx + 10) % 12];
         
         // Ngũ Phúc (Dùng Tích Trung Cổ Giáp Dần % 225 / 45 -> Càn, Cấn, Tốn, Khôn, Trung)
         const npR = this.tichTrungCo % 225;
