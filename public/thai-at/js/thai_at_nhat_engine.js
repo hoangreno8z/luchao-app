@@ -3,17 +3,8 @@ class RealNhatKeEngine extends ThaiAtBaseEngine {
         super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'nhat');
         this.jdInt = jdInt;
         this.soNgay = soNgay;
-    }
-    
-    // Mốc tương đối (Tìm Cục, Thái Ất)
-    calcThaiAt() {
-        const cucNum = (this.soNgay % 72) || 72; // 1-72
-        const step = Math.floor((cucNum - 1) / 3);
-        // Khởi cung 1 đi thuận 8 cung (Bỏ qua Trung Cung)
-        // 1(Khảm), 2(Khôn), 3(Chấn), 4(Tốn), 6(Kiền), 7(Đoài), 8(Cấn), 9(Ly)
-        const PATH_8 = [0, 2, 4, 6, 10, 12, 14, 8];
-        const thanIdx = PATH_8[step % 8];
-        return { thanIdx, class: 'thai-at', name: 'Thái Ất' };
+        this.cucNum = (this.soNgay % 72) || 72;
+        this.donCucName = (this.isDuongDon ? "Dương Độn" : "Âm Độn") + ` — Cục ${this.cucNum}`;
     }
 
     calcOtherStars() {
