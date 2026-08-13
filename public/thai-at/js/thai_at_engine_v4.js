@@ -394,6 +394,24 @@ class ThaiAtBaseEngine {
         const tpPath = (this.isDuongDon !== false) ? TAM_PHONG_DUONG : TAM_PHONG_AM;
         const tamPhongIdx = tpPath[du9_tp - 1];
 
+        // 13. Ngũ Phong: Kỷ Dư % 9 (nếu 0 thì = 9)
+        // Dương độn: Kiền(3) -> Cấn(7) -> Trung(-1) -> Khôn(15) -> Tốn(11) -> Ly(13) -> Chấn(9) -> Đoài(1) -> Khảm(5)
+        // Âm độn: Khôn(15) -> Cấn(7) -> Khảm(5) -> Chấn(9) -> Tốn(11) -> Trung(-1) -> Kiền(3) -> Đoài(1) -> Ly(13)
+        const du9_np = (kVal % 9) || 9;
+        const NGU_PHONG_DUONG = [3, 7, -1, 15, 11, 13, 9, 1, 5];
+        const NGU_PHONG_AM = [15, 7, 5, 9, 11, -1, 3, 1, 13];
+        const npPhongPath = (this.isDuongDon !== false) ? NGU_PHONG_DUONG : NGU_PHONG_AM;
+        const nguPhongIdx = npPhongPath[du9_np - 1];
+
+        // 14. Bát Phong: Kỷ Dư % 9 (nếu 0 thì = 9)
+        // Dương độn: Ly(13) -> Cấn(7) -> Chấn(9) -> Trung(-1) -> Đoài(1) -> Khôn(15) -> Khảm(5) -> Tốn(11) -> Kiền(3)
+        // Âm độn: Khảm(5) -> Khôn(15) -> Đoài(1) -> Trung(-1) -> Chấn(9) -> Cấn(7) -> Ly(13) -> Kiền(3) -> Tốn(11)
+        const du9_bp = (kVal % 9) || 9;
+        const BAT_PHONG_DUONG = [13, 7, 9, -1, 1, 15, 5, 11, 3];
+        const BAT_PHONG_AM = [5, 15, 1, -1, 9, 7, 13, 3, 11];
+        const bpPath = (this.isDuongDon !== false) ? BAT_PHONG_DUONG : BAT_PHONG_AM;
+        const batPhongIdx = bpPath[du9_bp - 1];
+
         return [
             { thanIdx: tuThanIdx, name: "Tứ Thần", class: "tu-than" },
             { thanIdx: thienAtIdx, name: "Thiên Ất", class: "tu-than" },
@@ -409,6 +427,8 @@ class ThaiAtBaseEngine {
             { thanIdx: phiDieuIdx, name: "Phi Điểu", class: "tu-than" },
             { thanIdx: nguHanhIdx, name: "Ngũ Hành", class: "tu-than" },
             { thanIdx: tamPhongIdx, name: "Tam Phong", class: "tu-than" },
+            { thanIdx: nguPhongIdx, name: "Ngũ Phong", class: "tu-than" },
+            { thanIdx: batPhongIdx, name: "Bát Phong", class: "tu-than" },
             { thanIdx: xkIdx, name: "Xích Kỳ (Cờ Đỏ)", class: "co-khac" },
             { thanIdx: hkIdx, name: "Hắc Kỳ (Cờ Đen)", class: "co-khac" }
         ];
