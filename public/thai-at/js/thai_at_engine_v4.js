@@ -257,11 +257,14 @@ class ThaiAtBaseEngine {
         const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
         
         // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái: Khôn, Khảm, Tốn, Kiền, Ly, Cấn, Chấn, Đoài)
-        const yearNum = (this.tuTru && this.tuTru.year && this.tuTru.year.yearNum) ? this.tuTru.year.yearNum : null;
-        const yearTich = yearNum ? (THUONG_CO_EPOCH + yearNum) : (this.fullTueTich || (this.tueTich > 10000000 ? this.tueTich : THUONG_CO_EPOCH + 2026));
-        const ddStep = Math.floor(((yearTich + 34) % 288) / 36);
+        const ddVal = (this.tueTich && this.mode === 'tue') ? (this.tueTich + 34) : (this.tichTrungCo || (2014 + 12607));
+        const ddR = ddVal % 288;
+        const ddStep = Math.floor(ddR / 36);
+        const ddRem = (ddR % 36) || 36;
         const PATH_DAI_DU = [15, 5, 11, 3, 13, 7, 9, 1]; // 0:Khôn(15), 1:Khảm(5), 2:Tốn(11), 3:Kiền(3), 4:Ly(13), 5:Cấn(7), 6:Chấn(9), 7:Đoài(1)
+        const NAMES_DAI_DU = ["Khôn", "Khảm", "Tốn", "Kiền", "Ly", "Cấn", "Chấn", "Đoài"];
         const ddIdx = PATH_DAI_DU[ddStep % 8];
+        const ddCungName = NAMES_DAI_DU[ddStep % 8];
         
         // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái: Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn)
         const tdStep = Math.floor(((yearTich + 10) % 192) / 24);
@@ -273,7 +276,7 @@ class ThaiAtBaseEngine {
             { thanIdx: thanCoIdx, name: `Thần Cơ (Cung ${thanCoCungName} - ${tcRem} ${unitName})`, class: "than-co", unique: "than_co" },
             { thanIdx: danCoIdx, name: `Dân Cơ (Cung ${danCoCungName})`, class: "dan-co", unique: "dan_co" },
             { thanIdx: npIdx, name: `Ngũ Phúc (Cung ${npCungName} - ${npRem} ${unitName})`, class: "ngu-phuc", unique: "ngu_phuc" },
-            { thanIdx: ddIdx, name: "Đại Du", class: "dai-du", unique: "dai_du" },
+            { thanIdx: ddIdx, name: `Đại Du (Cung ${ddCungName} - ${ddRem} ${unitName})`, class: "dai-du", unique: "dai_du" },
             { thanIdx: tdIdx, name: "Tiểu Du", class: "tieu-du", unique: "tieu_du" }
         ];
     }
