@@ -441,20 +441,35 @@ class ThaiAtBaseEngine {
         const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
-        // 1. Cửu Tinh Trực Phù (900/90/10 năm)
+        // 1. Cửu Tinh Trực Phù (Phối Kỳ Môn Độn Giáp & Lục Nghi Tam Kỳ - 900/90/10 năm)
         const TP_SAO_NAMES = ["Thiên Bồng", "Thiên Nhuế", "Thiên Xung", "Thiên Phụ", "Thiên Cầm", "Thiên Tâm", "Thiên Trụ", "Thiên Nhậm", "Thiên Ương"];
-        const cuuTinhStep = Math.floor((this.tueTich % 90) / 10);
-        const trucSuTpIdx = cuuTinhStep % 9;
-        
-        this.trucSuTpStarName = TP_SAO_NAMES[trucSuTpIdx];
-        const rotatedTp = rotateArray(TP_SAO_NAMES, trucSuTpIdx);
+        const CAN_TO_BIET_SO = { 0: 1, 1: 9, 2: 8, 3: 7, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6 };
+        const BIET_SO_TO_THAN_IDX = { 1: 5, 2: 15, 3: 9, 4: 11, 5: -1, 6: 3, 7: 1, 8: 7, 9: 13 };
 
-        for (let i = 0; i < 9; i++) {
+        const kValTP = this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360);
+        const du90_tp = kValTP % 90;
+        const q10_tp = Math.floor(du90_tp / 10);
+        const rem10_tp = (du90_tp % 10) || 10;
+        const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
+
+        const starTpIdx = q10_tp % 9;
+        this.trucSuTpStarName = TP_SAO_NAMES[starTpIdx];
+        
+        const canIdx = (this.namCanIdx !== undefined) ? this.namCanIdx : (this.tuTru && this.tuTru.year && this.tuTru.year.canIdx !== undefined ? this.tuTru.year.canIdx : 0);
+        const targetBietSo = CAN_TO_BIET_SO[canIdx] || 1;
+
+        for (let bietSo = 1; bietSo <= 9; bietSo++) {
+            const offset = (bietSo - targetBietSo + 9) % 9;
+            const currentStarIdx = (starTpIdx + offset) % 9;
+            const currentStarName = TP_SAO_NAMES[currentStarIdx];
+            const thanIdx = BIET_SO_TO_THAN_IDX[bietSo];
+            const isTrucPhuStar = (bietSo === targetBietSo);
+
             res.push({
-                thanIdx: LAC_THU_THAN_IDXS[i],
-                name: rotatedTp[i] + " (TP)",
+                thanIdx: thanIdx,
+                name: currentStarName + (isTrucPhuStar ? ` (TP - ${rem10_tp} ${unitName})` : " (TP)"),
                 class: "truc-phu",
-                unique: 'TP_' + rotatedTp[i]
+                unique: 'TP_' + currentStarName
             });
         }
 
