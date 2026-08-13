@@ -202,8 +202,8 @@ class ThaiAtBaseEngine {
         const thamKhachToan = (khachToan * 3) % 10;
         
         const res = [];
-        if (chuTuongIdx !== null) res.push({ thanIdx: chuTuongIdx, name: `Đại Tướng Chủ (Toán ${chuToan})`, class: "chu-tuong", rawToan: chuToanObj.raw });
-        if (khachTuongIdx !== null) res.push({ thanIdx: khachTuongIdx, name: `Đại Tướng Khách (Toán ${khachToan})`, class: "khach-tuong", rawToan: khachToanObj.raw });
+        if (chuTuongIdx !== null) res.push({ thanIdx: chuTuongIdx, name: `Đại Tướng Chủ (Toán ${chuToanObj.raw})`, class: "chu-tuong", rawToan: chuToanObj.raw });
+        if (khachTuongIdx !== null) res.push({ thanIdx: khachTuongIdx, name: `Đại Tướng Khách (Toán ${khachToanObj.raw})`, class: "khach-tuong", rawToan: khachToanObj.raw });
         
         const thamChuIdx = getTuongPosition(thamChuToan);
         const thamKhachIdx = getTuongPosition(thamKhachToan);
