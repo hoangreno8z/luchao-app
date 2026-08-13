@@ -55,7 +55,6 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         const kyDu = this.kyDuThang;
         // LAC_THU_THAN_IDXS: Index 0:Trung(-1), 1:Càn(3), 2:Đoài(1), 3:Cấn(7), 4:Ly(13), 5:Khảm(5), 6:Khôn(15), 7:Chấn(9-Mão), 8:Tốn(11)
         const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
-        const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 1. Vòng Trực Phù 9 Sao (TP)
         const STARS_TP = ["Thiên Bồng", "Thiên Nhuế", "Thiên Xung", "Thiên Phụ", "Thiên Cầm", "Thiên Tâm", "Thiên Trụ", "Thiên Nhậm", "Thiên Ương"];
@@ -64,9 +63,13 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         this.trucSuTpStarName = STARS_TP[trucSuTpIdx];
 
         const rotatedTp = rotateArray(STARS_TP, trucSuTpIdx);
-        res.push({ thanIdx: -1, name: rotatedTp[0] + " (TP)", class: "truc-phu", unique: 'TP_' + rotatedTp[0] });
-        for (let i = 0; i < 8; i++) {
-            res.push({ thanIdx: LAC_THU_THAN_IDXS[OTHER_PALACE_OFFSETS[i]], name: rotatedTp[i + 1] + " (TP)", class: "truc-phu", unique: 'TP_' + rotatedTp[i + 1] });
+        for (let i = 0; i < 9; i++) {
+            res.push({
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedTp[i] + " (TP)",
+                class: "truc-phu",
+                unique: 'TP_' + rotatedTp[i]
+            });
         }
 
         // 2. Vòng Văn Xương 9 Sao (VX)
@@ -78,9 +81,13 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         const trucSuVxIdx = (q_vx - 1 + start_vx - 1) % 9;
 
         const rotatedVx = rotateArray(STARS_VX, trucSuVxIdx);
-        res.push({ thanIdx: -1, name: rotatedVx[0] + " (VX)", class: "van-xuong-9", unique: 'VX_' + rotatedVx[0] });
-        for (let i = 0; i < 8; i++) {
-            res.push({ thanIdx: LAC_THU_THAN_IDXS[OTHER_PALACE_OFFSETS[i]], name: rotatedVx[i + 1] + " (VX)", class: "van-xuong-9", unique: 'VX_' + rotatedVx[i + 1] });
+        for (let i = 0; i < 9; i++) {
+            res.push({
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedVx[i] + " (VX)",
+                class: "van-xuong-9",
+                unique: 'VX_' + rotatedVx[i]
+            });
         }
 
         return res;
@@ -97,7 +104,6 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
 
         const kyDu = this.kyDuThang;
         const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
-        const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 3. Vòng Quý Thần 9 Sao (QT) - Rotate Array Lạc Thư
         const STARS_QT = ["Thái Nhất", "Nhiếp Đề", "Hiên Viên", "Chiêu Dao", "Thiên Phù", "Thanh Long", "Hàm Trì", "Thái Âm", "Thiên Hoàng"];
@@ -105,9 +111,13 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         const trucSuQtIdx = (r_qt - 1) % 9;
 
         const rotatedQt = rotateArray(STARS_QT, trucSuQtIdx);
-        stars.push({ thanIdx: -1, name: rotatedQt[0] + " (QT)", class: "quy-than", unique: 'QT_' + rotatedQt[0] });
-        for (let i = 0; i < 8; i++) {
-            stars.push({ thanIdx: LAC_THU_THAN_IDXS[OTHER_PALACE_OFFSETS[i]], name: rotatedQt[i + 1] + " (QT)", class: "quy-than", unique: 'QT_' + rotatedQt[i + 1] });
+        for (let i = 0; i < 9; i++) {
+            stars.push({
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedQt[i] + " (QT)",
+                class: "quy-than",
+                unique: 'QT_' + rotatedQt[i]
+            });
         }
 
         // 4. Đại Du & Tiểu Du Mỏ Neo Tích Niên Năm (10.155.943)

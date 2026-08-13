@@ -341,21 +341,14 @@ class ThaiAtBaseEngine {
         const trucSuTpIdx = cuuTinhStep % 9;
         
         this.trucSuTpStarName = TP_SAO_NAMES[trucSuTpIdx];
-
         const rotatedTp = rotateArray(TP_SAO_NAMES, trucSuTpIdx);
-        res.push({
-            thanIdx: -1,
-            name: rotatedTp[0] + " (TP)",
-            class: "truc-phu",
-            unique: 'TP_' + rotatedTp[0]
-        });
-        for (let i = 0; i < 8; i++) {
-            const palIdx = OTHER_PALACE_OFFSETS[i];
+
+        for (let i = 0; i < 9; i++) {
             res.push({
-                thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: rotatedTp[i + 1] + " (TP)",
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedTp[i] + " (TP)",
                 class: "truc-phu",
-                unique: 'TP_' + rotatedTp[i + 1]
+                unique: 'TP_' + rotatedTp[i]
             });
         }
 
@@ -368,19 +361,13 @@ class ThaiAtBaseEngine {
         const trucSuVxIdx = (q_vx - 1 + start_vx - 1) % 9;
 
         const rotatedVx = rotateArray(VX_SAO_NAMES, trucSuVxIdx);
-        res.push({
-            thanIdx: -1,
-            name: rotatedVx[0] + " (VX)",
-            class: "van-xuong-9",
-            unique: 'VX_' + rotatedVx[0]
-        });
-        for (let i = 0; i < 8; i++) {
-            const palIdx = OTHER_PALACE_OFFSETS[i];
+
+        for (let i = 0; i < 9; i++) {
             res.push({
-                thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: rotatedVx[i + 1] + " (VX)",
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedVx[i] + " (VX)",
                 class: "van-xuong-9",
-                unique: 'VX_' + rotatedVx[i + 1]
+                unique: 'VX_' + rotatedVx[i]
             });
         }
 
@@ -482,24 +469,16 @@ class ThaiAtBaseEngine {
         // --- QUÝ THẦN (9 SAO QUÝ THẦN: Trực Sự nhập Trung Cung, 8 sao phi tinh Lạc Thư) ---
         const QT_SAO_NAMES = ["Thái Nhất", "Nhiếp Đề", "Hiên Viên", "Chiêu Dao", "Thiên Phù", "Thanh Long", "Hàm Trì", "Thái Âm", "Thiên Hoàng"];
         const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
-        const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
         const r_qt = (kVal + 3) % 9 || 9;
         const trucSuQtIdx = (r_qt - 1) % 9;
 
         const rotatedQt = rotateArray(QT_SAO_NAMES, trucSuQtIdx);
-        res.push({
-            thanIdx: -1,
-            name: rotatedQt[0] + " (QT)",
-            class: "quy-than",
-            unique: 'QT_' + rotatedQt[0]
-        });
-        for (let i = 0; i < 8; i++) {
-            const palIdx = OTHER_PALACE_OFFSETS[i];
+        for (let i = 0; i < 9; i++) {
             res.push({
-                thanIdx: LAC_THU_THAN_IDXS[palIdx],
-                name: rotatedQt[i + 1] + " (QT)",
+                thanIdx: LAC_THU_THAN_IDXS[i],
+                name: rotatedQt[i] + " (QT)",
                 class: "quy-than",
-                unique: 'QT_' + rotatedQt[i + 1]
+                unique: 'QT_' + rotatedQt[i]
             });
         }
         
@@ -617,7 +596,7 @@ class ThaiAtBaseEngine {
 // 3. MODE IMPLEMENTATIONS
 // ==========================================
 function isPalaceHarmony(palaceIdx, toanVal) {
-    const DUONG_CUNGS = [3, 7, 9, 11]; // Càn(3), Cấn(7), Chấn(9), Tốn(11)
+    const DUONG_CUNGS = [3, 7, 9, 5]; // Kiền(3), Cấn(7), Chấn(9), Khảm(5)
     const isDuongCung = DUONG_CUNGS.includes(palaceIdx);
     const isToanChan = (toanVal % 2 === 0);
 
