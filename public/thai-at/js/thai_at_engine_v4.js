@@ -228,7 +228,7 @@ class ThaiAtBaseEngine {
         const quanCoCungName = CHI_NAMES_QC[qcQ % 12];
         
         // Thần Cơ (Khởi Ngọ qua 12 Chi thần, chu kỳ 36 số, 3 số/cung, % 360 % 36 / 3)
-        const tcVal = this.tichTrungCo || (2014 + 12607);
+        const tcVal = (this.mode === 'tue') ? (this.kyDu + 250) : (this.tichTrungCo || (2014 + 12607));
         const tc360 = tcVal % 360;
         const tc36 = tc360 % 36;
         const tcQ = Math.floor(tc36 / 3);
