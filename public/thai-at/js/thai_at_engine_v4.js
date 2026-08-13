@@ -132,32 +132,18 @@ class ThaiAtBaseEngine {
     }
 
     calcKeDinh(thaiTueIdx, vanXuongIdx) {
-        const THAN_HOP_MAP = { 0:12, 1:10, 2:9, 3:15, 4:8, 5:6, 6:5, 7:11, 8:4, 9:2, 10:1, 11:7, 12:0, 13:14, 14:13, 15:3 };
-        const thanHopIdx = THAN_HOP_MAP[thaiTueIdx] !== undefined ? THAN_HOP_MAP[thaiTueIdx] : thaiTueIdx;
+        if (thaiTueIdx === undefined || vanXuongIdx === undefined) return { thanIdx: 6, name: "Kế Định", class: "ke-dinh" };
         
-        // Count 12 Chi steps from thanHopIdx to vanXuongIdx (skipping 4 corners: 3, 7, 11, 15)
-        let stepCount = 1;
-        let p = thanHopIdx;
-        let safety = 0;
-        while (p !== vanXuongIdx && safety < 32) {
-            safety++;
-            p = (p + 1) % 16;
-            while ([3, 7, 11, 15].includes(p) && p !== vanXuongIdx) {
-                p = (p + 1) % 16;
-            }
-            stepCount++;
-        }
+        const cucChiIdx = (this.cucNum !== undefined && this.cucNum > 0) ? ((this.cucNum - 1) % 12) : ((this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0);
+        const LUC_HOP_CHI = { 0: 1, 1: 0, 2: 11, 3: 10, 4: 9, 5: 8, 6: 7, 7: 6, 8: 5, 9: 4, 10: 3, 11: 2 };
+        const thanHopIdx = CHI_TO_THAN_IDX[LUC_HOP_CHI[cucChiIdx]];
         
-        // Advance stepCount 12 Chi steps from thaiTueIdx
-        let keDinhIdx = thaiTueIdx;
-        for (let i = 1; i < stepCount; i++) {
-            keDinhIdx = (keDinhIdx + 1) % 16;
-            while ([3, 7, 11, 15].includes(keDinhIdx)) {
-                keDinhIdx = (keDinhIdx + 1) % 16;
-            }
-        }
+        // Đếm từ Thần Hợp đến Văn Xương qua 16 Thần Cung
+        const dist = (vanXuongIdx - thanHopIdx + 16) % 16;
         
-        return { thanIdx: keDinhIdx, name: "Kế Định", class: "ke-dinh", stepCount };
+        // Khởi từ Thái Tuế đếm thuận 16 Thần Cung vừa đủ số ngôi
+        const thanIdx = (thaiTueIdx + dist) % 16;
+        return { thanIdx, name: "Kế Định", class: "ke-dinh" };
     }
 
     // ------ NHÓM TÍCH HỢP (THỦY KÍCH, TƯỚNG) ------
