@@ -108,21 +108,14 @@ class ThaiAtBaseEngine {
     }
     
     calcKeThan() {
-        // Dương độn: Khởi Dần(idx=8) nghịch 12 Chi
-        // Âm độn: Khởi Thân(idx=0) nghịch 12 Chi
-        const R = this.kyDu % 12 || 12;
-        const startIdx = this.isDuongDon ? 8 : 0; // Dần=8, Thân=0
-        let current = startIdx;
-        for (let i = 1; i < R; i++) {
-            current = (current - 1 + 16) % 16;
-            // Bỏ qua 4 góc (Kiền, Cấn, Tốn, Khôn) khi đếm 12 chi
-            let safety = 0;
-            while ([3, 7, 11, 15].includes(current) && safety < 10) {
-                safety++;
-                current = (current - 1 + 16) % 16;
-            }
-        }
-        return { thanIdx: current, name: "Kế Thần", class: "ke-than" };
+        // Dương độn: Khởi Dần (Chi Dần = 2), đi nghịch 12 địa chi
+        // Âm độn: Khởi Thân (Chi Thân = 8), đi nghịch 12 địa chi
+        const startChiIdx = (this.isDuongDon !== false) ? 2 : 8; // Dần = 2, Thân = 8
+        const k = this.kyDuThang !== undefined ? this.kyDuThang : this.kyDu;
+        const r12 = (k % 12) || 12;
+        const targetChiIdx = (startChiIdx - (r12 - 1) + 120) % 12;
+        const thanIdx = CHI_TO_THAN_IDX[targetChiIdx];
+        return { thanIdx, name: "Kế Thần", class: "ke-than" };
     }
 
     calcKeDinh(thaiTueIdx, vanXuongIdx) {
