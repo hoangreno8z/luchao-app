@@ -3,8 +3,10 @@ class RealNhatKeEngine extends ThaiAtBaseEngine {
         super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'nhat');
         this.jdInt = jdInt;
         this.soNgay = soNgay;
-        this.cucNum = (this.soNgay % 72) || 72;
-        this.donCucName = (this.isDuongDon ? "Dương Độn" : "Âm Độn") + ` — Cục ${this.cucNum}`;
+        this.kyDuNgay = (soNgay % 360) || 360;
+        this.nguyenNum = Math.floor((this.kyDuNgay - 1) / 72) + 1;
+        this.cucNum = (this.kyDuNgay % 72) || 72;
+        this.donCucName = (this.isDuongDon ? "Dương Độn" : "Âm Độn") + ` — Nguyên ${this.nguyenNum} Cục ${this.cucNum}`;
     }
 
     calcOtherStars() {

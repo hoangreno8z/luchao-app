@@ -2,6 +2,10 @@ class RealThoiKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, soGio, tuTru) {
         super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'thoi');
         this.soGio = soGio;
+        this.kyDuGio = (soGio % 360) || 360;
+        this.nguyenNum = Math.floor((this.kyDuGio - 1) / 72) + 1;
+        this.cucNum = (this.kyDuGio % 72) || 72;
+        this.donCucName = (this.isDuongDon ? "Dương Độn" : "Âm Độn") + ` — Nguyên ${this.nguyenNum} Cục ${this.cucNum}`;
     }
     
     // Thái Ất Bàn Giờ

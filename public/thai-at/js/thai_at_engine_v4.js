@@ -64,12 +64,10 @@ class ThaiAtBaseEngine {
         this.mode = mode || null;
         
         // Cục Số (72)
-        this.cucNum = (this.tueTich % 72) || 72;
-        
-        // 144 Khối Âm/Dương (tự động tính dựa vào Kỷ Dư theo công thức: (Kỷ Dư - 1) % 72 + 1)
-        this.khoiSo = ((this.kyDu - 1) % 72 + 72) % 72 + 1;
-        this.tinhChatKhoi = this.isDuongDon ? "Dương Độn" : "Âm Độn";
-        
+        this.kyDuNam = (this.tueTich % 360) || 360;
+        this.nguyenNum = Math.floor((this.kyDuNam - 1) / 72) + 1;
+        this.cucNum = (this.kyDuNam % 72) || 72;
+        this.donCucName = (this.isDuongDon ? "Dương Độn" : "Âm Độn") + ` — Nguyên ${this.nguyenNum} Cục ${this.cucNum}`;    
         // Tích Trung Cổ Giáp Dần (Dành riêng cho Tuế Kể - Tam Cơ & Đại Du & Ngũ Phúc)
         const yearVal = this.tueTich > 10000000 ? (this.tueTich - THUONG_CO_EPOCH) : this.tueTich;
         this.tichTrungCo = yearVal + 12607;

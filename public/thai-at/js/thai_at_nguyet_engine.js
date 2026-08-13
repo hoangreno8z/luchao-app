@@ -18,10 +18,9 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
 
         // Kỷ Dư Tháng được truyền vào trực tiếp từ NguyetKeEngine (ví dụ: 142 hoặc 139)
         this.kyDuThang = (kyDu % 360) || 360;
-
-        // 1. Cục Số % 72 chuẩn toán học
+        this.nguyenNum = Math.floor((this.kyDuThang - 1) / 72) + 1;
         this.cucNum = (this.kyDuThang % 72) || 72;
-        this.donCucName = `Dương Độn — Cục ${this.cucNum}`;
+        this.donCucName = `Dương Độn — Nguyên ${this.nguyenNum} Cục ${this.cucNum}`;
     }
 
     // 2. Thái Ất bàn tháng: Chạy strictly trên 8 Cung Bát Quái
