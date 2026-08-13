@@ -473,22 +473,32 @@ class ThaiAtBaseEngine {
             });
         }
 
-        // 2. Cửu Tinh Văn Xương (270/30 năm)
+        // 2. Cửu Tinh Văn Xương (Phận Dã Trực Sự - 270/30 năm)
         const VX_SAO_NAMES = ["Văn Xương", "Huyền Phượng", "Minh Duy", "Âm Đức", "Chiêu Dao", "Hoa Minh", "Huyền Vũ", "Huyền Minh", "Cưu Minh"];
-        const CAN_TO_CUNG_VX = { 0: 3, 1: 4, 2: 9, 3: 2, 4: 5, 5: 5, 6: 7, 7: 6, 8: 1, 9: 8 };
-        const r270_vx = this.tueTich % 270;
-        const q_vx = Math.floor(r270_vx / 30) + 1;
-        const start_vx = CAN_TO_CUNG_VX[this.namCanIdx] || 1;
-        const trucSuVxIdx = (q_vx - 1 + start_vx - 1) % 9;
+        const CAN_TO_BIET_SO_VX = { 0: 3, 1: 4, 2: 9, 3: 2, 4: 5, 5: 5, 6: 7, 7: 6, 8: 1, 9: 8 };
+        
+        const tueTichVal = (this.tueTich && this.mode === 'tue') ? this.tueTich : (this.tichTrungCo ? (this.tichTrungCo + 10143297) : (1987 + 10153917));
+        const du270_vx = (tueTichVal + 30) % 270;
+        const q30_vx = Math.floor(du270_vx / 30);
+        const rem30_vx = (du270_vx % 30) || 30;
 
-        const rotatedVx = rotateArray(VX_SAO_NAMES, trucSuVxIdx);
+        const starVxIdx = q30_vx % 9;
+        this.trucSuVxStarName = VX_SAO_NAMES[starVxIdx];
 
-        for (let i = 0; i < 9; i++) {
+        const targetBietSoVx = CAN_TO_BIET_SO_VX[canIdx] || 1;
+
+        for (let bietSo = 1; bietSo <= 9; bietSo++) {
+            const offset = (bietSo - targetBietSoVx + 9) % 9;
+            const currentStarIdx = (starVxIdx + offset) % 9;
+            const currentStarName = VX_SAO_NAMES[currentStarIdx];
+            const thanIdx = BIET_SO_TO_THAN_IDX[bietSo];
+            const isTrucSuVxStar = (bietSo === targetBietSoVx);
+
             res.push({
-                thanIdx: LAC_THU_THAN_IDXS[i],
-                name: rotatedVx[i] + " (VX)",
+                thanIdx: thanIdx,
+                name: currentStarName + (isTrucSuVxStar ? ` (VX - ${rem30_vx} ${unitName})` : " (VX)"),
                 class: "van-xuong-9",
-                unique: 'VX_' + rotatedVx[i]
+                unique: 'VX_' + currentStarName
             });
         }
 
