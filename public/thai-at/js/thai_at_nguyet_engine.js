@@ -1,12 +1,12 @@
 /**
  * ====================================================================
- * 📜 THÁI ẤT NGUYỆT KẾ ENGINE (QUẺ THÁNG - PRD STANDARD REFACTOR V3)
+ * 📜 THÁI ẤT NGUYỆT KẾ ENGINE (QUẺ THÁNG - PRD STANDARD REFACTOR V4)
  * ====================================================================
  * 1. 100% Dương Độn (cucNum = (kyDuThang % 72) || 72).
  * 2. Thái Ất & Tiểu Du chạy strictly trên 8 Cung Bát Quái (PALACES_8_THAN_IDX).
  * 3. Thái Tuế an vị tại Nguyệt Kiến (Địa Chi tháng hiện tại).
  * 4. Tam Tài Generals Lock Rule (Chỉ đuôi 5 mới vào Trung Cung, đuôi 0 Vô Thiên).
- * 5. Phi tinh 27 sao (TP, VX, QT) bằng rotateArray theo Lạc Thư (Zero duplicates).
+ * 5. Phi tinh 27 sao (TP, VX, QT) bằng rotateArray theo Lạc Thư chuẩn (Zero duplicates & Cung Mão đầy đủ).
  * 6. Đại Du & Tiểu Du mỏ neo theo Tích Niên năm.
  */
 
@@ -16,10 +16,10 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         super(tueTich, kyDu, true, namCanIdx, tuTru, 'nguyet');
         this.fullTueTich = fullTueTich;
 
-        // Kỷ Dư Tháng được truyền vào trực tiếp từ NguyetKeEngine (ví dụ: 142)
+        // Kỷ Dư Tháng được truyền vào trực tiếp từ NguyetKeEngine (ví dụ: 142 hoặc 139)
         this.kyDuThang = (kyDu % 360) || 360;
 
-        // 1. Cục Số % 72 chuẩn toán học (142 % 72 = 70)
+        // 1. Cục Số % 72 chuẩn toán học
         this.cucNum = (this.kyDuThang % 72) || 72;
         this.donCucName = `Dương Độn — Cục ${this.cucNum}`;
     }
@@ -49,11 +49,12 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         return { thanIdx, class: 'thai-am', name: 'Thái Âm' };
     }
 
-    // Override calcCuuTinh cho Nguyệt Kế
+    // Override calcCuuTinh cho Nguyệt Kế - Lạc Thư Quỹ Đạo Bay Chuẩn: 5->6->7->8->9->1->2->3->4
     calcCuuTinh() {
         const res = [];
         const kyDu = this.kyDuThang;
-        const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
+        // LAC_THU_THAN_IDXS: Index 0:Trung(-1), 1:Càn(3), 2:Đoài(1), 3:Cấn(7), 4:Ly(13), 5:Khảm(5), 6:Khôn(15), 7:Chấn(9-Mão), 8:Tốn(11)
+        const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 1. Vòng Trực Phù 9 Sao (TP)
@@ -95,7 +96,7 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         };
 
         const kyDu = this.kyDuThang;
-        const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
+        const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 3. Vòng Quý Thần 9 Sao (QT) - Rotate Array Lạc Thư

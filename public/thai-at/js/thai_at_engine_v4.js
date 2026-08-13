@@ -185,7 +185,9 @@ class ThaiAtBaseEngine {
             let safety = 0;
             while (p !== taIdx && safety < 32) {
                 safety++;
-                if (MAIN_PALACE_BIET_SO[p] !== undefined) {
+                if (GIAN_THAN_IDXS.includes(p)) {
+                    sum += 1;
+                } else if (MAIN_PALACE_BIET_SO[p] !== undefined) {
                     sum += MAIN_PALACE_BIET_SO[p];
                 }
                 p = (p + 1) % 16;
@@ -330,7 +332,7 @@ class ThaiAtBaseEngine {
     // ------ NHÓM CỬU TINH (3 VÒNG SAO LẠC THƯ PHI TINH) ------
     calcCuuTinh() {
         const res = [];
-        const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
+        const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
 
         // 1. Cửu Tinh Trực Phù (900/90/10 năm)
@@ -479,7 +481,7 @@ class ThaiAtBaseEngine {
 
         // --- QUÝ THẦN (9 SAO QUÝ THẦN: Trực Sự nhập Trung Cung, 8 sao phi tinh Lạc Thư) ---
         const QT_SAO_NAMES = ["Thái Nhất", "Nhiếp Đề", "Hiên Viên", "Chiêu Dao", "Thiên Phù", "Thanh Long", "Hàm Trì", "Thái Âm", "Thiên Hoàng"];
-        const LAC_THU_THAN_IDXS = [5, 15, 9, 11, -1, 3, 1, 7, 13];
+        const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
         const OTHER_PALACE_OFFSETS = [0, 1, 2, 3, 5, 6, 7, 8];
         const r_qt = (kVal + 3) % 9 || 9;
         const trucSuQtIdx = (r_qt - 1) % 9;
@@ -523,7 +525,8 @@ class ThaiAtBaseEngine {
 
         // Tính bước Trực Sự: Chu kỳ 240, 30 đơn vị 1 cung
         let tichVal = this.tueTich;
-        if (this.mode === 'nguyet' && this.tichThang !== undefined) tichVal = this.tichThang;
+        if (this.kyDuThang !== undefined) tichVal = this.kyDuThang;
+        else if (this.mode === 'nguyet' && this.tichThang !== undefined) tichVal = this.tichThang;
         else if (this.mode === 'nhat' && this.soNgay !== undefined) tichVal = this.soNgay;
         else if (this.mode === 'thoi' && this.soGio !== undefined) tichVal = this.soGio;
 
