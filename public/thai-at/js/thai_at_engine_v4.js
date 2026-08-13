@@ -694,11 +694,12 @@ class NguyetKeEngine {
         // Chi tháng Tứ Trụ chính xác theo Tiết Khí (Tháng Tý chứa Đông Chí = 0, Sửu = 1, Dần = 2, ..., Hợi = 11)
         const thangChiIdx = (this.tuTru && this.tuTru.month) ? this.tuTru.month.chiIdx : ((month + 1) % 12);
         
-        // Số tháng đếm từ Tiết Đông Chí (Tháng Tý)
-        const soThangTuDongChi = (thangChiIdx - 0 + 12) % 12;
+        // PRD Chuẩn: Số tháng đã qua tính từ mốc tháng 11 năm trước (Thiên Chính, Chi Tuất index 10)
+        // Công thức theo sách Giải Mã Thái Ất: soThangDaQua = (thangChiIdx - 10 + 12) % 12 + 1
+        const soThangDaQua = (thangChiIdx - 10 + 12) % 12 + 1;
 
-        // Tích Tháng = (kyDuNam - 1) * 12 + soThangTuDongChi + 2 (2 tháng Thiên Chính & Địa Chính Tý, Sửu)
-        this.tichThang = (kyDuNam - 1) * 12 + soThangTuDongChi + 2;
+        // Tích Tháng = (kyDuNam - 1) * 12 + soThangDaQua + 2 (2 tháng Thiên Chính & Địa Chính)
+        this.tichThang = ((kyDuNam - 1) * 12) + soThangDaQua + 2;
 
         let kyDuThang = this.tichThang % 360;
         if (kyDuThang === 0) kyDuThang = 360;
@@ -941,7 +942,8 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         else if (MAIN_PALACE_BIET_SO[startIdx] !== undefined) sum += MAIN_PALACE_BIET_SO[startIdx];
         let p = (startIdx + 1) % 16;
         while (p !== targetIdx) {
-            if (MAIN_PALACE_BIET_SO[p] !== undefined) sum += MAIN_PALACE_BIET_SO[p];
+            if (GIAN_THAN_IDXS.includes(p)) sum += 1;
+            else if (MAIN_PALACE_BIET_SO[p] !== undefined) sum += MAIN_PALACE_BIET_SO[p];
             p = (p + 1) % 16;
         }
         return sum;
