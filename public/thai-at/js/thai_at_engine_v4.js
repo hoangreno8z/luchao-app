@@ -501,6 +501,50 @@ class ThaiAtBaseEngine {
                 unique: 'VX_' + currentStarName
             });
         }
+        
+        // 3. Cửu Tinh Quý Thần (Giữ Phận Dã Trực Sự - % 9 + 3)
+        const QT_SAO_NAMES = [
+            "Thái Nhất", "Thiên Hoàng", "Thái Âm", 
+            "Hàm Trì", "Thanh Long", "Thiên Phù", 
+            "Chiêu Dao", "Hiên Viên", "Nhiếp Đề"
+        ];
+        const QT_PALACE_ORDER = [
+            { bietSo: 6, thanIdx: 3 },  // Kiền
+            { bietSo: 7, thanIdx: 1 },  // Đoài
+            { bietSo: 8, thanIdx: 7 },  // Cấn
+            { bietSo: 9, thanIdx: 13 }, // Ly
+            { bietSo: 1, thanIdx: 5 },  // Khảm
+            { bietSo: 2, thanIdx: 15 }, // Khôn
+            { bietSo: 3, thanIdx: 9 },  // Chấn
+            { bietSo: 4, thanIdx: 11 }  // Tốn
+        ];
+
+        const kValQT = this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360);
+        const du9_qt = ((kValQT + 3) % 9) || 9;
+        const trucSuQtStarIdx = du9_qt - 1;
+        this.trucSuQtStarName = QT_SAO_NAMES[trucSuQtStarIdx];
+
+        // Trung Cung (-1): Trực Sự Quý Thần
+        res.push({
+            thanIdx: -1,
+            name: QT_SAO_NAMES[trucSuQtStarIdx] + " (QT)",
+            class: "quy-than-9",
+            unique: 'QT_' + QT_SAO_NAMES[trucSuQtStarIdx]
+        });
+
+        // 8 cung xung quanh: phi lùi từ sao Trực Sự
+        for (let i = 0; i < 8; i++) {
+            const currentStarIdx = (trucSuQtStarIdx - 1 - i + 900) % 9;
+            const currentStarName = QT_SAO_NAMES[currentStarIdx];
+            const pal = QT_PALACE_ORDER[i];
+
+            res.push({
+                thanIdx: pal.thanIdx,
+                name: currentStarName + " (QT)",
+                class: "quy-than-9",
+                unique: 'QT_' + currentStarName
+            });
+        }
 
         return res;
     }
