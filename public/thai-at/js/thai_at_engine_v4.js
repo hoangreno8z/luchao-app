@@ -325,11 +325,12 @@ class ThaiAtBaseEngine {
         const XICH_KY_PATH = [4, 0, 12, 8];
         const xkIdx = XICH_KY_PATH[r4_xk - 1];
         
-        // 5. Hắc Kỳ: (Kỷ Dư + 25) % 36 / 3 + 1, khởi Hợi nghịch 12 địa chi
+        // 5. Hắc Kỳ: (Kỷ Dư + 25) % 36 / 3, khởi Hợi nghịch 12 địa chi
         const r36_hk = (kVal + 25) % 36;
-        const P_hk = Math.floor(r36_hk / 3) + 1;
+        const P_hk = Math.floor(r36_hk / 3);
+        const hkRem = (r36_hk % 3) || 3;
         const HAC_KY_PATH = [4, 2, 1, 0, 14, 13, 12, 10, 9, 8, 6, 5];
-        const hkIdx = HAC_KY_PATH[(P_hk - 1) % 12];
+        const hkIdx = HAC_KY_PATH[P_hk % 12];
         
         // 6. Thiên Tôn: Kỷ Dư % 4 (nếu 0 thì = 4)
         // Dương độn: Khảm(5) -> Đoài(1) -> Ly(13) -> Chấn(9)
@@ -430,7 +431,7 @@ class ThaiAtBaseEngine {
             { thanIdx: nguPhongIdx, name: "Ngũ Phong", class: "tu-than" },
             { thanIdx: batPhongIdx, name: "Bát Phong", class: "tu-than" },
             { thanIdx: xkIdx, name: "Xích Kỳ (Cờ Đỏ)", class: "co-khac" },
-            { thanIdx: hkIdx, name: "Hắc Kỳ (Cờ Đen)", class: "co-khac" }
+            { thanIdx: hkIdx, name: `Hắc Kỳ (Cờ Đen - ${hkRem} ${unitName})`, class: "co-khac" }
         ];
     }
 
