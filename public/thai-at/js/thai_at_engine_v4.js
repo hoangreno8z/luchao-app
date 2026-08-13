@@ -227,8 +227,16 @@ class ThaiAtBaseEngine {
         const quanCoIdx = CHI_TO_THAN_QC[qcQ % 12];
         const quanCoCungName = CHI_NAMES_QC[qcQ % 12];
         
-        // Thần Cơ: Chi + 0 (Dần cho Dần=2)
-        const thanCoIdx = CHI_TO_THAN_IDX[(cucChiIdx + 0) % 12];
+        // Thần Cơ (Khởi Ngọ qua 12 Chi thần, chu kỳ 36 số, 3 số/cung, % 360 % 36 / 3)
+        const tcVal = this.tichTrungCo || (2014 + 12607);
+        const tc360 = tcVal % 360;
+        const tc36 = tc360 % 36;
+        const tcQ = Math.floor(tc36 / 3);
+        const tcRem = (tc36 % 3) || 3;
+        const CHI_TO_THAN_TC = [13, 14, 0, 1, 2, 4, 5, 6, 8, 9, 10, 12]; // Ngọ(13), Mùi(14), Thân(0), Dậu(1), Tuất(2), Hợi(4), Tý(5), Sửu(6), Dần(8), Mão(9), Thìn(10), Tị(12)
+        const CHI_NAMES_TC = ["Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị"];
+        const thanCoIdx = CHI_TO_THAN_TC[tcQ % 12];
+        const thanCoCungName = CHI_NAMES_TC[tcQ % 12];
         
         // Dân Cơ: Chi + 10 (Tý cho Dần=2)
         const danCoIdx = CHI_TO_THAN_IDX[(cucChiIdx + 10) % 12];
@@ -257,7 +265,7 @@ class ThaiAtBaseEngine {
         
         return [
             { thanIdx: quanCoIdx, name: `Quân Cơ (Cung ${quanCoCungName} - ${qcRem} ${unitName})`, class: "quan-co", unique: "quan_co" },
-            { thanIdx: thanCoIdx, name: "Thần Cơ", class: "than-co", unique: "than_co" },
+            { thanIdx: thanCoIdx, name: `Thần Cơ (Cung ${thanCoCungName} - ${tcRem} ${unitName})`, class: "than-co", unique: "than_co" },
             { thanIdx: danCoIdx, name: "Dân Cơ", class: "dan-co", unique: "dan_co" },
             { thanIdx: npIdx, name: `Ngũ Phúc (Cung ${npCungName} - ${npRem} ${unitName})`, class: "ngu-phuc", unique: "ngu_phuc" },
             { thanIdx: ddIdx, name: "Đại Du", class: "dai-du", unique: "dai_du" },
