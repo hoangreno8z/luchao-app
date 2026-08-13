@@ -178,8 +178,42 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         const dephuR = kyDu % 20 || 20;
         const dpThan = countSteps(2, dephuR, [5, 9, 13, 1]); // Tuất=2
         pushStar(dpThan, 'de-phu', 'Đế Phù');
-
         return stars;
+    }
+
+    // Override calcBatMon8 cho Nguyệt Kế - Dùng trực tiếp kyDuThang
+    calcBatMon8() {
+        const res = [];
+        const BAT_MON_LIST = ["Khai", "Hưu", "Sinh", "Thương", "Đỗ", "Cảnh", "Tử", "Kinh"];
+        const BAT_QUAI_PALACES = [
+            { thanIdx: 3,  id: "kien", name: "Càn" },
+            { thanIdx: 5,  id: "ty",   name: "Khảm" },
+            { thanIdx: 7,  id: "can",  name: "Cấn" },
+            { thanIdx: 9,  id: "mao",  name: "Chấn" },
+            { thanIdx: 11, id: "ton",  name: "Tốn" },
+            { thanIdx: 13, id: "ngo",  name: "Ly" },
+            { thanIdx: 15, id: "khon", name: "Khôn" },
+            { thanIdx: 1,  id: "dau",  name: "Đoài" }
+        ];
+
+        const batMonStep = ((this.cucNum - 1) % 8 + 8) % 8;
+        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep);
+
+        for (let i = 0; i < 8; i++) {
+            const pal = BAT_QUAI_PALACES[i];
+            const gateName = rotatedDoors[i];
+            const isTrucSu = (i === 0);
+
+            res.push({
+                thanIdx: pal.thanIdx,
+                name: isTrucSu ? `Cửa ${gateName} (Trực Sự)` : `Cửa ${gateName}`,
+                class: isTrucSu ? "bat-mon-truc-su" : "bat-mon-phu",
+                gateName: gateName,
+                isTrucSu: isTrucSu
+            });
+        }
+
+        return res;
     }
 }
 

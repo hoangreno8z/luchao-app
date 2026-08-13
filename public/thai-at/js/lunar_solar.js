@@ -77,12 +77,15 @@ function getExactSolarTerm(year, month, day, hour) {
  * VD: 2026 → (2026-4)%10 = 2 (Bính), (2026-4)%12 = 6 (Ngọ) → Bính Ngọ ✓
  */
 function getCanChiYear(year) {
-    let canIdx = ((year - 4) % 10 + 10) % 10;
-    let chiIdx = ((year - 4) % 12 + 12) % 12;
+    const canIdx = (year - 4 + 60000) % 10;
+    const chiIdx = (year - 4 + 60000) % 12;
     return {
-        can: CAN_LIST[canIdx], chi: CHI_LIST[chiIdx],
-        canIdx, chiIdx,
-        name: `${CAN_LIST[canIdx]} ${CHI_LIST[chiIdx]}`
+        canIdx,
+        chiIdx,
+        can: CAN_LIST[canIdx],
+        chi: CHI_LIST[chiIdx],
+        name: `${CAN_LIST[canIdx]} ${CHI_LIST[chiIdx]}`,
+        yearNum: year
     };
 }
 

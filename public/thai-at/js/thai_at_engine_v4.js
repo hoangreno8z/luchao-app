@@ -246,15 +246,17 @@ class ThaiAtBaseEngine {
         const npPath = [3, 7, 11, 15, -1]; // 1: Càn(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
         const npIdx = npPath[npQ % 5];
         
-        // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái)
-        const ddStep = Math.floor(((this.tueTich + 34) % 288) / 36);
-        const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // 0:Khôn(15), 1:Cấn(7), 2:Chấn(9), 3:Tốn(11), 4:Ly(13), 5:Càn(3), 6:Đoài(1), 7:Khảm(5)
-        const ddIdx = PATH_DAI_DU[ddStep % 8]; // Động: Ánh xạ Modulo vào mảng quỹ đạo
+        // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái: Khôn, Khảm, Tốn, Kiền, Ly, Cấn, Chấn, Đoài)
+        const yearNum = (this.tuTru && this.tuTru.year && this.tuTru.year.yearNum) ? this.tuTru.year.yearNum : null;
+        const yearTich = yearNum ? (THUONG_CO_EPOCH + yearNum) : (this.fullTueTich || (this.tueTich > 10000000 ? this.tueTich : THUONG_CO_EPOCH + 2026));
+        const ddStep = Math.floor(((yearTich + 34) % 288) / 36);
+        const PATH_DAI_DU = [15, 5, 11, 3, 13, 7, 9, 1]; // 0:Khôn(15), 1:Khảm(5), 2:Tốn(11), 3:Kiền(3), 4:Ly(13), 5:Cấn(7), 6:Chấn(9), 7:Đoài(1)
+        const ddIdx = PATH_DAI_DU[ddStep % 8];
         
-        // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái)
-        const tdStep = Math.floor((this.tueTich % 192) / 24);
+        // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái: Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn)
+        const tdStep = Math.floor(((yearTich + 10) % 192) / 24);
         const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
-        const tdIdx = PATH_TIEU_DU[tdStep % 8]; // Động: Ánh xạ Modulo vào mảng quỹ đạo
+        const tdIdx = PATH_TIEU_DU[tdStep % 8];
         
         return [
             { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co", unique: "quan_co" },
@@ -502,15 +504,9 @@ class ThaiAtBaseEngine {
             { thanIdx: 1,  id: "dau",  name: "Đoài" }
         ];
 
-        // Tính bước Trực Sự: Chu kỳ 240, 30 đơn vị 1 cung
-        let tichVal = this.tueTich;
-        if (this.kyDuThang !== undefined) tichVal = this.kyDuThang;
-        else if (this.mode === 'nguyet' && this.tichThang !== undefined) tichVal = this.tichThang;
-        else if (this.mode === 'nhat' && this.soNgay !== undefined) tichVal = this.soNgay;
-        else if (this.mode === 'thoi' && this.soGio !== undefined) tichVal = this.soGio;
-
-        const batMonStep = Math.floor(((tichVal - 1 + 240) % 240) / 30);
-        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep % 8);
+        // Tính bước Trực Sự Bát Môn: 1 Nguyên = 72 Cục, mỗi Cục tịnh tiến 1 cửa (batMonStep = (cucNum - 1) % 8)
+        const batMonStep = ((this.cucNum - 1) % 8 + 8) % 8;
+        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep);
 
         for (let i = 0; i < 8; i++) {
             const pal = BAT_QUAI_PALACES[i];
