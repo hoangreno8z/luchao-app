@@ -310,10 +310,10 @@ class ThaiAtBaseEngine {
         const thaiAmChiIdx = (thaiTueYearChiIdx - 2 + 12) % 12;
         const taIdx = CHI_TO_THAN_IDX[thaiAmChiIdx];
         
-        // 3. Phi Phù: Kỷ Dư % 72 / 3 + 1, đếm theo vòng 12 cung Dương/Âm Độn
-        const r72 = kVal % 72;
-        const P_pp = Math.floor(r72 / 3) + 1;
-        const ppStepIdx = (P_pp - 1) % 12;
+        // 3. Phi Phù: Kỷ Dư % 72 / 3, đếm theo vòng 12 cung Dương/Âm Độn
+        const r72 = (kVal % 72) || 72;
+        const rem3 = (r72 % 3) || 3;
+        const ppStepIdx = Math.floor((r72 - 1) / 3) % 12;
         const PHI_PHU_DUONG = [11, 11, 15, 3, 3, 13, 7, 9, -1, 1, 15, 5];
         const PHI_PHU_AM = [3, 3, 15, 11, 11, 5, 15, 1, -1, 9, 7, 13];
         const phiPhuPath = (this.isDuongDon !== false) ? PHI_PHU_DUONG : PHI_PHU_AM;
