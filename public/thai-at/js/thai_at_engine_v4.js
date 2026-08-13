@@ -877,13 +877,21 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
     const vxEl = engCurrent.calcVanXuong().thanIdx !== -1 ? THAP_LUC_THAN[engCurrent.calcVanXuong().thanIdx].elementKey : "tho";
     const tkEl = currRes.core.tkIdx !== -1 ? THAP_LUC_THAN[currRes.core.tkIdx].elementKey : "tho";
     
-    // Cửa Trực Sự (Bát Môn) - Chu kỳ 240 năm, 30 năm 1 cung
-    const batMonStep = Math.floor((factory.tueTich % 240) / 30);
+    // Cửa Trực Sự (Bát Môn) - Chu kỳ 240, 30 đơn vị 1 cung
+    let batMonTich = factory.tueTich;
+    if (mode === 'nguyet' && engCurrent.kyDuThang !== undefined) batMonTich = engCurrent.kyDuThang;
+    else if (mode === 'nhat' && engCurrent.soNgay !== undefined) batMonTich = engCurrent.soNgay;
+    else if (mode === 'thoi' && engCurrent.soGio !== undefined) batMonTich = engCurrent.soGio;
+
+    const batMonStep = Math.floor(((batMonTich !== undefined ? batMonTich : factory.tueTich) % 240) / 30);
     const batMonStr = BAT_MON[batMonStep % 8];
     
-    // Sao Trực Sự (Cửu Tinh) - Pure Math Formula
-    const cuuTinhStep = Math.floor((factory.tueTich % 90) / 10);
-    const cuuTinhStr = CUU_TINH[cuuTinhStep % 9];
+    // Sao Trực Sự (Cửu Tinh) - Synchronized with Engine Trực Phù Star
+    let cuuTinhStr = engCurrent.trucSuTpStarName;
+    if (!cuuTinhStr) {
+        const cuuTinhStep = Math.floor((factory.tueTich % 90) / 10);
+        cuuTinhStr = CUU_TINH[cuuTinhStep % 9];
+    }
     
     // Export Toán numbers & Kế values for UI
     let toanChuVal = 1;
@@ -977,13 +985,9 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
             activeHung.push("Chấp Đề (Chủ Khách đối thế)");
         }
 
-        // 5. Tù: Thái Ất ở Tý (5), Dần (8), Mão (9), Dậu (1) gặp hung tinh
-        if ([5, 8, 9, 1].includes(taIdx)) {
-            const taPalaceName = THAP_LUC_THAN[taIdx] ? THAP_LUC_THAN[taIdx].id : "";
-            const taStars = currRes.placement[taPalaceName] || [];
-            if (taStars.length > 2) {
-                activeHung.push("Tù (Thái Ất rơi vào hãm địa)");
-            }
+        // 5. TÙ: Thái Ất, Văn Xương và Đại Tướng Chủ CÙNG ĐÓNG TẠI 1 CUNG (Đồng Cung)
+        if (taIdx !== -1 && taIdx === currRes.core.vxIdx && taIdx === ctIdx) {
+            activeHung.push("Tù (Thái Ất, Văn Xương và Đại Tướng Chủ đồng cung)");
         }
 
         if (activeHung.length > 0) return activeHung.join("; ");
