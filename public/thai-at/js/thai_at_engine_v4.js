@@ -123,9 +123,9 @@ class ThaiAtBaseEngine {
     calcKeThan() {
         // Dương độn: Khởi Dần (Chi Dần = 2), đi nghịch 12 địa chi
         // Âm độn: Khởi Thân (Chi Thân = 8), đi nghịch 12 địa chi
+        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
         const startChiIdx = (this.isDuongDon !== false) ? 2 : 8; // Dần = 2, Thân = 8
-        const k = this.kyDuThang !== undefined ? this.kyDuThang : this.kyDu;
-        const r12 = (k % 12) || 12;
+        const r12 = (kyDuVal % 12) || 12;
         const targetChiIdx = (startChiIdx - (r12 - 1) + 120) % 12;
         const thanIdx = CHI_TO_THAN_IDX[targetChiIdx];
         return { thanIdx, name: "Kế Thần", class: "ke-than" };
@@ -162,9 +162,11 @@ class ThaiAtBaseEngine {
 
     // ------ NHÓM TÍCH HỢP (THỦY KÍCH, TƯỚNG) ------
     calcThuyKich(vanXuongIdx, keThanIdx) {
-        const CAN_IDX = 7;
-        const distance = (vanXuongIdx - keThanIdx + 16) % 16;
-        return { thanIdx: (CAN_IDX + distance) % 16, name: "Thủy Kích (Địa Mục)", class: "thuy-kich" };
+        if (vanXuongIdx === undefined || keThanIdx === undefined) return { thanIdx: 12, name: "Thủy Kích (Địa Mục)", class: "thuy-kich" };
+        const CAN_IDX = 7; // Cung Cấn
+        const distInclusive = (vanXuongIdx - keThanIdx + 16) % 16 + 1;
+        const thanIdx = (CAN_IDX + distInclusive - 1) % 16;
+        return { thanIdx, name: "Thủy Kích (Địa Mục)", class: "thuy-kich" };
     }
     
     calcDaiTuongAndThamTuong(taIdx, vxIdx, tkIdx) {
