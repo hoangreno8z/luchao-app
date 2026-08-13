@@ -257,12 +257,12 @@ class ThaiAtBaseEngine {
         const tdIdx = PATH_TIEU_DU[tdStep % 8]; // Động: Ánh xạ Modulo vào mảng quỹ đạo
         
         return [
-            { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co" },
-            { thanIdx: thanCoIdx, name: "Thần Cơ", class: "than-co" },
-            { thanIdx: danCoIdx, name: "Dân Cơ", class: "dan-co" },
-            { thanIdx: npIdx, name: "Ngũ Phúc", class: "ngu-phuc" },
-            { thanIdx: ddIdx, name: "Đại Du", class: "dai-du" },
-            { thanIdx: tdIdx, name: "Tiểu Du", class: "tieu-du" }
+            { thanIdx: quanCoIdx, name: "Quân Cơ", class: "quan-co", unique: "quan_co" },
+            { thanIdx: thanCoIdx, name: "Thần Cơ", class: "than-co", unique: "than_co" },
+            { thanIdx: danCoIdx, name: "Dân Cơ", class: "dan-co", unique: "dan_co" },
+            { thanIdx: npIdx, name: "Ngũ Phúc", class: "ngu-phuc", unique: "ngu_phuc" },
+            { thanIdx: ddIdx, name: "Đại Du", class: "dai-du", unique: "dai_du" },
+            { thanIdx: tdIdx, name: "Tiểu Du", class: "tieu-du", unique: "tieu_du" }
         ];
     }
     

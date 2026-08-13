@@ -147,18 +147,7 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
             });
         }
 
-        // 4. Đại Du & Tiểu Du Mỏ Neo Tích Niên Năm (Động bằng Toán Modulo)
-        const yearTich = this.fullTueTich || 10155943;
-        const PATH_DAI_DU = [15, 7, 9, 11, 13, 3, 1, 5]; // 0:Khôn(15), 1:Cấn(7), 2:Chấn(9), 3:Tốn(11), 4:Ly(13), 5:Càn(3), 6:Đoài(1), 7:Khảm(5)
-        const ddStep = Math.floor(((yearTich + 34) % 288) / 36);
-        const ddIdx = PATH_DAI_DU[ddStep % 8];
 
-        const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
-        const tdStep = Math.floor((yearTich % 192) / 24);
-        const tdIdx = PATH_TIEU_DU[tdStep % 8];
-
-        pushStar(ddIdx, 'dai-du', 'Đại Du');
-        pushStar(tdIdx, 'tieu-du', 'Tiểu Du');
 
         // Tứ Thần Kỳ, Thiên Hoàng, Thiên Thời, Đế Phù (Tra mảng & countSteps chuẩn)
         const r20 = (kyDu % 20) || 20;
