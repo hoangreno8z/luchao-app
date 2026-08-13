@@ -488,9 +488,12 @@ class ThaiAtBaseEngine {
             { thanIdx: 1,  id: "dau",  name: "Đoài" }
         ];
 
-        // Tính bước Trực Sự Bát Môn: 1 Nguyên = 72 Cục, mỗi Cục tịnh tiến 1 cửa (batMonStep = (cucNum - 1) % 8)
-        const batMonStep = ((this.cucNum - 1) % 8 + 8) % 8;
-        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep);
+        // Tính bước Trực Sự Bát Môn Kể Năm: Tích Niên % 240 / 30 (Số cửa đã qua)
+        const tichVal = this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360;
+        const du240 = (this.tueTich && this.mode === 'tue') ? (this.tueTich % 240) : (tichVal % 240);
+        const batMonStep = Math.floor(du240 / 30);
+        const soNamTrucSu = (du240 % 30) || 30; // Số năm/thời gian đóng ở cửa hiện tại
+        const rotatedDoors = rotateArray(BAT_MON_LIST, batMonStep % 8);
 
         for (let i = 0; i < 8; i++) {
             const pal = BAT_QUAI_PALACES[i];
@@ -499,10 +502,11 @@ class ThaiAtBaseEngine {
 
             res.push({
                 thanIdx: pal.thanIdx,
-                name: isTrucSu ? `Cửa ${gateName} (Trực Sự)` : `Cửa ${gateName}`,
+                name: isTrucSu ? `Cửa ${gateName} (Trực Sự - ${soNamTrucSu} năm)` : `Cửa ${gateName}`,
                 class: isTrucSu ? "bat-mon-truc-su" : "bat-mon-phu",
                 gateName: gateName,
-                isTrucSu: isTrucSu
+                isTrucSu: isTrucSu,
+                soNamTrucSu: isTrucSu ? soNamTrucSu : null
             });
         }
 
