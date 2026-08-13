@@ -139,5 +139,116 @@ const THAI_AT_REFERENCE = {
         "Lôi Sơn Tiểu Quá": "Hơi quá đà, việc nhỏ.",
         "Thủy Hỏa Ký Tế": "Đã xong, hoàn tất, cần thận trọng.",
         "Hỏa Thủy Vị Tế": "Chưa xong, dở dang, hy vọng."
+    },
+    NGU_HANH_TUONG_TINH: {
+        "Thái Ất": { element: "Mộc", status: "Vượng Xuân (Đông phương)", desc: "Chính khí Mộc thần, văn võ song toàn." },
+        "Thủy Kích": { element: "Hỏa", status: "Vượng Hạ (Nam phương)", desc: "Chính khí Hỏa thần, bạo lực hình khắc." },
+        "Văn Xương": { element: "Thổ", status: "Vượng Tứ Quý (Thìn, Tuất, Sửu, Mùi)", desc: "Chính khí Thổ thần, chủ học vấn uy quyền." },
+        "Đại Tướng Chủ": { element: "Kim", status: "Vượng Thu (Tây phương)", desc: "Chính khí Kim thần, chỉ huy quân Chủ." },
+        "Tham Tướng Chủ": { element: "Thủy", status: "Bắc phương", desc: "Trợ thủ phó tướng quân Chủ." },
+        "Đại Tướng Khách": { element: "Thủy", status: "Vượng Đông (Bắc phương)", desc: "Chính khí Thủy thần, chỉ huy quân Khách." },
+        "Tham Tướng Khách": { element: "Mộc", status: "Đông phương", desc: "Trợ thủ phó tướng quân Khách." },
+        "Ngũ Phúc": { element: "Thổ", status: "Kinh hành 5 cung chính (225 năm)", desc: "Thần ban phúc đức, phú quý khang ninh." },
+        "Quân Cơ": { element: "Thổ", status: "Chu kỳ 360 năm (30 năm/cung từ Ngọ)", desc: "Tử Vi Đại Đế, phò quốc an dân." },
+        "Thần Cơ": { element: "Thổ", status: "Chu kỳ 36 năm (3 năm/cung từ Ngọ)", desc: "Phụ tá Thiên Đế, cai quản lục cung." },
+        "Dân Cơ": { element: "Thổ", status: "Chu kỳ 12 năm (1 năm/cung từ Tuất)", desc: "Thần tài phú, an lòng bách tính." },
+        "Đại Du": { element: "Kim", status: "Chu kỳ 288 năm (36 năm/cung từ Khôn)", desc: "Hung thần tàn phá, thiên vận thất thường." },
+        "Tiểu Du": { element: "Mộc hóa Thủy", status: "Chu kỳ 192 năm (24 năm/cung từ Kiền)", desc: "Quẻ Ngoại, vận hành như Thái Ất." },
+        "Phi Phù": { element: "Hỏa", status: "Chu kỳ 36 năm (3 năm/cung)", desc: "Sao Lửa Bùa Bay, hung tinh xung chiếu Thái Ất." },
+        "Thanh Long": { element: "Mộc", status: "Cờ Xanh Thái Tuế (12 năm từ Hợi)", desc: "Giữ cờ hiệu lệnh thời tiết bình bị." },
+        "Xích Kỳ": { element: "Hỏa", status: "Cờ Đỏ Tứ Mạnh (4 năm từ Hợi)", desc: "Bất thường thời tiết bất lợi dụng binh." },
+        "Hắc Kỳ": { element: "Thủy/Hậu Phi", status: "Cờ Đen Thái Âm (36 năm nghịch Hợi)", desc: "Báo hiệu chiến trường và thời tiết khí hậu." }
+    },
+    CUNG_PHAN_DA_9_CHAU: {
+        1: { cung: "Càn", chau: "Dực Châu", can: "Nhâm", sao: "Văn Xương / Chiêu Dao" },
+        2: { cung: "Ly", chau: "Kinh Châu", can: "Đinh", sao: "Huyền Phượng / Hoa Minh" },
+        3: { cung: "Cấn", chau: "Thanh Châu", can: "Giáp", sao: "Minh Duy / Huyền Vũ" },
+        4: { cung: "Chấn", chau: "Từ Châu", can: "Ất", sao: "Âm Đức / Huyền Minh" },
+        5: { cung: "Trung Cung", chau: "Dự Châu", can: "Mậu / Kỷ", sao: "Chiêu Dao / Cưu Minh" },
+        6: { cung: "Đoài", chau: "Ung Châu", can: "Tân", sao: "Hoa Minh / Văn Xương" },
+        7: { cung: "Khôn", chau: "Lương Châu", can: "Canh", sao: "Huyền Vũ / Huyền Phượng" },
+        8: { cung: "Khảm", chau: "Duyên Châu", can: "Quý", sao: "Huyền Minh / Minh Duy" },
+        9: { cung: "Tốn", chau: "Dương Châu", can: "Bính", sao: "Cưu Minh / Âm Đức" }
+    },
+    QUY_THAN_CUU_TINH_LUAN_GIAI: {
+        "Thái Nhất": {
+            general: "Thần tinh tốt lành, may mắn, quý thần bậc nhất. Tuy nhiên nếu gia lâm các cung mà gặp Đại Du và Tứ Thần thì sinh tai họa lụt lội, dịch bệnh, tổn hại mùa màng.",
+            byPalace: {
+                "Kiền": "Gặp Đại Du/Tứ Thần: Băng tuyết lạnh giá, hại đời sống con người, việc thổ công vất vả.",
+                "Khảm": "Gặp Đại Du/Tứ Thần: Mưa rơi tuyết lạnh, nước sông dâng cao gây lụt lội.",
+                "Cấn": "Gặp Đại Du/Tứ Thần: Thủy thổ phát sinh bệnh tật.",
+                "Chấn": "Gặp Đại Du/Tứ Thần: Lúa ngô mùa màng bị sâu bọ côn trùng phá hoại.",
+                "Tốn": "Gặp Đại Du/Tứ Thần: Kẻ dưới chuyên quyền, việc thổ công nặng nhọc, mưa nhiều hại mùa màng.",
+                "Ly": "Gặp Đại Du/Tứ Thần: Sưu cao thuế nặng, hạn hán, sét đánh, cháy rừng.",
+                "Khôn": "Gặp Đại Du/Tứ Thần: Nước to, ứng tháng 6-7 thì hạn chế việc binh.",
+                "Đoài": "Gặp Đại Du/Tứ Thần: Công việc tạp nhạp, nước dâng, nội loạn.",
+                "Sửu_Mùi_Extra": "Tại Sửu-Mùi Thái Ất Kế Tháng gặp các cách trên: Vua chúa hoặc bậc quyền quý có sự chẳng lành."
+            }
+        },
+        "Nhiếp Đề": {
+            general: "Đóng ở cung nào năm ấy gió sương lạnh lẽo, phát sinh bệnh tật (nhất là bệnh thận và đường ruột).",
+            byCombination: {
+                "TieuDu_DaiDu": "Dịch tả, binh lính làm càn, kỷ luật lỏng lẻo, nạn nước lửa.",
+                "ThaiAt_4Palaces_Khon_Chan_Doai_Kien": "Thời tiết thất thường, dân chúng suy kiệt, thóc gạo hiếm.",
+                "ThaiAt_4Palaces_Ton_Can_Kham_Ly": "Phát sinh dịch bệnh, nhiều cái chết bất thường."
+            }
+        },
+        "Hiên Viên": {
+            general: "Đến Chấn-Tốn muôn vật tốt tươi. Gặp Thái Ất khí trời ấm áp hài hòa, bội thu.",
+            byCombination: {
+                "TuThan_DaiDu": "Thời tiết nóng lạnh thất thường, mùa màng kém thu hoạch, nhiều sấm sét, trộm cắp cướp bóc.",
+                "Seasonal": "Mùa Xuân ở Cấn-Chấn, Hạ ở Tốn-Ly, Thu ở Khôn-Đoài, Đông ở Kiền-Khảm: Gió to, sấm sét dồn dập."
+            }
+        },
+        "Chiêu Dao": {
+            general: "Vào cung nào năm ấy có gió lớn, rừng cây đổ gãy, mùa màng thất thu.",
+            byCombination: {
+                "TuThan_DaiDu": "Dân chúng xác xơ đói kém, sâu bệnh tàn hại mùa màng, bệnh tật, động đất, hạn hán, chiến loạn.",
+                "Ton": "Gió nóng, vật cháy bị nướng chín.",
+                "Can": "Mưa gió liên miên.",
+                "Ly": "Hạn hán, gió nóng.",
+                "Chan": "Sấm sét nhiều, mưa gây tai hại."
+            }
+        },
+        "Thiên Phù": {
+            general: "Hội Tứ Thần - Đại Du: Dân tình khốn khổ, sưu cao thuế nặng, thổ công nặng nhọc, binh dịch vất vả, sâu bệnh.",
+            byPalace: {
+                "Khảm": "Đê vỡ, dân bệnh.",
+                "Cấn_Đoài": "Sương lạnh, gia súc chết.",
+                "Kiền": "Trời lạnh giá, băng tuyết.",
+                "Ly": "Hạn hán.",
+                "Tốn": "Sấm rền, mưa đá, nông nhọc.",
+                "TrungCung": "Hại Hậu Phi, nhất là tháng Sửu, Mùi.",
+                "Chấn": "Sương lạnh, mưa nhiều, dịch bệnh, sâu lúa.",
+                "Khôn": "Nắng hanh cỏ cháy, mưa nhiều, dịch bệnh."
+            }
+        },
+        "Thanh Long": {
+            general: "Vào cung nào cũng thời tiết lạnh buốt, sương giá.",
+            byCombination: {
+                "TuThan_DaiDu_TieuDu": "Dân chúng xiêu liêu, dịch bệnh hoành hành, quân binh mệt mỏi.",
+                "Ly": "Nước lụt, binh lính mệt mỏi.",
+                "TrungCung": "Vào tháng 11, 12: Dân đói, thời tiết lạnh giá."
+            }
+        },
+        "Hàm Trì": {
+            general: "Vào cung nào cũng sương lạnh, cỏ cháy, lúa khô, dân đói, ngoại xâm, nước dâng, bệnh tật, sạt lở núi.",
+            byCombination: {
+                "DaiDu_TieuDu_TuThan_ThaiAt": "Gió Tây thổi đến mang vị mặn, xảy ra nhiều việc tai quái."
+            }
+        },
+        "Thái Âm": {
+            general: "Trời trăng mờ mịt, ít sao.",
+            byCombination: {
+                "TuThan_DaiDu_TieuDu": "Hậu Phi cần giữ chính, Đại Thần chuyên quyền, phiền dân, thời tiết mưa gió trái mùa, thất thu."
+            }
+        },
+        "Thiên Hoàng": {
+            general: "Còn gọi là Thiên Ất. Đại hạn, chướng khí nóng, người đau bệnh, côn trùng hại mùa.",
+            byCombination: {
+                "TuThan_DaiDu_TieuDu": "Chiến loạn liên miên.",
+                "Kham_TuThan_DaiDu_TieuDu": "Sưu cao thuế nặng, lòng dân bất ổn, hỏa hoạn."
+            }
+        }
     }
 };
