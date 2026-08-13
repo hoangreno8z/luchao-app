@@ -548,6 +548,12 @@ class ThaiAtBaseEngine {
         return res;
     }
 
+    calcThaiTue() {
+        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
+        const thanIdx = CHI_TO_THAN_IDX[namChiIdx];
+        return { thanIdx, class: 'thai-tue', name: 'Thái Tuế' };
+    }
+
     getAllStars() {
         const thaiAt = this.calcThaiAt();
         const vanXuong = this.calcVanXuong();
