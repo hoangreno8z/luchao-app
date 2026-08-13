@@ -155,7 +155,7 @@ class ThaiAtBaseEngine {
     }
     
     calcDaiTuongAndThamTuong(taIdx, vxIdx, tkIdx) {
-        const MAIN_PALACE_BIET_SO = { 3: 1, 13: 2, 7: 3, 9: 4, 1: 6, 15: 7, 5: 8, 11: 9 };
+        const MAIN_PALACE_BIET_SO = { 3: 1, 13: 2, 7: 3, 9: 4, 1: 6, 15: 7, 5: 6, 11: 9 };
         const GIAN_THAN_IDXS = [0, 2, 4, 6, 8, 10, 12, 14];
         // Index 1..9 corresponding to Palace 1..9 in Thái Ất Biệt Số Order:
         // 1=Càn(3), 2=Ly(13), 3=Cấn(7), 4=Chấn(9), 5=Trung Cung(-1), 6=Đoài(1), 7=Khôn(15), 8=Khảm(5-Tý), 9=Tốn(11)
@@ -163,17 +163,11 @@ class ThaiAtBaseEngine {
         
         const getToan = (startIdx) => {
             if (startIdx === taIdx) {
-                // If same palace: full cycle count = 43 (raw: 43, val: 3)
-                return { raw: 43, val: 3 };
+                const bVal = MAIN_PALACE_BIET_SO[taIdx] || 3;
+                return { raw: bVal, val: bVal };
             }
             
             let sum = 0;
-            if (GIAN_THAN_IDXS.includes(startIdx)) {
-                sum += 1;
-            } else if (MAIN_PALACE_BIET_SO[startIdx] !== undefined) {
-                sum += MAIN_PALACE_BIET_SO[startIdx];
-            }
-            
             let p = (startIdx + 1) % 16;
             let safety = 0;
             while (p !== taIdx && safety < 32) {
