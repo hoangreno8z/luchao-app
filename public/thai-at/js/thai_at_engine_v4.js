@@ -147,6 +147,107 @@ class ThaiAtBaseEngine {
         return { thanIdx, name: "Kế Định", class: "ke-dinh" };
     }
 
+    /**
+     * Phân tích sâu Tam Tài Toán Pháp & Lý Luận Số Toán Âm Dương Hòa/Bất Hòa
+     */
+    static analyzeToanFull(rawToan, thanIdx, starType) {
+        if (rawToan === undefined || rawToan === null) return null;
+        
+        const donVi = rawToan % 10;
+        
+        // 1. Tam Tài Toán Pháp
+        const isVoThien = rawToan < 10; // Hàng đơn vị từ 1-9 (chưa quá 10)
+        const isVoDia = (donVi > 0 && donVi < 5); // Hàng đơn vị < 5 (1, 2, 3, 4)
+        const isVoNhan = (donVi === 0); // Hàng đơn vị = 0 (10, 20, 30, 40)
+        
+        const tamTaiBadges = [];
+        if (isVoThien) tamTaiBadges.push("Vô Thiên");
+        if (isVoDia) tamTaiBadges.push("Vô Địa");
+        if (isVoNhan) tamTaiBadges.push("Vô Nhân");
+        
+        // 2. Cung Dương / Cung Âm
+        const DUONG_PALACES = [7, 9, 11, 13];
+        const AM_PALACES = [15, 1, 3, 5];
+        const GIAN_THAN_PALACES = [0, 2, 4, 6, 8, 10, 12, 14];
+        
+        const isDuongPalace = DUONG_PALACES.includes(thanIdx);
+        const isAmPalace = AM_PALACES.includes(thanIdx);
+        const isGianThanPalace = GIAN_THAN_PALACES.includes(thanIdx);
+        const isEven = (rawToan % 2 === 0);
+        
+        // 3. Thái Ất & Nhị Mục Hòa / Bất Hòa
+        let isHoa = false;
+        let hoaType = "Chưa rõ";
+        
+        if (starType === 'thai_at') {
+            if (isDuongPalace) isHoa = isEven;
+            else if (isAmPalace) isHoa = !isEven;
+            hoaType = isHoa ? "Thái Ất Hòa" : "Thái Ất Bất Hòa";
+        } else if (starType === 'van_xuong' || starType === 'thuy_kich' || starType === 'nhi_muc') {
+            if (!isGianThanPalace) isHoa = isEven;
+            else isHoa = !isEven;
+            hoaType = isHoa ? "Nhị Mục Hòa" : "Nhị Mục Bất Hòa";
+        } else {
+            if (isDuongPalace) isHoa = isEven;
+            else if (isAmPalace) isHoa = !isEven;
+            else isHoa = !isEven;
+            hoaType = isHoa ? "Toán Hòa" : "Toán Bất Hòa";
+        }
+        
+        // 4. Phân Loại Số Toán & 5 Mức Cát Hung
+        let starNumberType = "";
+        let catHungLevel = "";
+        let catHungDesc = "";
+        
+        if ((isDuongPalace && [33, 39].includes(rawToan)) || (isAmPalace && [22, 26].includes(rawToan))) {
+            starNumberType = isDuongPalace ? "Trùng Dương" : "Trùng Âm";
+            catHungLevel = "Thái Quá";
+            catHungDesc = "Thời có hôn quân, bạo chúa.";
+        } else if ((isAmPalace && [3, 9].includes(rawToan)) || (isDuongPalace && [2, 6].includes(rawToan))) {
+            starNumberType = isAmPalace ? "Thuần Dương trong Âm" : "Thuần Âm trong Dương";
+            catHungLevel = "Bất Cập (Đại Hung)";
+            catHungDesc = "Toán Bất Cập là toán Đại Hung. Ở cung Tuyệt Dương tai họa hung hiểm bội phần.";
+        } else if ((isDuongPalace && [13, 19, 31, 37].includes(rawToan)) || (isAmPalace && [24, 28].includes(rawToan))) {
+            starNumberType = isDuongPalace ? "Tạp Trùng Dương" : "Tạp Trùng Âm";
+            catHungLevel = "Thứ Hung";
+            catHungDesc = "Trong ngoài có mưu sâu kế hiểm ngầm.";
+        } else if ((isDuongPalace && [13, 17].includes(rawToan)) || (isAmPalace && [44, 48].includes(rawToan))) {
+            starNumberType = isDuongPalace ? "Âm Trùng trong Dương" : "Dương Trùng trong Âm";
+            catHungLevel = "Đại Hung";
+            catHungDesc = "Mưu sâu kế hiểm sắp sẵn (Trùng Dương mưu trong, Trùng Âm mưu ngoài).";
+        } else if ([14, 18, 33].includes(rawToan)) {
+            starNumberType = "Dương Âm Thượng Hòa";
+            catHungLevel = "Thượng Hòa (Đại Cát)";
+            catHungDesc = "Khí thuận, âm dương tương hợp, may mắn tốt lành.";
+        } else if ([23, 29, 32].includes(rawToan)) {
+            starNumberType = "Thứ Hòa";
+            catHungLevel = "Thứ Hòa (Thứ Cát)";
+            catHungDesc = "Khí hòa thuận, sự việc yên ổn.";
+        } else if ([12, 16, 27, 34, 38].includes(rawToan)) {
+            starNumberType = "Hạ Hòa";
+            catHungLevel = "Hạ Hòa (Tiểu Cát)";
+            catHungDesc = "Âm dương phối hợp, tiểu cát.";
+        } else {
+            starNumberType = isEven ? "Âm Số" : "Dương Số";
+            catHungLevel = isHoa ? "Hòa (Cát)" : "Bất Hòa (Hung)";
+            catHungDesc = isHoa ? "Toán hòa thì khí thuận, vạn sự may mắn." : "Toán bất hòa thì khí nghịch, âm dương đối lập, tai ương phát động.";
+        }
+        
+        return {
+            rawToan,
+            donVi,
+            isVoThien,
+            isVoDia,
+            isVoNhan,
+            tamTaiBadges,
+            isHoa,
+            hoaType,
+            starNumberType,
+            catHungLevel,
+            catHungDesc
+        };
+    }
+
     // ------ NHÓM TÍCH HỢP (THỦY KÍCH, TƯỚNG) ------
     calcThuyKich(vanXuongIdx, keThanIdx) {
         if (vanXuongIdx === undefined || keThanIdx === undefined) return { thanIdx: 12, name: "Thủy Kích (Địa Mục)", class: "thuy-kich" };
@@ -1171,7 +1272,12 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         placement: currRes.placement,
         batHung: evalBatHung(),
         verdict: evaluateThaiAtVerdict(currRes.core.taIdx, currRes.core.vxIdx, currRes.core.tkIdx, toanChuVal, toanKhachVal, evalBatHung()),
-        movingStars: movingStars,
+        toanProperties: {
+            chu: ThaiAtEngineV4.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.ctIdx : -1, 'chu_toan'),
+            khach: ThaiAtEngineV4.analyzeToanFull(toanKhachRawVal, currRes.core ? currRes.core.ktIdx : -1, 'khach_toan'),
+            dinh: ThaiAtEngineV4.analyzeToanFull(toanDinhRawVal, keDinhIdx, 'dinh_toan'),
+            thaiAt: ThaiAtEngineV4.analyzeToanFull(toanChuRawVal, currRes.core ? currRes.core.taIdx : -1, 'thai_at')
+        },
         luanDoanData: luanDoanData,
         khoiSo: factory.khoiSo,
         tinhChatKhoi: factory.tinhChatKhoi

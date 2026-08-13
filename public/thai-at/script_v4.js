@@ -231,14 +231,35 @@ function render(year, month, day, hour) {
     document.getElementById("tc-bat-mon").textContent = data.batMon;
     document.getElementById("tc-cuu-tinh").textContent = data.cuuTinh;
     
-    // Toán Chủ, Toán Khách, Toán Định (Số đã bỏ chục + Nguyên số chưa bỏ chục)
-    document.getElementById("tc-toan-chu").textContent = data.toanChuGoc !== undefined ? `${data.toanChu} (Nguyên số: ${data.toanChuGoc})` : data.toanChu;
-    document.getElementById("tc-toan-khach").textContent = data.toanKhachGoc !== undefined ? `${data.toanKhach} (Nguyên số: ${data.toanKhachGoc})` : data.toanKhach;
+    // Helper function to format toán badges (Tam Tài, Hòa/Bất Hòa, Cát Hung)
+    function formatToanBadges(toanVal, toanGoc, prop) {
+        if (!prop) return toanGoc !== undefined ? `${toanVal} (Nguyên số: ${toanGoc})` : toanVal;
+        let badgesHtml = [];
+        if (prop.isVoThien) badgesHtml.push(`<span style="background:#e67e22; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Thiên</span>`);
+        if (prop.isVoDia) badgesHtml.push(`<span style="background:#d35400; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Địa</span>`);
+        if (prop.isVoNhan) badgesHtml.push(`<span style="background:#8e44ad; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Nhân</span>`);
+        
+        if (prop.isHoa) badgesHtml.push(`<span style="background:#27ae60; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.hoaType}</span>`);
+        else badgesHtml.push(`<span style="background:#c0392b; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.hoaType}</span>`);
+        
+        if (prop.catHungLevel && prop.catHungLevel !== "Hòa (Cát)" && prop.catHungLevel !== "Bất Hòa (Hung)") {
+            badgesHtml.push(`<span style="background:#2c3e50; border:1px solid #f1c40f; color:#f1c40f; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.catHungLevel}</span>`);
+        }
+        
+        return `${toanVal} (Nguyên số: ${toanGoc}) ${badgesHtml.join(" ")}`;
+    }
+
+    // Toán Chủ, Toán Khách, Toán Định (Số đã bỏ chục + Nguyên số chưa bỏ chục + Badges)
+    const tcToanChuEl = document.getElementById("tc-toan-chu");
+    if (tcToanChuEl) tcToanChuEl.innerHTML = formatToanBadges(data.toanChu, data.toanChuGoc, data.toanProperties?.chu);
     
-    const tcToanDinh = document.getElementById("tc-toan-dinh");
-    if (tcToanDinh) tcToanDinh.textContent = data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên số: ${data.toanDinhGoc})` : (data.toanDinh || '-');
+    const tcToanKhachEl = document.getElementById("tc-toan-khach");
+    if (tcToanKhachEl) tcToanKhachEl.innerHTML = formatToanBadges(data.toanKhach, data.toanKhachGoc, data.toanProperties?.khach);
     
-    // Render Trung Cung stars & Tướng Bất Xuất Banner
+    const tcToanDinhEl = document.getElementById("tc-toan-dinh");
+    if (tcToanDinhEl) tcToanDinhEl.innerHTML = formatToanBadges(data.toanDinh, data.toanDinhGoc, data.toanProperties?.dinh);
+    
+    // Render Trung Cung stars & Tướng Bất Xuất / Tam Tài / Sao Chổi Banner
     const tcStars = data?.placement?.["trung_cung"] || [];
     const tcStarsListEl = document.getElementById("tc-stars-list");
     if (tcStarsListEl) {
@@ -247,7 +268,7 @@ function render(year, month, day, hour) {
             : `<span style="color:#aaa; font-style:italic;">Không có thần tinh trú ngụ</span>`;
     }
     
-    // Tướng Bất Xuất (Cửa Đóng) special alerts
+    // Tướng Bất Xuất & Tam Tài (Vô Thiên/Vô Địa/Vô Nhân) & Sao Chổi alerts
     const bannerEl = document.getElementById("tc-special-banner");
     if (bannerEl) {
         let bannerMsgs = [];
@@ -271,6 +292,35 @@ function render(year, month, day, hour) {
                     <strong>🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
                     <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
                         Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách (5×3=15) đồng thời bị hút vào Trung Cung (Cửa Đóng). Tướng soái phe Khách bị kẹt cứng ở trung tâm, hoàn toàn bất lợi ra quân!
+                    </div>
+                </div>
+            `);
+        }
+
+        // Tam Tài Toán Pháp & Điềm Báo Sao Chổi Warnings
+        const chuP = data.toanProperties?.chu;
+        const khachP = data.toanProperties?.khach;
+        const dinhP = data.toanProperties?.dinh;
+
+        const hasVoThien = (chuP?.isVoThien || khachP?.isVoThien || dinhP?.isVoThien);
+        const hasVoDia = (chuP?.isVoDia || khachP?.isVoDia || dinhP?.isVoDia);
+        const hasVoNhan = (chuP?.isVoNhan || khachP?.isVoNhan || dinhP?.isVoNhan);
+
+        if (hasVoThien || hasVoDia || hasVoNhan) {
+            let descList = [];
+            if (hasVoThien) descList.push("<strong>• Vô Thiên (Toán < 10):</strong> Nhật nguyệt tinh tú u mờ, giông bão mưa đá, khí hậu đại biến.");
+            if (hasVoDia) descList.push("<strong>• Vô Địa (Đơn vị < 5):</strong> Động đất, núi lở, lũ lụt, sóng thần, hạn hán cháy rừng.");
+            if (hasVoNhan) descList.push("<strong>• Vô Nhân (Đơn vị = 0):</strong> Xã hội loạn lạc, đạo đức suy đồi, gian dối nổi loạn. (Đúng kỳ lý nhân thì Thánh Nhân xuất hiện).");
+            
+            if (hasVoThien && hasVoDia && hasVoNhan) {
+                descList.push("<strong>⚠️ ĐẶC BIỆT TAM TÀI ĐỒNG THỜI VÔ THIÊN - VÔ ĐỊA - VÔ NHÂN:</strong> Thiên Địa Nhân tối hung ương, đại họa tai ách lớn! Bầu trời xuất hiện <strong>Sao Chổi</strong> (Tuế Tinh, Nhiếp Đề, Tùng Hoa, Ứng Tinh, Kỷ Tinh, Thiên Ngộ, Xuy Vưu, Nguyệt Hoa, Tư Nguy, Chiêu Dao, Trương Cung, Năm Tán, Thiên Tắc, Phi Phù, Thiên Cẩu...).");
+            }
+            
+            bannerMsgs.push(`
+                <div style="background: rgba(230, 126, 34, 0.18); border: 1px solid #e67e22; color: #f39c12; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
+                    <strong>☄️ TAM TÀI TOÁN PHÁP (VÔ THIÊN / VÔ ĐỊA / VÔ NHÂN)</strong>
+                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
+                        ${descList.join("<br/>")}
                     </div>
                 </div>
             `);
