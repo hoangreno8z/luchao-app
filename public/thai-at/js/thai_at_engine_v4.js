@@ -132,17 +132,18 @@ class ThaiAtBaseEngine {
     }
 
     calcKeDinh(thaiTueIdx, vanXuongIdx) {
-        if (thaiTueIdx === undefined || vanXuongIdx === undefined) return { thanIdx: 6, name: "Kế Định", class: "ke-dinh" };
+        if (thaiTueIdx === undefined || vanXuongIdx === undefined) return { thanIdx: 4, name: "Kế Định", class: "ke-dinh" };
         
-        const cucChiIdx = (this.cucNum !== undefined && this.cucNum > 0) ? ((this.cucNum - 1) % 12) : ((this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0);
-        const LUC_HOP_CHI = { 0: 1, 1: 0, 2: 11, 3: 10, 4: 9, 5: 8, 6: 7, 7: 6, 8: 5, 9: 4, 10: 3, 11: 2 };
-        const thanHopIdx = CHI_TO_THAN_IDX[LUC_HOP_CHI[cucChiIdx]];
+        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
+        const ttIdx = (this.mode === 'tue') ? CHI_TO_THAN_IDX[namChiIdx] : thaiTueIdx;
+        const THAN_HOP_MAP = { 0:14, 1:13, 2:12, 3:15, 4:8, 5:6, 6:5, 7:11, 8:4, 9:2, 10:1, 11:7, 12:2, 13:14, 14:13, 15:3 };
+        const thanHopIdx = THAN_HOP_MAP[ttIdx] !== undefined ? THAN_HOP_MAP[ttIdx] : ttIdx;
         
-        // Đếm từ Thần Hợp đến Văn Xương qua 16 Thần Cung
-        const dist = (vanXuongIdx - thanHopIdx + 16) % 16;
+        // Đếm từ Thần Hợp đến Văn Xương bao gồm 2 đầu
+        const distInclusive = (vanXuongIdx - thanHopIdx + 16) % 16 + 1;
         
-        // Khởi từ Thái Tuế đếm thuận 16 Thần Cung vừa đủ số ngôi
-        const thanIdx = (thaiTueIdx + dist) % 16;
+        // Khởi từ Thái Tuế đếm thuận 16 Thần Cung vừa đủ số ngôi bao gồm 2 đầu
+        const thanIdx = (ttIdx + distInclusive - 1) % 16;
         return { thanIdx, name: "Kế Định", class: "ke-dinh" };
     }
 
