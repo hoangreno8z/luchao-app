@@ -197,19 +197,29 @@ class ThaiAtBaseEngine {
         const khachToanObj = getToan(tkIdx);
         const chuToan = chuToanObj.val;
         const khachToan = khachToanObj.val;
+
+        function getTuongPosition(donVi) {
+            if (donVi === 5) return -1; // Only tail digit 5 locks in Trung Cung (-1)
+            if (donVi === 0 || donVi === 10) return null; // Vô Thiên (do not place in Trung Cung)
+            return PALACE_TO_THAN_IDX[donVi] !== undefined ? PALACE_TO_THAN_IDX[donVi] : null;
+        }
+
+        const chuTuongIdx = getTuongPosition(chuToan);
+        const khachTuongIdx = getTuongPosition(khachToan);
         
-        const chuTuongIdx = PALACE_TO_THAN_IDX[chuToan] !== undefined ? PALACE_TO_THAN_IDX[chuToan] : -1;
-        const khachTuongIdx = PALACE_TO_THAN_IDX[khachToan] !== undefined ? PALACE_TO_THAN_IDX[khachToan] : -1;
+        const thamChuToan = (chuToan * 3) % 10;
+        const thamKhachToan = (khachToan * 3) % 10;
         
-        const thamChuToan = (chuToan * 3) % 10 || 10;
-        const thamKhachToan = (khachToan * 3) % 10 || 10;
+        const res = [];
+        if (chuTuongIdx !== null) res.push({ thanIdx: chuTuongIdx, name: `Đại Tướng Chủ (Toán ${chuToan})`, class: "chu-tuong", rawToan: chuToanObj.raw });
+        if (khachTuongIdx !== null) res.push({ thanIdx: khachTuongIdx, name: `Đại Tướng Khách (Toán ${khachToan})`, class: "khach-tuong", rawToan: khachToanObj.raw });
         
-        return [
-            { thanIdx: chuTuongIdx, name: `Đại Tướng Chủ (Toán ${chuToan})`, class: "chu-tuong", rawToan: chuToanObj.raw },
-            { thanIdx: khachTuongIdx, name: `Đại Tướng Khách (Toán ${khachToan})`, class: "khach-tuong", rawToan: khachToanObj.raw },
-            { thanIdx: PALACE_TO_THAN_IDX[thamChuToan] !== undefined ? PALACE_TO_THAN_IDX[thamChuToan] : -1, name: `Tham Tướng Chủ`, class: "chu-tuong" },
-            { thanIdx: PALACE_TO_THAN_IDX[thamKhachToan] !== undefined ? PALACE_TO_THAN_IDX[thamKhachToan] : -1, name: `Tham Tướng Khách`, class: "khach-tuong" }
-        ];
+        const thamChuIdx = getTuongPosition(thamChuToan);
+        const thamKhachIdx = getTuongPosition(thamKhachToan);
+        if (thamChuIdx !== null) res.push({ thanIdx: thamChuIdx, name: `Tham Tướng Chủ`, class: "chu-tuong" });
+        if (thamKhachIdx !== null) res.push({ thanIdx: thamKhachIdx, name: `Tham Tướng Khách`, class: "khach-tuong" });
+        
+        return res;
     }
 
     // ------ NHÓM CƠ, PHÚC, DU (MOD TÍCH 360) ------
@@ -542,7 +552,8 @@ class ThaiAtBaseEngine {
         const thaiAt = this.calcThaiAt();
         const vanXuong = this.calcVanXuong();
         const keThan = this.calcKeThan();
-        const thaiTueIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? CHI_TO_THAN_IDX[this.tuTru.year.chiIdx] : 13;
+        const thaiTue = this.calcThaiTue();
+        const thaiTueIdx = thaiTue.thanIdx;
         const keDinh = this.calcKeDinh(thaiTueIdx, vanXuong.thanIdx);
         const thuyKich = this.calcThuyKich(vanXuong.thanIdx, keThan.thanIdx);
         const tuongStars = this.calcDaiTuongAndThamTuong(thaiAt.thanIdx, vanXuong.thanIdx, thuyKich.thanIdx);
@@ -550,9 +561,8 @@ class ThaiAtBaseEngine {
         // Add Thái Tuế and Thần Hợp explicitly
         const THAN_HOP_MAP = { 0:12, 1:10, 2:9, 3:15, 4:8, 5:6, 6:5, 7:11, 8:4, 9:2, 10:1, 11:7, 12:0, 13:14, 14:13, 15:3 };
         const thanHopIdx = THAN_HOP_MAP[thaiTueIdx] !== undefined ? THAN_HOP_MAP[thaiTueIdx] : thaiTueIdx;
-        const thaiTueName = (this.tuTru && this.tuTru.year && this.tuTru.year.chiName) ? `Thái Tuế (${this.tuTru.year.chiName})` : "Thái Tuế";
 
-        const thaiTueStar = { thanIdx: thaiTueIdx, name: thaiTueName, class: "other-stars", unique: "thai_tue" };
+        const thaiTueStar = { thanIdx: thaiTueIdx, name: "Thái Tuế", class: "other-stars", unique: "thai_tue" };
         const thanHopStar = { thanIdx: thanHopIdx, name: "Thần Hợp", class: "other-stars", unique: "than_hop" };
 
         const all = [
