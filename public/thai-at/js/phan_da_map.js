@@ -172,4 +172,6 @@ function highlightPhanDaCard(cungNum) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", initPhanDaMap);
+if (typeof document !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", initPhanDaMap);
+}

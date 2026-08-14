@@ -1,7 +1,6 @@
 /**
  * 🔒 [LOCKED & FROZEN ENGINE] - THÁI ẤT NGUYỆT KẾ ENGINE (QUẺ THÁNG)
  * TUYỆT ĐỐI KHÔNG SỬA ĐỔI HOẶC CAN THIỆP LOGIC TÍNH TOÁN BÊN DƯỚI.
- */
  * 1. 100% Dương Độn (cucNum = (kyDuThang % 72) || 72).
  * 2. Thái Ất & Tiểu Du chạy strictly trên 8 Cung Bát Quái (PALACES_8_THAN_IDX).
  * 3. Thái Tuế an vị tại Nguyệt Kiến (Địa Chi tháng hiện tại).
