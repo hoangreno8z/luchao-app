@@ -1,3 +1,7 @@
+/**
+ * 🔒 [LOCKED & FROZEN ENGINE] - THÁI ẤT THỜI KẾ ENGINE (QUẺ GIỜ)
+ * TUYỆT ĐỐI KHÔNG SỬA ĐỔI HOẶC CAN THIỆP LOGIC TÍNH TOÁN BÊN DƯỚI.
+ */
 class RealThoiKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, soGio, tuTru) {
         super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'thoi');

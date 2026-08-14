@@ -1,11 +1,7 @@
 /**
- * Modular Thái Ất Engine — V4.0 (Tái cấu trúc theo Cụm Công Thức)
- * 
- * PHÂN LỚP:
- * 1. Hằng số và Bảng Tra
- * 2. ThaiAtBaseEngine: Chứa tất cả công thức tính toán độc lập
- * 3. TueKeEngine, NguyetKeEngine...: Kế thừa và truyền Tích/Kỷ Dư phù hợp
- * 4. calculateThaiAtChart: Điều phối, tính Time Travel (Hiện tại & Tương lai)
+ * 🔒 [LOCKED & FROZEN ENGINE] - THÁI ẤT THẦN SỐ ENGINE V4.0
+ * TOÀN BỘ CÔNG THỨC TOÁN HỌC & LOGIC ĐÃ ĐƯỢC KIỂM ĐỊNH CHUẨN XÁC VỚI 144 CỤC ÂM DƯƠNG.
+ * TUYỆT ĐỐI KHÔNG SỬA ĐỔI HOẶC CAN THIỆP CÁC CÔNG THỨC VẬN HÀNH THẦN TINH, SỐ TOÁN VÀ BÁT MÔN BÊN DƯỚI.
  */
 
 // ==========================================

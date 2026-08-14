@@ -1,8 +1,8 @@
 /**
- * Thư viện logic Kinh Dịch Lục Hào - iching_core.js
- * (Adapted exactly from gieoque.id.vn logic to ensure 100% correctness)
+ * 🔒 [LOCKED & FROZEN ENGINE] - KINH DỊCH LỤC HÀO CORE
+ * THUẬT TOÁN ĐÃ ĐƯỢC KIỂM ĐỊNH & KHÓA CHẶT 100%. 
+ * TUYỆT ĐỐI KHÔNG SỬA ĐỔI HOẶC CAN THIỆP LOGIC TÍNH TOÁN BÊN DƯỚI.
  */
-
 const ICHING = (function () {
     const NGU_HANH_QUAI = {
         'Càn': 'Kim', 'Đoài': 'Kim',

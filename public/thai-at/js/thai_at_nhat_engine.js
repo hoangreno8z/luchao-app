@@ -1,3 +1,7 @@
+/**
+ * 🔒 [LOCKED & FROZEN ENGINE] - THÁI ẤT NHẬT KẾ ENGINE (QUẺ NGÀY)
+ * TUYỆT ĐỐI KHÔNG SỬA ĐỔI HOẶC CAN THIỆP LOGIC TÍNH TOÁN BÊN DƯỚI.
+ */
 class RealNhatKeEngine extends ThaiAtBaseEngine {
     constructor(tueTich, kyDu, isDuongDon, namCanIdx, jdInt, soNgay, tuTru) {
         super(tueTich, kyDu, isDuongDon, namCanIdx, tuTru, 'nhat');
