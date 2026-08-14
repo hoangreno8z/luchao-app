@@ -197,6 +197,12 @@ function initThaiAtApp() {
 
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initThaiAtApp);
+    window.addEventListener("load", () => {
+        const img = document.getElementById("thai-at-chart-img");
+        if (!img || !img.src || img.style.display === "none") {
+            initThaiAtApp();
+        }
+    });
 } else {
     initThaiAtApp();
 }
