@@ -1,8 +1,8 @@
 import { THAI_AT_KNOWLEDGE } from './thai_at_knowledge.js';
-import { THAI_AT_KNOWLEDGE_72 } from './thai_at_knowledge_pdf.js';
+import { THAI_AT_KNOWLEDGE_72, getMatchingCucKnowledge } from './thai_at_knowledge_pdf.js';
 export const maxDuration = 60;
 
-// List of models to try in order — all free-tier eligible, no models below 3.5
+// List of models to try in order — all free-tier eligible
 const MODELS = [
     'gemini-3.5-flash-lite',
     'gemini-3.5-flash',
@@ -34,90 +34,109 @@ export default async function handler(req, res) {
         let starPositions = 'Không có dữ liệu';
         if (payload.stars && Array.isArray(payload.stars) && payload.stars.length > 0) {
             starPositions = payload.stars
-                .map(c => `- Cung ${c.cung}: ${(c.stars || []).join(', ')}`)
+                .map(c => `- Cung ${c.cung.toUpperCase()}: ${(c.stars || []).join(', ')}`)
                 .join('\n');
         }
 
-        // Construct the prompt with priority order
-        const promptText = `BẠN LÀ MỘT ĐẠI SƯ THÁI ẤT THẦN SỐ.
-NHIỆM VỤ CỦA BẠN LÀ LUẬN GIẢI SA BÀN DỰA TRÊN DỮ LIỆU ĐƯỢC CUNG CẤP.
-LƯU Ý ĐẶC BIỆT: 
-1. BẠN CHỈ ĐƯỢC PHÉP LUẬN GIẢI DỰA TRÊN KIẾN THỨC BÊN DƯỚI, TUYỆT ĐỐI KHÔNG ĐƯỢC BỊA ĐẶT (HALLUCINATE) HOẶC SÁNG TẠO THÊM NỘI DUNG NÀO KHÁC VỀ THÁI ẤT.
-2. VỊ TRÍ CÁC SAO ĐÃ ĐƯỢC CỐ ĐỊNH, BẠN KHÔNG ĐƯỢC PHÉP THAY ĐỔI VỊ TRÍ HAY NHẦM LẪN GIỮA CÁC CUNG (Ví dụ: Cung Cấn và Cung Càn/Kiền là khác nhau).
-3. "Kiền" chính là "Càn", hai tên gọi này là một. Nếu dữ liệu ghi là Kiền, hãy hiểu đó là Càn.
-4. QUAN TRỌNG: "Cục" và "Khối" LÀ MỘT. (Ví dụ: Cục 55 chính là Khối 55). Khi luận giải, bạn PHẢI TÌM ĐỌC nội dung của Khối tương ứng trong tài liệu 72 Khối và diễn giải CỤ THỂ ra (ví dụ Toán chủ hòa hay bất hòa, Đại Chủ phát, xuất quân hướng nào, v.v.). Nếu trong tài liệu không có hoặc bị thiếu chữ, HÃY SỬ DỤNG KIẾN THỨC SÂU RỘNG CỦA CHÍNH BẠN VỀ THÁI ẤT THẦN SỐ để điền vào chỗ trống và luận giải chi tiết cho Khối/Cục đó.
+        // Extract Cục number and Độn type for targeted book lookup
+        const donCucStr = payload.donCucName || '';
+        const mCuc = donCucStr.match(/(\d+)/);
+        const cucNum = mCuc ? parseInt(mCuc[1]) : 1;
+        const isAm = donCucStr.toLowerCase().includes('âm');
+        const donType = isAm ? 'Âm Độn' : 'Dương Độn';
 
---- KIẾN THỨC CỐT LÕI THÁI ẤT ---
+        // Extract targeted textbook knowledge for current Cục
+        const matchingCucText = getMatchingCucKnowledge(donType, cucNum);
+
+        // Construct the ultimate professional prompt
+        const promptText = `BẠN LÀ MỘT BẬC ĐẠI SƯ THÁI ẤT THẦN SỐ & QUÂN SƯ CHIẾN LƯỢC ĐỈNH CAO.
+NHIỆM VỤ CỦA BẠN LÀ LUẬN GIẢI TOÀN DIỆN VÀ CHUYÊN SÂU SA BÀN THÁI ẤT HIỆN TẠI THEO ĐÚNG 100% CƠ SỞ TRI THỨC VÀ BINH PHÁP THÁI ẤT THẦN KINH.
+
+--- NGUYÊN TẮC BẮT BUỘC ---
+1. BÁM SÁT 100% DỮ LIỆU ĐỒ HÌNH & VĂN BẢN GỐC SÁCH CỔ BÊN DƯỚI. KHÔNG BỊA ĐẶT THÊM CÁC THUYẾT NGOÀI HỆ THỐNG THÁI ẤT.
+2. VỊ TRÍ CÁC SAO ĐÃ AN ĐỊNH TRÊN 16 CUNG, TUYỆT ĐỐI KHÔNG TỰ Ý ĐỔI CUNG HOẶC NHẦM LẪN GIỮA CÁC CUNG (Càn/Kiền=1, Ly=2, Cấn=3, Chấn=4, Trung Cung=5, Đoài=6, Khôn=7, Khảm=8, Tốn=9).
+3. "Cục" và "Khối" LÀ MỘT (Ví dụ: Cục 45 chính là Khối 45).
+4. Áp dụng chuẩn các thuật ngữ Thái Ất: Trường Toán/Đoản Toán, Vô Thiên/Vô Địa/Vô Nhân, Cửa Đóng (Bát Cửa Tắc), Đại/Tham Tướng Phát/Giam/Tù/Ép Trong/Ép Ngoài/Cách/Cắp/Bách/Kích.
+
+--- VĂN BẢN GỐC SÁCH 144 KHỐI ĐỒ HÌNH CHO CỤC HIỆN TẠI ---
+${matchingCucText || 'Không có đoạn văn bản trích xuất riêng, hãy sử dụng kho tri thức 72 Khối bên dưới.'}
+
+--- CƠ SỞ LÝ THUYẾT CỐT LÕI & THÁI ẤT BINH PHÁP ---
 ${THAI_AT_KNOWLEDGE}
 
---- KIẾN THỨC 72 KHỐI DƯƠNG VÀ ÂM (DÙNG ĐỂ TRA CỨU CỤC SỐ) ---
-${THAI_AT_KNOWLEDGE_72}
-
 --- THÔNG SỐ SA BÀN HIỆN TẠI ---
-- Chế độ: ${payload.mode || 'N/A'}
-- Khối Số: ${payload.khoiSo || 'Chưa xác định'} (${payload.tinhChatKhoi || 'Chưa xác định'})
-- Bát Môn: ${payload.batMon || 'Chưa xác định'}
-- Cửu Tinh: ${payload.cuuTinh || 'Chưa xác định'}
-- Cục Số: ${payload.donCucName || 'Chưa xác định'}
-- Toán Chủ: ${payload.toanChu || 'Không có'}
-- Toán Khách: ${payload.toanKhach || 'Không có'}
-- Toán Định: ${payload.toanDinh || 'Không có'}
+- Chế Độ Lập Quẻ: ${payload.mode || 'N/A'}
+- Tứ Trụ Can Chi: ${payload.tuTruStr || 'Không rõ'}
+- Tiết Khí: ${payload.solarTerm || 'Không rõ'}
+- Độn Cục: ${payload.donCucName || 'Không rõ'}
+- Khối Số: ${payload.khoiSo !== undefined ? payload.khoiSo : cucNum} (${payload.tinhChatKhoi || 'Chính Cục'})
+- Cửa Trực Sự (Bát Môn): ${payload.batMon || 'Không rõ'}
+- Sao Trực Sự (Cửu Tinh): ${payload.cuuTinh || 'Không rõ'}
+- Toán Chủ: ${payload.toanChu || 'N/A'}
+- Toán Khách: ${payload.toanKhach || 'N/A'}
+- Toán Định: ${payload.toanDinh || 'N/A'}
+- Bát Hung / Cách Cục Bất Thường: ${payload.batHung || 'Không thuộc Bát Hung'}
 
-Vị trí các Thần Tinh trên 16 Cung (CHÚ Ý KỸ VỊ TRÍ NÀY ĐỂ KHÔNG NHẦM LẪN):
+Vị Trí Phân Bố Toàn Bộ Các Sao Trên 16 Cung:
 ${starPositions}
 
---- YÊU CẦU LUẬN GIẢI (TUÂN THỦ TRÌNH TỰ ƯU TIÊN) ---
+--- YÊU CẦU CẤU TRÚC BÀI LUẬN GIẢI CHUYÊN SÂU (ĐÚNG 7 CHƯƠNG) ---
 
-PHẦN 1: ☯️ THẾ TRẬN 72 KHỐI DƯƠNG/ÂM
-- Tra cứu trong "Kiến thức 72 Khối" ở trên xem Khối Số hiện tại (ví dụ Dương Độn Cục 55) có đặc điểm gì?
-- Phân tích chi tiết: Toán chủ hòa hay bất hòa? Đại Chủ phát thế nào? Đối trận lợi phát động trước hay sau? Xuất quân hướng nào? Phục binh giờ nào? Bên Khách bị yểm hay tù? (Nếu tài liệu cung cấp thiếu, hãy dùng kiến thức Thái Ất của bạn để bổ sung trọn vẹn).
+HÃY TRÌNH BÀY BÀI LUẬN GIẢI THEO CẤU TRÚC 7 CHƯƠNG ĐẲNG CẤP DƯỚI ĐÂY:
 
-PHẦN 2: 🌟 CÁT HUNG CỦA THÁI ẤT
-- Thái Ất đang ở cung nào? Ngũ hành cung đó sinh hay khắc Thái Ất (Mộc)?
-- Thái Ất Hòa hay Bất Hòa? (Cung Dương + Toán Chẵn = Hòa; ngược lại = Bất Hòa). Đánh giá Cát/Hung.
+CHƯƠNG 1: ☯️ ĐẠI CƯƠNG KHỐI CỤC & BINH PHÁP 144 KHỐI
+- Phân tích chi tiết đặc điểm của Khối/Cục hiện tại dựa vào văn bản gốc sách cổ.
+- Luận thế trận Chủ - Khách: Bên nào đắc lực thế hơn? Lợi thế phát động trước hay phát động sau?
+- Binh pháp ứng dụng: Hướng xuất quân đắc lợi, hướng đánh tiêu diệt địch, hình thái trận pháp nên bày (tròn/vuông/nhọn/cong/thẳng), màu cờ nên phất (vàng/đỏ/xanh/trắng/đen), khung giờ phục binh cát lợi và tỷ lệ kỳ binh.
 
-PHẦN 3: 🚪 THÁI ẤT VÀ BÁT MÔN
-- Thái Ất đang rơi vào cửa nào trong 8 cửa? Tác động sinh tử ra sao?
+CHƯƠNG 2: ⚔️ TƯƠNG QUAN LỰC LƯỢNG CHỦ - KHÁCH & TAM TÀI ĐẮC THẾ
+- Phân tích Toán Chủ (${payload.toanChu}) vs Toán Khách (${payload.toanKhach}): Ai là Trường Toán (Dài $\ge 11$), ai là Đoản Toán (Ngắn $\le 10$)?
+- Xét Tam Tài: Có bị Vô Thiên (thiếu hàng chục), Vô Địa (tròn chục), hay Vô Nhân / Cửa Đóng (tận cùng 5) không?
+- Đánh giá mức độ Hòa Khí (Thượng Hòa / Thứ Hòa / Hạ Hòa / Bất Hòa). Kết luận bên Chủ (phòng thủ/nội bộ) hay bên Khách (tiến công/bên ngoài) chiếm ưu thế áp đảo.
 
-PHẦN 4: ⚔️ TOÁN CHỦ - KHÁCH VÀ THẮNG THUA
-- Toán Chủ bao nhiêu? Toán Khách bao nhiêu? Ai dài hơn?
-- Kết luận: Chủ (phòng thủ) thắng hay Khách (tấn công) thắng?
+CHƯƠNG 3: 🚪 CÁT HUNG BÁT MÔN & CỬU TINH TRỰC SỰ
+- Đánh giá Cửa Trực Sự (${payload.batMon}) và Sao Trực Sự (${payload.cuuTinh}).
+- Phân tích vị trí Thái Ất và Văn Xương rơi vào Cửa nào trong 8 Cửa (Khai, Hưu, Sinh, Thương, Đỗ, Cảnh, Tử, Kinh) ➔ Đâu là Sinh Môn đắc lợi, đâu là Tử Lộ cần tránh.
 
-PHẦN 5: ♟️ CÁC TƯỚNG, THỦY KÍCH, VĂN XƯƠNG & CÁCH CỤC
-- Vị trí cụ thể của Đại Tướng, Tham Tướng, Văn Xương, Thủy Kích, Đại Du.
-- Kiểm tra các cách cục bất thường. Gây ra hậu quả gì?
+CHƯƠNG 4: 🌪️ CHIÊM KHÍ TƯỢNG, PHONG HƯỚNG & THIÊN VĂN BIẾN TIẾT
+- Phân tích hệ thống Thập Tinh Khí Tượng: Tam Phong, Ngũ Phong, Bát Phong, Phi Điểu, Thiên Hoàng, Đế Phù, Thiên Thời đang đóng tại các cung nào.
+- Dự báo hiện tượng thời tiết: Gió to, mưa lạnh, giông bão, quầng nhật nguyệt, hay mây biến tiết theo giờ.
 
-PHẦN 6: 📅 DỰ BÁO THÁNG TỐT/XẤU TRONG NĂM
-- Liệt kê các tháng âm lịch tốt và xấu trong năm (dựa trên cung và sao).
+CHƯƠNG 5: 👑 CHIÊM ĐOÁN XÃ HỘI, DÂN SINH & VẬN HẠN TAM CƠ
+- Luận giải vị thế Tam Cơ:
+  + Quân Cơ (Cung đóng): Đánh giá tầng lớp lãnh đạo, người đứng đầu, chính sách vĩ mô.
+  + Thần Cơ (Cung đóng): Đánh giá đội ngũ trợ thủ, bộ máy thực thi, quan chức, tướng tá.
+  + Dân Cơ (Cung đóng): Đánh giá đời sống người dân, nhân tâm xã hội, dư luận, thị trường tiêu dùng.
+- Tác động của Ngũ Phúc (Cát tinh cứu trợ) và Đại Du / Tiểu Du vận niên.
 
-PHẦN 7: 🧭 PHƯƠNG VỊ TỐT/XẤU
-- Liệt kê phương vị (Đông, Tây, Nam, Bắc...) nào tốt, nào xấu dựa theo sao đóng ở đó.
+CHƯƠNG 6: 💼 ỨNG DỤNG THỰC TIỄN HIỆN ĐẠI (KINH DOANH, ĐẦU TƯ, DOANH NGHIỆP)
+- Chuyển hóa thế trận cổ truyền sang thời đại hiện nay:
+  + Đối với Đầu Tư / Tài Chính: Thời điểm nên mua vào (chủ động tấn công) hay giữ tiền mặt / phòng thủ?
+  + Đối với Doanh Nghiệp & Dự Án: Quan hệ hợp tác đối tác (Chủ - Khách), phòng ngừa rủi ro bị đối tác ép/chèn lấn hay nắm thế thượng phong.
+  + Đối với Nhân Sự: Nhận diện người trung dũng và kẻ cơ hội dựa trên thế Tướng.
 
-PHẦN 8: 📊 LIÊN HỆ THỜI SỰ VIỆT NAM VÀ THẾ GIỚI
-- KẾT HỢP sa bàn với KIẾN THỨC CỦA BẠN về KINH TẾ (GDP, lạm phát, chứng khoán), THỜI TIẾT (bão lụt) và CHÍNH TRỊ hiện tại của Việt Nam để đối chiếu.
-- Lưu ý: Thông tin sa bàn là gốc, thời sự là tham chiếu.
+CHƯƠNG 7: 🧭 PHƯƠNG ÁN HÀNH SỰ, GIỜ XUẤT HÀNH & HÓA GIẢI CÁT HUNG
+- Chiến lược hành động tối ưu cho người cầu việc / gia chủ / nhà lãnh đạo.
+- Liệt kê các phương vị đại cát nghênh đón vượng khí và phương vị đại hung cần kiêng kỵ.
+- Các khung giờ cát lành (hoàng đạo Thái Ất) để khởi sự, ký kết, đàm phán.
+- Phương pháp hóa giải nếu quẻ gặp các thế xấu (Yểm, Kích, Bách, Tù, Cách, Cáp).
 
-PHẦN 9: 🔮 DỰ BÁO XU HƯỚNG TƯƠNG LAI
-- Dự báo xu hướng 3-6 tháng tới (ngành nghề nào phát triển, ngành nào suy thoái).
+=== ĐỊNH DẠNG TRẢ LỜI (HTML CAO CẤP) ===
+Sử dụng mã HTML định dạng sang trọng theo mẫu sau:
+- Tiêu đề chương: <h3 style="color:#d4af37; font-family:'Cinzel', serif; font-size:1.05rem; margin-top:24px; margin-bottom:10px; border-bottom:1px solid rgba(212,175,55,0.3); padding-bottom:6px;">
+- Đoạn văn: <p style="color:#f5f0e1; margin:8px 0; line-height: 1.7; font-size:0.92rem;">
+- Điểm CÁT / LỢI / CHIẾN THẮNG: <span style="color:#51cf66; font-weight:bold;">
+- Điểm HUNG / NGUY HIỂM / BẤT LỢI: <span style="color:#ff6b6b; font-weight:bold;">
+- ĐIỂM NHẤN CHIẾN LƯỢC / LỜI KHUYÊN: <span style="color:#ffd43b; font-weight:bold;">
+- Danh sách ý: <ul style="color:#f5f0e1; padding-left:20px; margin:6px 0;"><li style="margin:4px 0;">
 
-PHẦN 10: 💡 LỜI KHUYÊN HÀNH SỰ & HÓA GIẢI
-- Cách hóa giải nếu quẻ hung, cách tận dụng nếu quẻ cát. Lời khuyên thực tiễn.
-
-=== ĐỊNH DẠNG BẮT BUỘC ===
-Trả lời bằng HTML. Dùng các style sau:
-- Tiêu đề phần: <h3 style="color:#d4af37; font-size:1rem; margin-top:20px; border-bottom:1px solid rgba(212,175,55,0.3); padding-bottom:5px;">
-- Nội dung: <p style="color:#f5f0e1; margin:8px 0; line-height: 1.6;">
-- Điểm HUNG/XẤU: <span style="color:#ff6b6b; font-weight:bold;">
-- Điểm CÁT/TỐT: <span style="color:#51cf66; font-weight:bold;">
-- Danh sách: <ul style="color:#f5f0e1;"><li style="margin:4px 0;">
-
-KHÔNG chào hỏi, KHÔNG giới thiệu. BẮT ĐẦU LUẬN GIẢI NGAY TỪ PHẦN 1.`;
+BẮT ĐẦU LUẬN GIẢI NGAY TỪ CHƯƠNG 1. TUYỆT ĐỐI KHÔNG CHÀO HỎI DẪN NHẬP.`;
 
         const requestBody = {
             contents: [{ parts: [{ text: promptText }] }],
             generationConfig: {
                 temperature: 0.2,
-                maxOutputTokens: 8000,
+                maxOutputTokens: 8192,
             }
         };
 

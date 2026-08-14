@@ -861,9 +861,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     batMon: d.batMon,
                     cuuTinh: d.cuuTinh,
                     donCucName: d.donCucName,
-                    toanDinh: d.toanDinhGoc,
-                    toanChu: d.luanDoanData?.toanChu,
-                    toanKhach: d.luanDoanData?.toanKhach,
+                    tuTruStr: d.tuTru ? d.tuTru.fullString : '',
+                    solarTerm: d.solarTerm || '',
+                    toanDinh: d.toanDinhGoc || d.toanDinh,
+                    toanChu: d.toanChuGoc || d.toanChu || d.luanDoanData?.toanChu,
+                    toanKhach: d.toanKhachGoc || d.toanKhach || d.luanDoanData?.toanKhach,
+                    batHung: d.batHung || 'Không thuộc Bát Hung.',
+                    verdict: d.verdict || '',
                     stars
                 };
                 
