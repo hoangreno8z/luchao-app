@@ -253,6 +253,7 @@ function draw5x5ThaiAtSaBan(data, callback) {
         }
 
         let sy = cy + 58;
+        ctx.textAlign = "left";
 
         if (stars.length === 0) {
             ctx.fillStyle = activeThemeKey === "huyen-khong" ? "#555" : "#999";
