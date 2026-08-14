@@ -75,10 +75,9 @@ class ThaiAtBaseEngine {
     
     // ------ NHÓM KỶ DƯ (MOD 360/24/18/12) ------
     calcThaiAt() {
-        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
-        const du24 = kyDuVal % 24;
-        const step = Math.floor(du24 / 3);
-        const rem = (du24 % 3) || 3;
+        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
+        const step = Math.floor(((cucNum - 1) % 24) / 3);
+        const rem = ((cucNum - 1) % 3) + 1;
 
         const PATH_DUONG = [3, 13, 7, 9, 1, 15, 5, 11]; // Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn
         const PATH_AM = [11, 5, 15, 1, 9, 7, 13, 3];    // Tốn, Khảm, Khôn, Đoài, Chấn, Cấn, Ly, Kiền
@@ -101,8 +100,8 @@ class ThaiAtBaseEngine {
     }
     
     calcVanXuong() {
-        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
-        const R = kyDuVal % 18 || 18;
+        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
+        const R = (cucNum % 18) || 18;
         let current = this.isDuongDon ? 0 : 8; // Dương: Thân(0), Âm: Dần(8)
         let stepCount = 1;
         const pauseArr = this.isDuongDon ? [3, 15] : [7, 11]; // Dương: Kiền(3),Khôn(15) vs Âm: Cấn(7),Tốn(11)
@@ -123,20 +122,23 @@ class ThaiAtBaseEngine {
     calcKeThan() {
         // Dương độn: Khởi Dần (Chi Dần = 2), đi nghịch 12 địa chi
         // Âm độn: Khởi Thân (Chi Thân = 8), đi nghịch 12 địa chi
-        const kyDuVal = (this.kyDuThang || this.kyDuNgay || this.kyDuGio || this.kyDuNam || (this.tueTich % 360) || 360);
+        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
         const startChiIdx = (this.isDuongDon !== false) ? 2 : 8; // Dần = 2, Thân = 8
-        const r12 = (kyDuVal % 12) || 12;
+        const r12 = (cucNum % 12) || 12;
         const targetChiIdx = (startChiIdx - (r12 - 1) + 120) % 12;
         const thanIdx = CHI_TO_THAN_IDX[targetChiIdx];
         return { thanIdx, name: "Kế Thần", class: "ke-than" };
     }
 
     calcKeDinh(thaiTueIdx, vanXuongIdx) {
-        if (thaiTueIdx === undefined || vanXuongIdx === undefined) return { thanIdx: 4, name: "Kế Định", class: "ke-dinh" };
+        if (vanXuongIdx === undefined) return { thanIdx: 15, name: "Kế Định", class: "ke-dinh" };
         
-        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
-        const ttIdx = (this.mode === 'tue') ? CHI_TO_THAN_IDX[namChiIdx] : thaiTueIdx;
-        const THAN_HOP_MAP = { 0:14, 1:13, 2:12, 3:15, 4:8, 5:6, 6:5, 7:11, 8:4, 9:2, 10:1, 11:7, 12:2, 13:14, 14:13, 15:3 };
+        // Thái Tuế lấy trực tiếp theo Địa Chi của Cục (Cục 1 -> Tý, Cục 71 -> Tuất...)
+        const cucChiIdx = ((this.cucNum || (this.kyDu % 72) || 72) - 1) % 12;
+        const ttIdx = CHI_TO_THAN_IDX[cucChiIdx];
+        
+        // Lục Hợp Địa Chi: Tý(5)<->Sửu(6), Dần(8)<->Hợi(4), Mão(9)<->Tuất(2), Thìn(10)<->Dậu(1), Tị(12)<->Thân(0), Ngọ(13)<->Mùi(14)
+        const THAN_HOP_MAP = { 5:6, 6:5, 8:4, 4:8, 9:2, 2:9, 10:1, 1:10, 12:0, 0:12, 13:14, 14:13 };
         const thanHopIdx = THAN_HOP_MAP[ttIdx] !== undefined ? THAN_HOP_MAP[ttIdx] : ttIdx;
         
         // Đếm từ Thần Hợp đến Văn Xương bao gồm 2 đầu
@@ -257,108 +259,143 @@ class ThaiAtBaseEngine {
         return { thanIdx, name: "Thủy Kích (Địa Mục)", class: "thuy-kich" };
     }
     
-    calcDaiTuongAndThamTuong(taIdx, vxIdx, tkIdx) {
-        const MAIN_PALACE_BIET_SO = { 3: 1, 13: 2, 7: 3, 9: 4, 1: 6, 15: 7, 5: 6, 11: 9 };
+    /**
+     * Phép tính Số Toán (Toán Chủ, Toán Khách, Toán Định)
+     * Quy tắc: BỎ ĐẦU TÍNH CUỐI — Bỏ cung khởi phát (Văn Xương/Thủy Kích/Kế Định),
+     * đếm thuận qua các cung trung gian rồi TÍNH LUÔN cung Thái Ất (targetIdx).
+     * Cung chính ăn Biệt số (Càn=1, Ly=2, Cấn=3, Chấn=4, Trung=5, Đoài=6, Khôn=7, Khảm=8, Tốn=9),
+     * gián thần ăn 1 số.
+     */
+    /**
+     * Phép tính Số Toán (Toán Chủ, Toán Khách, Toán Định)
+     * Chuẩn Thái Ất Thần Kinh:
+     * - Bảng Biệt Số Cửu Cung Thái Ất: Kiền=1, Ly=2, Cấn=3, Chấn=4, Đoài=6, Khôn=7, Khảm=8, Tốn=9.
+     * - Đường đi: Xuất phát từ startIdx, đi thuận 16 Thần đến trước targetIdx (bỏ targetIdx).
+     * - Nếu startIdx là Gián Thần: cộng 1 vào tổng.
+     * - Mỗi Cung Bát Quái trên đường đi (odd index: 1, 3, 5, 7, 9, 11, 13, 15): cộng Biệt Số của Cung đó.
+     * - Các Gián Thần trung gian không cộng số.
+     */
+    static getToanUnified(startIdx, targetIdx) {
+        // Biệt số Cửu Cung Thái Ất:
+        // 1: Đoài(6), 3: Kiền(1), 5: Khảm(8), 7: Cấn(3), 9: Chấn(4), 11: Tốn(9), 13: Ly(2), 15: Khôn(7)
+        const MAIN_PALACE_BIET_SO = { 1: 6, 3: 1, 5: 8, 7: 3, 9: 4, 11: 9, 13: 2, 15: 7 };
         const GIAN_THAN_IDXS = [0, 2, 4, 6, 8, 10, 12, 14];
-        // Index 1..9 corresponding to Palace 1..9 in Thái Ất Biệt Số Order:
-        // 1=Càn(3), 2=Ly(13), 3=Cấn(7), 4=Chấn(9), 5=Trung Cung(-1), 6=Đoài(1), 7=Khôn(15), 8=Khảm(5-Tý), 9=Tốn(11)
-        const PALACE_TO_THAN_IDX = [-1, 3, 13, 7, 9, -1, 1, 15, 5, 11];
+
+        if (startIdx === targetIdx) {
+            const bVal = GIAN_THAN_IDXS.includes(startIdx) ? 1 : (MAIN_PALACE_BIET_SO[startIdx] || 1);
+            return { raw: bVal, val: bVal % 10 || 10 };
+        }
         
-        const getToan = (startIdx) => {
-            if (startIdx === taIdx) {
-                const bVal = MAIN_PALACE_BIET_SO[taIdx] || 3;
-                return { raw: bVal, val: bVal };
+        let sum = 0;
+        if (GIAN_THAN_IDXS.includes(startIdx)) {
+            sum += 1;
+        }
+        
+        let p = startIdx;
+        let safety = 0;
+        while (p !== targetIdx && safety < 32) {
+            safety++;
+            if (!GIAN_THAN_IDXS.includes(p)) {
+                sum += MAIN_PALACE_BIET_SO[p];
             }
-            
-            let sum = 0;
-            let p = (startIdx + 1) % 16;
-            let safety = 0;
-            while (p !== taIdx && safety < 32) {
-                safety++;
-                if (GIAN_THAN_IDXS.includes(p)) {
-                    sum += 1;
-                } else if (MAIN_PALACE_BIET_SO[p] !== undefined) {
-                    sum += MAIN_PALACE_BIET_SO[p];
-                }
-                p = (p + 1) % 16;
+            p = (p + 1) % 16;
+        }
+        return { raw: sum, val: sum % 10 || 10 };
+    }
+
+    calcDaiTuongAndThamTuong(taIdx, vxIdx, tkIdx) {
+        // Index 1..9 corresponding to Palace 1..9 in Thái Ất Biệt Số Order:
+        // 1=Kiền(3), 2=Ly(13), 3=Cấn(7), 4=Chấn(9), 5=Trung Cung(-1), 6=Đoài(1), 7=Khôn(15), 8=Khảm(5), 9=Tốn(11)
+        const PALACE_TO_THAN_IDX = [-1, 3, 13, 7, 9, -1, 1, 15, 5, 11];
+
+        const chuToanObj = ThaiAtBaseEngine.getToanUnified(vxIdx, taIdx);
+        const khachToanObj = ThaiAtBaseEngine.getToanUnified(tkIdx, taIdx);
+
+        function getDaiTuongInfo(rawToan) {
+            const donVi = rawToan % 10;
+            if (donVi === 5) return { cungNum: 5, thanIdx: null, isClosed: true }; // 5, 15, 25, 35: Cửa đóng, không nhập Trung Cung
+            let cungNum = donVi;
+            if (donVi === 0) {
+                // 10, 20, 30, 40: Lấy theo hàng chục (10->Kiền 1, 20->Ly 2, 30->Cấn 3, 40->Chấn 4)
+                cungNum = (Math.floor(rawToan / 10) % 10) || 1;
             }
-            return { raw: sum, val: sum % 10 || 10 };
-        };
-
-        const chuToanObj = getToan(vxIdx);
-        const khachToanObj = getToan(tkIdx);
-        const chuToan = chuToanObj.val;
-        const khachToan = khachToanObj.val;
-
-        function getTuongPosition(donVi) {
-            if (donVi === 5) return -1; // Only tail digit 5 locks in Trung Cung (-1)
-            if (donVi === 0 || donVi === 10) return null; // Vô Thiên (do not place in Trung Cung)
-            return PALACE_TO_THAN_IDX[donVi] !== undefined ? PALACE_TO_THAN_IDX[donVi] : null;
+            const thanIdx = PALACE_TO_THAN_IDX[cungNum] !== undefined ? PALACE_TO_THAN_IDX[cungNum] : null;
+            return { cungNum, thanIdx, isClosed: false };
         }
 
-        const chuTuongIdx = getTuongPosition(chuToan);
-        const khachTuongIdx = getTuongPosition(khachToan);
-        
-        const thamChuToan = (chuToan * 3) % 10;
-        const thamKhachToan = (khachToan * 3) % 10;
-        
+        function getThamTuongInfo(daiCungNum) {
+            if (!daiCungNum || daiCungNum === 5) return null;
+            const thamCungNum = (daiCungNum * 3) % 10;
+            if (thamCungNum === 5 || thamCungNum === 0) return null;
+            const thanIdx = PALACE_TO_THAN_IDX[thamCungNum] !== undefined ? PALACE_TO_THAN_IDX[thamCungNum] : null;
+            return { cungNum: thamCungNum, thanIdx };
+        }
+
+        const chuDaiInfo = getDaiTuongInfo(chuToanObj.raw);
+        const khachDaiInfo = getDaiTuongInfo(khachToanObj.raw);
+
         const res = [];
-        if (chuTuongIdx !== null) res.push({ thanIdx: chuTuongIdx, name: `Đại Tướng Chủ (Toán ${chuToanObj.raw})`, class: "chu-tuong", rawToan: chuToanObj.raw });
-        if (khachTuongIdx !== null) res.push({ thanIdx: khachTuongIdx, name: `Đại Tướng Khách (Toán ${khachToanObj.raw})`, class: "khach-tuong", rawToan: khachToanObj.raw });
+        if (chuDaiInfo.thanIdx !== null) {
+            res.push({ thanIdx: chuDaiInfo.thanIdx, name: `Đại Tướng Chủ (Toán ${chuToanObj.raw})`, class: "chu-tuong", rawToan: chuToanObj.raw, cungNum: chuDaiInfo.cungNum });
+            const chuThamInfo = getThamTuongInfo(chuDaiInfo.cungNum);
+            if (chuThamInfo && chuThamInfo.thanIdx !== null) {
+                res.push({ thanIdx: chuThamInfo.thanIdx, name: `Tham Tướng Chủ`, class: "chu-tuong", cungNum: chuThamInfo.cungNum });
+            }
+        }
         
-        const thamChuIdx = getTuongPosition(thamChuToan);
-        const thamKhachIdx = getTuongPosition(thamKhachToan);
-        if (thamChuIdx !== null) res.push({ thanIdx: thamChuIdx, name: `Tham Tướng Chủ`, class: "chu-tuong" });
-        if (thamKhachIdx !== null) res.push({ thanIdx: thamKhachIdx, name: `Tham Tướng Khách`, class: "khach-tuong" });
+        if (khachDaiInfo.thanIdx !== null) {
+            res.push({ thanIdx: khachDaiInfo.thanIdx, name: `Đại Tướng Khách (Toán ${khachToanObj.raw})`, class: "khach-tuong", rawToan: khachToanObj.raw, cungNum: khachDaiInfo.cungNum });
+            const khachThamInfo = getThamTuongInfo(khachDaiInfo.cungNum);
+            if (khachThamInfo && khachThamInfo.thanIdx !== null) {
+                res.push({ thanIdx: khachThamInfo.thanIdx, name: `Tham Tướng Khách`, class: "khach-tuong", cungNum: khachThamInfo.cungNum });
+            }
+        }
         
         return res;
     }
 
     // ------ NHÓM CƠ, PHÚC, DU (MOD TÍCH 360) ------
     calcCoPhucDu() {
-        const tichDu = this.tichTrungCo % 360;
+        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
+        const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
+        const CHI_NAMES = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
         
-        // Quân Cơ (Khởi Ngọ qua 12 Chi thần, 30 số/cung, % 360 / 30)
-        const qcVal = (this.tueTich && this.mode === 'tue') ? (this.kyDu + 250) : (this.tichTrungCo || (2014 + 12607));
-        const qcR = qcVal % 360;
-        const qcQ = Math.floor(qcR / 30);
-        const qcRem = (qcR % 30) || 30;
-        const CHI_TO_THAN_QC = [13, 14, 0, 1, 2, 4, 5, 6, 8, 9, 10, 12]; // Ngọ(13), Mùi(14), Thân(0), Dậu(1), Tuất(2), Hợi(4), Tý(5), Sửu(6), Dần(8), Mão(9), Thìn(10), Tị(12)
-        const CHI_NAMES_QC = ["Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị"];
-        const quanCoIdx = CHI_TO_THAN_QC[qcQ % 12];
-        const quanCoCungName = CHI_NAMES_QC[qcQ % 12];
+        // Bài thơ Tam Cơ:
+        // "Tuế tích hai trăm rưỡi lại gia
+        //  Ba trăm sáu chục lại trừ ra
+        //  Lấy ngay ngôi trú mà trừ số
+        //  Khởi Ngọ, Quân Thần, Dân Tuất qua
+        //  3 chục năm Quân Cơ 1 đổi
+        //  Thần 3, Dân 1 thuận theo đà"
         
-        // Thần Cơ (Khởi Ngọ qua 12 Chi thần, chu kỳ 36 số, 3 số/cung, % 360 % 36 / 3)
-        const tcVal = (this.mode === 'tue') ? (this.kyDu + 250) : (this.tichTrungCo || (2014 + 12607));
-        const tc360 = tcVal % 360;
-        const tc36 = tc360 % 36;
-        const tcQ = Math.floor(tc36 / 3);
-        const tcRem = (tc36 % 3) || 3;
-        const CHI_TO_THAN_TC = [13, 14, 0, 1, 2, 4, 5, 6, 8, 9, 10, 12]; // Ngọ(13), Mùi(14), Thân(0), Dậu(1), Tuất(2), Hợi(4), Tý(5), Sửu(6), Dần(8), Mão(9), Thìn(10), Tị(12)
-        const CHI_NAMES_TC = ["Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị"];
-        const thanCoIdx = CHI_TO_THAN_TC[tcQ % 12];
-        const thanCoCungName = CHI_NAMES_TC[tcQ % 12];
+        // 1. Quân Cơ: Khởi Ngọ (Chi 6), 30 số/cung (30 năm 1 cung)
+        const chiQuan = (6 + Math.floor((cucNum - 1) / 30)) % 12;
+        const quanCoIdx = CHI_TO_THAN_IDX[chiQuan];
+        const quanCoCungName = CHI_NAMES[chiQuan];
+        const remQuan = ((cucNum - 1) % 30) + 1;
         
-        // Dân Cơ (Khởi Tuất qua 12 Chi thần, 1 số/cung, % 360 % 12)
-        const dcVal = (this.mode === 'tue') ? (this.kyDu + 250) : (this.tichTrungCo || (2014 + 12607));
-        const dcR = (dcVal % 360) % 12 || 12;
-        const CHI_TO_THAN_DC = [2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 0, 1]; // Tuất(2), Hợi(4), Tý(5), Sửu(6), Dần(8), Mão(9), Thìn(10), Tị(12), Ngọ(13), Mùi(14), Thân(0), Dậu(1)
-        const CHI_NAMES_DC = ["Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu"];
-        const danCoIdx = CHI_TO_THAN_DC[(dcR - 1) % 12];
-        const danCoCungName = CHI_NAMES_DC[(dcR - 1) % 12];
+        // 2. Thần Cơ: Khởi Ngọ (Chi 6), 3 số/cung (3 năm 1 cung)
+        const chiThan = (6 + Math.floor((cucNum - 1) / 3)) % 12;
+        const thanCoIdx = CHI_TO_THAN_IDX[chiThan];
+        const thanCoCungName = CHI_NAMES[chiThan];
+        const remThan = ((cucNum - 1) % 3) + 1;
         
-        // Ngũ Phúc (Dùng Tích Trung Cổ Giáp Dần % 225 / 45 -> Kiền, Cấn, Tốn, Khôn, Trung)
-        const npR = this.tichTrungCo % 225;
+        // 3. Dân Cơ: Khởi Tuất (Chi 10), 1 số/cung (1 năm 1 cung)
+        const chiDan = (10 + (cucNum - 1)) % 12;
+        const danCoIdx = CHI_TO_THAN_IDX[chiDan];
+        const danCoCungName = CHI_NAMES[chiDan];
+        
+        // Ngũ Phúc (Dùng Tích % 225 / 45 -> Kiền, Cấn, Tốn, Khôn, Trung)
+        const npR = (cucNum * 5) % 225;
         const npQ = Math.floor(npR / 45);
         const npRem = (npR % 45) || 45;
         const npPath = [3, 7, 11, 15, -1]; // 1: Kiền(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
         const npNames = ["Kiền", "Cấn", "Tốn", "Khôn", "Trung Cung"];
         const npIdx = npPath[npQ % 5];
         const npCungName = npNames[npQ % 5];
-        const unitName = (this.mode === 'nguyet') ? 'tháng' : (this.mode === 'nhat') ? 'ngày' : (this.mode === 'thoi') ? 'giờ' : 'năm';
         
         // Đại Du (Chu kỳ 288 năm, 36 năm/cung, 8 cung Bát Quái: Khôn, Khảm, Tốn, Kiền, Ly, Cấn, Chấn, Đoài)
-        const ddVal = (this.tueTich && this.mode === 'tue') ? (this.tueTich + 34) : (this.tichTrungCo || (2014 + 12607));
+        const ddVal = (cucNum * 5 + 34);
         const ddR = ddVal % 288;
         const ddStep = Math.floor(ddR / 36);
         const ddRem = (ddR % 36) || 36;
@@ -368,14 +405,14 @@ class ThaiAtBaseEngine {
         const ddCungName = NAMES_DAI_DU[ddStep % 8];
         
         // Tiểu Du (Chu kỳ 192 năm, 24 năm/cung, 8 cung Bát Quái: Kiền, Ly, Cấn, Chấn, Đoài, Khôn, Khảm, Tốn)
-        const yTichVal = this.tueTich || (this.tichTrungCo ? (this.tichTrungCo + 10143297) : (1987 + 10153917));
-        const tdStep = Math.floor(((yTichVal + 10) % 192) / 24);
+        const yTichVal = (cucNum * 5 + 10);
+        const tdStep = Math.floor((yTichVal % 192) / 24);
         const PATH_TIEU_DU = [3, 13, 7, 9, 1, 15, 5, 11]; // 0:Càn(3), 1:Ly(13), 2:Cấn(7), 3:Chấn(9), 4:Đoài(1), 5:Khôn(15), 6:Khảm(5), 7:Tốn(11)
         const tdIdx = PATH_TIEU_DU[tdStep % 8];
         
         return [
-            { thanIdx: quanCoIdx, name: `Quân Cơ (Cung ${quanCoCungName} - ${qcRem} ${unitName})`, class: "quan-co", unique: "quan_co" },
-            { thanIdx: thanCoIdx, name: `Thần Cơ (Cung ${thanCoCungName} - ${tcRem} ${unitName})`, class: "than-co", unique: "than_co" },
+            { thanIdx: quanCoIdx, name: `Quân Cơ (Cung ${quanCoCungName} - ${remQuan} ${unitName})`, class: "quan-co", unique: "quan_co" },
+            { thanIdx: thanCoIdx, name: `Thần Cơ (Cung ${thanCoCungName} - ${remThan} ${unitName})`, class: "than-co", unique: "than_co" },
             { thanIdx: danCoIdx, name: `Dân Cơ (Cung ${danCoCungName})`, class: "dan-co", unique: "dan_co" },
             { thanIdx: npIdx, name: `Ngũ Phúc (Cung ${npCungName} - ${npRem} ${unitName})`, class: "ngu-phuc", unique: "ngu_phuc" },
             { thanIdx: ddIdx, name: `Đại Du (Cung ${ddCungName} - ${ddRem} ${unitName})`, class: "dai-du", unique: "dai_du" },
@@ -385,18 +422,17 @@ class ThaiAtBaseEngine {
     
     // ------ NHÓM TỨ THẦN KỲ (MOD 36/12) ------
     calcTuThanKy() {
-        // Dùng Kỷ Dư (kyDu) chia 36 lấy dư, dư chia 3, kết quả + 1 = P
-        const kVal = this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360);
-        const r36 = kVal % 36;
-        const P = Math.floor(r36 / 3) + 1; // 1-12
+        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
+        const kVal = cucNum;
+        const step = Math.floor((cucNum - 1) / 3) % 12;
         
         // Mảng 12 cung Tứ Thần Kỳ: 1:Càn(3), 2:Ly(13), 3:Cấn(7), 4:Chấn(9), 5:Trung(-1), 6:Đoài(1), 7:Khôn(15), 8:Khảm(5), 9:Tốn(11), 10:Tị(12), 11:Thân(0), 12:Dần(8)
         const MASTER_PATH = [3, 13, 7, 9, -1, 1, 15, 5, 11, 12, 0, 8];
         
-        const tuThanIdx = MASTER_PATH[(0 + P - 1) % 12];   // Khởi Càn (idx 0 của MASTER_PATH)
-        const thienAtIdx = MASTER_PATH[(5 + P - 1) % 12];  // Khởi Đoài (idx 5 của MASTER_PATH)
-        const trucPhuIdx = MASTER_PATH[(4 + P - 1) % 12];  // Khởi Trung Cung (idx 4 của MASTER_PATH)
-        const diaAtIdx = MASTER_PATH[(8 + P - 1) % 12];    // Khởi Tốn (idx 8 của MASTER_PATH)
+        const tuThanIdx = MASTER_PATH[(0 + step) % 12];   // Khởi Càn (idx 0 của MASTER_PATH)
+        const thienAtIdx = MASTER_PATH[(5 + step) % 12];  // Khởi Đoài (idx 5 của MASTER_PATH)
+        const trucPhuIdx = MASTER_PATH[(4 + step) % 12];  // Khởi Trung Cung (idx 4 của MASTER_PATH)
+        const diaAtIdx = MASTER_PATH[(8 + step) % 12];    // Khởi Tốn (idx 8 của MASTER_PATH)
         
         // 1. Thanh Long: Kỷ Dư % 60 % 12, khởi Hợi thuận 12 địa chi
         const r60_tl = kVal % 60;
@@ -404,12 +440,9 @@ class ThaiAtBaseEngine {
         const THANH_LONG_PATH = [4, 5, 6, 8, 9, 10, 12, 13, 14, 0, 1, 2];
         const tlIdx = THANH_LONG_PATH[r12_tl - 1];
         
-        // 2. Thái Âm: luôn đứng sau Thái Tuế CỦA NĂM 2 cung (Nghịch lùi 2 cung Chi từ Chi Năm)
-        let thaiTueYearChiIdx = 0; // Mặc định Tý (0)
-        if (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) {
-            thaiTueYearChiIdx = this.tuTru.year.chiIdx;
-        }
-        const thaiAmChiIdx = (thaiTueYearChiIdx - 2 + 12) % 12;
+        // 2. Thái Âm: luôn đứng sau Thái Tuế CỦA CỤC 2 cung (Nghịch lùi 2 cung Chi từ Chi Thái Tuế)
+        const cucChiIdx = ((this.cucNum || (this.kyDu % 72) || 72) - 1) % 12;
+        const thaiAmChiIdx = (cucChiIdx - 2 + 12) % 12;
         const taIdx = CHI_TO_THAN_IDX[thaiAmChiIdx];
         
         // 3. Phi Phù: Kỷ Dư % 72 / 3, đếm theo vòng 12 cung Dương/Âm Độn
@@ -806,8 +839,8 @@ class ThaiAtBaseEngine {
     }
 
     calcThaiTue() {
-        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
-        const thanIdx = CHI_TO_THAN_IDX[namChiIdx];
+        const cucChiIdx = ((this.cucNum || (this.kyDu % 72) || 72) - 1) % 12;
+        const thanIdx = CHI_TO_THAN_IDX[cucChiIdx];
         return { thanIdx, class: 'thai-tue', name: 'Thái Tuế' };
     }
 
@@ -1090,10 +1123,7 @@ class ThoiKeEngine {
     }
 }
 
-// ==========================================
-// 4. MAIN DISPATCHER & TIME TRAVEL
-// ==========================================
-function calculateThaiAtChart(mode, year, month, day, hour) {
+function calculateThaiAtChart(mode, year, month, day, hour, engineType = "classic") {
     // Mode Bypass for Dich & Menh
     if (mode === "dich") return calculateQueDich(year, month, day, hour);
     if (mode === "menh") return calculateNhanMenh(year, month, day, hour);
@@ -1103,6 +1133,28 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
     else if (mode === "nguyet") factory = new NguyetKeEngine(year, month, day, hour);
     else if (mode === "nhat") factory = new NhatKeEngine(year, month, day, hour);
     else factory = new ThoiKeEngine(year, month, day, hour);
+    
+    let astroInfo = null;
+    if (engineType === "astronomical" && typeof ThaiYiCalibrator !== "undefined") {
+        const jd = ThaiYiCalibrator.dateToJD(year, month, day, hour);
+        const calib = ThaiYiCalibrator.calibrateYearTichNien(year, factory.tueTich || 10155943, month, day);
+        const solarLong = ThaiYiCalibrator.getTrueSolarLongitude(year, month, day, hour);
+        const eot = ThaiYiCalibrator.getEquationOfTime(year, month, day, hour);
+        
+        astroInfo = {
+            jd,
+            deltaDYear: calib.deltaDYear,
+            calibratedTichNien: calib.calibratedTichNien,
+            calibratedKyDu: calib.calibratedKyDu,
+            solarLongitude: solarLong,
+            equationOfTime: eot
+        };
+        
+        if (mode === "tue") {
+            factory.tueTich = calib.calibratedTichNien;
+            factory.kyDu = calib.calibratedKyDu;
+        }
+    }
     
     const engCurrent = factory.getEngine(0);
     const engNext = factory.getEngine(1);
@@ -1189,26 +1241,11 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
     }
     
     // Toán Định (Tính từ Kế Định đến Thái Ất)
-    const MAIN_PALACE_BIET_SO = { 3: 1, 13: 2, 7: 3, 9: 4, 1: 6, 15: 7, 5: 8, 11: 9 };
-    const GIAN_THAN_IDXS = [0, 2, 4, 6, 8, 10, 12, 14];
-    const calcToanFunc = (startIdx, targetIdx) => {
-        if (startIdx === targetIdx) return 1;
-        let sum = 0;
-        if (GIAN_THAN_IDXS.includes(startIdx)) sum += 1;
-        else if (MAIN_PALACE_BIET_SO[startIdx] !== undefined) sum += MAIN_PALACE_BIET_SO[startIdx];
-        let p = (startIdx + 1) % 16;
-        while (p !== targetIdx) {
-            if (GIAN_THAN_IDXS.includes(p)) sum += 1;
-            else if (MAIN_PALACE_BIET_SO[p] !== undefined) sum += MAIN_PALACE_BIET_SO[p];
-            p = (p + 1) % 16;
-        }
-        return sum;
-    };
-
     const keDinhStar = currRes.flat.find(s => s.name === "Kế Định");
     const keDinhIdx = keDinhStar ? keDinhStar.thanIdx : 4;
-    const toanDinhRawVal = calcToanFunc(keDinhIdx, currRes.core.taIdx);
-    const toanDinhVal = toanDinhRawVal % 10 || 10;
+    const toanDinhObj = ThaiAtBaseEngine.getToanUnified(keDinhIdx, currRes.core.taIdx);
+    const toanDinhRawVal = toanDinhObj.raw;
+    const toanDinhVal = toanDinhObj.val;
     
     // Kế Đại, Kế Tiểu, Kế Định
     const keDaiVal = factory.tichNhat || factory.tueTichThuongCo || factory.tueTich || 0;
@@ -1282,7 +1319,8 @@ function calculateThaiAtChart(mode, year, month, day, hour) {
         },
         luanDoanData: luanDoanData,
         khoiSo: factory.khoiSo,
-        tinhChatKhoi: factory.tinhChatKhoi
+        tinhChatKhoi: factory.tinhChatKhoi,
+        astroInfo: astroInfo
     };
 }
 

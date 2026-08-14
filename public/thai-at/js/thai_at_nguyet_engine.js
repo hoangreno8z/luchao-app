@@ -23,57 +23,9 @@ class RealNguyetKeEngine extends ThaiAtBaseEngine {
         this.donCucName = `Dương Độn — Nguyên ${this.nguyenNum} Cục ${this.cucNum}`;
     }
 
-    // 2. Thái Ất bàn tháng: Chạy strictly trên 8 Cung Bát Quái
-    calcThaiAt() {
-        const PALACES_8_THAN_IDX = [3, 13, 7, 9, 1, 15, 5, 11]; // Kiền(3), Ly(13), Cấn(7), Chấn(9), Đoài(1), Khôn(15), Khảm(5), Tốn(11)
-        const step = Math.floor((this.kyDuThang % 24) / 3);
-        const thanIdx = PALACES_8_THAN_IDX[step % 8];
-        return { thanIdx, class: 'thai-at', name: 'Thái Ất' };
-    }
 
-    // 3. Thái Tuế Nguyệt Kế: An tại Nguyệt Kiến (Chi tháng hiện tại)
-    calcThaiTue() {
-        const thangChiIdx = (this.tuTru && this.tuTru.month && this.tuTru.month.chiIdx !== undefined) 
-            ? this.tuTru.month.chiIdx 
-            : 8; // Mặc định Thân (8) nếu là Tháng Bính Thân
-        const thanIdx = CHI_TO_THAN_IDX[thangChiIdx];
-        return { thanIdx, class: 'thai-tue', name: 'Thái Tuế' };
-    }
 
-    // 3b. Văn Xương Nguyệt Kế: Khởi Thân (idx 0), đi thuận 16 thần, lưu 2 toán ở Kiền(3) và Khôn(15)
-    calcVanXuong() {
-        const R = (this.kyDuThang % 18) || 18;
-        let current = 0; // Thân idx=0
-        let stepCount = 1;
-        const pauseArr = [3, 15]; // Kiền, Khôn
-        if (R <= 1) return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
-        let safety = 0;
-        while (stepCount < R && safety < 100) {
-            safety++;
-            if (pauseArr.includes(current)) {
-                stepCount++;
-                if (stepCount >= R) return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
-            }
-            current = (current + 1) % 16;
-            stepCount++;
-        }
-        return { thanIdx: current, name: "Văn Xương (Thiên Mục)", class: "van-xuong" };
-    }
 
-    // 3c. Kế Thần Nguyệt Kế: Khởi Dần (Chi Dần = 2), đi nghịch 12 địa chi
-    calcKeThan() {
-        const targetChiIdx = (2 - (this.kyDuThang % 12) + 120) % 12;
-        const thanIdx = CHI_TO_THAN_IDX[targetChiIdx];
-        return { thanIdx, name: "Kế Thần", class: "ke-than" };
-    }
-
-    // Thái Âm đứng sau Thái Tuế CỦA NĂM 2 cung (Chi Năm - 2)
-    calcThaiAm() {
-        const namChiIdx = (this.tuTru && this.tuTru.year && this.tuTru.year.chiIdx !== undefined) ? this.tuTru.year.chiIdx : 0;
-        const thaiAmChiIdx = (namChiIdx - 2 + 12) % 12;
-        const thanIdx = CHI_TO_THAN_IDX[thaiAmChiIdx];
-        return { thanIdx, class: 'thai-am', name: 'Thái Âm' };
-    }
 
     // Override calcCuuTinh cho Nguyệt Kế - Lạc Thư Quỹ Đạo Bay Chuẩn: 5->6->7->8->9->1->2->3->4
     calcCuuTinh() {

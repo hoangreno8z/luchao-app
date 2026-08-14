@@ -174,31 +174,20 @@ function renderWithDate(dObj) {
 
 function render(year, month, day, hour) {
     try {
-        let data = calculateThaiAtChart(currentMode, year, month, day, hour);
+        let data = calculateThaiAtChart(currentMode, year, month, day, hour, currentEngineType);
 
         // NASA Astronomical Auto-Calibration Overlay
-        if (currentEngineType === "astronomical" && typeof ThaiYiCalibrator !== "undefined") {
-            const jd = ThaiYiCalibrator.dateToJD(year, month, day, hour);
-            const calib = ThaiYiCalibrator.calibrateYearTichNien(year, data.keDaiVal || 10155943, month, day);
-            const solarLong = ThaiYiCalibrator.getTrueSolarLongitude(year, month, day, hour);
-            
+        if (currentEngineType === "astronomical" && data.astroInfo) {
+            const astro = data.astroInfo;
             // Update NASA Calibration Banner UI
             const jdEl = document.getElementById("astro-jd-val");
-            if (jdEl) jdEl.textContent = jd.toLocaleString('vi-VN');
+            if (jdEl) jdEl.textContent = astro.jd.toLocaleString('vi-VN');
             const offsetEl = document.getElementById("astro-offset-val");
-            if (offsetEl) offsetEl.textContent = `-${calib.deltaDYear}`;
+            if (offsetEl) offsetEl.textContent = `-${astro.deltaDYear}`;
             const tichEl = document.getElementById("astro-tich-val");
-            if (tichEl) tichEl.textContent = calib.calibratedTichNien.toLocaleString('vi-VN');
+            if (tichEl) tichEl.textContent = astro.calibratedTichNien.toLocaleString('vi-VN');
             const solarEl = document.getElementById("astro-solar-val");
-            if (solarEl) solarEl.textContent = solarLong.toFixed(2);
-
-            // Override display Tích & Kỷ Dư with Astronomical Calibration
-            data = {
-                ...data,
-                keDai: calib.calibratedTichNien,
-                keTieu: calib.calibratedKyDu,
-                modeName: `${data.modeName} (NASA Auto-Calibrated)`
-            };
+            if (solarEl) solarEl.textContent = astro.solarLongitude.toFixed(2);
         }
 
         window.lastCalculatedThaiAtData = data;

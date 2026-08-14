@@ -1,4 +1,5 @@
 {
+  "framework": null,
   "buildCommand": "node compiler/compile.js",
   "outputDirectory": "public",
   "cleanUrls": true,
