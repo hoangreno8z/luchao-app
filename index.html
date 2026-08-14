@@ -119,9 +119,10 @@
                 </div>
 
                 <!-- TABS LỰA CHỌN PHƯƠNG PHÁP -->
-                <div class="method-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(223,177,91,0.2); padding-bottom: 10px;">
-                    <button id="tab-toss" class="btn active-tab-btn" style="flex: 1; padding: 12px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer;">Tung Xu Trực Tuyến</button>
-                    <button id="tab-manual" class="btn" style="flex: 1; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 6px; cursor: pointer;">Tự Nhập 6 Hào (Gieo Bên Ngoài)</button>
+                <div class="method-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(223,177,91,0.2); padding-bottom: 12px;">
+                    <button id="tab-toss" class="btn active-tab-btn" style="flex: 1; min-width: 160px; padding: 10px 16px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
+                    <button id="tab-manual" class="btn" style="flex: 1; min-width: 180px; padding: 10px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
+                    <button id="tab-number" class="btn" style="flex: 1; min-width: 140px; padding: 10px 16px; background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,174,0,0.15)); border: 1.5px solid #ffd700; color: #ffd700; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255,215,0,0.25);">✨ Nhập Số</button>
                 </div>
 
                 <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
@@ -308,6 +309,66 @@
                     </div>
 
                     <button id="manual-submit-btn" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Lập Bản Đồ Quẻ Dịch (Nhập Hào)</button>
+                </div>
+
+                <!-- PHÂN VÙNG 3: NHẬP SỐ (MAI HOA DỊCH SỐ - ẨN MẶC ĐỊNH) -->
+                <div id="method-number-area" class="hidden" style="animation: fadeIn 0.5s ease;">
+                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <h4 style="color: #ffd700; margin-top: 0; margin-bottom: 8px; text-align: center; font-family: var(--font-serif); font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,215,0,0.3);">
+                            🔢 KHỞI QUẺ MAI HOA BẰNG DÃY SỐ
+                        </h4>
+                        <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 0; margin-bottom: 20px;">
+                            Nhập dãy số tự nhiên bất kỳ (từ 2 số, 3 số, dãy chẵn/lẻ $\ge 4$ số, hoặc 2 cặp số cách nhau)
+                        </p>
+
+                        <!-- Ô nhập số nổi bật -->
+                        <div style="max-width: 480px; margin: 0 auto 20px auto;">
+                            <input type="text" id="number-input" class="form-control" 
+                                placeholder="Nhập số... (VD: 10009000, 1001200, 357, 20 30, 12)" 
+                                style="font-size: 1.35rem; font-weight: 700; text-align: center; letter-spacing: 2px; padding: 14px 20px; border-radius: 30px; border: 2px solid #ffd700; background: rgba(15, 20, 35, 0.9); color: #fff; box-shadow: 0 0 15px rgba(255,215,0,0.25); transition: all 0.3s ease;"
+                                autocomplete="off" autocorrect="off" spellcheck="false">
+                        </div>
+
+                        <!-- Khung xem trước quẻ trực quan thời gian thực -->
+                        <div id="number-preview-box" style="max-width: 520px; margin: 0 auto 20px auto; padding: 16px; background: rgba(255, 215, 0, 0.06); border: 1px dashed rgba(255, 215, 0, 0.35); border-radius: 12px; font-size: 0.92rem; color: #e0e6ed; line-height: 1.7; display: none;">
+                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; text-align: center;">
+                                <div style="flex: 1; min-width: 130px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #00d2ff;">
+                                    <span style="font-size: 0.8rem; color: #888; display: block;">Thượng Quái</span>
+                                    <strong id="np-thuong" style="color: #00d2ff; font-size: 1.05rem;">--</strong>
+                                </div>
+                                <div style="flex: 1; min-width: 130px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #2ecc71;">
+                                    <span style="font-size: 0.8rem; color: #888; display: block;">Hạ Quái</span>
+                                    <strong id="np-ha" style="color: #2ecc71; font-size: 1.05rem;">--</strong>
+                                </div>
+                                <div style="flex: 1; min-width: 130px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #ff4757;">
+                                    <span style="font-size: 0.8rem; color: #888; display: block;">Hào Động</span>
+                                    <strong id="np-dong" style="color: #ff4757; font-size: 1.05rem;">--</strong>
+                                </div>
+                            </div>
+                            <div id="np-result-name" style="text-align: center; color: #ffd700; font-weight: bold; font-size: 1.05rem; margin-top: 6px;"></div>
+                            <div id="np-explain" style="font-size: 0.82rem; color: #aaa; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;"></div>
+                        </div>
+
+                        <!-- Nút Lập Quẻ thiết kế hình Oval màu sáng nổi bật -->
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button id="number-submit-btn" class="btn" 
+                                style="border-radius: 35px; padding: 14px 45px; min-width: 220px; background: linear-gradient(135deg, #ffd700, #ffae00); color: #1a0f00; font-weight: 800; font-size: 1.15rem; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.45); transition: all 0.3s ease; letter-spacing: 1px;">
+                                LẬP QUẺ
+                            </button>
+                        </div>
+
+                        <!-- Hướng dẫn quy tắc nhập số nhanh -->
+                        <div style="margin-top: 20px; font-size: 0.82rem; color: #888; border-top: 1px solid rgba(255,215,0,0.15); padding-top: 12px; line-height: 1.6;">
+                            <strong style="color: #ffd700;">💡 Quy tắc nhận diện tự động:</strong>
+                            <ul style="margin: 4px 0 0 0; padding-left: 18px;">
+                                <li><strong>Dãy số chẵn $\ge 4$ số (VD: 10009000, 1234):</strong> Chia đều 2 nửa $\to$ Thượng/Hạ quái, cộng tổng $\to$ Hào động.</li>
+                                <li><strong>Dãy số lẻ $\ge 5$ số (VD: 1001200):</strong> Nửa đầu ít hơn 1 số (3 số đầu $\to$ Thượng, 4 số sau $\to$ Hạ).</li>
+                                <li><strong>Dãy 3 số (VD: 357, 888):</strong> Số 1 $\to$ Thượng, Số 2 $\to$ Hạ, Số 3 $\to$ Hào động.</li>
+                                <li><strong>Cặp 2 số có dấu cách (VD: 20 30):</strong> Số đầu $\pmod 8 \to$ Thượng, Số sau $\pmod 8 \to$ Hạ, Tổng $\pmod 6 \to$ Động.</li>
+                                <li><strong>Dãy 2 số (VD: 12):</strong> Số 1 $\to$ Thượng, Số 2 $\to$ Hạ, Tổng $\pmod 6 \to$ Động.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -1039,3 +1039,29 @@ footer a:hover {
     75% { opacity: 0.05; filter: brightness(1); }
     100% { opacity: 0; filter: brightness(1); }
 }
+
+/* =========================================================================
+   TAB NHẬP SỐ & NÚT LẬP QUẺ OVAL SÁNG NỔI BẬT
+   ========================================================================= */
+#tab-number:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.45);
+}
+
+#number-input:focus {
+    outline: none;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5) !important;
+    background: rgba(25, 32, 55, 0.95) !important;
+}
+
+#number-submit-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 25px rgba(255, 215, 0, 0.65) !important;
+    filter: brightness(1.1);
+}
+
+#number-submit-btn:active {
+    transform: translateY(1px) scale(0.98);
+}
+

@@ -224,38 +224,215 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // HÀM & LOGIC CHO TAB TỰ NHẬP 6 HÀO
+    // HÀM & LOGIC CHO CÁC PHƯƠNG THỨC LẬP QUẺ (TUNG XU / TỰ NHẬP HÀO / NHẬP SỐ)
     // -------------------------------------------------------------------------
     const tabToss = document.getElementById('tab-toss');
     const tabManual = document.getElementById('tab-manual');
+    const tabNumber = document.getElementById('tab-number');
     const methodTossArea = document.getElementById('method-toss-area');
     const methodManualArea = document.getElementById('method-manual-area');
+    const methodNumberArea = document.getElementById('method-number-area');
 
-    if (tabToss && tabManual) {
-        tabToss.addEventListener('click', () => {
-            tabToss.style.background = 'var(--gold-dark)';
-            tabToss.style.borderColor = 'var(--gold)';
-            tabToss.style.color = '#fff';
-            tabManual.style.background = 'rgba(0,0,0,0.3)';
-            tabManual.style.borderColor = 'rgba(223,177,91,0.2)';
-            tabManual.style.color = 'var(--text-muted)';
+    function switchMethodTab(activeTab) {
+        if (tabToss) {
+            tabToss.style.background = (activeTab === 'toss') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
+            tabToss.style.borderColor = (activeTab === 'toss') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
+            tabToss.style.color = (activeTab === 'toss') ? '#fff' : 'var(--text-muted)';
+            tabToss.style.boxShadow = 'none';
+        }
+        if (tabManual) {
+            tabManual.style.background = (activeTab === 'manual') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
+            tabManual.style.borderColor = (activeTab === 'manual') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
+            tabManual.style.color = (activeTab === 'manual') ? '#fff' : 'var(--text-muted)';
+            tabManual.style.boxShadow = 'none';
+        }
+        if (tabNumber) {
+            if (activeTab === 'number') {
+                tabNumber.style.background = 'linear-gradient(135deg, #ffd700, #ffae00)';
+                tabNumber.style.borderColor = '#ffd700';
+                tabNumber.style.color = '#1a0f00';
+                tabNumber.style.boxShadow = '0 0 15px rgba(255,215,0,0.4)';
+            } else {
+                tabNumber.style.background = 'linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,174,0,0.08))';
+                tabNumber.style.borderColor = 'rgba(255,215,0,0.4)';
+                tabNumber.style.color = '#ffd700';
+                tabNumber.style.boxShadow = 'none';
+            }
+        }
+
+        if (methodTossArea) methodTossArea.classList.toggle('hidden', activeTab !== 'toss');
+        if (methodManualArea) methodManualArea.classList.toggle('hidden', activeTab !== 'manual');
+        if (methodNumberArea) methodNumberArea.classList.toggle('hidden', activeTab !== 'number');
+
+        if (activeTab === 'number') {
+            const numInput = document.getElementById('number-input');
+            if (numInput) setTimeout(() => numInput.focus(), 50);
+        }
+    }
+
+    if (tabToss) tabToss.addEventListener('click', () => switchMethodTab('toss'));
+    if (tabManual) tabManual.addEventListener('click', () => switchMethodTab('manual'));
+    if (tabNumber) tabNumber.addEventListener('click', () => switchMethodTab('number'));
+
+    // -------------------------------------------------------------------------
+    // BẢNG TIÊN THIÊN BÁT QUÁI & THUẬT TOÁN LẬP QUẺ BẰNG SỐ
+    // -------------------------------------------------------------------------
+    const TIEN_THIEN_BAT_QUAI = {
+        1: { name: 'Càn', bin: [1, 1, 1] }, // [hào 1, hào 2, hào 3]
+        2: { name: 'Đoài', bin: [1, 1, 0] },
+        3: { name: 'Ly', bin: [1, 0, 1] },
+        4: { name: 'Chấn', bin: [1, 0, 0] },
+        5: { name: 'Tốn', bin: [0, 1, 1] },
+        6: { name: 'Khảm', bin: [0, 1, 0] },
+        7: { name: 'Cấn', bin: [0, 0, 1] },
+        8: { name: 'Khôn', bin: [0, 0, 0] }
+    };
+
+    function parseNumberHexagram(rawInput) {
+        if (!rawInput || typeof rawInput !== 'string') return { success: false, error: 'Vui lòng nhập dãy số' };
+        const trimmed = rawInput.trim();
+        if (!trimmed) return { success: false, error: 'Vui lòng nhập dãy số' };
+
+        let thuongQuai = 1;
+        let haQuai = 1;
+        let haoDong = 1;
+        let explain = '';
+
+        // Trường hợp 1: Nhập theo cặp số có khoảng cách (ví dụ '20 30', '12 34', '123 456')
+        const spaceParts = trimmed.split(/[\s,]+/).filter(p => p.length > 0);
+        if (spaceParts.length === 2 && /^\d+$/.test(spaceParts[0]) && /^\d+$/.test(spaceParts[1])) {
+            const p1 = parseInt(spaceParts[0], 10);
+            const p2 = parseInt(spaceParts[1], 10);
             
-            methodTossArea.classList.remove('hidden');
-            methodManualArea.classList.add('hidden');
+            let t = p1 % 8;
+            if (t === 0) t = 8;
+            let h = p2 % 8;
+            if (h === 0) h = 8;
+            
+            let d = (p1 + p2) % 6;
+            if (d === 0) d = 6;
+            
+            thuongQuai = t;
+            haQuai = h;
+            haoDong = d;
+            explain = `Cặp số cách nhau (${p1} & ${p2}): Thượng quái = ${p1} % 8 = ${t} (${TIEN_THIEN_BAT_QUAI[t].name}), Hạ quái = ${p2} % 8 = ${h} (${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = (${p1}+${p2}) % 6 = ${d} (Động Hào ${d})`;
+        } else {
+            const clean = trimmed.replace(/\D/g, '');
+            if (clean.length < 2) {
+                return { success: false, error: 'Dãy số cần có ít nhất 2 chữ số' };
+            }
+            const len = clean.length;
+
+            // Trường hợp 2: Dãy 2 chữ số (ví dụ '12')
+            if (len === 2) {
+                let n1 = parseInt(clean[0], 10);
+                let n2 = parseInt(clean[1], 10);
+                if (n1 === 0) n1 = 8; else if (n1 === 9) n1 = 1;
+                if (n2 === 0) n2 = 8; else if (n2 === 9) n2 = 1;
+                
+                let d = n1 + n2;
+                if (d > 6) {
+                    d = d % 6;
+                    if (d === 0) d = 6;
+                }
+                thuongQuai = n1;
+                haQuai = n2;
+                haoDong = d;
+                explain = `Dãy 2 chữ số (${clean}): Số 1 = ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Hào động = (${n1}+${n2}) = ${n1+n2}${n1+n2>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
+            }
+            // Trường hợp 3: Dãy 3 chữ số (ví dụ '357', '888')
+            else if (len === 3) {
+                let n1 = parseInt(clean[0], 10);
+                let n2 = parseInt(clean[1], 10);
+                let n3 = parseInt(clean[2], 10);
+                if (n1 === 0) n1 = 8; else if (n1 === 9) n1 = 1;
+                if (n2 === 0) n2 = 8; else if (n2 === 9) n2 = 1;
+
+                let d = 6;
+                if (n3 === 0) {
+                    d = 6;
+                } else if (n3 >= 1 && n3 <= 6) {
+                    d = n3;
+                } else if (n3 >= 7) {
+                    d = n3 - 6; // 7->1, 8->2, 9->3
+                }
+                thuongQuai = n1;
+                haQuai = n2;
+                haoDong = d;
+                explain = `Dãy 3 chữ số (${clean}): Số 1 = ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Số 3 = ${n3} ➔ Động Hào ${d}`;
+            }
+            // Trường hợp 4: Dãy chẵn >= 4 chữ số (ví dụ '1234', '10009000')
+            else if (len % 2 === 0) {
+                const halfLen = len / 2;
+                const s1Str = clean.slice(0, halfLen);
+                const s2Str = clean.slice(halfLen);
+                
+                let sum1 = s1Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
+                let sum2 = s2Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
+                
+                let t = sum1 <= 8 ? (sum1 === 0 ? 8 : sum1) : (sum1 % 8 === 0 ? 8 : sum1 % 8);
+                let h = sum2 <= 8 ? (sum2 === 0 ? 8 : sum2) : (sum2 % 8 === 0 ? 8 : sum2 % 8);
+                
+                let sumDong = t + h;
+                let d = sumDong <= 6 ? sumDong : (sumDong % 6 === 0 ? 6 : sumDong % 6);
+                if (d === 0) d = 6;
+                
+                thuongQuai = t;
+                haQuai = h;
+                haoDong = d;
+                explain = `Dãy chẵn ${len} số (${clean}): Nửa đầu ${s1Str} (tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = (${t}+${h}) = ${sumDong}${sumDong>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
+            }
+            // Trường hợp 5: Dãy lẻ >= 5 chữ số (ví dụ '1001200')
+            else {
+                const half1Len = Math.floor(len / 2);
+                const s1Str = clean.slice(0, half1Len);
+                const s2Str = clean.slice(half1Len);
+                
+                let sum1 = s1Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
+                let sum2 = s2Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
+                
+                let t = sum1 <= 8 ? (sum1 === 0 ? 8 : sum1) : (sum1 % 8 === 0 ? 8 : sum1 % 8);
+                let h = sum2 <= 8 ? (sum2 === 0 ? 8 : sum2) : (sum2 % 8 === 0 ? 8 : sum2 % 8);
+                
+                let sumDong = t + h;
+                let d = sumDong <= 6 ? sumDong : (sumDong % 6 === 0 ? 6 : sumDong % 6);
+                if (d === 0) d = 6;
+                
+                thuongQuai = t;
+                haQuai = h;
+                haoDong = d;
+                explain = `Dãy lẻ ${len} số (${clean}): Nửa đầu ${s1Str} (${half1Len} số ➔ tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (${len-half1Len} số ➔ tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = (${t}+${h}) = ${sumDong}${sumDong>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
+            }
+        }
+
+        // Ghép 6 hào: Hào 1..3 từ Hạ Quái, Hào 4..6 từ Thượng Quái
+        const tQuai = TIEN_THIEN_BAT_QUAI[thuongQuai];
+        const hQuai = TIEN_THIEN_BAT_QUAI[haQuai];
+        const raw6 = [
+            hQuai.bin[0], hQuai.bin[1], hQuai.bin[2],
+            tQuai.bin[0], tQuai.bin[1], tQuai.bin[2]
+        ];
+
+        // Ánh xạ sang giá trị hào Lục Hào:
+        // 1 = Thiếu Dương (Dương tĩnh), 2 = Thiếu Âm (Âm tĩnh)
+        // 3 = Lão Dương (Dương động biến Âm), 0 = Lão Âm (Âm động biến Dương)
+        const hexLines = raw6.map((val, idx) => {
+            const lineNum = idx + 1;
+            const isDong = (lineNum === haoDong);
+            if (val === 1) return isDong ? 3 : 1;
+            return isDong ? 0 : 2;
         });
 
-        tabManual.addEventListener('click', () => {
-            tabManual.style.background = 'var(--gold-dark)';
-            tabManual.style.borderColor = 'var(--gold)';
-            tabManual.style.color = '#fff';
-            tabToss.style.background = 'rgba(0,0,0,0.3)';
-            tabToss.style.borderColor = 'rgba(223,177,91,0.2)';
-            tabToss.style.color = 'var(--text-muted)';
-            
-            methodManualArea.classList.remove('hidden');
-            tabToss.style.background = 'rgba(0,0,0,0.3)';
-            methodTossArea.classList.add('hidden');
-        });
+        return {
+            success: true,
+            thuongQuai,
+            thuongName: tQuai.name,
+            haQuai,
+            haName: hQuai.name,
+            haoDong,
+            hexLines,
+            explain
+        };
     }
 
     const manualSubmitBtn = document.getElementById('manual-submit-btn');
@@ -294,6 +471,138 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Gọi logic tính quẻ dịch với phương pháp "Nhập hào"
             const hexData = ICHING.calculateHexagramData(manualHexLines, calendarData, "Lục hào (Nhập hào)", formattedDate);
+
+            // Tạo giao diện trong captureTarget
+            renderCaptureHTML(hexData);
+
+            // Chờ vẽ và lấy ảnh
+            setTimeout(() => {
+                const captureArea = document.getElementById('captureArea');
+                const target = document.getElementById('captureTarget');
+
+                captureArea.style.position = 'fixed';
+                captureArea.style.left = '0';
+                captureArea.style.top = '0';
+                captureArea.style.zIndex = '-1';
+                captureArea.style.opacity = '0.01';
+
+                html2canvas(target, {
+                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#0f0a05',
+                    logging: false
+                }).then(canvas => {
+                    captureArea.style.position = 'absolute';
+                    captureArea.style.left = '-9999px';
+                    captureArea.style.opacity = '1';
+
+                    const syncDataUrl = canvas.toDataURL('image/png');
+                    hexagramImg.src = syncDataUrl;
+                    hexagramImg.style.userSelect = 'auto';
+                    hexagramImg.style.webkitUserSelect = 'auto';
+                    hexagramImg.style.webkitUserDrag = 'auto';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.pointerEvents = 'auto';
+                    hexagramImg.style.touchAction = 'auto';
+
+                    try {
+                        canvas.toBlob(blob => {
+                            if (blob) {
+                                hexagramImg.src = URL.createObjectURL(blob);
+                            }
+                        }, 'image/png');
+                    } catch (e) {}
+
+                    // Cập nhật kết luận giải thích
+                    displayInterpretation(hexData);
+
+                    // Ẩn khu gieo và hiện khu kết quả
+                    castingStage.classList.add('hidden');
+                    resultArea.classList.remove('hidden');
+                    loadingOverlay.classList.remove('visible');
+
+                    // Cuộn mượt đến đầu kết quả
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
+
+                }).catch(err => {
+                    console.error(err);
+                    loadingOverlay.classList.remove('visible');
+                    alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch!");
+                });
+            }, 300);
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // SỰ KIỆN XEM TRƯỚC VÀ LẬP QUẺ CHO TAB NHẬP SỐ (MAI HOA DỊCH SỐ)
+    // -------------------------------------------------------------------------
+    const numberInput = document.getElementById('number-input');
+    const numberPreviewBox = document.getElementById('number-preview-box');
+    const npThuong = document.getElementById('np-thuong');
+    const npHa = document.getElementById('np-ha');
+    const npDong = document.getElementById('np-dong');
+    const npResultName = document.getElementById('np-result-name');
+    const npExplain = document.getElementById('np-explain');
+    const numberSubmitBtn = document.getElementById('number-submit-btn');
+
+    if (numberInput) {
+        numberInput.addEventListener('input', () => {
+            const val = numberInput.value;
+            const res = parseNumberHexagram(val);
+            if (res.success) {
+                if (numberPreviewBox) numberPreviewBox.style.display = 'block';
+                if (npThuong) npThuong.innerHTML = `${res.thuongName} (${res.thuongQuai})`;
+                if (npHa) npHa.innerHTML = `${res.haName} (${res.haQuai})`;
+                if (npDong) npDong.innerHTML = `Hào ${res.haoDong}`;
+                if (npResultName) npResultName.innerHTML = `Quẻ Chủ: ${res.thuongName} (Thượng) / ${res.haName} (Hạ) ➔ Động Hào ${res.haoDong}`;
+                if (npExplain) npExplain.innerHTML = `💡 ${res.explain}`;
+            } else {
+                if (val.trim().length > 0) {
+                    if (numberPreviewBox) numberPreviewBox.style.display = 'block';
+                    if (npThuong) npThuong.innerHTML = '--';
+                    if (npHa) npHa.innerHTML = '--';
+                    if (npDong) npDong.innerHTML = '--';
+                    if (npResultName) npResultName.innerHTML = '';
+                    if (npExplain) npExplain.innerHTML = `<span style="color:#ff6b6b;">⚠️ ${res.error}</span>`;
+                } else {
+                    if (numberPreviewBox) numberPreviewBox.style.display = 'none';
+                }
+            }
+        });
+
+        numberInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (numberSubmitBtn) numberSubmitBtn.click();
+            }
+        });
+    }
+
+    if (numberSubmitBtn) {
+        numberSubmitBtn.addEventListener('click', () => {
+            const val = numberInput ? numberInput.value : '';
+            const res = parseNumberHexagram(val);
+            if (!res.success) {
+                alert(res.error || "Vui lòng nhập dãy số hợp lệ trước khi lập quẻ!");
+                if (numberInput) numberInput.focus();
+                return;
+            }
+
+            // Gán 6 câu trả lời trống vì người dùng không cần nhập câu hỏi khảo sát ở tab nhập số
+            userAnswers = ['', '', '', '', '', ''];
+
+            // Tắt đếm giờ thực
+            if (liveClockTimer) clearInterval(liveClockTimer);
+
+            loadingOverlay.classList.add('visible');
+
+            const dVal = document.getElementById('current-date-time').value;
+            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const formattedDate = formatDate(dVal);
+
+            // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Nhập số)"
+            const hexData = ICHING.calculateHexagramData(res.hexLines, calendarData, "Mai hoa (Nhập số)", formattedDate);
 
             // Tạo giao diện trong captureTarget
             renderCaptureHTML(hexData);
