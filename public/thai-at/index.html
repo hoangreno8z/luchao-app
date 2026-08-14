@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_v4.css?v=30.0.0">
+    <link rel="stylesheet" href="style_v4.css?v=31.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -118,6 +118,16 @@
 
             <!-- Right: Chart Display Panel -->
             <section class="chart-display-area">
+                <!-- Thanh Tua Thời Gian Nhanh (Time Travel Navigation Toolbar) -->
+                <div class="time-travel-toolbar glass">
+                    <span class="time-travel-label">⏳ Du Hành Thời Gian:</span>
+                    <button type="button" class="btn-time-step" id="btn-time-prev-big" onclick="adjustTimeTravel('prev_big')" ontouchend="adjustTimeTravel('prev_big')">⏪ -10 Năm</button>
+                    <button type="button" class="btn-time-step" id="btn-time-prev" onclick="adjustTimeTravel('prev')" ontouchend="adjustTimeTravel('prev')">◀ Năm Trước</button>
+                    <button type="button" class="btn-time-step btn-time-now" id="btn-time-now" onclick="adjustTimeTravel('now')" ontouchend="adjustTimeTravel('now')">⏱️ Hiện Tại</button>
+                    <button type="button" class="btn-time-step" id="btn-time-next" onclick="adjustTimeTravel('next')" ontouchend="adjustTimeTravel('next')">Năm Kế ▶</button>
+                    <button type="button" class="btn-time-step" id="btn-time-next-big" onclick="adjustTimeTravel('next_big')" ontouchend="adjustTimeTravel('next_big')">+10 Năm ⏩</button>
+                </div>
+
                 <!-- Khu vực hiển thị Ảnh PNG HD trực tiếp cho Mobile touch-hold & PC Right-click -->
                 <div class="chart-image-section">
                     <div id="chart-img-loader" class="chart-img-loader" style="display: none;">
@@ -323,16 +333,16 @@
         </div>
     </div>
 
-    <script src="js/lunar_solar.js?v=30.0.0"></script>
-    <script src="js/thai_at_luan_doan.js?v=30.0.0"></script>
-    <script src="js/thai_at_reference.js?v=30.0.0"></script>
-    <script src="js/phan_da_map.js?v=30.0.0"></script>
-    <script src="js/thai_at_engine_v4.js?v=30.0.0"></script>
-    <script src="js/thai_at_nguyet_engine.js?v=30.0.0"></script>
-    <script src="js/thai_at_nhat_engine.js?v=30.0.0"></script>
-    <script src="js/thai_at_thoi_engine.js?v=30.0.0"></script>
-    <script src="js/thai_at_astronomical_engine.js?v=30.0.0"></script>
-    <script src="js/png_exporter.js?v=30.0.0"></script>
-    <script src="script_v4.js?v=30.0.0"></script>
+    <script src="js/lunar_solar.js?v=31.0.0"></script>
+    <script src="js/thai_at_luan_doan.js?v=31.0.0"></script>
+    <script src="js/thai_at_reference.js?v=31.0.0"></script>
+    <script src="js/phan_da_map.js?v=31.0.0"></script>
+    <script src="js/thai_at_engine_v4.js?v=31.0.0"></script>
+    <script src="js/thai_at_nguyet_engine.js?v=31.0.0"></script>
+    <script src="js/thai_at_nhat_engine.js?v=31.0.0"></script>
+    <script src="js/thai_at_thoi_engine.js?v=31.0.0"></script>
+    <script src="js/thai_at_astronomical_engine.js?v=31.0.0"></script>
+    <script src="js/png_exporter.js?v=31.0.0"></script>
+    <script src="script_v4.js?v=31.0.0"></script>
 </body>
 </html>

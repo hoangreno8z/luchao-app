@@ -32,6 +32,119 @@ function switchSaBanTheme(themeKey, skipPNGRefresh = false) {
     }
 }
 
+// =========================================================================
+// THANH TUA THỜI GIAN NHANH (TIME-TRAVEL NAVIGATION)
+// =========================================================================
+function updateTimeTravelLabels() {
+    const prevBigBtn = document.getElementById("btn-time-prev-big");
+    const prevBtn = document.getElementById("btn-time-prev");
+    const nextBtn = document.getElementById("btn-time-next");
+    const nextBigBtn = document.getElementById("btn-time-next-big");
+    if (!prevBtn || !nextBtn) return;
+
+    if (currentMode === "tue") {
+        if (prevBigBtn) prevBigBtn.innerHTML = "⏪ -10 Năm";
+        prevBtn.innerHTML = "◀ Năm Trước";
+        nextBtn.innerHTML = "Năm Kế ▶";
+        if (nextBigBtn) nextBigBtn.innerHTML = "+10 Năm ⏩";
+    } else if (currentMode === "nguyet") {
+        if (prevBigBtn) prevBigBtn.innerHTML = "⏪ -1 Năm";
+        prevBtn.innerHTML = "◀ Tháng Trước";
+        nextBtn.innerHTML = "Tháng Kế ▶";
+        if (nextBigBtn) nextBigBtn.innerHTML = "+1 Năm ⏩";
+    } else if (currentMode === "nhat") {
+        if (prevBigBtn) prevBigBtn.innerHTML = "⏪ -7 Ngày";
+        prevBtn.innerHTML = "◀ Ngày Trước";
+        nextBtn.innerHTML = "Ngày Sau ▶";
+        if (nextBigBtn) nextBigBtn.innerHTML = "+7 Ngày ⏩";
+    } else if (currentMode === "thoi") {
+        if (prevBigBtn) prevBigBtn.innerHTML = "⏪ -1 Ngày";
+        prevBtn.innerHTML = "◀ Canh Trước (-2h)";
+        nextBtn.innerHTML = "Canh Kế (+2h) ▶";
+        if (nextBigBtn) nextBigBtn.innerHTML = "+1 Ngày ⏩";
+    } else {
+        if (prevBigBtn) prevBigBtn.innerHTML = "⏪ -10 Năm";
+        prevBtn.innerHTML = "◀ Năm Trước";
+        nextBtn.innerHTML = "Năm Kế ▶";
+        if (nextBigBtn) nextBigBtn.innerHTML = "+10 Năm ⏩";
+    }
+}
+
+function adjustTimeTravel(stepType) {
+    const dateInput = document.getElementById("input-date");
+    const timeInput = document.getElementById("input-time");
+    if (!dateInput || !timeInput) return;
+
+    let dateVal = dateInput.value;
+    let timeVal = timeInput.value || "12:00";
+    if (!dateVal) dateVal = new Date().toISOString().split("T")[0];
+
+    // Tạo đối tượng Date an toàn
+    const parts = dateVal.split("-");
+    const tParts = timeVal.split(":");
+    let yr = parseInt(parts[0], 10);
+    let mo = parseInt(parts[1], 10) - 1;
+    let da = parseInt(parts[2], 10);
+    let ho = parseInt(tParts[0], 10);
+    let mi = parseInt(tParts[1], 10);
+
+    let currentDt = new Date(yr, mo, da, ho, mi, 0);
+    if (isNaN(currentDt.getTime())) currentDt = new Date();
+
+    if (stepType === "now") {
+        const now = new Date();
+        const nYr = now.getFullYear();
+        const nMo = String(now.getMonth() + 1).padStart(2, '0');
+        const nDa = String(now.getDate()).padStart(2, '0');
+        const nHo = String(now.getHours()).padStart(2, '0');
+        const nMi = String(now.getMinutes()).padStart(2, '0');
+        dateInput.value = `${nYr}-${nMo}-${nDa}`;
+        timeInput.value = `${nHo}:${nMi}`;
+        castChart();
+        return;
+    }
+
+    if (currentMode === "tue") {
+        if (stepType === "prev_big") currentDt.setFullYear(currentDt.getFullYear() - 10);
+        else if (stepType === "prev") currentDt.setFullYear(currentDt.getFullYear() - 1);
+        else if (stepType === "next") currentDt.setFullYear(currentDt.getFullYear() + 1);
+        else if (stepType === "next_big") currentDt.setFullYear(currentDt.getFullYear() + 10);
+    } else if (currentMode === "nguyet") {
+        if (stepType === "prev_big") currentDt.setFullYear(currentDt.getFullYear() - 1);
+        else if (stepType === "prev") currentDt.setMonth(currentDt.getMonth() - 1);
+        else if (stepType === "next") currentDt.setMonth(currentDt.getMonth() + 1);
+        else if (stepType === "next_big") currentDt.setFullYear(currentDt.getFullYear() + 1);
+    } else if (currentMode === "nhat") {
+        if (stepType === "prev_big") currentDt.setDate(currentDt.getDate() - 7);
+        else if (stepType === "prev") currentDt.setDate(currentDt.getDate() - 1);
+        else if (stepType === "next") currentDt.setDate(currentDt.getDate() + 1);
+        else if (stepType === "next_big") currentDt.setDate(currentDt.getDate() + 7);
+    } else if (currentMode === "thoi") {
+        if (stepType === "prev_big") currentDt.setDate(currentDt.getDate() - 1);
+        else if (stepType === "prev") currentDt.setHours(currentDt.getHours() - 2);
+        else if (stepType === "next") currentDt.setHours(currentDt.getHours() + 2);
+        else if (stepType === "next_big") currentDt.setDate(currentDt.getDate() + 1);
+    } else {
+        if (stepType === "prev_big") currentDt.setFullYear(currentDt.getFullYear() - 10);
+        else if (stepType === "prev") currentDt.setFullYear(currentDt.getFullYear() - 1);
+        else if (stepType === "next") currentDt.setFullYear(currentDt.getFullYear() + 1);
+        else if (stepType === "next_big") currentDt.setFullYear(currentDt.getFullYear() + 10);
+    }
+
+    const resYr = currentDt.getFullYear();
+    const resMo = String(currentDt.getMonth() + 1).padStart(2, '0');
+    const resDa = String(currentDt.getDate()).padStart(2, '0');
+    const resHo = String(currentDt.getHours()).padStart(2, '0');
+    const resMi = String(currentDt.getMinutes()).padStart(2, '0');
+
+    dateInput.value = `${resYr}-${resMo}-${resDa}`;
+    timeInput.value = `${resHo}:${resMi}`;
+
+    castChart();
+}
+window.adjustTimeTravel = adjustTimeTravel;
+window.updateTimeTravelLabels = updateTimeTravelLabels;
+
 document.addEventListener("DOMContentLoaded", () => {
     switchSaBanTheme(window.currentSaBanTheme, true);
     const now = new Date();
@@ -60,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentMode = btn.getAttribute("data-mode");
+            updateTimeTravelLabels();
             castChart();
         });
     });
@@ -69,6 +183,8 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         castChart();
     });
+
+    updateTimeTravelLabels();
 
     // Initial render
     castChart();

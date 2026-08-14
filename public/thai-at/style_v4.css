@@ -1380,4 +1380,82 @@ h1 {
     }
 }
 
+/* =========================================================================
+   THANH TUA THỜI GIAN NHANH (TIME-TRAVEL NAVIGATION TOOLBAR)
+   ========================================================================= */
+.time-travel-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    background: rgba(18, 24, 48, 0.75);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+
+.time-travel-label {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+}
+
+.btn-time-step {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: #e0e6ed;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+}
+
+.btn-time-step:hover {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: #ffd700;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-time-step:active {
+    transform: translateY(1px);
+}
+
+.btn-time-step.btn-time-now {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(0, 242, 254, 0.25));
+    border-color: #00f2fe;
+    color: #00f2fe;
+    font-weight: 700;
+}
+
+.btn-time-step.btn-time-now:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(0, 242, 254, 0.45));
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+}
+
+@media (max-width: 768px) {
+    .time-travel-toolbar {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+    .btn-time-step {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+}
+
+
 
