@@ -242,27 +242,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const methodNumberAreaEl = document.getElementById('method-number-area');
 
         if (tabTossEl) {
-            tabTossEl.style.background = (activeTab === 'toss') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
-            tabTossEl.style.borderColor = (activeTab === 'toss') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
-            tabTossEl.style.color = (activeTab === 'toss') ? '#fff' : 'var(--text-muted)';
-            tabTossEl.style.boxShadow = 'none';
+            tabTossEl.style.background = (activeTab === 'toss') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
+            tabTossEl.style.borderColor = (activeTab === 'toss') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
+            tabTossEl.style.color = (activeTab === 'toss') ? '#110c03' : 'var(--text-muted)';
+            tabTossEl.style.fontWeight = (activeTab === 'toss') ? '800' : '600';
+            tabTossEl.style.boxShadow = (activeTab === 'toss') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
         }
         if (tabManualEl) {
-            tabManualEl.style.background = (activeTab === 'manual') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
-            tabManualEl.style.borderColor = (activeTab === 'manual') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
-            tabManualEl.style.color = (activeTab === 'manual') ? '#fff' : 'var(--text-muted)';
-            tabManualEl.style.boxShadow = 'none';
+            tabManualEl.style.background = (activeTab === 'manual') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
+            tabManualEl.style.borderColor = (activeTab === 'manual') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
+            tabManualEl.style.color = (activeTab === 'manual') ? '#110c03' : 'var(--text-muted)';
+            tabManualEl.style.fontWeight = (activeTab === 'manual') ? '800' : '600';
+            tabManualEl.style.boxShadow = (activeTab === 'manual') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
         }
         if (tabNumberEl) {
             if (activeTab === 'number') {
-                tabNumberEl.style.background = 'linear-gradient(135deg, #ffd700, #ffae00)';
-                tabNumberEl.style.borderColor = '#ffd700';
-                tabNumberEl.style.color = '#1a0f00';
-                tabNumberEl.style.boxShadow = '0 0 15px rgba(255,215,0,0.4)';
+                tabNumberEl.style.background = 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)';
+                tabNumberEl.style.borderColor = '#fbbf24';
+                tabNumberEl.style.color = '#110c03';
+                tabNumberEl.style.fontWeight = '800';
+                tabNumberEl.style.boxShadow = '0 4px 15px rgba(245,158,11,0.45)';
             } else {
-                tabNumberEl.style.background = 'linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,174,0,0.08))';
-                tabNumberEl.style.borderColor = 'rgba(255,215,0,0.4)';
-                tabNumberEl.style.color = '#ffd700';
+                tabNumberEl.style.background = 'rgba(255,255,255,0.06)';
+                tabNumberEl.style.borderColor = 'rgba(168,85,247,0.3)';
+                tabNumberEl.style.color = '#fbbf24';
+                tabNumberEl.style.fontWeight = '600';
                 tabNumberEl.style.boxShadow = 'none';
             }
         }
@@ -395,43 +399,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const len = clean.length;
 
-            // Trường hợp 2: Dãy 2 chữ số (ví dụ '12')
+            // Trường hợp 2: Dãy 2 chữ số (ví dụ '00', '12', '46', '99')
             if (len === 2) {
-                let n1 = parseInt(clean[0], 10);
-                let n2 = parseInt(clean[1], 10);
-                if (n1 === 0) n1 = 8; else if (n1 === 9) n1 = 1;
-                if (n2 === 0) n2 = 8; else if (n2 === 9) n2 = 1;
+                let r1 = parseInt(clean[0], 10);
+                let r2 = parseInt(clean[1], 10);
+                let n1 = (r1 % 8 === 0) ? 8 : (r1 % 8);
+                let n2 = (r2 % 8 === 0) ? 8 : (r2 % 8);
                 
-                let d = n1 + n2;
-                if (d > 6) {
-                    d = d % 6;
-                    if (d === 0) d = 6;
-                }
-                thuongQuai = n1;
-                haQuai = n2;
-                haoDong = d;
-                explain = `Dãy 2 chữ số (${clean}): Số 1 = ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Hào động = (${n1}+${n2}) = ${n1+n2}${n1+n2>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
-            }
-            // Trường hợp 3: Dãy 3 chữ số (ví dụ '357', '888')
-            else if (len === 3) {
-                let n1 = parseInt(clean[0], 10);
-                let n2 = parseInt(clean[1], 10);
-                let n3 = parseInt(clean[2], 10);
-                if (n1 === 0) n1 = 8; else if (n1 === 9) n1 = 1;
-                if (n2 === 0) n2 = 8; else if (n2 === 9) n2 = 1;
+                let sum = r1 + r2;
+                let d = sum % 6;
+                if (d === 0) d = 6;
 
-                let d = 6;
-                if (n3 === 0) {
-                    d = 6;
-                } else if (n3 >= 1 && n3 <= 6) {
-                    d = n3;
-                } else if (n3 >= 7) {
-                    d = n3 - 6; // 7->1, 8->2, 9->3
-                }
                 thuongQuai = n1;
                 haQuai = n2;
                 haoDong = d;
-                explain = `Dãy 3 chữ số (${clean}): Số 1 = ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Số 3 = ${n3} ➔ Động Hào ${d}`;
+                explain = `Dãy 2 chữ số (${clean}): Số 1 = ${r1} ➔ ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${r2} ➔ ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Hào động = (${r1}+${r2}) = ${sum} % 6 ➔ Động Hào ${d}`;
+            }
+            // Trường hợp 3: Dãy 3 chữ số (ví dụ '357', '888', '000')
+            else if (len === 3) {
+                let r1 = parseInt(clean[0], 10);
+                let r2 = parseInt(clean[1], 10);
+                let r3 = parseInt(clean[2], 10);
+                let n1 = (r1 % 8 === 0) ? 8 : (r1 % 8);
+                let n2 = (r2 % 8 === 0) ? 8 : (r2 % 8);
+
+                let d = r3 % 6;
+                if (d === 0) d = 6;
+
+                thuongQuai = n1;
+                haQuai = n2;
+                haoDong = d;
+                explain = `Dãy 3 chữ số (${clean}): Số 1 = ${r1} ➔ ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${r2} ➔ ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Số 3 = ${r3} % 6 ➔ Động Hào ${d}`;
             }
             // Trường hợp 4 & 5: Dãy số >= 4 chữ số (chẵn hoặc lẻ)
             else {
@@ -443,18 +441,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 let sum1 = s1Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
                 let sum2 = s2Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
                 
-                let t = sum1 <= 8 ? (sum1 === 0 ? 8 : sum1) : (sum1 % 8 === 0 ? 8 : sum1 % 8);
-                let h = sum2 <= 8 ? (sum2 === 0 ? 8 : sum2) : (sum2 % 8 === 0 ? 8 : sum2 % 8);
+                let t = (sum1 % 8 === 0) ? 8 : (sum1 % 8);
+                let h = (sum2 % 8 === 0) ? 8 : (sum2 % 8);
                 
-                // Hào động: Tổng tất cả các chữ số trong dãy chia 6 lấy dư
+                // Hào động: Tổng tất cả các chữ số trong dãy chia 6 lấy dư (dư 0 lấy 6)
                 let totalAllDigits = sum1 + sum2;
-                let d = totalAllDigits <= 6 ? totalAllDigits : (totalAllDigits % 6 === 0 ? 6 : totalAllDigits % 6);
+                let d = totalAllDigits % 6;
                 if (d === 0) d = 6;
                 
                 thuongQuai = t;
                 haQuai = h;
                 haoDong = d;
-                explain = `Dãy ${len} số (${clean}): Nửa đầu ${s1Str} (tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = Tổng dãy ${totalAllDigits}${totalAllDigits>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
+                explain = `Dãy ${len} số (${clean}): Nửa đầu ${s1Str} (tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = Tổng ${totalAllDigits} % 6 ➔ Động Hào ${d}`;
             }
         }
 
