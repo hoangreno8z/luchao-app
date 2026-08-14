@@ -178,9 +178,7 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const gapX = 7;
     const gapY = 6;
 
-    // Track positions for Tactical Chủ - Khách connection beam
-    let chuPos = null;
-    let khachPos = null;
+
 
     // Draw 16 Outer Cells
     Object.keys(THAN_GRID_DEF).forEach(id => {
@@ -282,10 +280,7 @@ function draw5x5ThaiAtSaBan(data, callback) {
             sortedStars.forEach((st, idx) => {
                 if (sy <= cy + cellH - 12) {
                     ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
-                    let starDisplayName = st.name;
-                    if (isChuKhachActive && (st.name.includes("Chủ Tướng") || st.class === "chu-tuong")) starDisplayName = `🛡️ ${st.name}`;
-                    if (isChuKhachActive && (st.name.includes("Khách Tướng") || st.class === "khach-tuong")) starDisplayName = `⚔️ ${st.name}`;
-                    ctx.fillText(`• ${starDisplayName}`, cx + 8, sy);
+                    ctx.fillText(`• ${st.name}`, cx + 8, sy);
                     sy += 16;
                 }
             });
