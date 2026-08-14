@@ -361,30 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 haoDong = d;
                 explain = `Dãy 3 chữ số (${clean}): Số 1 = ${n1} (${TIEN_THIEN_BAT_QUAI[n1].name}), Số 2 = ${n2} (${TIEN_THIEN_BAT_QUAI[n2].name}), Số 3 = ${n3} ➔ Động Hào ${d}`;
             }
-            // Trường hợp 4: Dãy chẵn >= 4 chữ số (ví dụ '1234', '10009000')
-            else if (len % 2 === 0) {
-                const halfLen = len / 2;
-                const s1Str = clean.slice(0, halfLen);
-                const s2Str = clean.slice(halfLen);
-                
-                let sum1 = s1Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
-                let sum2 = s2Str.split('').reduce((acc, c) => acc + parseInt(c, 10), 0);
-                
-                let t = sum1 <= 8 ? (sum1 === 0 ? 8 : sum1) : (sum1 % 8 === 0 ? 8 : sum1 % 8);
-                let h = sum2 <= 8 ? (sum2 === 0 ? 8 : sum2) : (sum2 % 8 === 0 ? 8 : sum2 % 8);
-                
-                let sumDong = t + h;
-                let d = sumDong <= 6 ? sumDong : (sumDong % 6 === 0 ? 6 : sumDong % 6);
-                if (d === 0) d = 6;
-                
-                thuongQuai = t;
-                haQuai = h;
-                haoDong = d;
-                explain = `Dãy chẵn ${len} số (${clean}): Nửa đầu ${s1Str} (tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = (${t}+${h}) = ${sumDong}${sumDong>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
-            }
-            // Trường hợp 5: Dãy lẻ >= 5 chữ số (ví dụ '1001200')
+            // Trường hợp 4 & 5: Dãy số >= 4 chữ số (chẵn hoặc lẻ)
             else {
-                const half1Len = Math.floor(len / 2);
+                const isEven = (len % 2 === 0);
+                const half1Len = isEven ? (len / 2) : Math.floor(len / 2);
                 const s1Str = clean.slice(0, half1Len);
                 const s2Str = clean.slice(half1Len);
                 
@@ -394,14 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 let t = sum1 <= 8 ? (sum1 === 0 ? 8 : sum1) : (sum1 % 8 === 0 ? 8 : sum1 % 8);
                 let h = sum2 <= 8 ? (sum2 === 0 ? 8 : sum2) : (sum2 % 8 === 0 ? 8 : sum2 % 8);
                 
-                let sumDong = t + h;
-                let d = sumDong <= 6 ? sumDong : (sumDong % 6 === 0 ? 6 : sumDong % 6);
+                // Hào động: Tổng tất cả các chữ số trong dãy chia 6 lấy dư
+                let totalAllDigits = sum1 + sum2;
+                let d = totalAllDigits <= 6 ? totalAllDigits : (totalAllDigits % 6 === 0 ? 6 : totalAllDigits % 6);
                 if (d === 0) d = 6;
                 
                 thuongQuai = t;
                 haQuai = h;
                 haoDong = d;
-                explain = `Dãy lẻ ${len} số (${clean}): Nửa đầu ${s1Str} (${half1Len} số ➔ tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (${len-half1Len} số ➔ tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = (${t}+${h}) = ${sumDong}${sumDong>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
+                explain = `Dãy ${len} số (${clean}): Nửa đầu ${s1Str} (tổng ${sum1} ➔ ${t} ${TIEN_THIEN_BAT_QUAI[t].name}), Nửa sau ${s2Str} (tổng ${sum2} ➔ ${h} ${TIEN_THIEN_BAT_QUAI[h].name}), Hào động = Tổng dãy ${totalAllDigits}${totalAllDigits>6 ? ' % 6 = ' + d : ''} (Động Hào ${d})`;
             }
         }
 
