@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinh Dịch - Thái Ất thần quẻ.</title>
     <meta name="description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <link rel="stylesheet" href="style.css?v=3.4">
+    <link rel="stylesheet" href="style.css?v=4.1.0">
     
     <!-- Open Graph / Zalo / Facebook / Messenger Sharing -->
     <meta property="og:type" content="website">
@@ -120,9 +120,9 @@
 
                 <!-- TABS LỰA CHỌN PHƯƠNG PHÁP -->
                 <div class="method-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(223,177,91,0.2); padding-bottom: 12px;">
-                    <button id="tab-toss" class="btn active-tab-btn" style="flex: 1; min-width: 160px; padding: 10px 16px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
-                    <button id="tab-manual" class="btn" style="flex: 1; min-width: 180px; padding: 10px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
-                    <button id="tab-number" class="btn" style="flex: 1; min-width: 140px; padding: 10px 16px; background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,174,0,0.15)); border: 1.5px solid #ffd700; color: #ffd700; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255,215,0,0.25);">✨ Nhập Số</button>
+                    <button id="tab-toss" class="btn active-tab-btn" onclick="switchMethodTab('toss')" ontouchend="switchMethodTab('toss')" style="flex: 1; min-width: 160px; padding: 10px 16px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
+                    <button id="tab-manual" class="btn" onclick="switchMethodTab('manual')" ontouchend="switchMethodTab('manual')" style="flex: 1; min-width: 180px; padding: 10px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
+                    <button id="tab-number" class="btn" onclick="switchMethodTab('number')" ontouchend="switchMethodTab('number')" style="flex: 1; min-width: 140px; padding: 10px 16px; background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,174,0,0.15)); border: 1.5px solid #ffd700; color: #ffd700; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255,215,0,0.25);">✨ Nhập Số</button>
                 </div>
 
                 <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
@@ -430,8 +430,8 @@
     <!-- Lightning Flash overlay -->
     <div id="lightning-strike-overlay"></div>
 
-    <script src="calendar.js?v=3.4"></script>
-    <script src="iching_core.js?v=3.4"></script>
-    <script src="app.js?v=3.4"></script>
+    <script src="calendar.js?v=4.1.0"></script>
+    <script src="iching_core.js?v=4.1.0"></script>
+    <script src="app.js?v=4.1.0"></script>
 </body>
 </html>

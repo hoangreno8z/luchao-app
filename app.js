@@ -234,45 +234,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const methodNumberArea = document.getElementById('method-number-area');
 
     function switchMethodTab(activeTab) {
-        if (tabToss) {
-            tabToss.style.background = (activeTab === 'toss') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
-            tabToss.style.borderColor = (activeTab === 'toss') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
-            tabToss.style.color = (activeTab === 'toss') ? '#fff' : 'var(--text-muted)';
-            tabToss.style.boxShadow = 'none';
+        const tabTossEl = document.getElementById('tab-toss');
+        const tabManualEl = document.getElementById('tab-manual');
+        const tabNumberEl = document.getElementById('tab-number');
+        const methodTossAreaEl = document.getElementById('method-toss-area');
+        const methodManualAreaEl = document.getElementById('method-manual-area');
+        const methodNumberAreaEl = document.getElementById('method-number-area');
+
+        if (tabTossEl) {
+            tabTossEl.style.background = (activeTab === 'toss') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
+            tabTossEl.style.borderColor = (activeTab === 'toss') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
+            tabTossEl.style.color = (activeTab === 'toss') ? '#fff' : 'var(--text-muted)';
+            tabTossEl.style.boxShadow = 'none';
         }
-        if (tabManual) {
-            tabManual.style.background = (activeTab === 'manual') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
-            tabManual.style.borderColor = (activeTab === 'manual') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
-            tabManual.style.color = (activeTab === 'manual') ? '#fff' : 'var(--text-muted)';
-            tabManual.style.boxShadow = 'none';
+        if (tabManualEl) {
+            tabManualEl.style.background = (activeTab === 'manual') ? 'var(--gold-dark)' : 'rgba(0,0,0,0.3)';
+            tabManualEl.style.borderColor = (activeTab === 'manual') ? 'var(--gold)' : 'rgba(223,177,91,0.2)';
+            tabManualEl.style.color = (activeTab === 'manual') ? '#fff' : 'var(--text-muted)';
+            tabManualEl.style.boxShadow = 'none';
         }
-        if (tabNumber) {
+        if (tabNumberEl) {
             if (activeTab === 'number') {
-                tabNumber.style.background = 'linear-gradient(135deg, #ffd700, #ffae00)';
-                tabNumber.style.borderColor = '#ffd700';
-                tabNumber.style.color = '#1a0f00';
-                tabNumber.style.boxShadow = '0 0 15px rgba(255,215,0,0.4)';
+                tabNumberEl.style.background = 'linear-gradient(135deg, #ffd700, #ffae00)';
+                tabNumberEl.style.borderColor = '#ffd700';
+                tabNumberEl.style.color = '#1a0f00';
+                tabNumberEl.style.boxShadow = '0 0 15px rgba(255,215,0,0.4)';
             } else {
-                tabNumber.style.background = 'linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,174,0,0.08))';
-                tabNumber.style.borderColor = 'rgba(255,215,0,0.4)';
-                tabNumber.style.color = '#ffd700';
-                tabNumber.style.boxShadow = 'none';
+                tabNumberEl.style.background = 'linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,174,0,0.08))';
+                tabNumberEl.style.borderColor = 'rgba(255,215,0,0.4)';
+                tabNumberEl.style.color = '#ffd700';
+                tabNumberEl.style.boxShadow = 'none';
             }
         }
 
-        if (methodTossArea) methodTossArea.classList.toggle('hidden', activeTab !== 'toss');
-        if (methodManualArea) methodManualArea.classList.toggle('hidden', activeTab !== 'manual');
-        if (methodNumberArea) methodNumberArea.classList.toggle('hidden', activeTab !== 'number');
+        if (methodTossAreaEl) {
+            methodTossAreaEl.classList.toggle('hidden', activeTab !== 'toss');
+            methodTossAreaEl.style.display = (activeTab === 'toss') ? 'block' : 'none';
+        }
+        if (methodManualAreaEl) {
+            methodManualAreaEl.classList.toggle('hidden', activeTab !== 'manual');
+            methodManualAreaEl.style.display = (activeTab === 'manual') ? 'block' : 'none';
+        }
+        if (methodNumberAreaEl) {
+            methodNumberAreaEl.classList.toggle('hidden', activeTab !== 'number');
+            methodNumberAreaEl.style.display = (activeTab === 'number') ? 'block' : 'none';
+        }
 
         if (activeTab === 'number') {
             const numInput = document.getElementById('number-input');
-            if (numInput) setTimeout(() => numInput.focus(), 50);
+            if (numInput) setTimeout(() => numInput.focus(), 100);
         }
     }
+    window.switchMethodTab = switchMethodTab;
 
-    if (tabToss) tabToss.addEventListener('click', () => switchMethodTab('toss'));
-    if (tabManual) tabManual.addEventListener('click', () => switchMethodTab('manual'));
-    if (tabNumber) tabNumber.addEventListener('click', () => switchMethodTab('number'));
+    if (tabToss) {
+        tabToss.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('toss'); });
+        tabToss.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('toss'); });
+    }
+    if (tabManual) {
+        tabManual.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('manual'); });
+        tabManual.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('manual'); });
+    }
+    if (tabNumber) {
+        tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
+        tabNumber.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('number'); });
+    }
 
     // -------------------------------------------------------------------------
     // BẢNG TIÊN THIÊN BÁT QUÁI & THUẬT TOÁN LẬP QUẺ BẰNG SỐ
