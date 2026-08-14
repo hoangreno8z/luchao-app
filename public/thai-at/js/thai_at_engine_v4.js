@@ -382,7 +382,8 @@ class ThaiAtBaseEngine {
         const danCoCungName = CHI_NAMES[chiDan];
         
         // Ngũ Phúc (Dùng Tích % 225 / 45 -> Kiền, Cấn, Tốn, Khôn, Trung)
-        const npR = (cucNum * 5) % 225;
+        // Ngũ Phúc: Tích % 225 / 45 -> 0:Kiền(3), 1:Cấn(7), 2:Tốn(11), 3:Khôn(15), 4:Trung(-1)
+        const npR = (cucNum * 5 + 25) % 225;
         const npQ = Math.floor(npR / 45);
         const npRem = (npR % 45) || 45;
         const npPath = [3, 7, 11, 15, -1]; // 1: Kiền(3), 2: Cấn(7), 3: Tốn(11), 4: Khôn(15), 5: Trung(-1)
@@ -427,8 +428,8 @@ class ThaiAtBaseEngine {
         
         const tuThanIdx = MASTER_PATH[(0 + step) % 12];   // Khởi Càn (idx 0 của MASTER_PATH)
         const thienAtIdx = MASTER_PATH[(5 + step) % 12];  // Khởi Đoài (idx 5 của MASTER_PATH)
-        const trucPhuIdx = MASTER_PATH[(4 + step) % 12];  // Khởi Trung Cung (idx 4 của MASTER_PATH)
-        const diaAtIdx = MASTER_PATH[(8 + step) % 12];    // Khởi Tốn (idx 8 của MASTER_PATH)
+        const trucPhuIdx = MASTER_PATH[(8 + step) % 12];  // Khởi Tốn (idx 8 của MASTER_PATH)
+        const diaAtIdx = MASTER_PATH[(4 + step) % 12];    // Khởi Trung Cung (idx 4 của MASTER_PATH -> Cục 32 ở Cấn)
         
         // 1. Thanh Long: Kỷ Dư % 60 % 12, khởi Hợi thuận 12 địa chi
         const r60_tl = kVal % 60;
