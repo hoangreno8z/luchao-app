@@ -1,14 +1,14 @@
-/* Theme Colors - inspired by gieoque.id.vn dark mystical palette */
+/* Theme Colors - Imperial Gold & Deep Celestial Obsidian Glass */
 :root {
-    --bg-main: #050711;
-    --panel-bg: rgba(15, 20, 42, 0.75);
-    --panel-border: rgba(212, 175, 55, 0.35);
-    --gold: #d4af37;
-    --gold-glow: rgba(212, 175, 55, 0.6);
+    --bg-main: #04060f;
+    --panel-bg: rgba(14, 22, 50, 0.6);
+    --panel-border: rgba(255, 215, 0, 0.35);
+    --gold: #ffd700;
+    --gold-glow: rgba(255, 215, 0, 0.6);
     --gold-dark: #b8860b;
-    --text-light: #f0f2f5;
-    --text-muted: #8a94a8;
-    --card-bg: rgba(25, 32, 64, 0.6);
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(20, 30, 65, 0.5);
     --color-moc: #2ecc71;
     --color-hoa: #e74c3c;
     --color-tho: #e67e22;
@@ -20,14 +20,21 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Quicksand', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
 
 body {
-    background-color: var(--bg-main);
+    background-color: #04060f;
+    background-image: 
+        radial-gradient(circle at 15% 18%, rgba(212, 175, 55, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 85% 22%, rgba(0, 242, 254, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 50% 75%, rgba(138, 43, 226, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 30% 90%, rgba(255, 215, 0, 0.2) 0%, transparent 45%),
+        linear-gradient(135deg, #03050d 0%, #09122a 50%, #150a26 100%);
+    background-attachment: fixed;
     color: var(--text-light);
     min-height: 100vh;
     overflow-x: hidden;
@@ -37,11 +44,11 @@ body {
 .stars-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
     background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-        radial-gradient(white, rgba(255,255,255,.12) 1px, transparent 30px);
+        radial-gradient(white, rgba(255,255,255,.25) 2px, transparent 40px),
+        radial-gradient(gold, rgba(255,215,0,.18) 1px, transparent 30px);
     background-size: 550px 550px, 350px 350px;
     animation: bgFloat 100s linear infinite;
-    opacity: 0.3;
+    opacity: 0.35;
 }
 @keyframes bgFloat {
     from { background-position: 0 0, 40px 60px; }
@@ -52,61 +59,71 @@ body {
 
 /* Glass Effect */
 .glass {
-    background: var(--panel-bg);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--panel-border);
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    background: rgba(14, 22, 50, 0.6);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    border-radius: 20px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 240, 180, 0.45);
 }
 
 /* ========== HEADER ========== */
 header { text-align: center; margin-bottom: 1rem; }
 .logo {
-    font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 900;
-    color: var(--gold); text-shadow: 0 0 15px var(--gold-glow);
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 2.2rem; font-weight: 900;
+    color: var(--gold); text-shadow: 0 0 20px var(--gold-glow);
 }
 h1 {
-    font-family: 'Cinzel', serif; font-size: 1.6rem; letter-spacing: 3px; color: #fff;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; color: #fff;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
 }
-.subtitle { font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px; }
+.subtitle { font-size: 0.88rem; color: var(--text-muted); letter-spacing: 0.5px; font-weight: 500; }
 
 /* ========== DUAL ENGINE TAB NAV ========== */
 .engine-tab-nav {
     display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem;
-    padding: 0.6rem; margin-bottom: 0.8rem; border-radius: 10px;
-    background: rgba(10, 15, 30, 0.6);
+    padding: 0.6rem; margin-bottom: 0.8rem; border-radius: 50px;
+    background: rgba(10, 16, 38, 0.55);
+    border: 1px solid rgba(255, 215, 0, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 .engine-tab-btn {
-    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.25);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 215, 0, 0.3);
     padding: 0.6rem 1.4rem; color: var(--text-muted);
-    font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700;
-    cursor: pointer; border-radius: 8px; transition: all 0.35s ease;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; border-radius: 50px; transition: all 0.35s ease;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
-.engine-tab-btn:hover { color: #fff; border-color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+.engine-tab-btn:hover { color: #fff; border-color: var(--gold); background: rgba(255, 215, 0, 0.15); }
 .engine-tab-btn.active {
-    color: #fff; background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(0, 242, 254, 0.25));
-    border-color: #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    color: #fff; background: linear-gradient(135deg, rgba(212,175,55,0.7), rgba(0, 242, 254, 0.6));
+    border-color: rgba(255, 255, 255, 0.7); box-shadow: 0 0 20px rgba(0, 242, 254, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 .engine-tab-btn[data-engine="astronomical"].active {
-    color: #00f2fe; background: linear-gradient(135deg, rgba(0, 102, 255, 0.3), rgba(0, 242, 254, 0.3));
-    border-color: #00f2fe; box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+    color: #00f2fe; background: linear-gradient(135deg, rgba(0, 102, 255, 0.6), rgba(0, 242, 254, 0.7));
+    border-color: #00f2fe; box-shadow: 0 0 25px rgba(0, 242, 254, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 /* ========== MODE NAV ========== */
 .mode-nav {
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 0.4rem;
-    padding: 0.5rem; margin-bottom: 1.2rem;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem;
+    padding: 0.6rem; margin-bottom: 1.2rem;
+    border-radius: 50px;
 }
 .nav-btn {
-    background: none; border: 1px solid transparent;
-    padding: 0.5rem 1rem; color: var(--text-muted);
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700;
-    cursor: pointer; border-radius: 6px; transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 215, 0, 0.25);
+    padding: 0.55rem 1.2rem; color: var(--text-muted);
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; border-radius: 50px; transition: all 0.3s;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
-.nav-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.nav-btn:hover { color: #fff; background: rgba(255, 215, 0, 0.15); border-color: var(--gold); transform: translateY(-1px); }
 .nav-btn.active {
-    color: #050711; background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    box-shadow: 0 0 12px var(--gold-glow);
+    color: #ffffff; background: linear-gradient(135deg, rgba(212, 175, 55, 0.8) 0%, rgba(0, 242, 254, 0.65) 100%);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.85);
 }
 
 /* ========== MAIN LAYOUT ========== */
@@ -115,7 +132,7 @@ h1 {
 /* ========== SIDEBAR ========== */
 .sidebar { padding: 1.2rem; }
 .sidebar-title {
-    font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold);
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gold);
     margin-bottom: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;
 }
 .form-group { margin-bottom: 0.8rem; }
@@ -336,20 +353,20 @@ h1 {
 }
 
 .trans-title-kanji {
-    font-family: 'Cinzel', serif;
-    font-size: 3.2rem;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+    font-size: 2.6rem;
     font-weight: 900;
     color: #ffd700;
-    letter-spacing: 12px;
+    letter-spacing: 6px;
     text-shadow: 0 0 20px #ffd700, 0 0 40px #ff9800, 0 4px 10px rgba(0,0,0,0.9);
 }
 
 .trans-title-sub {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #fffef7;
-    letter-spacing: 6px;
+    letter-spacing: 3px;
     margin-top: 6px;
     text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 2px 6px rgba(0,0,0,0.9);
 }
@@ -368,29 +385,30 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 9px 22px !important;
-    border-radius: 9999px !important; /* Perfect oval / capsule pill shape */
-    font-family: 'Cinzel', 'Quicksand', -apple-system, sans-serif;
-    font-weight: 600 !important; /* Reduced thickness for maximum sharp clarity */
-    font-size: 0.88rem;
+    padding: 10px 24px !important;
+    border-radius: 50px !important; /* Perfect frosted glass pill */
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, sans-serif;
+    font-weight: 700 !important;
+    font-size: 0.9rem;
     letter-spacing: 0.5px;
     cursor: pointer;
     text-decoration: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
     
-    /* Dark, Subtle Rich Background - No Glare! */
-    background: linear-gradient(180deg, #241d13 0%, #140f09 100%) !important;
-    color: #f5f0e1 !important; /* Crisp Ivory-Cream text */
-    border: 1px solid #d4af37 !important; /* Elegant gold rim */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important; /* Sharp contrast, no blur! */
+    /* Frosted Glass Obsidian Gold Background */
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 215, 0, 0.35) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
     
     box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.5),
-        inset 0 1px 2px rgba(255, 255, 255, 0.15),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.6) !important;
+        0 6px 20px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 240, 180, 0.6) !important;
 }
 
 /* Subtle Top Glass Reflection Overlay */
@@ -402,12 +420,12 @@ h1 {
 #btn-copy-luan-giai::before {
     content: '';
     position: absolute;
-    top: 1px;
+    top: 0;
     left: 8%;
     right: 8%;
-    height: 40%;
-    border-radius: 9999px 9999px 35% 35%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+    height: 45%;
+    border-radius: 50px 50px 0 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.05) 100%);
     pointer-events: none;
     z-index: 1;
 }
@@ -420,13 +438,12 @@ h1 {
 .nav-btn:hover,
 #btn-copy-luan-giai:hover {
     transform: translateY(-2px);
-    background: linear-gradient(180deg, #32281a 0%, #1a140b 100%) !important;
+    background: rgba(255, 255, 255, 0.18) !important;
     color: #ffffff !important;
-    border-color: #ffe082 !important;
+    border-color: #ffd700 !important;
     box-shadow: 
-        0 6px 16px rgba(212, 175, 55, 0.4),
-        inset 0 1px 3px rgba(255, 255, 255, 0.25),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.6) !important;
+        0 10px 30px rgba(212, 175, 55, 0.45),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .btn-glossy:active,
@@ -437,17 +454,23 @@ h1 {
 #btn-copy-luan-giai:active {
     transform: translateY(1px);
     box-shadow: 
-        0 2px 6px rgba(0, 0, 0, 0.6),
-        inset 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+        0 2px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
 }
 
-/* Button Color Variants (Dark Metallic Tones) */
-
-/* Primary / AI Button: Dark Gold/Amber */
+/* Primary Button: Glorious Imperial Gold Glass */
 .btn-primary, #btn-ai-luan-giai {
-    background: linear-gradient(180deg, #2b2111 0%, #150f07 100%) !important;
-    color: #ffe082 !important;
-    border-color: #d4af37 !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.75) 0%, rgba(0, 242, 254, 0.65) 100%) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+.btn-export {
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.65) 0%, rgba(124, 58, 237, 0.7) 100%) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 8px 30px rgba(0, 242, 254, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Export HD / PNG Download: Dark Emerald */
@@ -484,7 +507,7 @@ h1 {
     margin-top: 1.2rem; background: rgba(5,7,17,0.6); border-radius: 6px;
     padding: 0.8rem; border: 1px solid rgba(255,255,255,0.05);
 }
-.info-card h3 { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--gold); margin-bottom: 0.5rem; text-align: center; }
+.info-card h3 { font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 0.85rem; color: var(--gold); margin-bottom: 0.5rem; text-align: center; }
 .info-details { list-style: none; }
 .info-details li {
     display: flex; justify-content: space-between; font-size: 0.75rem;
@@ -552,7 +575,7 @@ h1 {
     padding: 12px 28px;
     background: linear-gradient(135deg, #16a085, #2ecc71);
     color: #ffffff !important;
-    font-family: 'Cinzel', serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     font-weight: bold;
     font-size: 0.95rem;
     border-radius: 8px;
@@ -739,7 +762,7 @@ h1 {
 
 /* Cell Inner Lines */
 .cell-line-1 {
-    font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.72rem;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-weight: 700; font-size: 0.72rem;
     color: var(--gold); border-bottom: 1px solid rgba(255,255,255,0.08);
     padding-bottom: 2px; display: flex; justify-content: space-between; align-items: center;
     white-space: nowrap; line-height: 1.35; margin-bottom: 2px;
@@ -790,7 +813,7 @@ h1 {
 
 /* ========== TRUNG CUNG STYLES ========== */
 .tc-header { text-align: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.4rem; }
-.tc-header h2 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
+.tc-header h2 { font-family: 'Be Vietnam Pro', 'Inter', sans-serif; color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
 .tc-subtitle { font-size: 0.75rem; color: var(--text-muted); }
 
 .tc-body { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.8rem; margin: 0.6rem 0; flex-grow: 1; }
@@ -809,7 +832,7 @@ h1 {
     text-align: center; border-top: 1px solid var(--panel-border); padding-top: 0.5rem;
     background: rgba(212,175,55,0.05); border-radius: 4px; margin-top: 0.3rem;
 }
-.author-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.95rem; color: var(--gold); letter-spacing: 1px; }
+.author-name { font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--gold); letter-spacing: 1px; }
 .author-zalo { font-size: 0.8rem; color: #fff; font-weight: 600; }
 
 /* ========== LUẬN GIẢI CHUYÊN SÂU STYLES ========== */
@@ -825,7 +848,7 @@ h1 {
     padding: 0.9rem 1.1rem;
 }
 .luan-doan-section-title {
-    font-family: 'Cinzel', serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     color: var(--gold);
     font-size: 1rem;
     font-weight: 700;
@@ -864,7 +887,7 @@ h1 {
     max-width: 700px; width: 92%; max-height: 90vh; overflow-y: auto;
     padding: 1.5rem; text-align: center; border-color: var(--gold);
 }
-.png-modal-title { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 0.8rem; }
+.png-modal-title { font-family: 'Be Vietnam Pro', 'Inter', sans-serif; color: var(--gold); margin-bottom: 0.8rem; }
 .png-instruction-box {
     background: rgba(212,175,55,0.1); border: 1px solid var(--gold);
     border-radius: 6px; padding: 0.6rem; margin-bottom: 0.8rem;
@@ -973,7 +996,7 @@ h1 {
     padding-bottom: 10px;
 }
 .pd-section-header h3 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     color: var(--gold);
     font-size: 1.2rem;
     letter-spacing: 1px;
@@ -1073,7 +1096,7 @@ h1 {
     padding-bottom: 6px;
 }
 .pd-card-header h4 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     font-size: 0.95rem;
 }
 .pd-card-badge {
@@ -1110,7 +1133,7 @@ h1 {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 .hex-title {
-    font-family: 'Cinzel', serif;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
     font-size: 1.15rem;
     font-weight: 700;
     text-align: center;
@@ -1323,7 +1346,19 @@ h1 {
     width: 100%;
     position: relative;
     z-index: 9999;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+/* =========================================================================
+   CỔNG DỊCH HỌC HỢP NHẤT - MENU SWITCHER (FROSTED OBSIDIAN GLASS)
+   ========================================================================= */
+.app-switcher-nav {
+    background: rgba(8, 14, 32, 0.65);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 10px 0;
+    width: 100%;
+    position: relative;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 .app-switcher-nav .nav-container {
     max-width: 1200px;
@@ -1335,14 +1370,17 @@ h1 {
     padding: 0 15px;
 }
 .app-switcher-nav .nav-item {
-    color: #e2d3bb;
+    color: #e2e8f0;
     text-decoration: none;
-    font-size: 14.5px;
+    font-size: 14px;
     font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: 1px solid rgba(179, 143, 84, 0.3);
-    background: rgba(43, 31, 21, 0.5);
+    padding: 8px 18px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 1px rgba(255, 240, 180, 0.35);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -1354,16 +1392,17 @@ h1 {
     font-size: 16px;
 }
 .app-switcher-nav .nav-item:hover {
-    color: #ffd899;
-    border-color: #ffd899;
-    background: rgba(179, 143, 84, 0.15);
-    box-shadow: 0 0 10px rgba(255, 216, 153, 0.2);
+    color: #ffffff;
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.15);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.35);
+    transform: translateY(-1px);
 }
 .app-switcher-nav .nav-item.active {
     color: #ffffff;
-    background: #b38f54; /* Màu vàng đồng active */
-    border-color: #ffd899;
-    box-shadow: 0 0 12px rgba(179, 143, 84, 0.4);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.75), rgba(0, 242, 254, 0.65));
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 768px) {
@@ -1389,31 +1428,36 @@ h1 {
     justify-content: center;
     gap: 8px;
     flex-wrap: wrap;
-    padding: 10px 16px;
+    padding: 10px 18px;
     margin-bottom: 15px;
-    border-radius: 12px;
-    background: rgba(18, 24, 48, 0.75);
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+    border-radius: 50px;
+    background: rgba(14, 22, 50, 0.6);
+    border: 1px solid rgba(255, 215, 0, 0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 240, 180, 0.3);
 }
 
 .time-travel-label {
     color: var(--gold);
     font-weight: 700;
     font-size: 0.9rem;
-    font-family: 'Cinzel', serif;
-    letter-spacing: 1px;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .btn-time-step {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     color: #e0e6ed;
-    padding: 7px 14px;
-    border-radius: 20px;
+    padding: 7px 16px;
+    border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
     transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
@@ -1422,11 +1466,11 @@ h1 {
 }
 
 .btn-time-step:hover {
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(255, 215, 0, 0.2);
     border-color: #ffd700;
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .btn-time-step:active {
@@ -1434,28 +1478,88 @@ h1 {
 }
 
 .btn-time-step.btn-time-now {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(0, 242, 254, 0.25));
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.55), rgba(0, 242, 254, 0.45));
     border-color: #00f2fe;
-    color: #00f2fe;
+    color: #ffffff;
     font-weight: 700;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.7);
 }
 
 .btn-time-step.btn-time-now:hover {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(0, 242, 254, 0.45));
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.75), rgba(0, 242, 254, 0.65));
     color: #fff;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
 }
 
 @media (max-width: 768px) {
     .time-travel-toolbar {
         padding: 8px 10px;
         gap: 6px;
+        border-radius: 20px;
     }
     .btn-time-step {
         padding: 5px 10px;
         font-size: 0.78rem;
     }
 }
+
+/* =========================================================================
+   NÚT BẬT TẮT LỚP CHIẾN THUẬT (TACTICAL LAYER TOGGLES)
+   ========================================================================= */
+.tactical-layers-toolbar {
+    border-radius: 50px !important;
+}
+
+.btn-layer-toggle {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: #a0aec0;
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+}
+
+.btn-layer-toggle:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-layer-toggle.active {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.55), rgba(0, 242, 254, 0.45));
+    border-color: #00f2fe;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .tactical-layers-toolbar {
+        border-radius: 20px !important;
+    }
+    .btn-layer-toggle {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .btn-layer-toggle {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+}
+
 
 
 

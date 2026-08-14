@@ -580,7 +580,7 @@ function generateVanQuaiAnalysisReport(du) {
         
         <!-- TÔN CHỈ VẬN QUÁI CỐT LÕI -->
         <div style="background: rgba(212, 175, 55, 0.08); border-left: 4px solid var(--gold); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
-            <h4 style="color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.05rem; margin-bottom: 4px;">
+            <h4 style="color: var(--gold); font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1.05rem; margin-bottom: 4px;">
                 ☯ TÔN CHỈ LUẬN GIẢI CỐT LÕI VẬN QUÁI THÁI ẤT (MỤC 59)
             </h4>
             <p style="font-size: 0.95rem; color: #ffffff; font-weight: 700; margin-bottom: 4px;">

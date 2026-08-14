@@ -155,7 +155,7 @@ function draw5x5ThaiAtSaBan(data, callback) {
 
     // Header Title
     ctx.fillStyle = pal.headerTitle;
-    ctx.font = "bold 26px 'Cinzel', serif, Georgia";
+    ctx.font = "bold 25px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("☯ THÁI ẤT THẦN SỐ — SA BÀN 16 CUNG ☯", 600, 52);
 
@@ -178,6 +178,10 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const gapX = 7;
     const gapY = 6;
 
+    // Track positions for Tactical Chủ - Khách connection beam
+    let chuPos = null;
+    let khachPos = null;
+
     // Draw 16 Outer Cells
     Object.keys(THAN_GRID_DEF).forEach(id => {
         const def = THAN_GRID_DEF[id];
@@ -191,9 +195,28 @@ function draw5x5ThaiAtSaBan(data, callback) {
         ctx.lineWidth = 1;
         ctx.strokeRect(cx, cy, cellW, cellH);
 
-        // Cell Header Line 1
+        // Stars List inside Cell
+        const stars = (data && data.placement && data.placement[id]) ? data.placement[id] : [];
+
+        // Check Bát Môn and Primary Elements for Cung
+        let batMonType = null;
+
+        stars.forEach(st => {
+            const isBatMon = (st.class && st.class.includes("bat-mon")) || st.name.startsWith("Cửa ") || Boolean(st.gateName);
+            if (isBatMon) {
+                if (st.name.includes("Khai") || st.name.includes("Hưu") || st.name.includes("Sinh")) {
+                    batMonType = 'cat';
+                } else if (st.name.includes("Tử") || st.name.includes("Kinh") || st.name.includes("Thương")) {
+                    batMonType = 'hung';
+                } else if (st.name.includes("Đỗ") || st.name.includes("Cảnh")) {
+                    batMonType = 'trung';
+                }
+            }
+        });
+
+        // Cell Header Line 1: Palace Title & Khí
         ctx.fillStyle = pal.palaceTitle;
-        ctx.font = "bold 13px 'Cinzel', serif, Georgia";
+        ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
         ctx.textAlign = "left";
         ctx.fillText(def.name, cx + 8, cy + 20);
 
@@ -215,8 +238,22 @@ function draw5x5ThaiAtSaBan(data, callback) {
         ctx.textAlign = "left";
         ctx.fillText(`${def.alias} • ${def.phanDa}`, cx + 8, cy + 41);
 
-        // Stars List inside Cell
-        const stars = (data && data.placement && data.placement[id]) ? data.placement[id] : [];
+        // Draw Bát Môn Nature Badge in Line 2 (right aligned)
+        if (batMonType) {
+            ctx.font = "bold 10px 'Be Vietnam Pro', 'Inter', sans-serif";
+            ctx.textAlign = "right";
+            if (batMonType === 'cat') {
+                ctx.fillStyle = "#27ae60";
+                ctx.fillText("🟢 CÁT MÔN", cx + cellW - 8, cy + 41);
+            } else if (batMonType === 'hung') {
+                ctx.fillStyle = "#c0392b";
+                ctx.fillText("🔴 HUNG MÔN", cx + cellW - 8, cy + 41);
+            } else if (batMonType === 'trung') {
+                ctx.fillStyle = "#d35400";
+                ctx.fillText("🟡 TRUNG MÔN", cx + cellW - 8, cy + 41);
+            }
+        }
+
         let sy = cy + 58;
 
         if (stars.length === 0) {
@@ -225,10 +262,30 @@ function draw5x5ThaiAtSaBan(data, callback) {
             ctx.fillText("(Không có sao)", cx + 8, sy);
         } else {
             ctx.font = "bold 11px 'Inter', sans-serif";
-            stars.forEach((st, idx) => {
+            
+            // Priority sort stars: Key strategic stars (Thái Ất, Bát Môn, Tướng) first
+            const sortedStars = [...stars].sort((a, b) => {
+                const getPrio = (s) => {
+                    if (s.class === "thai-at" || s.name.includes("Thái Ất")) return 1;
+                    if (s.class === "van-xuong" || s.name.includes("Văn Xương")) return 2;
+                    if (s.class === "thuy-kich" || s.name.includes("Thủy Kích")) return 3;
+                    if (s.class === "chu-tuong" || s.name.includes("Chủ Tướng")) return 4;
+                    if (s.class === "khach-tuong" || s.name.includes("Khách Tướng")) return 5;
+                    if (s.class?.includes("bat-mon") || s.name.startsWith("Cửa ")) return 6; // Bát môn always visible!
+                    if (s.class === "ngu-phuc" || s.name.includes("Ngũ Phúc")) return 7;
+                    if (s.class === "dai-du" || s.class === "tieu-du") return 8;
+                    return 99;
+                };
+                return getPrio(a) - getPrio(b);
+            });
+
+            sortedStars.forEach((st, idx) => {
                 if (sy <= cy + cellH - 12) {
                     ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
-                    ctx.fillText(`• ${st.name}`, cx + 8, sy);
+                    let starDisplayName = st.name;
+                    if (isChuKhachActive && (st.name.includes("Chủ Tướng") || st.class === "chu-tuong")) starDisplayName = `🛡️ ${st.name}`;
+                    if (isChuKhachActive && (st.name.includes("Khách Tướng") || st.class === "khach-tuong")) starDisplayName = `⚔️ ${st.name}`;
+                    ctx.fillText(`• ${starDisplayName}`, cx + 8, sy);
                     sy += 16;
                 }
             });
@@ -252,12 +309,12 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.strokeRect(tcX + 4, tcY + 4, tcW - 8, tcH - 8);
 
     ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 20px 'Cinzel', serif, Georgia";
+    ctx.font = "bold 19px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("TRUNG CUNG THÁI ẤT", tcX + tcW / 2, tcY + 32);
 
     ctx.fillStyle = "#553311";
-    ctx.font = "12px 'Cinzel', serif";
+    ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.fillText("Thái Cực — Hoàng Cực — Bàn Luận", tcX + tcW / 2, tcY + 52);
 
     ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
@@ -454,12 +511,12 @@ function draw5x5ThaiAtSaBan(data, callback) {
             line = testLine;
         }
     }
-    if (vy <= vBoxY + vBoxH - 8) {
+    if (line && vy <= vBoxY + vBoxH - 8) {
         ctx.fillText(line, tcX + 35, vy);
     }
 
     ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 12px 'Cinzel', serif";
+    ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);
 
@@ -559,7 +616,7 @@ function showZaloImageModalThaiAt(imgData) {
     modal.innerHTML = `
         <div style="width: 100%; max-width: 550px; text-align: center; position: relative; background: #050711; border: 2px solid #ffd700; border-radius: 12px; padding: 20px 15px; box-sizing: border-box;">
             <button id="close-zalo-modal-thaiat" style="position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">✕ ĐÓNG</button>
-            <h4 style="color: #ffd700; margin: 0 0 12px 0; font-family: Cinzel, serif; font-size: 1.05rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 8px;">📍 CẢNH BÁO TRÌNH DUYỆT</h4>
+            <h4 style="color: #ffd700; margin: 0 0 12px 0; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1.05rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 8px;">📍 CẢNH BÁO TRÌNH DUYỆT</h4>
             
             <div style="background: rgba(231, 76, 60, 0.15); border: 1.5px solid #e74c3c; border-radius: 8px; padding: 12px; margin-bottom: 12px; color: #ff6b6b; font-weight: bold; font-size: 0.95rem; line-height: 1.5;">
                 ⚠️ Trình duyệt này chặn tải ảnh, hãy zoom quẻ vừa màn hình rồi chụp lại.

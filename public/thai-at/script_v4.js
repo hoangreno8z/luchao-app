@@ -308,289 +308,95 @@ function render(year, month, day, hour) {
 
         window.lastCalculatedThaiAtData = data;
 
-    // Update header line
-    document.getElementById("chart-datetime-header").innerHTML =
-        `Năm Tháng Ngày Giờ (Dương Lịch): <span style="font-weight:normal">${data?.tuTru?.solarDate || 'Không xác định'}</span>`;
+        // Update sidebar info
+        const infoMode = document.getElementById("info-mode-name");
+        if (infoMode) infoMode.textContent = data.modeName || '-';
+        const infoSolar = document.getElementById("info-solar-term");
+        if (infoSolar) infoSolar.textContent = data.solarTerm || '-';
+        const infoCuc = document.getElementById("info-cuc-name");
+        if (infoCuc) infoCuc.textContent = data.donCucName || '-';
+        const infoKhoi = document.getElementById("info-khoi-name");
+        if (infoKhoi) infoKhoi.textContent = (data.khoiSo !== undefined ? "Khối " + data.khoiSo + " (" + data.tinhChatKhoi + ")" : "-");
+        const infoMon = document.getElementById("info-mon-name");
+        if (infoMon) infoMon.textContent = data.batMon || '-';
+        const infoTinh = document.getElementById("info-tinh-name");
+        if (infoTinh) infoTinh.textContent = data.cuuTinh || '-';
 
-    // Update sidebar info
-    document.getElementById("info-mode-name").textContent = data.modeName;
-    document.getElementById("info-solar-term").textContent = data.solarTerm;
-    document.getElementById("info-cuc-name").textContent = data.donCucName;
-    document.getElementById("info-khoi-name").textContent = (data.khoiSo !== undefined ? "Khối " + data.khoiSo + " (" + data.tinhChatKhoi + ")" : "-");
-    document.getElementById("info-mon-name").textContent = data.batMon;
-    document.getElementById("info-tinh-name").textContent = data.cuuTinh;
-
-    // Update Trung Cung
-    document.getElementById("tc-tu-tru").textContent = data.tuTru.fullString;
-    document.getElementById("tc-don-cuc").textContent = data.donCucName;
-    document.getElementById("tc-tiet-khi").textContent = data.solarTerm;
-    
-    // Kế Đại, Kế Tiểu, Kế Định
-    const tcKeDai = document.getElementById("tc-ke-dai");
-    if (tcKeDai) tcKeDai.textContent = data.keDai !== undefined ? data.keDai.toLocaleString('vi-VN') : '-';
-    const tcKeTieu = document.getElementById("tc-ke-tieu");
-    if (tcKeTieu) tcKeTieu.textContent = data.keTieu !== undefined ? data.keTieu : '-';
-    const tcKeDinh = document.getElementById("tc-ke-dinh");
-    if (tcKeDinh) tcKeDinh.textContent = data.keDinh !== undefined ? data.keDinh : '-';
-
-    document.getElementById("tc-bat-mon").textContent = data.batMon;
-    document.getElementById("tc-cuu-tinh").textContent = data.cuuTinh;
-    
-    // Helper function to format toán badges (Tam Tài, Hòa/Bất Hòa, Cát Hung)
-    function formatToanBadges(toanVal, toanGoc, prop) {
-        if (!prop) return toanGoc !== undefined ? `${toanVal} (Nguyên số: ${toanGoc})` : toanVal;
-        let badgesHtml = [];
-        if (prop.isVoThien) badgesHtml.push(`<span style="background:#e67e22; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Thiên</span>`);
-        if (prop.isVoDia) badgesHtml.push(`<span style="background:#d35400; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Địa</span>`);
-        if (prop.isVoNhan) badgesHtml.push(`<span style="background:#8e44ad; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px; font-weight:bold;">Vô Nhân</span>`);
-        
-        if (prop.isHoa) badgesHtml.push(`<span style="background:#27ae60; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.hoaType}</span>`);
-        else badgesHtml.push(`<span style="background:#c0392b; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.hoaType}</span>`);
-        
-        if (prop.catHungLevel && prop.catHungLevel !== "Hòa (Cát)" && prop.catHungLevel !== "Bất Hòa (Hung)") {
-            badgesHtml.push(`<span style="background:#2c3e50; border:1px solid #f1c40f; color:#f1c40f; padding:1px 5px; border-radius:4px; font-size:0.72rem; margin-left:4px;">${prop.catHungLevel}</span>`);
-        }
-        
-        return `${toanVal} (Nguyên số: ${toanGoc}) ${badgesHtml.join(" ")}`;
-    }
-
-    // Toán Chủ, Toán Khách, Toán Định (Số đã bỏ chục + Nguyên số chưa bỏ chục + Badges)
-    const tcToanChuEl = document.getElementById("tc-toan-chu");
-    if (tcToanChuEl) tcToanChuEl.innerHTML = formatToanBadges(data.toanChu, data.toanChuGoc, data.toanProperties?.chu);
-    
-    const tcToanKhachEl = document.getElementById("tc-toan-khach");
-    if (tcToanKhachEl) tcToanKhachEl.innerHTML = formatToanBadges(data.toanKhach, data.toanKhachGoc, data.toanProperties?.khach);
-    
-    const tcToanDinhEl = document.getElementById("tc-toan-dinh");
-    if (tcToanDinhEl) tcToanDinhEl.innerHTML = formatToanBadges(data.toanDinh, data.toanDinhGoc, data.toanProperties?.dinh);
-    
-    // Render Trung Cung stars & Tướng Bất Xuất / Tam Tài / Sao Chổi Banner
-    const tcStars = data?.placement?.["trung_cung"] || [];
-    const tcStarsListEl = document.getElementById("tc-stars-list");
-    if (tcStarsListEl) {
-        tcStarsListEl.innerHTML = tcStars.length > 0 
-            ? tcStars.map(s => `<span class="star-tag ${s.class}">${s.name}</span>`).join(" ") 
-            : `<span style="color:#aaa; font-style:italic;">Không có thần tinh trú ngụ</span>`;
-    }
-    
-    // Tướng Bất Xuất & Tam Tài (Vô Thiên/Vô Địa/Vô Nhân) & Sao Chổi alerts
-    const bannerEl = document.getElementById("tc-special-banner");
-    if (bannerEl) {
-        let bannerMsgs = [];
-        const toanChuVal = parseInt(data.toanChuGoc ?? data.toanChu, 10);
-        const toanKhachVal = parseInt(data.toanKhachGoc ?? data.toanKhach, 10);
-
-        if (!isNaN(toanChuVal) && toanChuVal % 10 === 5) {
-            bannerMsgs.push(`
-                <div style="background: rgba(255, 71, 87, 0.18); border: 1px solid #ff4757; color: #ff6b6b; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
-                    <strong>🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
-                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
-                        Toán Chủ = ${data.toanChuGoc || toanChuVal} (đuôi 5): Đại Tướng Chủ & Tham Tướng Chủ (5×3=15) đồng thời bị hút vào Trung Cung (Cửa Đóng). Tướng soái phe Chủ bị giam lỏng ở trung tâm, tiến thoái lưỡng nan!
-                    </div>
-                </div>
-            `);
-        }
-
-        if (!isNaN(toanKhachVal) && toanKhachVal % 10 === 5) {
-            bannerMsgs.push(`
-                <div style="background: rgba(52, 152, 219, 0.18); border: 1px solid #3498db; color: #54a0ff; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
-                    <strong>🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT)</strong>
-                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
-                        Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách (5×3=15) đồng thời bị hút vào Trung Cung (Cửa Đóng). Tướng soái phe Khách bị kẹt cứng ở trung tâm, hoàn toàn bất lợi ra quân!
-                    </div>
-                </div>
-            `);
-        }
-
-        // Tam Tài Toán Pháp & Điềm Báo Sao Chổi Warnings
-        const chuP = data.toanProperties?.chu;
-        const khachP = data.toanProperties?.khach;
-        const dinhP = data.toanProperties?.dinh;
-
-        const hasVoThien = (chuP?.isVoThien || khachP?.isVoThien || dinhP?.isVoThien);
-        const hasVoDia = (chuP?.isVoDia || khachP?.isVoDia || dinhP?.isVoDia);
-        const hasVoNhan = (chuP?.isVoNhan || khachP?.isVoNhan || dinhP?.isVoNhan);
-
-        if (hasVoThien || hasVoDia || hasVoNhan) {
-            let descList = [];
-            if (hasVoThien) descList.push("<strong>• Vô Thiên (Toán < 10):</strong> Nhật nguyệt tinh tú u mờ, giông bão mưa đá, khí hậu đại biến.");
-            if (hasVoDia) descList.push("<strong>• Vô Địa (Đơn vị < 5):</strong> Động đất, núi lở, lũ lụt, sóng thần, hạn hán cháy rừng.");
-            if (hasVoNhan) descList.push("<strong>• Vô Nhân (Đơn vị = 0):</strong> Xã hội loạn lạc, đạo đức suy đồi, gian dối nổi loạn. (Đúng kỳ lý nhân thì Thánh Nhân xuất hiện).");
-            
-            if (hasVoThien && hasVoDia && hasVoNhan) {
-                descList.push("<strong>⚠️ ĐẶC BIỆT TAM TÀI ĐỒNG THỜI VÔ THIÊN - VÔ ĐỊA - VÔ NHÂN:</strong> Thiên Địa Nhân tối hung ương, đại họa tai ách lớn! Bầu trời xuất hiện <strong>Sao Chổi</strong> (Tuế Tinh, Nhiếp Đề, Tùng Hoa, Ứng Tinh, Kỷ Tinh, Thiên Ngộ, Xuy Vưu, Nguyệt Hoa, Tư Nguy, Chiêu Dao, Trương Cung, Năm Tán, Thiên Tắc, Phi Phù, Thiên Cẩu...).");
-            }
-            
-            bannerMsgs.push(`
-                <div style="background: rgba(230, 126, 34, 0.18); border: 1px solid #e67e22; color: #f39c12; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-top: 6px;">
-                    <strong>☄️ TAM TÀI TOÁN PHÁP (VÔ THIÊN / VÔ ĐỊA / VÔ NHÂN)</strong>
-                    <div style="margin-top: 4px; color: #f5f0e1; font-size: 0.78rem; line-height: 1.4;">
-                        ${descList.join("<br/>")}
-                    </div>
-                </div>
-            `);
-        }
-
-        if (bannerMsgs.length > 0) {
-            bannerEl.innerHTML = bannerMsgs.join("");
-            bannerEl.style.display = "block";
-        } else {
-            bannerEl.style.display = "none";
-            bannerEl.innerHTML = "";
-        }
-    }
-        
-    document.getElementById("tc-bat-hung").textContent = data.batHung;
-    document.getElementById("tc-verdict").textContent = data.verdict;
-
-const TRANG_THAI_KHI = {
-    "kien": "Âm Tuyệt",
-    "hoi": "Âm Thuần",
-    "ty": "Dương Tạp",
-    "suu": "Dương Tạp",
-    "can": "Dương Thuần",
-    "dan": "Dương Thuần",
-    "mao": "Dương Tạp",
-    "thin": "Dương Thuần",
-    "ton": "Dương Tuyệt",
-    "ty_chi": "Dương Tạp",
-    "ngo": "Dương Thuần",
-    "mui": "Âm Thuần",
-    "khon": "Âm Tạp",
-    "than": "Âm Tạp",
-    "dau": "Âm Thuần",
-    "tuat": "Âm Tạp"
-};
-
-const PHAN_DA_CUU_CUNG = {
-    "kien": "Ký Châu",
-    "hoi": "Ký Châu",
-    "ngo": "Kinh Châu",
-    "mui": "Kinh Châu",
-    "suu": "Thanh Châu",
-    "can": "Thanh Châu",
-    "dan": "Thanh Châu",
-    "mao": "Từ Châu",
-    "thin": "Từ Châu",
-    "trung_cung": "Dự Châu",
-    "dau": "Ung Châu",
-    "tuat": "Ung Châu",
-    "khon": "Lương Châu",
-    "than": "Lương Châu",
-    "ty": "Duyên Châu",
-    "ton": "Dương Châu",
-    "ty_chi": "Dương Châu"
-};
-
-    // Render 16 outer cells
-    THAP_LUC_THAN.forEach(than => {
-        const cell = document.getElementById(`cell-${than.id}`);
-        if (!cell) return;
-
-        const stars = data.placement[than.id] || [];
-
-        // Categorize stars into lines
-        let mainHtml = "";
-        let generalHtml = "";
-        let baseHtml = "";
-        let auxHtml = "";
-
-        stars.forEach(s => {
-            const tag = `<span class="star-tag ${s.class}">${s.name}</span>`;
-            if (["thai-at", "van-xuong", "thuy-kich"].includes(s.class)) mainHtml += tag;
-            else if (["chu-tuong", "khach-tuong"].includes(s.class)) generalHtml += tag;
-            else if (["quan-co", "than-co", "dan-co", "ngu-phuc", "dai-du", "tieu-du"].includes(s.class)) baseHtml += tag;
-            else auxHtml += tag;
-        });
-
-        const khi = TRANG_THAI_KHI[than.id] || "";
-        const phanDa = PHAN_DA_CUU_CUNG[than.id] || "";
-
-        cell.innerHTML = `
-            <div class="cell-line-1">
-                <span class="palace-title">${than.name.toUpperCase()}</span>
-                <span class="palace-khi">${khi}</span>
-            </div>
-            <div class="cell-line-2">${than.alias} • ${phanDa}</div>
-            <div class="cell-line-3">${mainHtml || ''}</div>
-            <div class="cell-line-4">${generalHtml || ''}</div>
-            <div class="cell-line-5">${baseHtml || ''}</div>
-            <div class="cell-line-6 aux-stars">${auxHtml || ''}</div>
-        `;
-    });
-
-    // Populate Deep Analysis Report
-    const deepAnalysisEl = document.getElementById("luan-doan-deep-analysis-content");
-    if (deepAnalysisEl) {
-        if (typeof generateDetailedAnalysisReport === "function") {
-            deepAnalysisEl.innerHTML = generateDetailedAnalysisReport(data);
-        } else {
-            deepAnalysisEl.innerHTML = "<p><em>Đang tải báo cáo luận giải chuyên sâu...</em></p>";
-        }
-    }
-
-    // Populate Future Predictions
-    const predContent = document.getElementById("future-predictions-content");
-    if (predContent) {
-        if (Array.isArray(data.movingStars) && data.movingStars.length > 0) {
-            const nextTimeStr = currentMode === "tue" ? "1 năm" : currentMode === "nguyet" ? "1 tháng" : currentMode === "nhat" ? "1 ngày" : currentMode === "thoi" ? "1 canh giờ" : "";
-            if (nextTimeStr) {
-                let predHtml = `<p>Trong <strong>${nextTimeStr} tiếp theo</strong>, các sao sau đây sẽ thay đổi quỹ đạo:</p><ul style="margin-top: 5px; margin-left: 20px;">`;
-                data.movingStars.forEach(m => {
-                    predHtml += `<li><strong>${m.name}</strong> sẽ di chuyển sang <strong>${m.nextCungName}</strong> (hiện tại đang ở ${m.currCungName}).</li>`;
-                });
-                predHtml += `</ul>`;
-                predContent.innerHTML = predHtml;
+        // Populate Deep Analysis Report
+        const deepAnalysisEl = document.getElementById("luan-doan-deep-analysis-content");
+        if (deepAnalysisEl) {
+            if (typeof generateDetailedAnalysisReport === "function") {
+                deepAnalysisEl.innerHTML = generateDetailedAnalysisReport(data);
             } else {
-                predContent.innerHTML = "<p><em>Không dự báo quỹ đạo sao cho chế độ này.</em></p>";
+                deepAnalysisEl.innerHTML = "<p><em>Đang tải báo cáo luận giải chuyên sâu...</em></p>";
             }
-        } else {
-            predContent.innerHTML = "<p><em>Không có sao nào di chuyển trong chu kỳ tiếp theo, hoặc không có dữ liệu dự báo.</em></p>";
         }
-    }
 
-    // Ẩn/Hiện khung sa bàn 16 cung, các nút luận giải và bản đồ cửu châu cho tab Quẻ Dịch & Bàn Nhân Mệnh
-    const isNoSaBanMode = (currentMode === "dich" || currentMode === "menh");
-
-    const matrixGrid = document.querySelector(".matrix-grid");
-    if (matrixGrid) {
-        matrixGrid.style.display = isNoSaBanMode ? "none" : "grid";
-    }
-
-    const analysisSec = document.getElementById("analysis-accordion-section");
-    if (analysisSec) {
-        analysisSec.style.display = isNoSaBanMode ? "none" : "block";
-    }
-
-    const phanDaSec = document.getElementById("phan-da-map-section");
-    if (phanDaSec) {
-        phanDaSec.style.display = isNoSaBanMode ? "none" : "block";
-    }
-
-    // Cập nhật tiêu đề khối Quẻ
-    const resHeader = document.querySelector(".result-section h3");
-    if (resHeader) {
-        if (currentMode === "dich") {
-            resHeader.textContent = "☯ QUẺ THÁI TUẾ LƯU NIÊN TRỰC QUÁI (TAB QUẺ DỊCH)";
-        } else if (currentMode === "menh") {
-            resHeader.textContent = "☯ QUẺ NHÂN MỆNH THÁI ẤT (VÀO ĐỜI & DỰNG NGHIỆP)";
-        } else {
-            resHeader.textContent = "☯ VẬN QUÁI THÁI ẤT (ĐẠI DU & TIỂU DU VẬN QUÁI)";
+        // Populate Future Predictions
+        const predContent = document.getElementById("future-predictions-content");
+        if (predContent) {
+            if (Array.isArray(data.movingStars) && data.movingStars.length > 0) {
+                const nextTimeStr = currentMode === "tue" ? "1 năm" : currentMode === "nguyet" ? "1 tháng" : currentMode === "nhat" ? "1 ngày" : currentMode === "thoi" ? "1 canh giờ" : "";
+                if (nextTimeStr) {
+                    let predHtml = `<p>Trong <strong>${nextTimeStr} tiếp theo</strong>, các sao sau đây sẽ thay đổi quỹ đạo:</p><ul style="margin-top: 5px; margin-left: 20px;">`;
+                    data.movingStars.forEach(m => {
+                        predHtml += `<li><strong>${m.name}</strong> sẽ di chuyển sang <strong>${m.nextCungName}</strong> (hiện tại đang ở ${m.currCungName}).</li>`;
+                    });
+                    predHtml += `</ul>`;
+                    predContent.innerHTML = predHtml;
+                } else {
+                    predContent.innerHTML = "<p><em>Không dự báo quỹ đạo sao cho chế độ này.</em></p>";
+                }
+            } else {
+                predContent.innerHTML = "<p><em>Không có sao nào di chuyển trong chu kỳ tiếp theo, hoặc không có dữ liệu dự báo.</em></p>";
+            }
         }
-    }
 
-    // Render Vận Quái Thái Ất / Quẻ Dịch / Bàn Nhân Mệnh
-    renderVanQuaiSection(data);
+        // Ẩn/Hiện các khối phân tích và bản đồ cửu châu cho tab Quẻ Dịch & Bàn Nhân Mệnh
+        const isNoSaBanMode = (currentMode === "dich" || currentMode === "menh");
 
-    // Tự động tạo ảnh PNG HD và cập nhật thẻ <img> trực tiếp cho mobile & PC
-    if (typeof generateThaiAtPNG === "function") {
-        generateThaiAtPNG(data);
-    }
+        const analysisSec = document.getElementById("analysis-accordion-section");
+        if (analysisSec) {
+            analysisSec.style.display = isNoSaBanMode ? "none" : "block";
+        }
+
+        const phanDaSec = document.getElementById("phan-da-map-section");
+        if (phanDaSec) {
+            phanDaSec.style.display = isNoSaBanMode ? "none" : "block";
+        }
+
+        const imgSec = document.querySelector(".chart-image-section");
+        if (imgSec) {
+            imgSec.style.display = isNoSaBanMode ? "none" : "flex";
+        }
+
+        // Cập nhật tiêu đề khối Quẻ
+        const resHeader = document.querySelector(".result-section h3");
+        if (resHeader) {
+            if (currentMode === "dich") {
+                resHeader.textContent = "☯ QUẺ THÁI TUẾ LƯU NIÊN TRỰC QUÁI (TAB QUẺ DỊCH)";
+            } else if (currentMode === "menh") {
+                resHeader.textContent = "☯ QUẺ NHÂN MỆNH THÁI ẤT (VÀO ĐỜI & DỰNG NGHIỆP)";
+            } else {
+                resHeader.textContent = "☯ VẬN QUÁI THÁI ẤT (ĐẠI DU & TIỂU DU VẬN QUÁI)";
+            }
+        }
+
+        // Render Vận Quái Thái Ất / Quẻ Dịch / Bàn Nhân Mệnh
+        renderVanQuaiSection(data);
+
+        // Tự động tạo ảnh PNG HD và cập nhật thẻ <img> trực tiếp cho mobile & PC
+        if (typeof generateThaiAtPNG === "function") {
+            generateThaiAtPNG(data);
+        }
     } catch (err) {
         console.error("Lỗi khi render sa bàn Thái Ất:", err);
-        alert("Có lỗi xảy ra khi tính toán dữ liệu sa bàn Thái Ất!");
+        alert("Có lỗi xảy ra khi tính toán dữ liệu sa bàn Thái Ất: " + (err?.message || err));
     }
 }
+
+
+
 
 function renderHexagramGraphic(title, subtitle, hexName, lines6, haoDong, accentColor) {
     const HANG_NAMES = ["Hào Sơ (1)", "Hào Nhị (2)", "Hào Tam (3)", "Hào Tứ (4)", "Hào Ngũ (5)", "Hào Thượng (6)"];
@@ -704,7 +510,7 @@ function renderVanQuaiSection(data) {
                 ${namHtml}
             </div>
             <div style="margin-top: 20px; padding: 15px; background: rgba(15, 20, 42, 0.9); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 0.85rem; color: #e0e6ed; line-height: 1.8;">
-                <h4 style="color: var(--gold); margin-bottom: 8px; font-family: 'Cinzel', serif;">📜 THÔNG TIN NẠP GIÁP & THAI NGUYÊN BÀN NHÂN MỆNH</h4>
+                <h4 style="color: var(--gold); margin-bottom: 8px; font-family: 'Be Vietnam Pro', 'Inter', sans-serif;">📜 THÔNG TIN NẠP GIÁP & THAI NGUYÊN BÀN NHÂN MỆNH</h4>
                 <ul style="list-style: none; padding-left: 0;">
                     <li><strong>🔹 Tổng số Nạp Âm Nạp Giáp Tứ Trụ:</strong> ${nm.sumTuTru} (+ 55 Đại Diễn = ${nm.sumTuTru + 55}) ➔ Quẻ Vào Đời thứ <strong>${nm.queVaoDoiNum} (${nm.hexVaoDoiName})</strong></li>
                     <li><strong>🔹 Ngày Chịu Khí (Thai Nguyên):</strong> Ngày + Giờ = ${nm.sumNgayGio} ➔ Số Hạn = <strong>${nm.soHan}</strong>. Lùi ${nm.soHan} bước từ Ngày sinh ➔ <strong>Ngày Chịu Khí: ${nm.thaiNguyenCanChi}</strong> (${nm.thaiNguyenChiName} - ${nm.isDuongThai ? 'Dương' : 'Âm'})</li>
