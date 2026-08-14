@@ -891,10 +891,15 @@ class ThaiAtBaseEngine {
             }
         });
         
+        const chuTuongStar = tuongStars.find(s => s.class === "chu-tuong" && s.name.startsWith("Đại Tướng"));
+        const khachTuongStar = tuongStars.find(s => s.class === "khach-tuong" && s.name.startsWith("Đại Tướng"));
+        const ctIdx = chuTuongStar ? chuTuongStar.thanIdx : -1;
+        const ktIdx = khachTuongStar ? khachTuongStar.thanIdx : -1;
+        
         return {
             placement, 
             flat: all, 
-            core: { taIdx: thaiAt.thanIdx, vxIdx: vanXuong.thanIdx, tkIdx: thuyKich.thanIdx, ctIdx: tuongStars[0].thanIdx, ktIdx: tuongStars[1].thanIdx }
+            core: { taIdx: thaiAt.thanIdx, vxIdx: vanXuong.thanIdx, tkIdx: thuyKich.thanIdx, ctIdx, ktIdx }
         };
     }
 }
@@ -1206,27 +1211,12 @@ function calculateThaiAtChart(mode, year, month, day, hour, engineType = "classi
     }
     
     // Export Toán numbers & Kế values for UI
-    let toanChuVal = 1;
-    let toanChuRawVal = 1;
-    let toanKhachVal = 1;
-    let toanKhachRawVal = 1;
-    for (const key in currRes.placement) {
-        if (!currRes.placement[key]) continue;
-        const sC = currRes.placement[key].find(s => s.name.includes('Đại Tướng Chủ'));
-        if (sC) {
-            const m = sC.name.match(/Toán (\d+)/);
-            if (m) toanChuVal = parseInt(m[1]);
-            if (sC.rawToan !== undefined) toanChuRawVal = sC.rawToan;
-            else toanChuRawVal = toanChuVal;
-        }
-        const sK = currRes.placement[key].find(s => s.name.includes('Đại Tướng Khách'));
-        if (sK) {
-            const m = sK.name.match(/Toán (\d+)/);
-            if (m) toanKhachVal = parseInt(m[1]);
-            if (sK.rawToan !== undefined) toanKhachRawVal = sK.rawToan;
-            else toanKhachRawVal = toanKhachVal;
-        }
-    }
+    const chuToanObj = ThaiAtBaseEngine.getToanUnified(currRes.core.vxIdx, currRes.core.taIdx);
+    const khachToanObj = ThaiAtBaseEngine.getToanUnified(currRes.core.tkIdx, currRes.core.taIdx);
+    const toanChuRawVal = chuToanObj.raw;
+    const toanChuVal = chuToanObj.val;
+    const toanKhachRawVal = khachToanObj.raw;
+    const toanKhachVal = khachToanObj.val;
     
     // Gọi module Luận Đoán cho tất cả các chế độ
     let luanDoanData = null;
