@@ -420,7 +420,7 @@ class ThaiAtBaseEngine {
     // ------ NHÓM TỨ THẦN KỲ (MOD 36/12) ------
     calcTuThanKy() {
         const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
-        const kVal = cucNum;
+        const kVal = (this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360) || cucNum);
         const step = Math.floor((cucNum - 1) / 3) % 12;
         
         // Mảng 12 cung Tứ Thần Kỳ: 1:Càn(3), 2:Ly(13), 3:Cấn(7), 4:Chấn(9), 5:Trung(-1), 6:Đoài(1), 7:Khôn(15), 8:Khảm(5), 9:Tốn(11), 10:Tị(12), 11:Thân(0), 12:Dần(8)
@@ -682,115 +682,9 @@ class ThaiAtBaseEngine {
         return res;
     }
     
-    // ------ NHÓM QUÝ THẦN & KHÁC ------
+    // ------ NHÓM KHÁC ------
     calcOtherStars() {
-        const res = [];
-        // Use global CUNG_TO_THAN_IDX (defined at file top)
-        
-        // --- CÁC SAO PHỤ ---
-        // Helper đếm bước lưu toán
-        const countSteps = (startIdx, steps, pauseArr) => {
-            let current = startIdx;
-            let stepCount = 1;
-            if (steps <= 1) return current;
-            let safety = 0;
-            while (safety < 100) {
-                safety++;
-                if (pauseArr.includes(current)) {
-                    stepCount++;
-                    if (stepCount >= steps) return current;
-                }
-                current = (current + 1) % 16;
-                stepCount++;
-                if (stepCount >= steps) return current;
-            }
-            return current;
-        };
-
-        const kVal = this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360);
-        const isDuong = this.isDuongDon !== false;
-
-        // 1. Thiên Tôn (dư mod 4, Dương: Khảm->Đoài->Ly->Chấn, Âm: Chấn->Ly->Đoài->Khảm)
-        const r4 = (kVal % 4) || 4;
-        const THIEN_TON_DUONG = [5, 1, 13, 9];
-        const THIEN_TON_AM = [9, 13, 1, 5];
-        const ttonIdx = (isDuong ? THIEN_TON_DUONG : THIEN_TON_AM)[r4 - 1];
-        
-        // 2. Thiên Hoàng (dư mod 20, Dương khởi Thân lưu 2 toán ở 4 góc, Âm khởi Dần lưu 2 toán ở 4 góc)
-        const r20 = (kVal % 20) || 20;
-        const THIEN_HOANG_DUONG = [0, 1, 2, 3, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 14, 15, 15];
-        const THIEN_HOANG_AM = [8, 7, 7, 6, 5, 4, 3, 3, 2, 1, 0, 15, 15, 14, 13, 12, 11, 11, 10, 9];
-        const thoangIdx = (isDuong ? THIEN_HOANG_DUONG : THIEN_HOANG_AM)[r20 - 1];
-        
-        // 3. Thiên Thời (dư mod 12, Dương khởi Dần thuận 12 chi, Âm khởi Thân nghịch 12 chi)
-        const r12 = (kVal % 12) || 12;
-        const THIEN_THOI_DUONG = [8, 9, 10, 12, 13, 14, 0, 1, 2, 4, 5, 6];
-        const THIEN_THOI_AM = [0, 14, 13, 12, 10, 9, 8, 6, 5, 4, 2, 1];
-        const tthoiIdx = (isDuong ? THIEN_THOI_DUONG : THIEN_THOI_AM)[r12 - 1];
-        
-        // Đế Phù (chia 20, khởi Tuất đi thuận, lưu 2 toán ở 4 chính: Tý, Mão, Ngọ, Dậu)
-        const dephuR = kVal % 20 || 20;
-        const dephuIdx = countSteps(2, dephuR, [5, 9, 13, 1]); // Tuất=2
-        
-        // 4. Phi Điểu (dư mod 9, Dương khởi Càn thuận 9 cung, Âm khởi Tốn nghịch 9 cung)
-        const r9 = (kVal % 9) || 9;
-        const PHI_DIEU_DUONG = [3, 13, 7, 9, -1, 1, 15, 5, 11];
-        const PHI_DIEU_AM = [11, 5, 15, 1, -1, 9, 7, 13, 3];
-        const pdIdx = (isDuong ? PHI_DIEU_DUONG : PHI_DIEU_AM)[r9 - 1];
-        
-        // 5. Ngũ Hành (dư mod 5, Dương: Càn->Khảm->Cấn->Tốn->Khôn, Âm: Tốn->Ly->Khôn->Càn->Cấn)
-        const r5_nh = (kVal % 5) || 5;
-        const NGU_HANH_DUONG = [3, 5, 7, 11, 15];
-        const NGU_HANH_AM = [11, 13, 15, 3, 7];
-        const nhanhIdx = (isDuong ? NGU_HANH_DUONG : NGU_HANH_AM)[r5_nh - 1];
-        
-        // Dùng chung dư mod 9 cho 3 sao Phong: Tam Phong, Ngũ Phong, Bát Phong
-        const r9_phong = (kVal % 9) || 9;
-        
-        // 6. Tam Phong (dư mod 9, Dương: Cấn->Khôn->Ly->Đoài->Càn->Trung->Tốn->Chấn->Khảm)
-        const TAM_PHONG_DUONG = [7, 15, 13, 1, 3, -1, 11, 9, 5];
-        const TAM_PHONG_AM = [15, 7, 5, 9, 11, -1, 3, 1, 13];
-        const tphongIdx = (isDuong ? TAM_PHONG_DUONG : TAM_PHONG_AM)[r9_phong - 1];
-        
-        // 7. Ngũ Phong (dư mod 9, Dương: Càn->Cấn->Trung->Khôn->Tốn->Ly->Chấn->Đoài->Khảm)
-        const NGU_PHONG_DUONG = [3, 7, -1, 15, 11, 13, 9, 1, 5];
-        const NGU_PHONG_AM = [15, 7, 5, 9, 11, -1, 3, 1, 13];
-        const ngphongIdx = (isDuong ? NGU_PHONG_DUONG : NGU_PHONG_AM)[r9_phong - 1];
-        
-        // 8. Bát Phong (dư mod 9, Dương: Ly->Cấn->Chấn->Trung->Đoài->Khôn->Khảm->Tốn->Càn)
-        const BAT_PHONG_DUONG = [13, 7, 9, -1, 1, 15, 5, 11, 3];
-        const BAT_PHONG_AM = [5, 15, 1, -1, 9, 7, 13, 3, 11];
-        const bphongIdx = (isDuong ? BAT_PHONG_DUONG : BAT_PHONG_AM)[r9_phong - 1];
-
-        res.push(
-            { thanIdx: ttonIdx, name: "Thiên Tôn", class: "other-stars" },
-            { thanIdx: thoangIdx, name: "Thiên Hoàng", class: "other-stars" },
-            { thanIdx: tthoiIdx, name: "Thiên Thời", class: "other-stars" },
-            { thanIdx: dephuIdx, name: "Đế Phù", class: "other-stars" },
-            { thanIdx: pdIdx, name: "Phi Điểu", class: "other-stars" },
-            { thanIdx: nhanhIdx, name: "Ngũ Hành", class: "other-stars" },
-            { thanIdx: tphongIdx, name: "Tam Phong", class: "other-stars" },
-            { thanIdx: ngphongIdx, name: "Ngũ Phong", class: "other-stars" },
-            { thanIdx: bphongIdx, name: "Bát Phong", class: "other-stars" }
-        );
-
-        // --- QUÝ THẦN (9 SAO QUÝ THẦN: Trực Sự nhập Trung Cung, 8 sao phi tinh Lạc Thư) ---
-        const QT_SAO_NAMES = ["Thái Nhất", "Nhiếp Đề", "Hiên Viên", "Chiêu Dao", "Thiên Phù", "Thanh Long", "Hàm Trì", "Thái Âm", "Thiên Hoàng"];
-        const LAC_THU_THAN_IDXS = [-1, 3, 1, 7, 13, 5, 15, 9, 11];
-        const r_qt = (kVal + 3) % 9 || 9;
-        const trucSuQtIdx = (r_qt - 1) % 9;
-
-        const rotatedQt = rotateArray(QT_SAO_NAMES, trucSuQtIdx);
-        for (let i = 0; i < 9; i++) {
-            res.push({
-                thanIdx: LAC_THU_THAN_IDXS[i],
-                name: rotatedQt[i] + " (QT)",
-                class: "quy-than",
-                unique: 'QT_' + rotatedQt[i]
-            });
-        }
-        
-        return res;
+        return [];
     }
 
     // ------ BÁT MÔN (8 CỬA AN LÊN 8 CUNG BÁT QUÁI) ------
