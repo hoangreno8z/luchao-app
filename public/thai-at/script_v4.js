@@ -145,15 +145,17 @@ function adjustTimeTravel(stepType) {
 window.adjustTimeTravel = adjustTimeTravel;
 window.updateTimeTravelLabels = updateTimeTravelLabels;
 
-document.addEventListener("DOMContentLoaded", () => {
+function initThaiAtApp() {
     switchSaBanTheme(window.currentSaBanTheme, true);
     const now = new Date();
-    document.getElementById("input-date").value = now.toISOString().split("T")[0];
-    document.getElementById("input-time").value = now.toTimeString().substring(0, 5);
+    const dateEl = document.getElementById("input-date");
+    const timeEl = document.getElementById("input-time");
+    if (dateEl && !dateEl.value) dateEl.value = now.toISOString().split("T")[0];
+    if (timeEl && !timeEl.value) timeEl.value = now.toTimeString().substring(0, 5);
 
     // Dual Engine Navigation Tab Buttons
     document.querySelectorAll(".engine-tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.onclick = () => {
             document.querySelectorAll(".engine-tab-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentEngineType = btn.getAttribute("data-engine");
@@ -164,31 +166,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             castChart();
-        });
+        };
     });
 
     // 6 Mode Navigation Tab Buttons
     document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.onclick = () => {
             document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentMode = btn.getAttribute("data-mode");
             updateTimeTravelLabels();
             castChart();
-        });
+        };
     });
 
     // Form Submit
-    document.getElementById("control-form").addEventListener("submit", (e) => {
-        e.preventDefault();
-        castChart();
-    });
+    const form = document.getElementById("control-form");
+    if (form) {
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            castChart();
+        };
+    }
 
     updateTimeTravelLabels();
 
-    // Initial render
-    castChart();
-});
+    // Initial render immediately
+    castChart(true);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initThaiAtApp);
+} else {
+    initThaiAtApp();
+}
 
 // Preload transition background image to prevent blank load delays
 const transitionBgImg = new Image();
