@@ -314,6 +314,52 @@ document.addEventListener('DOMContentLoaded', () => {
         8: { name: 'Khôn', bin: [0, 0, 0] }
     };
 
+    const TEN_QUE_MATRIX = [
+        ['Bát Thuần Khôn', 'Địa Sơn Khiêm', 'Địa Thủy Sư', 'Địa Phong Thăng', 'Địa Lôi Phục', 'Địa Hỏa Minh Di', 'Địa Trạch Lâm', 'Địa Thiên Thái'],
+        ['Sơn Địa Bác', 'Bát Thuần Cấn', 'Sơn Thủy Mông', 'Sơn Phong Cổ', 'Sơn Lôi Di', 'Sơn Hỏa Bí', 'Sơn Trạch Tổn', 'Sơn Thiên Đại Súc'],
+        ['Thủy Địa Tỷ', 'Thủy Sơn Kiển', 'Bát Thuần Khảm', 'Thủy Phong Tỉnh', 'Thủy Lôi Truân', 'Thủy Hỏa Ký Tế', 'Thủy Trạch Tiết', 'Thủy Thiên Nhu'],
+        ['Phong Địa Quan', 'Phong Sơn Tiệm', 'Phong Thủy Hoán', 'Bát Thuần Tốn', 'Phong Lôi Ích', 'Phong Hỏa Gia Nhân', 'Phong Trạch Trung Phu', 'Phong Thiên Tiểu Súc'],
+        ['Lôi Địa Dự', 'Lôi Sơn Tiểu Quá', 'Lôi Thủy Giải', 'Lôi Phong Hằng', 'Bát Thuần Chấn', 'Lôi Hỏa Phong', 'Lôi Trạch Quy Muội', 'Lôi Thiên Đại Tráng'],
+        ['Hỏa Địa Tấn', 'Hỏa Sơn Lữ', 'Hỏa Thủy Vị Tế', 'Hỏa Phong Đỉnh', 'Hỏa Lôi Phệ Hạp', 'Bát Thuần Ly', 'Hỏa Trạch Khuê', 'Hỏa Thiên Đại Hữu'],
+        ['Trạch Địa Tụy', 'Trạch Sơn Hàm', 'Trạch Thủy Khốn', 'Trạch Phong Đại Quá', 'Trạch Lôi Tùy', 'Trạch Hỏa Cách', 'Bát Thuần Đoài', 'Trạch Thiên Quải'],
+        ['Thiên Địa Bĩ', 'Thiên Sơn Độn', 'Thiên Thủy Tụng', 'Thiên Phong Cấu', 'Thiên Lôi Vô Vọng', 'Thiên Hỏa Đồng Nhân', 'Thiên Trạch Lý', 'Bát Thuần Càn']
+    ];
+
+    const TIEN_THIEN_TO_QUAI_IDX = { 8: 0, 7: 1, 6: 2, 5: 3, 4: 4, 3: 5, 2: 6, 1: 7 };
+    const BIN_TO_TIEN_THIEN = { '111': 1, '110': 2, '101': 3, '100': 4, '011': 5, '010': 6, '001': 7, '000': 8 };
+
+    function getHexagramPairNames(thuongNum, haNum, haoDong) {
+        const tIdx = TIEN_THIEN_TO_QUAI_IDX[thuongNum];
+        const hIdx = TIEN_THIEN_TO_QUAI_IDX[haNum];
+        const mainHexName = (TEN_QUE_MATRIX[tIdx] && TEN_QUE_MATRIX[tIdx][hIdx]) ? TEN_QUE_MATRIX[tIdx][hIdx] : '';
+
+        const tQuai = TIEN_THIEN_BAT_QUAI[thuongNum];
+        const hQuai = TIEN_THIEN_BAT_QUAI[haNum];
+        if (!tQuai || !hQuai) return { mainHexName, changedHexName: '' };
+
+        const raw6 = [
+            hQuai.bin[0], hQuai.bin[1], hQuai.bin[2],
+            tQuai.bin[0], tQuai.bin[1], tQuai.bin[2]
+        ];
+        
+        const changed6 = [...raw6];
+        if (haoDong >= 1 && haoDong <= 6) {
+            changed6[haoDong - 1] = (changed6[haoDong - 1] === 1) ? 0 : 1;
+        }
+
+        const changedHaBin = '' + changed6[0] + changed6[1] + changed6[2];
+        const changedThuongBin = '' + changed6[3] + changed6[4] + changed6[5];
+
+        const changedHaNum = BIN_TO_TIEN_THIEN[changedHaBin];
+        const changedThuongNum = BIN_TO_TIEN_THIEN[changedThuongBin];
+
+        const ctIdx = TIEN_THIEN_TO_QUAI_IDX[changedThuongNum];
+        const chIdx = TIEN_THIEN_TO_QUAI_IDX[changedHaNum];
+        const changedHexName = (TEN_QUE_MATRIX[ctIdx] && TEN_QUE_MATRIX[ctIdx][chIdx]) ? TEN_QUE_MATRIX[ctIdx][chIdx] : '';
+
+        return { mainHexName, changedHexName };
+    }
+
     function parseNumberHexagram(rawInput) {
         if (!rawInput || typeof rawInput !== 'string') return { success: false, error: 'Vui lòng nhập dãy số' };
         const trimmed = rawInput.trim();
@@ -558,20 +604,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = numberInput.value;
             const res = parseNumberHexagram(val);
             if (res.success) {
+                const hexNames = getHexagramPairNames(res.thuongQuai, res.haQuai, res.haoDong);
                 if (numberPreviewBox) numberPreviewBox.style.display = 'block';
                 if (npThuong) npThuong.innerHTML = `${res.thuongName} (${res.thuongQuai})`;
                 if (npHa) npHa.innerHTML = `${res.haName} (${res.haQuai})`;
                 if (npDong) npDong.innerHTML = `Hào ${res.haoDong}`;
-                if (npResultName) npResultName.innerHTML = `Quẻ Chủ: ${res.thuongName} (Thượng) / ${res.haName} (Hạ) ➔ Động Hào ${res.haoDong}`;
-                if (npExplain) npExplain.innerHTML = `💡 ${res.explain}`;
+                if (npResultName) {
+                    npResultName.innerHTML = `Quẻ Chủ: <span style="color: #fff;">${hexNames.mainHexName}</span> &nbsp;➔&nbsp; Biến: <span style="color: #ffd700;">${hexNames.changedHexName}</span>`;
+                }
             } else {
                 if (val.trim().length > 0) {
                     if (numberPreviewBox) numberPreviewBox.style.display = 'block';
                     if (npThuong) npThuong.innerHTML = '--';
                     if (npHa) npHa.innerHTML = '--';
                     if (npDong) npDong.innerHTML = '--';
-                    if (npResultName) npResultName.innerHTML = '';
-                    if (npExplain) npExplain.innerHTML = `<span style="color:#ff6b6b;">⚠️ ${res.error}</span>`;
+                    if (npResultName) npResultName.innerHTML = `<span style="color:#ff6b6b; font-size: 0.9rem;">⚠️ ${res.error}</span>`;
                 } else {
                     if (numberPreviewBox) numberPreviewBox.style.display = 'none';
                 }
