@@ -899,8 +899,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    let intentPeakWeight = 0;
+    let intentLastWeight = 0;
     let intentCorrectionDebt = 0;
+    let intentDropTimer = null;
+    let intentPendingDrop = 0;
 
     const intentInput = document.getElementById('intent-input');
     const intentPreviewBox = document.getElementById('intent-preview-box');
@@ -935,25 +937,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const val = (intentInput.value || '').normalize('NFC');
 
         if (val.length === 0) {
-            // Khi ô nhập hoàn toàn trống -> bắt đầu câu hỏi mới
-            intentPeakWeight = 0;
+            if (intentDropTimer) clearTimeout(intentDropTimer);
+            intentLastWeight = 0;
             intentCorrectionDebt = 0;
+            intentPendingDrop = 0;
             updateIntentLivePreview();
             return;
         }
 
         const currentWeight = calculateStringActionWeight(val);
 
-        if (currentWeight < intentPeakWeight) {
-            // Người dùng thực sự đã xóa bớt ký tự/từ lỗi
-            const dropped = intentPeakWeight - currentWeight;
-            intentCorrectionDebt += (dropped * 2);
-            intentPeakWeight = currentWeight;
+        if (currentWeight < intentLastWeight) {
+            // Có sự sụt giảm ký tự -> Chờ 80ms để lọc bỏ Unikey/IME composition
+            const drop = intentLastWeight - currentWeight;
+            intentPendingDrop += drop;
+            if (intentDropTimer) clearTimeout(intentDropTimer);
+            intentDropTimer = setTimeout(() => {
+                // Người dùng thực sự xóa ký tự lỗi
+                intentCorrectionDebt += (intentPendingDrop * 2);
+                intentPendingDrop = 0;
+                intentDropTimer = null;
+                updateIntentLivePreview();
+            }, 80);
         } else {
-            intentPeakWeight = currentWeight;
+            // Ký tự tăng lên hoặc giữ nguyên -> Hoàn tất ghép âm IME, hủy timer xóa
+            if (intentDropTimer) {
+                clearTimeout(intentDropTimer);
+                intentDropTimer = null;
+                intentPendingDrop = 0;
+            }
+            updateIntentLivePreview();
         }
 
-        updateIntentLivePreview();
+        intentLastWeight = currentWeight;
     }
 
     function updateIntentLivePreview() {
