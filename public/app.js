@@ -775,24 +775,53 @@ document.addEventListener('DOMContentLoaded', () => {
         return { count, breakdown };
     }
 
-    function parseVietnameseIntent(text, extraDebt = 0) {
+    function parseVietnameseIntent(text, typoLog = []) {
         if (!text || typeof text !== 'string') return { success: false, error: 'Chưa có nội dung ý niệm' };
         
         const normalized = text.normalize('NFC');
-        // Split into tokens: words, spaces, punctuation
         const regex = /(\s+|[^\s]+)/g;
-        const tokens = normalized.match(regex) || [];
-        if (tokens.length === 0) return { success: false, error: 'Chưa có nội dung ý niệm' };
-        
-        let baseTotal = 0;
-        const tokenList = [];
-        tokens.forEach(tok => {
-            const { count, breakdown } = countWordActions(tok);
-            tokenList.push({ token: tok, count, breakdown, isSpace: /^\s+$/.test(tok) });
-            baseTotal += count;
-        });
+        const tokens = [];
+        let match;
+        while ((match = regex.exec(normalized)) !== null) {
+            const { count, breakdown } = countWordActions(match[0]);
+            tokens.push({
+                token: match[0],
+                start: match.index,
+                end: match.index + match[0].length,
+                isSpace: /^\s+$/.test(match[0]),
+                baseCount: count,
+                debt: 0,
+                effectiveCount: count,
+                breakdown
+            });
+        }
 
-        const totalCount = baseTotal + extraDebt;
+        if (tokens.length === 0) return { success: false, error: 'Chưa có nội dung ý niệm' };
+
+        // Phân bổ nợ số toán sửa xóa vào đúng từ ngữ chứa vị trí ký tự đã bị xóa sửa
+        let extraDebtTotal = 0;
+        if (Array.isArray(typoLog)) {
+            typoLog.forEach(typo => {
+                extraDebtTotal += typo.debt;
+                let assigned = false;
+                for (let i = 0; i < tokens.length; i++) {
+                    const isLast = (i === tokens.length - 1);
+                    if (typo.charIndex >= tokens[i].start && (typo.charIndex < tokens[i].end || isLast)) {
+                        tokens[i].debt += typo.debt;
+                        tokens[i].effectiveCount += typo.debt;
+                        assigned = true;
+                        break;
+                    }
+                }
+                if (!assigned && tokens.length > 0) {
+                    tokens[tokens.length - 1].debt += typo.debt;
+                    tokens[tokens.length - 1].effectiveCount += typo.debt;
+                }
+            });
+        }
+
+        const totalCount = tokens.reduce((sum, t) => sum + t.effectiveCount, 0);
+        const baseTotal = tokens.reduce((sum, t) => sum + t.baseCount, 0);
 
         if (totalCount < 2) {
             return { success: false, error: 'Vui lòng nhập ít nhất 2 ký tự ý niệm.' };
@@ -815,7 +844,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 success: true,
                 totalCount: 3,
                 baseTotal,
-                extraDebt,
+                extraDebt: extraDebtTotal,
                 thuongCount: 1,
                 haCount: 2,
                 thuongQuai: 1, // Càn
@@ -837,10 +866,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let bestThuongSum = 0;
 
         let accumulated = 0;
-        for (let i = 0; i < tokenList.length; i++) {
-            accumulated += tokenList[i].count;
+        for (let i = 0; i < tokens.length; i++) {
+            accumulated += tokens[i].effectiveCount;
             // A valid boundary is either a space token OR a word token that is followed by a space
-            const isBoundary = tokenList[i].isSpace || (i < tokenList.length - 1 && tokenList[i + 1].isSpace) || (i === tokenList.length - 1);
+            const isBoundary = tokens[i].isSpace || (i < tokens.length - 1 && tokens[i + 1].isSpace) || (i === tokens.length - 1);
             if (isBoundary && accumulated <= targetHalf) {
                 bestSplitIndex = i + 1;
                 bestThuongSum = accumulated;
@@ -849,17 +878,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (bestThuongSum === 0) {
             bestSplitIndex = 1;
-            bestThuongSum = tokenList[0].count;
+            bestThuongSum = tokens[0].effectiveCount;
         }
 
-        const thuongTokens = tokenList.slice(0, bestSplitIndex);
-        const haTokens = tokenList.slice(bestSplitIndex);
+        const thuongTokens = tokens.slice(0, bestSplitIndex);
+        const haTokens = tokens.slice(bestSplitIndex);
 
         const thuongText = thuongTokens.map(t => t.token).join('');
         const haText = haTokens.map(t => t.token).join('');
 
-        const thuongCount = bestThuongSum;
-        const haCount = totalCount - thuongCount;
+        const thuongCount = thuongTokens.reduce((s, t) => s + t.effectiveCount, 0);
+        const haCount = haTokens.reduce((s, t) => s + t.effectiveCount, 0);
 
         const thuongQuai = (thuongCount % 8 === 0) ? 8 : (thuongCount % 8);
         const haQuai = (haCount % 8 === 0) ? 8 : (haCount % 8);
@@ -884,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
             success: true,
             totalCount,
             baseTotal,
-            extraDebt,
+            extraDebt: extraDebtTotal,
             thuongCount,
             haCount,
             thuongQuai,
@@ -895,14 +924,16 @@ document.addEventListener('DOMContentLoaded', () => {
             thuongText,
             haText,
             hexLines,
-            tokenList
+            tokens
         };
     }
 
     let intentLastWeight = 0;
     let intentCorrectionDebt = 0;
+    let intentTypoLog = [];
     let intentDropTimer = null;
     let intentPendingDrop = 0;
+    let intentPendingDropPos = 0;
 
     const intentInput = document.getElementById('intent-input');
     const intentPreviewBox = document.getElementById('intent-preview-box');
@@ -940,6 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (intentDropTimer) clearTimeout(intentDropTimer);
             intentLastWeight = 0;
             intentCorrectionDebt = 0;
+            intentTypoLog = [];
             intentPendingDrop = 0;
             updateIntentLivePreview();
             return;
@@ -951,10 +983,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Có sự sụt giảm ký tự -> Chờ 80ms để lọc bỏ Unikey/IME composition
             const drop = intentLastWeight - currentWeight;
             intentPendingDrop += drop;
+            intentPendingDropPos = (intentInput.selectionStart !== null && intentInput.selectionStart !== undefined) ? intentInput.selectionStart : val.length;
             if (intentDropTimer) clearTimeout(intentDropTimer);
             intentDropTimer = setTimeout(() => {
                 // Người dùng thực sự xóa ký tự lỗi
-                intentCorrectionDebt += (intentPendingDrop * 2);
+                const debt = intentPendingDrop * 2;
+                intentCorrectionDebt += debt;
+                intentTypoLog.push({ charIndex: intentPendingDropPos, debt });
                 intentPendingDrop = 0;
                 intentDropTimer = null;
                 updateIntentLivePreview();
@@ -975,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateIntentLivePreview() {
         if (!intentInput) return;
         const val = intentInput.value;
-        const res = parseVietnameseIntent(val, intentCorrectionDebt);
+        const res = parseVietnameseIntent(val, intentTypoLog);
         if (res.success) {
             const hexNames = getHexagramPairNames(res.thuongQuai, res.haQuai, res.haoDong);
             if (intentPreviewBox) intentPreviewBox.style.display = 'block';
@@ -1026,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intentSubmitBtn) {
         intentSubmitBtn.addEventListener('click', () => {
             const val = intentInput ? intentInput.value : '';
-            const res = parseVietnameseIntent(val, intentCorrectionDebt);
+            const res = parseVietnameseIntent(val, intentTypoLog);
             if (!res.success) {
                 alert(res.error || "Vui lòng nhập câu hỏi / ý niệm hợp lệ trước khi lập quẻ!");
                 if (intentInput) intentInput.focus();
