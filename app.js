@@ -229,17 +229,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabToss = document.getElementById('tab-toss');
     const tabManual = document.getElementById('tab-manual');
     const tabNumber = document.getElementById('tab-number');
+    const tabIntent = document.getElementById('tab-intent');
     const methodTossArea = document.getElementById('method-toss-area');
     const methodManualArea = document.getElementById('method-manual-area');
     const methodNumberArea = document.getElementById('method-number-area');
+    const methodIntentArea = document.getElementById('method-intent-area');
 
     function switchMethodTab(activeTab) {
         const tabTossEl = document.getElementById('tab-toss');
         const tabManualEl = document.getElementById('tab-manual');
         const tabNumberEl = document.getElementById('tab-number');
+        const tabIntentEl = document.getElementById('tab-intent');
         const methodTossAreaEl = document.getElementById('method-toss-area');
         const methodManualAreaEl = document.getElementById('method-manual-area');
         const methodNumberAreaEl = document.getElementById('method-number-area');
+        const methodIntentAreaEl = document.getElementById('method-intent-area');
 
         if (tabTossEl) {
             tabTossEl.style.background = (activeTab === 'toss') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
@@ -256,19 +260,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tabManualEl.style.boxShadow = (activeTab === 'manual') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
         }
         if (tabNumberEl) {
-            if (activeTab === 'number') {
-                tabNumberEl.style.background = 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)';
-                tabNumberEl.style.borderColor = '#fbbf24';
-                tabNumberEl.style.color = '#110c03';
-                tabNumberEl.style.fontWeight = '800';
-                tabNumberEl.style.boxShadow = '0 4px 15px rgba(245,158,11,0.45)';
-            } else {
-                tabNumberEl.style.background = 'rgba(255,255,255,0.06)';
-                tabNumberEl.style.borderColor = 'rgba(168,85,247,0.3)';
-                tabNumberEl.style.color = '#fbbf24';
-                tabNumberEl.style.fontWeight = '600';
-                tabNumberEl.style.boxShadow = 'none';
-            }
+            tabNumberEl.style.background = (activeTab === 'number') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
+            tabNumberEl.style.borderColor = (activeTab === 'number') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
+            tabNumberEl.style.color = (activeTab === 'number') ? '#110c03' : '#fbbf24';
+            tabNumberEl.style.fontWeight = (activeTab === 'number') ? '800' : '600';
+            tabNumberEl.style.boxShadow = (activeTab === 'number') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
+        }
+        if (tabIntentEl) {
+            tabIntentEl.style.background = (activeTab === 'intent') ? 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' : 'rgba(255,255,255,0.06)';
+            tabIntentEl.style.borderColor = (activeTab === 'intent') ? '#ec4899' : 'rgba(168,85,247,0.3)';
+            tabIntentEl.style.color = (activeTab === 'intent') ? '#ffffff' : '#e9d5ff';
+            tabIntentEl.style.fontWeight = (activeTab === 'intent') ? '800' : '600';
+            tabIntentEl.style.boxShadow = (activeTab === 'intent') ? '0 4px 18px rgba(168,85,247,0.55)' : 'none';
         }
 
         if (methodTossAreaEl) {
@@ -283,10 +286,17 @@ document.addEventListener('DOMContentLoaded', () => {
             methodNumberAreaEl.classList.toggle('hidden', activeTab !== 'number');
             methodNumberAreaEl.style.display = (activeTab === 'number') ? 'block' : 'none';
         }
+        if (methodIntentAreaEl) {
+            methodIntentAreaEl.classList.toggle('hidden', activeTab !== 'intent');
+            methodIntentAreaEl.style.display = (activeTab === 'intent') ? 'block' : 'none';
+        }
 
         if (activeTab === 'number') {
             const numInput = document.getElementById('number-input');
             if (numInput) setTimeout(() => numInput.focus(), 100);
+        } else if (activeTab === 'intent') {
+            const intentInput = document.getElementById('intent-input');
+            if (intentInput) setTimeout(() => intentInput.focus(), 100);
         }
     }
     window.switchMethodTab = switchMethodTab;
@@ -302,6 +312,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabNumber) {
         tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
         tabNumber.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('number'); });
+    }
+    if (tabIntent) {
+        tabIntent.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('intent'); });
+        tabIntent.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('intent'); });
     }
 
     // -------------------------------------------------------------------------
@@ -697,6 +711,319 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }, 'image/png');
                     } catch (e) {}
+
+                    // Cập nhật kết luận giải thích
+                    displayInterpretation(hexData);
+
+                    // Ẩn khu gieo và hiện khu kết quả
+                    castingStage.classList.add('hidden');
+                    resultArea.classList.remove('hidden');
+                    loadingOverlay.classList.remove('visible');
+
+                    // Cuộn mượt đến đầu kết quả
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
+
+                }).catch(err => {
+                    console.error(err);
+                    loadingOverlay.classList.remove('visible');
+                    alert("Có lỗi xảy ra khi tạo thẻ quẻ dịch!");
+                });
+            }, 300);
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // THUẬT TOÁN GIEO Ý NIỆM (INTENT-BASED HEXAGRAM CASTING)
+    // -------------------------------------------------------------------------
+    const VIETNAMESE_CHAR_WEIGHTS = {
+        // a
+        'à': ['a', 'huyền'], 'á': ['a', 'sắc'], 'ả': ['a', 'hỏi'], 'ã': ['a', 'ngã'], 'ạ': ['a', 'nặng'],
+        'ă': ['a', 'trăng'], 'ằ': ['a', 'trăng', 'huyền'], 'ắ': ['a', 'trăng', 'sắc'], 'ẳ': ['a', 'trăng', 'hỏi'], 'ẵ': ['a', 'trăng', 'ngã'], 'ặ': ['a', 'trăng', 'nặng'],
+        'â': ['a', 'mũ'], 'ầ': ['a', 'mũ', 'huyền'], 'ấ': ['a', 'mũ', 'sắc'], 'ẩ': ['a', 'mũ', 'hỏi'], 'ẫ': ['a', 'mũ', 'ngã'], 'ậ': ['a', 'mũ', 'nặng'],
+        // e
+        'è': ['e', 'huyền'], 'é': ['e', 'sắc'], 'ẻ': ['e', 'hỏi'], 'ẽ': ['e', 'ngã'], 'ẹ': ['e', 'nặng'],
+        'ê': ['e', 'mũ'], 'ề': ['e', 'mũ', 'huyền'], 'ế': ['e', 'mũ', 'sắc'], 'ể': ['e', 'mũ', 'hỏi'], 'ễ': ['e', 'mũ', 'ngã'], 'ệ': ['e', 'mũ', 'nặng'],
+        // i
+        'ì': ['i', 'huyền'], 'í': ['i', 'sắc'], 'ỉ': ['i', 'hỏi'], 'ĩ': ['i', 'ngã'], 'ị': ['i', 'nặng'],
+        // o
+        'ò': ['o', 'huyền'], 'ó': ['o', 'sắc'], 'ỏ': ['o', 'hỏi'], 'õ': ['o', 'ngã'], 'ọ': ['o', 'nặng'],
+        'ô': ['o', 'mũ'], 'ồ': ['o', 'mũ', 'huyền'], 'ố': ['o', 'mũ', 'sắc'], 'ổ': ['o', 'mũ', 'hỏi'], 'ỗ': ['o', 'mũ', 'ngã'], 'ộ': ['o', 'mũ', 'nặng'],
+        'ơ': ['o', 'móc'], 'ờ': ['o', 'móc', 'huyền'], 'ớ': ['o', 'móc', 'sắc'], 'ở': ['o', 'móc', 'hỏi'], 'ỡ': ['o', 'móc', 'ngã'], 'ợ': ['o', 'móc', 'nặng'],
+        // u
+        'ù': ['u', 'huyền'], 'ú': ['u', 'sắc'], 'ủ': ['u', 'hỏi'], 'ũ': ['u', 'ngã'], 'ụ': ['u', 'nặng'],
+        'ư': ['u', 'móc'], 'ừ': ['u', 'móc', 'huyền'], 'ứ': ['u', 'móc', 'sắc'], 'ử': ['u', 'móc', 'hỏi'], 'ữ': ['u', 'móc', 'ngã'], 'ự': ['u', 'móc', 'nặng'],
+        // y
+        'ỳ': ['y', 'huyền'], 'ý': ['y', 'sắc'], 'ỷ': ['y', 'hỏi'], 'ỹ': ['y', 'ngã'], 'ỵ': ['y', 'nặng'],
+        // d
+        'đ': ['d', 'gạch']
+    };
+
+    function countWordActions(word) {
+        let count = 0;
+        let breakdown = [];
+        for (const ch of word) {
+            const lower = ch.toLowerCase();
+            if (VIETNAMESE_CHAR_WEIGHTS[lower]) {
+                const parts = VIETNAMESE_CHAR_WEIGHTS[lower];
+                count += parts.length;
+                breakdown.push(ch + ' (' + parts.join('+') + '=' + parts.length + ')');
+            } else {
+                count += 1;
+                breakdown.push(ch + '=1');
+            }
+        }
+        return { count, breakdown };
+    }
+
+    function parseVietnameseIntent(text, extraActionHistoryCount = 0) {
+        if (!text || typeof text !== 'string') return { success: false, error: 'Chưa có nội dung ý niệm' };
+        
+        // Split into tokens: words, spaces, punctuation
+        const regex = /(\s+|[^\s]+)/g;
+        const tokens = text.match(regex) || [];
+        
+        let baseTotal = 0;
+        const tokenList = [];
+        tokens.forEach(tok => {
+            const { count, breakdown } = countWordActions(tok);
+            tokenList.push({ token: tok, count, breakdown, isSpace: /^\s+$/.test(tok) });
+            baseTotal += count;
+        });
+
+        const totalCount = baseTotal + extraActionHistoryCount;
+
+        if (totalCount < 2) {
+            return { success: false, error: 'Vui lòng nhập ít nhất 2 ký tự ý niệm.' };
+        }
+
+        if (totalCount === 3) {
+            const tQuai = TIEN_THIEN_BAT_QUAI[1];
+            const hQuai = TIEN_THIEN_BAT_QUAI[2];
+            const raw6 = [
+                hQuai.bin[0], hQuai.bin[1], hQuai.bin[2],
+                tQuai.bin[0], tQuai.bin[1], tQuai.bin[2]
+            ];
+            const hexLines = raw6.map((val, idx) => {
+                const lineNum = idx + 1;
+                const isDong = (lineNum === 3);
+                if (val === 1) return isDong ? 3 : 1;
+                return isDong ? 0 : 2;
+            });
+            return {
+                success: true,
+                totalCount: 3,
+                thuongCount: 1,
+                haCount: 2,
+                thuongQuai: 1, // Càn
+                thuongName: tQuai.name,
+                haQuai: 2,     // Đoài
+                haName: hQuai.name,
+                haoDong: 3,
+                thuongText: text.slice(0, 1),
+                haText: text.slice(1),
+                hexLines,
+                explain: '3 ký tự ➔ Thượng quái: 1 (Càn), Hạ quái: 2 (Đoài), Động hào: 3'
+            };
+        }
+
+        // Target half count for Thượng quái
+        const targetHalf = Math.floor(totalCount / 2);
+
+        let bestSplitIndex = 0;
+        let bestThuongSum = 0;
+
+        let accumulated = 0;
+        for (let i = 0; i < tokenList.length; i++) {
+            accumulated += tokenList[i].count;
+            // A valid boundary is either a space token OR a word token that is followed by a space
+            const isBoundary = tokenList[i].isSpace || (i < tokenList.length - 1 && tokenList[i + 1].isSpace) || (i === tokenList.length - 1);
+            if (isBoundary && accumulated <= targetHalf) {
+                bestSplitIndex = i + 1;
+                bestThuongSum = accumulated;
+            }
+        }
+
+        if (bestThuongSum === 0) {
+            bestSplitIndex = 1;
+            bestThuongSum = tokenList[0].count;
+        }
+
+        const thuongTokens = tokenList.slice(0, bestSplitIndex);
+        const haTokens = tokenList.slice(bestSplitIndex);
+
+        const thuongText = thuongTokens.map(t => t.token).join('');
+        const haText = haTokens.map(t => t.token).join('');
+
+        const thuongCount = bestThuongSum;
+        const haCount = totalCount - thuongCount;
+
+        const thuongQuai = (thuongCount % 8 === 0) ? 8 : (thuongCount % 8);
+        const haQuai = (haCount % 8 === 0) ? 8 : (haCount % 8);
+        let haoDong = totalCount % 6;
+        if (haoDong === 0) haoDong = 6;
+
+        const tQuai = TIEN_THIEN_BAT_QUAI[thuongQuai];
+        const hQuai = TIEN_THIEN_BAT_QUAI[haQuai];
+        const raw6 = [
+            hQuai.bin[0], hQuai.bin[1], hQuai.bin[2],
+            tQuai.bin[0], tQuai.bin[1], tQuai.bin[2]
+        ];
+
+        const hexLines = raw6.map((val, idx) => {
+            const lineNum = idx + 1;
+            const isDong = (lineNum === haoDong);
+            if (val === 1) return isDong ? 3 : 1;
+            return isDong ? 0 : 2;
+        });
+
+        return {
+            success: true,
+            totalCount,
+            thuongCount,
+            haCount,
+            thuongQuai,
+            thuongName: tQuai.name,
+            haQuai,
+            haName: hQuai.name,
+            haoDong,
+            thuongText,
+            haText,
+            hexLines,
+            tokenList
+        };
+    }
+
+    let intentActionHistoryCount = 0;
+    let lastIntentRawLength = 0;
+    const intentInput = document.getElementById('intent-input');
+    const intentPreviewBox = document.getElementById('intent-preview-box');
+    const ipTotal = document.getElementById('ip-total');
+    const ipThuong = document.getElementById('ip-thuong');
+    const ipHa = document.getElementById('ip-ha');
+    const ipDong = document.getElementById('ip-dong');
+    const ipThuongCount = document.getElementById('ip-thuong-count');
+    const ipThuongText = document.getElementById('ip-thuong-text');
+    const ipHaCount = document.getElementById('ip-ha-count');
+    const ipHaText = document.getElementById('ip-ha-text');
+    const ipMainHex = document.getElementById('ip-main-hex');
+    const ipChangedHex = document.getElementById('ip-changed-hex');
+    const intentSubmitBtn = document.getElementById('intent-submit-btn');
+
+    function updateIntentLivePreview() {
+        if (!intentInput) return;
+        const val = intentInput.value;
+        const res = parseVietnameseIntent(val, intentActionHistoryCount);
+        if (res.success) {
+            const hexNames = getHexagramPairNames(res.thuongQuai, res.haQuai, res.haoDong);
+            if (intentPreviewBox) intentPreviewBox.style.display = 'block';
+            if (ipTotal) ipTotal.innerHTML = `${res.totalCount}`;
+            if (ipThuong) ipThuong.innerHTML = `${res.thuongName} (${res.thuongQuai})`;
+            if (ipHa) ipHa.innerHTML = `${res.haName} (${res.haQuai})`;
+            if (ipDong) ipDong.innerHTML = `Hào ${res.haoDong}`;
+            if (ipThuongCount) ipThuongCount.innerHTML = `${res.thuongCount}`;
+            if (ipThuongText) ipThuongText.innerHTML = `"${res.thuongText}"`;
+            if (ipHaCount) ipHaCount.innerHTML = `${res.haCount}`;
+            if (ipHaText) ipHaText.innerHTML = `"${res.haText}"`;
+            if (ipMainHex) ipMainHex.innerHTML = hexNames.mainHexName;
+            if (ipChangedHex) ipChangedHex.innerHTML = hexNames.changedHexName;
+        } else {
+            if (val.trim().length > 0) {
+                if (intentPreviewBox) intentPreviewBox.style.display = 'block';
+                if (ipTotal) ipTotal.innerHTML = '0';
+                if (ipThuong) ipThuong.innerHTML = '--';
+                if (ipHa) ipHa.innerHTML = '--';
+                if (ipDong) ipDong.innerHTML = '--';
+                if (ipThuongCount) ipThuongCount.innerHTML = '0';
+                if (ipThuongText) ipThuongText.innerHTML = '--';
+                if (ipHaCount) ipHaCount.innerHTML = '0';
+                if (ipHaText) ipHaText.innerHTML = '--';
+                if (ipMainHex) ipMainHex.innerHTML = `<span style="color:#ff6b6b; font-size: 0.85rem;">⚠️ ${res.error}</span>`;
+                if (ipChangedHex) ipChangedHex.innerHTML = '--';
+            } else {
+                if (intentPreviewBox) intentPreviewBox.style.display = 'none';
+            }
+        }
+    }
+
+    if (intentInput) {
+        intentInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                intentActionHistoryCount++;
+            }
+        });
+
+        intentInput.addEventListener('input', () => {
+            const currentLen = intentInput.value.length;
+            if (currentLen < lastIntentRawLength) {
+                intentActionHistoryCount += (lastIntentRawLength - currentLen);
+            }
+            lastIntentRawLength = currentLen;
+            updateIntentLivePreview();
+        });
+    }
+
+    if (intentSubmitBtn) {
+        intentSubmitBtn.addEventListener('click', () => {
+            const val = intentInput ? intentInput.value : '';
+            const res = parseVietnameseIntent(val, intentActionHistoryCount);
+            if (!res.success) {
+                alert(res.error || "Vui lòng nhập câu hỏi / ý niệm hợp lệ trước khi lập quẻ!");
+                if (intentInput) intentInput.focus();
+                return;
+            }
+
+            // Gán câu hỏi ý niệm vào userAnswers để hiển thị trên thẻ quẻ và AI luận giải
+            userAnswers = [val.trim(), '', '', '', '', ''];
+
+            // Tắt đếm giờ thực
+            if (liveClockTimer) clearInterval(liveClockTimer);
+
+            loadingOverlay.classList.add('visible');
+
+            const dVal = document.getElementById('current-date-time').value;
+            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const formattedDate = formatDate(dVal);
+
+            // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Gieo ý niệm)"
+            const hexData = ICHING.calculateHexagramData(res.hexLines, calendarData, "Mai hoa (Gieo ý niệm)", formattedDate);
+
+            // Tạo giao diện trong captureTarget
+            renderCaptureHTML(hexData);
+
+            // Chờ vẽ và lấy ảnh
+            setTimeout(() => {
+                const captureArea = document.getElementById('captureArea');
+                const target = document.getElementById('captureTarget');
+
+                captureArea.style.position = 'fixed';
+                captureArea.style.left = '0';
+                captureArea.style.top = '0';
+                captureArea.style.zIndex = '-1';
+                captureArea.style.opacity = '0.01';
+
+                html2canvas(target, {
+                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#0f0a05',
+                    logging: false
+                }).then(canvas => {
+                    captureArea.style.position = 'absolute';
+                    captureArea.style.left = '-9999px';
+                    captureArea.style.opacity = '1';
+
+                    const syncDataUrl = canvas.toDataURL('image/png');
+                    hexagramImg.src = syncDataUrl;
+                    hexagramImg.style.userSelect = 'auto';
+                    hexagramImg.style.webkitUserSelect = 'auto';
+                    hexagramImg.style.webkitUserDrag = 'auto';
+                    hexagramImg.style.webkitTouchCallout = 'default';
+                    hexagramImg.style.pointerEvents = 'auto';
+
+                    if (btnDownload) {
+                        btnDownload.href = syncDataUrl;
+                        btnDownload.download = `QueDich_${hexData.mainHex.name.replace(/\s+/g, '_')}_${Date.now()}.png`;
+                    }
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);

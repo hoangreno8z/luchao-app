@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinh Dịch - Thái Ất thần quẻ.</title>
     <meta name="description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <link rel="stylesheet" href="style.css?v=5.1.0">
+    <link rel="stylesheet" href="style.css?v=5.2.0">
     
     <!-- Open Graph / Zalo / Facebook / Messenger Sharing -->
     <meta property="og:type" content="website">
@@ -120,9 +120,10 @@
 
                 <!-- TABS LỰA CHỌN PHƯƠNG PHÁP -->
                 <div class="method-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(223,177,91,0.2); padding-bottom: 12px;">
-                    <button id="tab-toss" class="btn active-tab-btn" onclick="switchMethodTab('toss')" ontouchend="switchMethodTab('toss')" style="flex: 1; min-width: 160px; padding: 10px 16px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
-                    <button id="tab-manual" class="btn" onclick="switchMethodTab('manual')" ontouchend="switchMethodTab('manual')" style="flex: 1; min-width: 180px; padding: 10px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
-                    <button id="tab-number" class="btn" onclick="switchMethodTab('number')" ontouchend="switchMethodTab('number')" style="flex: 1; min-width: 140px; padding: 10px 16px; background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,174,0,0.15)); border: 1.5px solid #ffd700; color: #ffd700; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255,215,0,0.25);">✨ Nhập Số</button>
+                    <button id="tab-toss" class="btn active-tab-btn" onclick="switchMethodTab('toss')" ontouchend="switchMethodTab('toss')" style="flex: 1; min-width: 140px; padding: 10px 14px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
+                    <button id="tab-manual" class="btn" onclick="switchMethodTab('manual')" ontouchend="switchMethodTab('manual')" style="flex: 1; min-width: 160px; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
+                    <button id="tab-number" class="btn" onclick="switchMethodTab('number')" ontouchend="switchMethodTab('number')" style="flex: 1; min-width: 120px; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(168,85,247,0.3); color: #fbbf24; font-weight: 600; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">✨ Nhập Số</button>
+                    <button id="tab-intent" class="btn" onclick="switchMethodTab('intent')" ontouchend="switchMethodTab('intent')" style="flex: 1; min-width: 140px; padding: 10px 14px; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(255,215,0,0.15)); border: 1.5px solid #a855f7; color: #e9d5ff; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(168,85,247,0.25);">🔮 Gieo Ý Niệm</button>
                 </div>
 
                 <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
@@ -350,6 +351,65 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- PHÂN VÙNG 4: GIEO Ý NIỆM (ẨN MẶC ĐỊNH) -->
+                <div id="method-intent-area" class="hidden" style="animation: fadeIn 0.5s ease;">
+                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 16px; padding: 26px 20px; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <div style="max-width: 560px; margin: 0 auto 16px auto;">
+                            <label for="intent-input" style="display: block; font-weight: 700; color: #e9d5ff; margin-bottom: 8px; font-size: 1rem; text-align: center;">
+                                🔮 Nhập Ý Niệm / Câu Hỏi Chiêm Bốc
+                            </label>
+                            <textarea id="intent-input" class="form-control" rows="3"
+                                placeholder="Nhập câu hỏi cụ thể của bạn... (VD: ngày mai có mưa không? / công việc sắp tới thế nào?)"
+                                style="font-size: 1.1rem; font-weight: 600; text-align: left; padding: 14px 18px; border-radius: 16px; border: 2px solid #a855f7; background: rgba(15, 20, 35, 0.9); color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.25); transition: all 0.3s ease; resize: vertical; width: 100%; min-height: 85px;"
+                                autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+                        </div>
+
+                        <!-- Khung xem trước quẻ ý niệm thời gian thực -->
+                        <div id="intent-preview-box" style="max-width: 560px; margin: 0 auto 20px auto; padding: 14px 16px; background: rgba(168, 85, 247, 0.08); border: 1px dashed rgba(168, 85, 247, 0.45); border-radius: 12px; font-size: 0.92rem; color: #e0e6ed; line-height: 1.7; display: none;">
+                            <!-- Badges: Tổng số toán, Thượng, Hạ, Động -->
+                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; text-align: center;">
+                                <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #fbbf24;">
+                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Tổng Số Toán</span>
+                                    <strong id="ip-total" style="color: #fbbf24; font-size: 1.1rem;">0</strong>
+                                </div>
+                                <div style="flex: 1; min-width: 105px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #00d2ff;">
+                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Thượng Quái</span>
+                                    <strong id="ip-thuong" style="color: #00d2ff; font-size: 1.05rem;">--</strong>
+                                </div>
+                                <div style="flex: 1; min-width: 105px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #ff7b00;">
+                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Hạ Quái</span>
+                                    <strong id="ip-ha" style="color: #ff7b00; font-size: 1.05rem;">--</strong>
+                                </div>
+                                <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #ff2a6d;">
+                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Hào Động</span>
+                                    <strong id="ip-dong" style="color: #ff2a6d; font-size: 1.05rem;">--</strong>
+                                </div>
+                            </div>
+
+                            <!-- Chi tiết phân đoạn từ ngữ tròn nghĩa -->
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.88rem;">
+                                <div>🔹 <strong>Thượng quái (<span id="ip-thuong-count">0</span> số):</strong> <span id="ip-thuong-text" style="color: #00d2ff; font-style: italic;">--</span></div>
+                                <div style="margin-top: 5px;">🔸 <strong>Hạ quái (<span id="ip-ha-count">0</span> số):</strong> <span id="ip-ha-text" style="color: #ff7b00; font-style: italic;">--</span></div>
+                            </div>
+
+                            <!-- Tên quẻ chủ & quẻ biến -->
+                            <div style="text-align: center; font-size: 0.95rem; padding-top: 4px;">
+                                <span>Quẻ Chủ: <strong id="ip-main-hex" style="color: #fbbf24;">--</strong></span>
+                                <span style="margin: 0 8px; color: #888;">➔</span>
+                                <span>Quẻ Biến: <strong id="ip-changed-hex" style="color: #00f2fe;">--</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Nút Lập Quẻ Ý Niệm -->
+                        <div style="text-align: center; margin-top: 8px;">
+                            <button id="intent-submit-btn" class="btn" 
+                                style="border-radius: 35px; padding: 14px 45px; min-width: 240px; background: linear-gradient(135deg, #a855f7, #ec4899); color: #ffffff; font-weight: 800; font-size: 1.15rem; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.45); transition: all 0.3s ease; letter-spacing: 1px;">
+                                LẬP QUẺ Ý NIỆM
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- MÀN HÌNH 3: HIỂN THỊ KẾT QUẢ QUẺ DỊCH -->
@@ -429,8 +489,8 @@
     <!-- Lightning Flash overlay -->
     <div id="lightning-strike-overlay"></div>
 
-    <script src="calendar.js?v=5.1.0"></script>
-    <script src="iching_core.js?v=5.1.0"></script>
-    <script src="app.js?v=5.1.0"></script>
+    <script src="calendar.js?v=5.2.0"></script>
+    <script src="iching_core.js?v=5.2.0"></script>
+    <script src="app.js?v=5.2.0"></script>
 </body>
 </html>
