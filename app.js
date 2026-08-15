@@ -778,9 +778,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseVietnameseIntent(text, extraDebt = 0) {
         if (!text || typeof text !== 'string') return { success: false, error: 'Chưa có nội dung ý niệm' };
         
+        const normalized = text.normalize('NFC');
         // Split into tokens: words, spaces, punctuation
         const regex = /(\s+|[^\s]+)/g;
-        const tokens = text.match(regex) || [];
+        const tokens = normalized.match(regex) || [];
         if (tokens.length === 0) return { success: false, error: 'Chưa có nội dung ý niệm' };
         
         let baseTotal = 0;
@@ -918,8 +919,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function calculateStringActionWeight(str) {
         if (!str) return 0;
+        const normalized = str.normalize('NFC');
         const regex = /(\s+|[^\s]+)/g;
-        const tokens = str.match(regex) || [];
+        const tokens = normalized.match(regex) || [];
         let total = 0;
         tokens.forEach(tok => {
             const { count } = countWordActions(tok);
@@ -930,7 +932,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleIntentInputEvent() {
         if (!intentInput) return;
-        const val = intentInput.value;
+        const val = (intentInput.value || '').normalize('NFC');
+
+        if (val.length === 0) {
+            // Khi ô nhập hoàn toàn trống -> bắt đầu câu hỏi mới
+            intentPeakWeight = 0;
+            intentCorrectionDebt = 0;
+            updateIntentLivePreview();
+            return;
+        }
+
         const currentWeight = calculateStringActionWeight(val);
 
         if (currentWeight < intentPeakWeight) {
