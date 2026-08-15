@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { count, breakdown };
     }
 
-    function parseVietnameseIntent(text) {
+    function parseVietnameseIntent(text, extraDebt = 0) {
         if (!text || typeof text !== 'string') return { success: false, error: 'Chưa có nội dung ý niệm' };
         
         // Split into tokens: words, spaces, punctuation
@@ -783,13 +783,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const tokens = text.match(regex) || [];
         if (tokens.length === 0) return { success: false, error: 'Chưa có nội dung ý niệm' };
         
-        let totalCount = 0;
+        let baseTotal = 0;
         const tokenList = [];
         tokens.forEach(tok => {
             const { count, breakdown } = countWordActions(tok);
             tokenList.push({ token: tok, count, breakdown, isSpace: /^\s+$/.test(tok) });
-            totalCount += count;
+            baseTotal += count;
         });
+
+        const totalCount = baseTotal + extraDebt;
 
         if (totalCount < 2) {
             return { success: false, error: 'Vui lòng nhập ít nhất 2 ký tự ý niệm.' };
@@ -811,6 +813,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return {
                 success: true,
                 totalCount: 3,
+                baseTotal,
+                extraDebt,
                 thuongCount: 1,
                 haCount: 2,
                 thuongQuai: 1, // Càn
@@ -878,6 +882,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return {
             success: true,
             totalCount,
+            baseTotal,
+            extraDebt,
             thuongCount,
             haCount,
             thuongQuai,
@@ -892,9 +898,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    let intentCorrectionDebt = 0;
+    let isIMEComposing = false;
+
     const intentInput = document.getElementById('intent-input');
     const intentPreviewBox = document.getElementById('intent-preview-box');
+    const intentResetBtn = document.getElementById('intent-reset-btn');
     const ipTotal = document.getElementById('ip-total');
+    const ipSubDetail = document.getElementById('ip-sub-detail');
     const ipThuong = document.getElementById('ip-thuong');
     const ipHa = document.getElementById('ip-ha');
     const ipDong = document.getElementById('ip-dong');
@@ -909,11 +920,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateIntentLivePreview() {
         if (!intentInput) return;
         const val = intentInput.value;
-        const res = parseVietnameseIntent(val);
+        const res = parseVietnameseIntent(val, intentCorrectionDebt);
         if (res.success) {
             const hexNames = getHexagramPairNames(res.thuongQuai, res.haQuai, res.haoDong);
             if (intentPreviewBox) intentPreviewBox.style.display = 'block';
             if (ipTotal) ipTotal.innerHTML = `${res.totalCount}`;
+            if (ipSubDetail) {
+                if (intentCorrectionDebt > 0) {
+                    ipSubDetail.style.display = 'block';
+                    ipSubDetail.innerHTML = `(Gốc: ${res.baseTotal}, Sửa: +${intentCorrectionDebt})`;
+                } else {
+                    ipSubDetail.style.display = 'none';
+                }
+            }
             if (ipThuong) ipThuong.innerHTML = `${res.thuongName} (${res.thuongQuai})`;
             if (ipHa) ipHa.innerHTML = `${res.haName} (${res.haQuai})`;
             if (ipDong) ipDong.innerHTML = `Hào ${res.haoDong}`;
@@ -924,9 +943,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ipMainHex) ipMainHex.innerHTML = hexNames.mainHexName;
             if (ipChangedHex) ipChangedHex.innerHTML = hexNames.changedHexName;
         } else {
-            if (val.trim().length > 0) {
+            if (val.trim().length > 0 || intentCorrectionDebt > 0) {
                 if (intentPreviewBox) intentPreviewBox.style.display = 'block';
-                if (ipTotal) ipTotal.innerHTML = '0';
+                if (ipTotal) ipTotal.innerHTML = `${intentCorrectionDebt}`;
+                if (ipSubDetail) ipSubDetail.style.display = 'none';
                 if (ipThuong) ipThuong.innerHTML = '--';
                 if (ipHa) ipHa.innerHTML = '--';
                 if (ipDong) ipDong.innerHTML = '--';
@@ -942,7 +962,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    if (intentResetBtn) {
+        intentResetBtn.addEventListener('click', () => {
+            intentCorrectionDebt = 0;
+            if (intentInput) {
+                intentInput.value = '';
+                intentInput.focus();
+            }
+            updateIntentLivePreview();
+        });
+    }
+
     if (intentInput) {
+        intentInput.addEventListener('compositionstart', () => {
+            isIMEComposing = true;
+        });
+
+        intentInput.addEventListener('compositionend', () => {
+            isIMEComposing = false;
+            updateIntentLivePreview();
+        });
+
+        intentInput.addEventListener('keydown', (e) => {
+            if (isIMEComposing) return;
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                // Người dùng bấm xóa ký tự lỗi:
+                // 1 số toán cho ký tự đã gõ trước đó bị xóa + 1 số toán cho thao tác phím xóa = 2
+                intentCorrectionDebt += 2;
+                setTimeout(updateIntentLivePreview, 10);
+            }
+        });
+
         intentInput.addEventListener('input', updateIntentLivePreview);
         intentInput.addEventListener('keyup', updateIntentLivePreview);
         intentInput.addEventListener('change', updateIntentLivePreview);
@@ -952,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (intentSubmitBtn) {
         intentSubmitBtn.addEventListener('click', () => {
             const val = intentInput ? intentInput.value : '';
-            const res = parseVietnameseIntent(val);
+            const res = parseVietnameseIntent(val, intentCorrectionDebt);
             if (!res.success) {
                 alert(res.error || "Vui lòng nhập câu hỏi / ý niệm hợp lệ trước khi lập quẻ!");
                 if (intentInput) intentInput.focus();
