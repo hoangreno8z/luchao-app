@@ -1031,29 +1031,27 @@ function calculateThaiAtChart(mode, year, month, day, hour, engineType = "classi
     else factory = new ThoiKeEngine(year, month, day, hour);
     
     let astroInfo = null;
-    if (engineType === "astronomical" && typeof ThaiYiCalibrator !== "undefined") {
-        const jd = ThaiYiCalibrator.dateToJD(year, month, day, hour);
-        const calib = ThaiYiCalibrator.calibrateYearTichNien(year, factory.tueTich || 10155943, month, day);
-        const solarLong = ThaiYiCalibrator.getTrueSolarLongitude(year, month, day, hour);
-        const eot = ThaiYiCalibrator.getEquationOfTime(year, month, day, hour);
-        
+    let engCurrent, engNext;
+    
+    if (engineType === "astronomical" && typeof ThaiAtAstronomicalEngine !== "undefined" && typeof AstroVSOP87 !== "undefined") {
+        const eph = AstroVSOP87.calculateEphemeris(new Date(year, month - 1, day, hour, 0, 0));
         astroInfo = {
-            jd,
-            deltaDYear: calib.deltaDYear,
-            calibratedTichNien: calib.calibratedTichNien,
-            calibratedKyDu: calib.calibratedKyDu,
-            solarLongitude: solarLong,
-            equationOfTime: eot
+            jd: eph.JD,
+            deltaDYear: (eph.T * 100 * (12.0 - 11.8618) * 30).toFixed(1),
+            calibratedTichNien: Math.floor((factory.tueTich || 10155943) - eph.T * 100 * 4.14),
+            calibratedKyDu: Math.floor(((factory.tueTich || 10155943) - eph.T * 100 * 4.14) % 360),
+            solarLongitude: eph.sun.longitude,
+            equationOfTime: (eph.sun.longitude - eph.sun.trueLongitude) * 4
         };
         
-        if (mode === "tue") {
-            factory.tueTich = calib.calibratedTichNien;
-            factory.kyDu = calib.calibratedKyDu;
-        }
+        const baseTich = factory.tueTich || 10155943;
+        const isDuong = (factory.getEngine && factory.getEngine(0)) ? factory.getEngine(0).isDuongDon : true;
+        engCurrent = new ThaiAtAstronomicalEngine(baseTich, baseTich % 360, isDuong, factory.namCanIdx, factory.tuTru, year, month, day, hour, 0);
+        engNext = new ThaiAtAstronomicalEngine(baseTich + 1, (baseTich + 1) % 360, isDuong, factory.namCanIdx, factory.tuTru, year + 1, month, day, hour, 0);
+    } else {
+        engCurrent = factory.getEngine(0);
+        engNext = factory.getEngine(1);
     }
-    
-    const engCurrent = factory.getEngine(0);
-    const engNext = factory.getEngine(1);
     
     const currRes = engCurrent.getAllStars();
     const nextRes = engNext.getAllStars();
