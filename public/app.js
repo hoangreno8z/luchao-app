@@ -775,22 +775,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return { count, breakdown };
     }
 
-    function parseVietnameseIntent(text, extraActionHistoryCount = 0) {
+    function parseVietnameseIntent(text) {
         if (!text || typeof text !== 'string') return { success: false, error: 'Chưa có nội dung ý niệm' };
         
         // Split into tokens: words, spaces, punctuation
         const regex = /(\s+|[^\s]+)/g;
         const tokens = text.match(regex) || [];
+        if (tokens.length === 0) return { success: false, error: 'Chưa có nội dung ý niệm' };
         
-        let baseTotal = 0;
+        let totalCount = 0;
         const tokenList = [];
         tokens.forEach(tok => {
             const { count, breakdown } = countWordActions(tok);
             tokenList.push({ token: tok, count, breakdown, isSpace: /^\s+$/.test(tok) });
-            baseTotal += count;
+            totalCount += count;
         });
-
-        const totalCount = baseTotal + extraActionHistoryCount;
 
         if (totalCount < 2) {
             return { success: false, error: 'Vui lòng nhập ít nhất 2 ký tự ý niệm.' };
@@ -893,8 +892,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    let intentActionHistoryCount = 0;
-    let lastIntentRawLength = 0;
     const intentInput = document.getElementById('intent-input');
     const intentPreviewBox = document.getElementById('intent-preview-box');
     const ipTotal = document.getElementById('ip-total');
@@ -912,7 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateIntentLivePreview() {
         if (!intentInput) return;
         const val = intentInput.value;
-        const res = parseVietnameseIntent(val, intentActionHistoryCount);
+        const res = parseVietnameseIntent(val);
         if (res.success) {
             const hexNames = getHexagramPairNames(res.thuongQuai, res.haQuai, res.haoDong);
             if (intentPreviewBox) intentPreviewBox.style.display = 'block';
@@ -946,26 +943,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (intentInput) {
-        intentInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-                intentActionHistoryCount++;
-            }
-        });
-
-        intentInput.addEventListener('input', () => {
-            const currentLen = intentInput.value.length;
-            if (currentLen < lastIntentRawLength) {
-                intentActionHistoryCount += (lastIntentRawLength - currentLen);
-            }
-            lastIntentRawLength = currentLen;
-            updateIntentLivePreview();
-        });
+        intentInput.addEventListener('input', updateIntentLivePreview);
+        intentInput.addEventListener('keyup', updateIntentLivePreview);
+        intentInput.addEventListener('change', updateIntentLivePreview);
+        intentInput.addEventListener('paste', () => setTimeout(updateIntentLivePreview, 50));
     }
 
     if (intentSubmitBtn) {
         intentSubmitBtn.addEventListener('click', () => {
             const val = intentInput ? intentInput.value : '';
-            const res = parseVietnameseIntent(val, intentActionHistoryCount);
+            const res = parseVietnameseIntent(val);
             if (!res.success) {
                 alert(res.error || "Vui lòng nhập câu hỏi / ý niệm hợp lệ trước khi lập quẻ!");
                 if (intentInput) intentInput.focus();
