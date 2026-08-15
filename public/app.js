@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainScreen = document.getElementById('main-screen');
     const disclaimerCheckbox = document.getElementById('disclaimer-checkbox');
     const proceedBtn = document.getElementById('proceed-btn');
+    const castingStage = document.getElementById('casting-stage');
+    const resultArea = document.getElementById('result-area');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const hexagramImg = document.getElementById('hexagram-img');
+    const downloadBtn = document.getElementById('download-btn');
 
     disclaimerCheckbox.addEventListener('change', () => {
         proceedBtn.disabled = !disclaimerCheckbox.checked;
@@ -1115,11 +1120,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     hexagramImg.style.webkitUserDrag = 'auto';
                     hexagramImg.style.webkitTouchCallout = 'default';
                     hexagramImg.style.pointerEvents = 'auto';
+                    hexagramImg.style.touchAction = 'auto';
 
-                    if (btnDownload) {
-                        btnDownload.href = syncDataUrl;
-                        btnDownload.download = `QueDich_${hexData.mainHex.name.replace(/\s+/g, '_')}_${Date.now()}.png`;
-                    }
+                    try {
+                        canvas.toBlob(blob => {
+                            if (blob) {
+                                hexagramImg.src = URL.createObjectURL(blob);
+                            }
+                        }, 'image/png');
+                    } catch (e) {}
 
                     // Cập nhật kết luận giải thích
                     displayInterpretation(hexData);
@@ -1309,11 +1318,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. HIỂN THỊ KẾT QUẢ VÀ CHỤP CARD
     // -------------------------------------------------------------------------
     const finishBtn = document.getElementById('finish-btn');
-    const castingStage = document.getElementById('casting-stage');
-    const resultArea = document.getElementById('result-area');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const hexagramImg = document.getElementById('hexagram-img');
-    const downloadBtn = document.getElementById('download-btn');
 
     finishBtn.addEventListener('click', () => {
         try {
