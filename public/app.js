@@ -898,12 +898,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    let intentPeakWeight = 0;
     let intentCorrectionDebt = 0;
-    let isIMEComposing = false;
 
     const intentInput = document.getElementById('intent-input');
     const intentPreviewBox = document.getElementById('intent-preview-box');
-    const intentResetBtn = document.getElementById('intent-reset-btn');
     const ipTotal = document.getElementById('ip-total');
     const ipSubDetail = document.getElementById('ip-sub-detail');
     const ipThuong = document.getElementById('ip-thuong');
@@ -916,6 +915,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const ipMainHex = document.getElementById('ip-main-hex');
     const ipChangedHex = document.getElementById('ip-changed-hex');
     const intentSubmitBtn = document.getElementById('intent-submit-btn');
+
+    function calculateStringActionWeight(str) {
+        if (!str) return 0;
+        const regex = /(\s+|[^\s]+)/g;
+        const tokens = str.match(regex) || [];
+        let total = 0;
+        tokens.forEach(tok => {
+            const { count } = countWordActions(tok);
+            total += count;
+        });
+        return total;
+    }
+
+    function handleIntentInputEvent() {
+        if (!intentInput) return;
+        const val = intentInput.value;
+        const currentWeight = calculateStringActionWeight(val);
+
+        if (currentWeight < intentPeakWeight) {
+            // Người dùng thực sự đã xóa bớt ký tự/từ lỗi
+            const dropped = intentPeakWeight - currentWeight;
+            intentCorrectionDebt += (dropped * 2);
+            intentPeakWeight = currentWeight;
+        } else {
+            intentPeakWeight = currentWeight;
+        }
+
+        updateIntentLivePreview();
+    }
 
     function updateIntentLivePreview() {
         if (!intentInput) return;
@@ -962,41 +990,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (intentResetBtn) {
-        intentResetBtn.addEventListener('click', () => {
-            intentCorrectionDebt = 0;
-            if (intentInput) {
-                intentInput.value = '';
-                intentInput.focus();
-            }
-            updateIntentLivePreview();
-        });
-    }
-
     if (intentInput) {
-        intentInput.addEventListener('compositionstart', () => {
-            isIMEComposing = true;
-        });
-
-        intentInput.addEventListener('compositionend', () => {
-            isIMEComposing = false;
-            updateIntentLivePreview();
-        });
-
-        intentInput.addEventListener('keydown', (e) => {
-            if (isIMEComposing) return;
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-                // Người dùng bấm xóa ký tự lỗi:
-                // 1 số toán cho ký tự đã gõ trước đó bị xóa + 1 số toán cho thao tác phím xóa = 2
-                intentCorrectionDebt += 2;
-                setTimeout(updateIntentLivePreview, 10);
-            }
-        });
-
-        intentInput.addEventListener('input', updateIntentLivePreview);
-        intentInput.addEventListener('keyup', updateIntentLivePreview);
-        intentInput.addEventListener('change', updateIntentLivePreview);
-        intentInput.addEventListener('paste', () => setTimeout(updateIntentLivePreview, 50));
+        intentInput.addEventListener('input', handleIntentInputEvent);
+        intentInput.addEventListener('change', handleIntentInputEvent);
+        intentInput.addEventListener('paste', () => setTimeout(handleIntentInputEvent, 50));
     }
 
     if (intentSubmitBtn) {
