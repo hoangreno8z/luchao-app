@@ -419,17 +419,32 @@ class ThaiAtBaseEngine {
     
     // ------ NHÓM TỨ THẦN KỲ (MOD 36/12) ------
     calcTuThanKy() {
-        const cucNum = (this.cucNum || (this.kyDu % 72) || 72);
-        const kVal = (this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360) || cucNum);
-        const step = Math.floor((cucNum - 1) / 3) % 12;
+        const kVal = (this.kyDu !== undefined ? this.kyDu : (this.tueTich % 360)) || 360;
         
-        // Mảng 12 cung Tứ Thần Kỳ: 1:Càn(3), 2:Ly(13), 3:Cấn(7), 4:Chấn(9), 5:Trung(-1), 6:Đoài(1), 7:Khôn(15), 8:Khảm(5), 9:Tốn(11), 10:Tị(12), 11:Thân(0), 12:Dần(8)
-        const MASTER_PATH = [3, 13, 7, 9, -1, 1, 15, 5, 11, 12, 0, 8];
+        // Bước 2: Vòng kỷ dư chia 36 lấy số dư
+        const r36 = (kVal % 36) || 36;
         
-        const tuThanIdx = MASTER_PATH[(0 + step) % 12];   // Khởi Càn (idx 0 của MASTER_PATH)
-        const thienAtIdx = MASTER_PATH[(5 + step) % 12];  // Khởi Đoài (idx 5 của MASTER_PATH)
-        const trucPhuIdx = MASTER_PATH[(8 + step) % 12];  // Khởi Tốn (idx 8 của MASTER_PATH)
-        const diaAtIdx = MASTER_PATH[(4 + step) % 12];    // Khởi Trung Cung (idx 4 của MASTER_PATH -> Cục 32 ở Cấn)
+        // Bước 3: Lấy số dư chia tiếp cho 3 để tìm vị trí
+        // Kết quả phép chia = số vị trí loại bỏ, an lên vị trí thứ tự tiếp theo (0-based index)
+        const step = Math.floor((r36 - 1) / 3);
+        
+        // Mảng 12 vị trí của Tứ Thần, Thiên Ất, Địa Ất, Trực Phù:
+        // 1. Tứ Thần: Khởi 1 Càn(3), 2 Ly(13), 3 Cấn(7), 4 Chấn(9), 5 Trung(-1), 6 Đoài(1), 7 Khôn(15), 8 Khảm(5), 9 Tốn(11), 10 Tị(12), 11 Thân(0), 12 Dần(8)
+        const PATH_TU_THAN = [3, 13, 7, 9, -1, 1, 15, 5, 11, 12, 0, 8];
+        
+        // 2. Thiên Ất: Khởi 1 Đoài(1), 2 Khôn(15), 3 Khảm(5), 4 Tốn(11), 5 Tị(12), 6 Thân(0), 7 Dần(8), 8 Kiền(3), 9 Ly(13), 10 Cấn(7), 11 Chấn(9), 12 Trung(-1)
+        const PATH_THIEN_AT = [1, 15, 5, 11, 12, 0, 8, 3, 13, 7, 9, -1];
+        
+        // 3. Địa Ất: Khởi 1 Tốn(11), 2 Tị(12), 3 Thân(0), 4 Dần(8), 5 Kiền(3), 6 Ly(13), 7 Cấn(7), 8 Chấn(9), 9 Trung(-1), 10 Đoài(1), 11 Khôn(15), 12 Khảm(5)
+        const PATH_DIA_AT = [11, 12, 0, 8, 3, 13, 7, 9, -1, 1, 15, 5];
+        
+        // 4. Trực Phù: Khởi 1 Trung(-1), 2 Đoài(1), 3 Khôn(15), 4 Khảm(5), 5 Tốn(11), 6 Tị(12), 7 Thân(0), 8 Dần(8), 9 Càn(3), 10 Ly(13), 11 Cấn(7), 12 Chấn(9)
+        const PATH_TRUC_PHU = [-1, 1, 15, 5, 11, 12, 0, 8, 3, 13, 7, 9];
+        
+        const tuThanIdx = PATH_TU_THAN[step];
+        const thienAtIdx = PATH_THIEN_AT[step];
+        const diaAtIdx = PATH_DIA_AT[step];
+        const trucPhuIdx = PATH_TRUC_PHU[step];
         
         // 1. Thanh Long: Kỷ Dư % 60 % 12, khởi Hợi thuận 12 địa chi
         const r60_tl = kVal % 60;
