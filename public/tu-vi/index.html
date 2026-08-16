@@ -3,109 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tử Vi Đẩu Số — Dịch Sư Nguyễn Huy Hoàng</title>
-    <meta name="description" content="Lập lá số Tử Vi Đẩu Số 12 Cung, 108 Tinh Tú, Tinh Hệ, Vận Hạn — Dịch Sư Nguyễn Huy Hoàng (Zalo: 0933 116 860)">
-
+    <title>Tử Vi — Lá Số Tử Vi Đẩu Số Đại Toàn | Dịch Sư Nguyễn Huy Hoàng</title>
+    <meta name="description" content="Lập lá số Tử Vi Đẩu Số 12 cung, 14 chính tinh, ngũ hành phong thủy, tứ hóa, thần sát và đại vận — Dịch Sư Nguyễn Huy Hoàng">
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="../style.css?v=6.1.0">
-    <style>
-        .tuvi-hero {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 40px 25px;
-            background: rgba(14, 18, 42, 0.85);
-            border: 1px solid rgba(251, 191, 36, 0.35);
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(251, 191, 36, 0.2);
-        }
-
-        .tuvi-badge {
-            display: inline-block;
-            padding: 6px 18px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(180, 83, 9, 0.25));
-            border: 1px solid #ffd700;
-            border-radius: 20px;
-            color: #ffd700;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-        }
-
-        .tuvi-hero h1 {
-            color: #ffd700;
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .tuvi-hero p {
-            color: #cbd5e1;
-            font-size: 1.05rem;
-            line-height: 1.8;
-            max-width: 720px;
-            margin: 0 auto 25px;
-        }
-
-        .tuvi-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin: 35px 0;
-            text-align: left;
-        }
-
-        .tuvi-feat-card {
-            background: rgba(6, 8, 20, 0.6);
-            border: 1px solid rgba(251, 191, 36, 0.25);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .tuvi-feat-card h4 {
-            color: #ffd700;
-            font-size: 1.05rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tuvi-feat-card p {
-            font-size: 0.88rem;
-            color: #94a3b8;
-            margin-bottom: 0;
-        }
-
-        .cta-btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, #d4af37, #b45309);
-            color: #ffffff;
-            font-weight: 800;
-            padding: 12px 28px;
-            border-radius: 30px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
-            transition: all 0.25s ease;
-            border: 1px solid #ffd700;
-        }
-
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 22px rgba(251, 191, 36, 0.6);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css?v=3.5.0">
 </head>
 <body>
 
@@ -113,121 +19,137 @@
     <header class="app-universal-header">
         <div class="header-inner">
             <a href="/" class="brand-link">
-                <div>
-                    <span class="brand-title">NGUYỄN HUY HOÀNG</span>
-                    <span class="brand-sub">Tử Vi Đẩu Số (12 Cung Tinh Hệ)</span>
-                </div>
+                <span class="brand-icon">⭐</span>
+                <span class="brand-title">NGUYỄN HUY HOÀNG</span>
+                <span class="brand-sub">TỬ VI ĐẨU SỐ</span>
             </a>
-
             <div class="menu-dropdown-wrapper">
-                <button id="menu-btn" class="menu-toggle-btn" aria-label="Mở Menu">
+                <button type="button" class="menu-toggle-btn" id="menuToggleBtn">
                     <span>☰ MENU</span>
-                    <span class="arrow-icon">▼</span>
+                    <span style="font-size: 0.75rem;">▼</span>
                 </button>
-
-                <nav id="dropdown-menu" class="portal-dropdown-menu">
+                <div class="portal-dropdown-menu" id="portalDropdownMenu">
                     <a href="/" class="menu-item">
-                        <span class="menu-icon">🏠</span>
-                        <div>
-                            <div>Trang Chủ</div>
-                            <span class="menu-desc">Giới thiệu & Triết lý</span>
-                        </div>
+                        <span>🏠</span> Trang Chủ
                     </a>
                     <a href="/kinh-dich/" class="menu-item">
-                        <span class="menu-icon">☰</span>
-                        <div>
-                            <div>Kinh Dịch</div>
-                            <span class="menu-desc">Gieo quẻ Lục Hào Cổ Bốc</span>
-                        </div>
+                        <span>☰</span> Kinh Dịch
                     </a>
                     <a href="/tu-vi/" class="menu-item active">
-                        <span class="menu-icon">⭐</span>
-                        <div>
-                            <div>Tử Vi</div>
-                            <span class="menu-desc">Lá số Tử Vi Đẩu Số 12 Cung</span>
-                        </div>
+                        <span>⭐</span> Tử Vi
                     </a>
                     <a href="/thai-at/" class="menu-item">
-                        <span class="menu-icon">☯</span>
-                        <div>
-                            <div>Thái Ất</div>
-                            <span class="menu-desc">Sa bàn 16 cung & 72 cục</span>
-                        </div>
+                        <span>☯</span> Thái Ất
                     </a>
                     <a href="/bat-tu/" class="menu-item">
-                        <span class="menu-icon">🏛️</span>
-                        <div>
-                            <div>Bát Tự</div>
-                            <span class="menu-desc">Tứ Trụ, Thập Thần & Đại Vận</span>
-                        </div>
+                        <span>🏛️</span> Bát Tự
                     </a>
-                </nav>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="container" style="max-width: 960px; margin: 0 auto; padding: 20px;">
-        <div class="tuvi-hero">
-            <div class="tuvi-badge">⭐ TỬ VI ĐẨU SỐ TOÀN THƯ</div>
-            <h1>TỬ VI — NHÌN VẬN MỆNH TRONG DÒNG THỜI GIAN</h1>
-            <p>
-                Tử Vi là một hệ thống phức tạp về <strong>thời gian, không gian và các tổ hợp tinh hệ</strong>. Hệ thống tự động an sao chuẩn xác 12 Cung Mệnh Số, 14 Chính Tinh, Phụ Tinh, Tứ Hóa, Thập Niên Đại Hạn & Lưu Niên đang được tích hợp nâng cấp vào hệ thống chung.
-            </p>
+    <div class="container">
+        <!-- Page Title -->
+        <div class="page-header">
+            <div class="logo-badge">THẬP NHỊ CUNG VỊ — TINH HỆ ĐẨU SỐ</div>
+            <h1 class="page-title">LÁ SỐ TỬ VI</h1>
+            <p class="page-subtitle">Hệ thống an sao Tử Vi Đẩu Số chuẩn xác, phân định màu sắc Ngũ Hành phong thủy</p>
+        </div>
 
-            <div class="tuvi-features">
-                <div class="tuvi-feat-card">
-                    <h4><span>🌌</span> 12 Cung Mệnh Số</h4>
-                    <p>Mệnh, Phụ, Phúc, Điền, Quan, Nô, Di, Tật, Tài, Tử, Phu Thê, Huynh Đệ liên kết đa chiều.</p>
+        <!-- Input Form -->
+        <div class="form-card">
+            <form id="tuViForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="inputName">Họ và Tên</label>
+                        <input type="text" id="inputName" class="form-control" placeholder="Nhập họ tên..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputGender">Giới Tính</label>
+                        <select id="inputGender" class="form-control">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputSolarDay">Ngày Sinh (Dương Lịch)</label>
+                        <input type="number" id="inputSolarDay" class="form-control" min="1" max="31" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputSolarMonth">Tháng Sinh (Dương Lịch)</label>
+                        <input type="number" id="inputSolarMonth" class="form-control" min="1" max="12" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputSolarYear">Năm Sinh (Dương Lịch)</label>
+                        <input type="number" id="inputSolarYear" class="form-control" min="1900" max="2100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputHour">Giờ Sinh (Canh Giờ)</label>
+                        <select id="inputHour" class="form-control">
+                            <option value="0">Tý (23h - 01h)</option>
+                            <option value="1">Sửu (01h - 03h)</option>
+                            <option value="2">Dần (03h - 05h)</option>
+                            <option value="3">Mão (05h - 07h)</option>
+                            <option value="4">Thìn (07h - 09h)</option>
+                            <option value="5">Tị (09h - 11h)</option>
+                            <option value="6">Ngọ (11h - 13h)</option>
+                            <option value="7">Mùi (13h - 15h)</option>
+                            <option value="8">Thân (15h - 17h)</option>
+                            <option value="9">Dậu (17h - 19h)</option>
+                            <option value="10">Tuất (19h - 21h)</option>
+                            <option value="11">Hợi (21h - 23h)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputViewYear">Năm Xem Hạn</label>
+                        <input type="number" id="inputViewYear" class="form-control" min="1900" max="2100" value="2026">
+                    </div>
                 </div>
-                <div class="tuvi-feat-card">
-                    <h4><span>✨</span> 14 Chính Tinh & Tứ Hóa</h4>
-                    <p>Tử Vi, Thiên Phủ, Vũ Khúc, Thái Dương, Thiên Cơ... cùng Hóa Khoa, Hóa Quyền, Hóa Lộc, Hóa Kỵ.</p>
-                </div>
-                <div class="tuvi-feat-card">
-                    <h4><span>⏳</span> Đại Hạn & Lưu Niên</h4>
-                    <p>Theo dõi sự biến chuyển của vận thế qua từng thập kỷ và từng năm theo quy luật âm dương.</p>
-                </div>
+
+                <button type="submit" class="btn-submit">
+                    <span>⚡ LẬP LÁ SỐ TỬ VI ĐẨU SỐ</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 12-Palace Traditional Chart -->
+        <div class="chart-container-wrapper">
+            <div class="chart-header-actions">
+                <div class="chart-header-title">ĐỒ HÌNH THẬP NHỊ CUNG — LÁ SỐ TỬ VI</div>
+                <button type="button" class="btn-export-png" id="btnExportPng">
+                    <span>📥 Tải Ảnh Lá Số HD (PNG)</span>
+                </button>
             </div>
 
-            <div class="cta-btn-group">
-                <a href="/bat-tu/" class="btn-gold">🏛️ Trải Nghiệm Bát Tự Tứ Trụ</a>
-                <a href="/kinh-dich/" class="btn-gold" style="background: rgba(255,255,255,0.08);">☰ Gieo Quẻ Kinh Dịch</a>
-                <a href="/thai-at/" class="btn-gold" style="background: rgba(255,255,255,0.08);">☯ Xem Thái Ất Thần Số</a>
+            <!-- The Grid Element -->
+            <div class="tuvi-grid" id="tuviGrid">
+                <!-- Injected via JavaScript -->
             </div>
         </div>
-    </main>
 
-    <footer>
-        <p>© 2026 Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258</p>
-    </footer>
+        <!-- Tra Cứu Tinh Tú Section -->
+        <div class="reference-card">
+            <div class="ref-tabs">
+                <button type="button" class="ref-tab-btn active" data-tab="chinh_tinh">14 Chính Tinh</button>
+                <button type="button" class="ref-tab-btn" data-tab="luc_sat">Lục Sát & Hung Tinh</button>
+                <button type="button" class="ref-tab-btn" data-tab="luc_cat">Lục Cát Tinh</button>
+                <button type="button" class="ref-tab-btn" data-tab="tu_hoa">Bộ Tứ Hóa</button>
+            </div>
+            <div class="ref-content-grid" id="refContentGrid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
 
-    <!-- Dropdown Menu Interaction Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.getElementById('menu-btn');
-            const dropdownMenu = document.getElementById('dropdown-menu');
-            if (!menuBtn || !dropdownMenu) return;
-
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('show');
-                menuBtn.classList.toggle('active');
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
-                    menuBtn.classList.remove('active');
-                }
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    dropdownMenu.classList.remove('show');
-                    menuBtn.classList.remove('active');
-                }
-            });
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="js/lunar.js"></script>
+    <script type="module" src="script.js?v=3.5.0"></script>
 </body>
 </html>
