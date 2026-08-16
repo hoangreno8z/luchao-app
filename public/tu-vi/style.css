@@ -595,3 +595,118 @@ body {
     color: #cbd5e1;
     line-height: 1.5;
 }
+
+/* ==========================================================================
+   FIT SCREEN MODE & MOBILE RESPONSIVE
+   ========================================================================== */
+.chart-container-wrapper.fit-screen-mode .tuvi-grid {
+    min-width: unset !important;
+    width: 100% !important;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px 6px;
+    }
+    
+    .chart-container-wrapper {
+        padding: 8px 4px;
+        margin-bottom: 20px;
+    }
+
+    .chart-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .chart-header-actions > div:last-child {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* In Fit Screen Mode on mobile, scale elements to fit screen exactly */
+    .chart-container-wrapper.fit-screen-mode .tuvi-grid {
+        min-width: unset !important;
+        width: 100% !important;
+        gap: 1px !important;
+        border-width: 1px !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .palace-box {
+        min-height: 145px !important;
+        padding: 4px 3px !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .palace-header .palace-can {
+        font-size: 0.72rem !important;
+        font-weight: 900 !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .palace-header .palace-cung-name {
+        font-size: 0.65rem !important;
+        font-weight: 800 !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .palace-header .palace-daihan {
+        font-size: 0.65rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .main-star-item {
+        font-size: 0.7rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .stars-column-left span,
+    .chart-container-wrapper.fit-screen-mode .stars-column-right span {
+        font-size: 0.58rem !important;
+        line-height: 1.15 !important;
+        white-space: nowrap;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .palace-footer {
+        font-size: 0.55rem !important;
+        padding-top: 2px !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .trung-cung-box {
+        padding: 4px !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-header .tc-title {
+        font-size: 0.78rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-info-grid {
+        gap: 2px 4px !important;
+        font-size: 0.6rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-label {
+        font-size: 0.58rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-value {
+        font-size: 0.6rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-author-box {
+        margin-top: 4px !important;
+        padding-top: 4px !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-author-contact {
+        font-size: 0.62rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .tc-author-quote {
+        font-size: 0.55rem !important;
+    }
+
+    .chart-container-wrapper.fit-screen-mode .badge-tuan,
+    .chart-container-wrapper.fit-screen-mode .badge-triet {
+        font-size: 0.55rem !important;
+        padding: 1px 4px !important;
+    }
+}
+
