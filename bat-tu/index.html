@@ -199,22 +199,28 @@
                     </button>
                 </form>
 
-                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+                <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
                     <p style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">Dịch Sư Nguyễn Huy Hoàng</p>
-                    <p>Zalo / Hotline: <strong style="color: #ffffff;">0933116860</strong></p>
-                    <p>Ngân hàng Sacombank: <strong style="color: #ffffff;">060216644258</strong></p>
+                    <p>Zalo / Hotline: <strong style="color: #ffffff;">0933 116 860</strong></p>
+                    <p>Facebook: <strong style="color: #ffffff;">Hoàng ngủ mơ</strong></p>
                 </div>
             </aside>
 
             <!-- Main Chart Display -->
             <section class="chart-container">
                 <div class="chart-actions">
-                    <div style="font-weight: bold; color: #ffd700; font-size: 1.05rem;" id="chart-summary-title">
+                    <div style="font-weight: bold; color: #ffd700; font-size: 1rem;" id="chart-summary-title">
                         📊 Đồ Hình Lá Số Bát Tự
                     </div>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" id="btn-mode-compact" class="btn-mode active" style="background: linear-gradient(135deg, #d4af37, #aa820a); color: #050711; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                            📊 10 Đại Vận (Mệnh Bàn)
+                        </button>
+                        <button type="button" id="btn-mode-full100" class="btn-mode" style="background: rgba(212, 175, 55, 0.15); color: #ffd700; border: 1px solid var(--accent-gold); padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                            📜 100 Năm Lưu Niên
+                        </button>
                         <button id="btn-download-png" class="btn-secondary">
-                            📥 Tải Ảnh PNG HD
+                            📥 Tải Ảnh HD
                         </button>
                     </div>
                 </div>
@@ -242,10 +248,6 @@
             </section>
         </div>
     </main>
-
-    <footer>
-        <p>© 2026 Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Hệ Thống Mệnh Lý & Dịch Học Toàn Thư</p>
-    </footer>
 
     <!-- Scripts -->
     <script src="js/lunar.js?v=3.0.0"></script>
