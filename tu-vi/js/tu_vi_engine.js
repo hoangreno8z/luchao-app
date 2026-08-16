@@ -161,7 +161,9 @@ export class TuViEngine {
         solarDay, solarMonth, solarYear,
         lunarDay, lunarMonth, lunarYear, isLeap = false,
         hourIndex, // 0=Tý, 1=Sửu, ..., 11=Hợi
-        viewYear = 2026
+        viewYear = 2026,
+        showSaoLuu = true,
+        showDaoHongLuu = true
     }) {
         // Can Chi Năm, Tháng, Ngày, Giờ
         const yearCanIdx = (lunarYear - 4) % 10;
@@ -226,10 +228,10 @@ export class TuViEngine {
         const cucInfo = CUC_INFO[cucNumber];
 
         // 4. AN 12 CUNG CHỨC NĂNG
-        // Thứ tự nghịch kim đồng hồ từ Mệnh: Mệnh, Phụ Mẫu, Phúc Đức, Điền Trạch, Quan Lộc, Nô Bộc, Thiên Di, Tật Ách, Tài Bạch, Tử Tức, Phu Thê, Huynh Đệ
+        // Thứ tự thuận chiều kim đồng hồ từ Mệnh: Mệnh, Phụ Mẫu, Phúc Đức, Điền Trạch, Quan Lộc, Nô Bộc, Thiên Di, Tật Ách, Tài Bạch, Tử Tức, Phu Thê, Huynh Đệ
         const cungNames = new Array(12);
         for (let k = 0; k < 12; k++) {
-            const pos = (menhPos - k + 12) % 12;
+            const pos = (menhPos + k) % 12;
             cungNames[pos] = CUNG_CHUC_NANG[k];
         }
 
@@ -670,35 +672,56 @@ export class TuViEngine {
         const viewCanIdx = (viewYear - 4) % 10;
         const viewChiIdx = (viewYear - 4) % 12;
 
-        // L.Thái Tuế (tại Chi năm xem)
-        palaces[viewChiIdx].badStars.push({ name: "L.Thái Tuế", mieuHam: "", element: "Hỏa" });
+        if (showSaoLuu) {
+            // L.Thái Tuế (tại Chi năm xem)
+            palaces[viewChiIdx].badStars.push({ name: "L.Thái Tuế", mieuHam: "", element: "Hỏa" });
 
-        // L.Kình Dương, L.Đà La, L.Lộc Tồn theo Can năm xem
-        const viewLocTonPos = locTonPositions[viewCanIdx];
-        const viewKinhPos = (viewLocTonPos + 1) % 12;
-        const viewDaLaPos = (viewLocTonPos - 1 + 12) % 12;
-        palaces[viewLocTonPos].goodStars.push({ name: "L.Lộc Tồn", mieuHam: "", element: "Thổ" });
-        palaces[viewKinhPos].badStars.push({ name: "L.Kình Dương", mieuHam: "", element: "Kim" });
-        palaces[viewDaLaPos].badStars.push({ name: "L.Đà La", mieuHam: "", element: "Kim" });
+            // L.Kình Dương, L.Đà La, L.Lộc Tồn theo Can năm xem
+            const viewLocTonPos = locTonPositions[viewCanIdx];
+            const viewKinhPos = (viewLocTonPos + 1) % 12;
+            const viewDaLaPos = (viewLocTonPos - 1 + 12) % 12;
+            palaces[viewLocTonPos].goodStars.push({ name: "L.Lộc Tồn", mieuHam: "", element: "Thổ" });
+            palaces[viewKinhPos].badStars.push({ name: "L.Kình Dương", mieuHam: "", element: "Kim" });
+            palaces[viewDaLaPos].badStars.push({ name: "L.Đà La", mieuHam: "", element: "Kim" });
 
-        // L.Tang Môn (Chi xem + 2), L.Bạch Hổ (Chi xem + 8)
-        const viewTangMonPos = (viewChiIdx + 2) % 12;
-        const viewBachHoPos = (viewChiIdx + 8) % 12;
-        palaces[viewTangMonPos].badStars.push({ name: "L.Tang Môn", mieuHam: "", element: "Mộc" });
-        palaces[viewBachHoPos].badStars.push({ name: "L.Bạch Hổ", mieuHam: "", element: "Kim" });
+            // L.Tang Môn (Chi xem + 2), L.Bạch Hổ (Chi xem + 8)
+            const viewTangMonPos = (viewChiIdx + 2) % 12;
+            const viewBachHoPos = (viewChiIdx + 8) % 12;
+            palaces[viewTangMonPos].badStars.push({ name: "L.Tang Môn", mieuHam: "", element: "Mộc" });
+            palaces[viewBachHoPos].badStars.push({ name: "L.Bạch Hổ", mieuHam: "", element: "Kim" });
 
-        // L.Thiên Khốc, L.Thiên Hư
-        const viewKhocPos = (6 - viewChiIdx + 24) % 12;
-        const viewHuPos = (6 + viewChiIdx) % 12;
-        palaces[viewKhocPos].badStars.push({ name: "L.Thiên Khốc", mieuHam: "", element: "Thủy" });
-        palaces[viewHuPos].badStars.push({ name: "L.Thiên Hư", mieuHam: "", element: "Thủy" });
+            // L.Thiên Khốc, L.Thiên Hư
+            const viewKhocPos = (6 - viewChiIdx + 24) % 12;
+            const viewHuPos = (6 + viewChiIdx) % 12;
+            palaces[viewKhocPos].badStars.push({ name: "L.Thiên Khốc", mieuHam: "", element: "Thủy" });
+            palaces[viewHuPos].badStars.push({ name: "L.Thiên Hư", mieuHam: "", element: "Thủy" });
 
-        // L.Thiên Mã
-        let viewMaPos = 8;
-        if ([0, 4, 8].includes(viewChiIdx)) viewMaPos = 2;
-        else if ([1, 5, 9].includes(viewChiIdx)) viewMaPos = 11;
-        else if ([3, 7, 11].includes(viewChiIdx)) viewMaPos = 5;
-        palaces[viewMaPos].goodStars.push({ name: "L.Thiên Mã", mieuHam: "", element: "Hỏa" });
+            // L.Thiên Mã
+            let viewMaPos = 8;
+            if ([0, 4, 8].includes(viewChiIdx)) viewMaPos = 2;
+            else if ([1, 5, 9].includes(viewChiIdx)) viewMaPos = 11;
+            else if ([3, 7, 11].includes(viewChiIdx)) viewMaPos = 5;
+            palaces[viewMaPos].goodStars.push({ name: "L.Thiên Mã", mieuHam: "", element: "Hỏa" });
+        }
+
+        // Lưu Đào Hoa & Lưu Hồng Loan (và Lưu Thiên Hỷ)
+        if (showDaoHongLuu) {
+            const viewChiIdx = (viewYear - 4) % 12;
+            
+            // Lưu Hồng Loan (Khởi Mão đếm nghịch đến Chi xem)
+            const viewHongLoanPos = (3 - viewChiIdx + 24) % 12;
+            // Lưu Thiên Hỷ (Đối xung Lưu Hồng Loan)
+            const viewThienHyPos = (viewHongLoanPos + 6) % 12;
+            palaces[viewHongLoanPos].goodStars.push({ name: "L.Hồng Loan", mieuHam: "", element: "Thủy" });
+            palaces[viewThienHyPos].goodStars.push({ name: "L.Thiên Hỷ", mieuHam: "", element: "Thủy" });
+
+            // Lưu Đào Hoa (theo Tam hợp Chi năm xem)
+            let viewDaoHoaPos = 3; // Dần Ngọ Tuất -> Mão
+            if ([0, 4, 8].includes(viewChiIdx)) viewDaoHoaPos = 9; // Thân Tý Thìn -> Dậu
+            else if ([1, 5, 9].includes(viewChiIdx)) viewDaoHoaPos = 6; // Tỵ Dậu Sửu -> Ngọ
+            else if ([3, 7, 11].includes(viewChiIdx)) viewDaoHoaPos = 0; // Hợi Mão Mùi -> Tý
+            palaces[viewDaoHoaPos].goodStars.push({ name: "L.Đào Hoa", mieuHam: "", element: "Mộc" });
+        }
 
         // 23. CHỦ MỆNH & CHỦ THÂN
         const chuMenhTable = ["Tham Lang", "Cự Môn", "Lộc Tồn", "Văn Khúc", "Liêm Trinh", "Vũ Khúc", "Phá Quân", "Vũ Khúc", "Liêm Trinh", "Văn Khúc", "Lộc Tồn", "Cự Môn"];
