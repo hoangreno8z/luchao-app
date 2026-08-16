@@ -315,86 +315,146 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.lineWidth = 1;
     ctx.strokeRect(tcX + 4, tcY + 4, tcW - 8, tcH - 8);
 
+/**
+ * Helper to wrap and draw text on canvas within maxWidth without overflowing
+ */
+function drawWrappedCanvasText(ctx, text, x, y, maxW, lineH) {
+    if (!text) return y;
+    const words = String(text).split(" ");
+    let line = "";
+    let curY = y;
+    for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + " ";
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxW && n > 0) {
+            ctx.fillText(line.trim(), x, curY);
+            line = words[n] + " ";
+            curY += lineH;
+        } else {
+            line = testLine;
+        }
+    }
+    if (line.trim()) {
+        ctx.fillText(line.trim(), x, curY);
+        curY += lineH;
+    }
+    return curY;
+}
+
     if (isMenhMode) {
         // RENDER TRUNG CUNG CHO BÀN NHÂN MỆNH
         const lp = data.lifePalaces || {};
         const lh = data.lifeHex || {};
 
+        // 1. Header Trung Cung
         ctx.fillStyle = pal.headerTitle;
-        ctx.font = "bold 20px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.font = "bold 22px 'Be Vietnam Pro', 'Inter', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", tcX + tcW / 2, tcY + 34);
+        ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", tcX + tcW / 2, tcY + 36);
 
         ctx.fillStyle = pal.accentGold;
-        ctx.font = "bold 13px 'Inter', sans-serif";
-        ctx.fillText("THÁI ẤT THẦN SỐ — SA BÀN NHÂN MỆNH (16 CUNG)", tcX + tcW / 2, tcY + 56);
+        ctx.font = "bold 13.5px 'Inter', sans-serif";
+        ctx.fillText("THÁI ẤT THẦN SỐ — SA BÀN NHÂN MỆNH (16 CUNG)", tcX + tcW / 2, tcY + 58);
 
         ctx.strokeStyle = pal.divider;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(tcX + 30, tcY + 66);
-        ctx.lineTo(tcX + tcW - 30, tcY + 66);
+        ctx.moveTo(tcX + 25, tcY + 68);
+        ctx.lineTo(tcX + tcW - 25, tcY + 68);
         ctx.stroke();
 
-        ctx.font = "12.5px 'Inter', sans-serif";
+        // 2. Thông tin Bản Mệnh & Đương Số (Canh đều, đẹp, dễ đọc)
         ctx.textAlign = "left";
-        let py = tcY + 90;
+        let py = tcY + 92;
+        const lineGap = 24;
+
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillStyle = pal.textColor;
+        ctx.fillText(`• Đương Số: `, tcX + 28, py);
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.fillText(`${data.sex === 'nam' ? 'Nam Mệnh' : 'Nữ Mệnh'} (${lp.isYangYear ? 'Dương' : 'Âm'} ${data.sex === 'nam' ? 'Nam' : 'Nữ'})  —  Hướng An Cung: ${lp.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}`, tcX + 115, py);
+        py += lineGap;
+
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`• Tứ Trụ: `, tcX + 28, py);
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.fillStyle = "#8B0000";
+        ctx.fillText(tuTruStr, tcX + 88, py);
+        py += lineGap;
 
         ctx.fillStyle = pal.textColor;
-        ctx.fillText(`• Đương Số: ${data.sex === 'nam' ? 'Nam Mệnh' : 'Nữ Mệnh'} (${lp.isYangYear ? 'Dương' : 'Âm'} ${data.sex === 'nam' ? 'Nam' : 'Nữ'})  —  Hướng An Cung: ${lp.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}`, tcX + 30, py);
-        py += 22;
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`• Trọng Cung: `, tcX + 28, py);
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.fillText(`Mệnh tại Cung ${lp.lifeBranchName || '-'}  —  Thân tại Cung ${lp.bodyBranchName || '-'}`, tcX + 120, py);
+        py += lineGap;
 
-        ctx.fillText(`• Tứ Trụ Can Chi: ${tuTruStr}`, tcX + 30, py);
-        py += 22;
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`• Độn Cục: `, tcX + 28, py);
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.fillText(`${data.donCucName || 'Dương Độn'}  |  Tiết Khí: ${data.solarTerm || 'Lập Xuân'}`, tcX + 100, py);
 
-        ctx.fillText(`• Trọng Cung: Mệnh tại Cung ${lp.lifeBranchName || '-'}  —  Thân tại Cung ${lp.bodyBranchName || '-'}`, tcX + 30, py);
-        py += 22;
+        // 3. Khung Tam Đại Quẻ Dịch Đời Người (Tận dụng toàn bộ khoảng trống dọc, auto-wrap chống tràn lề)
+        const hexBoxY = py + 14;
+        const hexBoxH = tcY + tcH - hexBoxY - 30; // Điền kín không gian dọc đến chân Trung Cung
+        const innerBoxW = tcW - 36;
+        const maxTextW = innerBoxW - 32;
 
-        ctx.fillText(`• Độn Cục Giờ Sinh: ${data.donCucName || 'Dương Độn'}  |  Tiết Khí: ${data.solarTerm || 'Lập Xuân'}`, tcX + 30, py);
-        py += 26;
-
-        // Box Tam Đại Quẻ Dịch Đời Người
-        const hexBoxH = 185;
         ctx.fillStyle = pal.cellBg;
-        ctx.fillRect(tcX + 20, py, tcW - 40, hexBoxH);
+        ctx.fillRect(tcX + 18, hexBoxY, innerBoxW, hexBoxH);
         ctx.strokeStyle = pal.cellBorder;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(tcX + 20, py, tcW - 40, hexBoxH);
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(tcX + 18, hexBoxY, innerBoxW, hexBoxH);
 
+        // Tiêu đề Khung Quẻ
         ctx.fillStyle = pal.headerTitle;
-        ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.font = "bold 14px 'Be Vietnam Pro', 'Inter', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("☯ HỆ THỐNG TAM ĐẠI QUẺ DỊCH ĐỜI NGƯỜI ☯", tcX + tcW / 2, py + 22);
+        ctx.fillText("☯ HỆ THỐNG TAM ĐẠI QUẺ DỊCH ĐỜI NGƯỜI ☯", tcX + tcW / 2, hexBoxY + 22);
 
         ctx.textAlign = "left";
-        let hy = py + 46;
+        let qy = hexBoxY + 44;
 
+        // Quẻ 1: Vào Đời
         ctx.fillStyle = "#c0392b";
-        ctx.font = "bold 12px 'Inter', sans-serif";
-        ctx.fillText(`1. Quẻ Vào Đời (Lập Nghiệp / Tiền Vận): Quẻ ${lh.hexVaoDoiName || '—'} (Hào ${lh.haoDongVaoDoi || 1} Động)`, tcX + 35, hy);
-        hy += 18;
-        ctx.fillStyle = pal.textColor;
-        ctx.font = "11px 'Inter', sans-serif";
-        ctx.fillText(`- Ngày Chịu Khí (Thai Nguyên): ${lh.thaiNguyenCanChi || '—'}  |  ${lh.thaiNguyenRuleText || ''}`, tcX + 45, hy);
-        hy += 22;
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`1. Quẻ Vào Đời (Lập Nghiệp / Tiền Vận): Quẻ ${lh.hexVaoDoiName || '—'} (Hào ${lh.haoDongVaoDoi || 1} Động)`, tcX + 30, qy);
+        qy += 18;
 
+        ctx.fillStyle = pal.textColor;
+        ctx.font = "11.5px 'Inter', sans-serif";
+        const thaiNguyenTxt = `- Thai Nguyên (Ngày Chịu Khí): ${lh.thaiNguyenCanChi || '—'}  |  ${lh.thaiNguyenRuleText || ''}`;
+        qy = drawWrappedCanvasText(ctx, thaiNguyenTxt, tcX + 42, qy, maxTextW - 30, 16);
+        qy += 6;
+
+        // Quẻ 2: Dựng Nghiệp
         ctx.fillStyle = "#2980b9";
-        ctx.font = "bold 12px 'Inter', sans-serif";
-        ctx.fillText(`2. Quẻ Dựng Nghiệp (Trung Niên Khởi Sắc): Quẻ ${lh.hexDungNghiepName || '—'}`, tcX + 35, hy);
-        hy += 18;
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`2. Quẻ Dựng Nghiệp (Trung Niên Khởi Sắc): Quẻ ${lh.hexDungNghiepName || '—'}`, tcX + 30, qy);
+        qy += 18;
+
         ctx.fillStyle = pal.textColor;
-        ctx.font = "11px 'Inter', sans-serif";
-        ctx.fillText(`- Biến quái chuyển hóa từ Hào Động, định hướng xây dựng sự nghiệp trung vận.`, tcX + 45, hy);
-        hy += 22;
+        ctx.font = "11.5px 'Inter', sans-serif";
+        const dungNghiepTxt = `- Biến quái chuyển hóa từ Hào ${lh.haoDongVaoDoi || 1} Động, định hướng xây dựng sự nghiệp trung vận.`;
+        qy = drawWrappedCanvasText(ctx, dungNghiepTxt, tcX + 42, qy, maxTextW - 30, 16);
+        qy += 6;
 
+        // Quẻ 3: Lưu Niên
         ctx.fillStyle = "#27ae60";
-        ctx.font = "bold 12px 'Inter', sans-serif";
-        ctx.fillText(`3. Quẻ Lưu Niên (Vận Hạn Năm Xem): Quẻ ${lh.hexNamName || '—'} (Tuổi Mụ: ${lh.tuoiMu || '—'} tuổi)`, tcX + 35, hy);
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText(`3. Quẻ Lưu Niên (Vận Hạn Năm Xem): Quẻ ${lh.hexNamName || '—'} (Tuổi Mụ: ${lh.tuoiMu || '—'} tuổi)`, tcX + 30, qy);
+        qy += 18;
 
-        // Footer Contact
+        ctx.fillStyle = pal.textColor;
+        ctx.font = "11.5px 'Inter', sans-serif";
+        const luuNienTxt = `- Quẻ lưu niên định hướng cát hung, nắm bắt thời vận và cơ hội trong năm đương thời.`;
+        qy = drawWrappedCanvasText(ctx, luuNienTxt, tcX + 42, qy, maxTextW - 30, 16);
+
+        // 4. Footer Contact
         ctx.fillStyle = "#8B0000";
         ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", tcX + tcW / 2, tcY + tcH - 18);
+        ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", tcX + tcW / 2, tcY + tcH - 12);
 
     } else {
         // RENDER TRUNG CUNG CHO BÀN VĨ MÔ (TUẾ/NGUYỆT/NHẬT/THỜI)
