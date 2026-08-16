@@ -270,33 +270,30 @@ body {
 }
 
 /* ==========================================================================
-   TỬ VI 12 CUNG GRID LAYOUT (TRADITIONAL CHART)
-   ========================================================================== */
-/* ==========================================================================
    TỬ VI 12 CUNG GRID LAYOUT (CHESTBOARD 4x4 MOBILE-FIRST THEO COHOC.NET)
    ========================================================================== */
 .chart-container-wrapper {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 8px;
-    margin: 0 auto 30px;
-    max-width: 680px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0 auto 24px;
+    max-width: 500px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .chart-header-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    padding: 0 4px;
+    margin-bottom: 8px;
+    padding: 0 2px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
 }
 
 .chart-header-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #fbbf24;
 }
@@ -305,14 +302,14 @@ body {
     background: #047857;
     color: #ffffff;
     border: 1px solid #10b981;
-    padding: 6px 14px;
+    padding: 5px 12px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     transition: all 0.2s;
 }
 
@@ -326,70 +323,76 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    gap: 1.5px;
-    background: #334155;
-    border: 2px solid #1e293b;
-    border-radius: 6px;
+    gap: 1px;
+    background: #262626;
+    border: 1.5px solid #262626;
+    border-radius: 4px;
     width: 100%;
-    max-width: 680px;
-    aspect-ratio: 1 / 1.25;
+    max-width: 500px;
+    aspect-ratio: 1 / 1.35;
+    margin: 0 auto;
     position: relative;
+    box-sizing: border-box;
     user-select: none;
 }
 
 /* 12 Palaces */
 .palace-box {
     background: #fdfaf4;
-    color: #111827;
-    padding: 2px 3px;
+    color: #171717;
+    padding: 2px 2px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
 }
 
 /* Palace Header */
 .palace-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e2e8f0;
+    align-items: baseline;
+    border-bottom: 1px solid #e5e5e5;
     padding-bottom: 1px;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
 }
 
 .can-cung {
     font-weight: 800;
-    font-size: 0.68rem;
-    color: #334155;
+    font-size: 0.65rem;
+    color: #404040;
+    line-height: 1;
 }
 
 .cung-name {
     font-weight: 900;
-    font-size: 0.76rem;
-    color: #111827;
+    font-size: 0.72rem;
+    color: #171717;
+    line-height: 1;
 }
 
 .cung-name.menh {
-    color: #b91c1c;
+    color: #dc2626;
+    font-size: 0.75rem;
 }
 
 .dai-han {
     font-weight: 800;
-    font-size: 0.68rem;
-    color: #111827;
+    font-size: 0.65rem;
+    color: #171717;
+    line-height: 1;
 }
 
 /* Main Stars */
 .main-stars-list {
     text-align: center;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
 }
 
 .main-star-item {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 900;
     display: block;
     line-height: 1.15;
@@ -399,149 +402,159 @@ body {
 .stars-two-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    font-size: 0.62rem;
+    gap: 1px 2px;
+    font-size: 0.58rem;
     font-weight: 600;
     flex-grow: 1;
     line-height: 1.15;
+    overflow: hidden;
 }
 
 .col-good {
     text-align: left;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 0.5px;
 }
 
 .col-bad {
     text-align: right;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 0.5px;
 }
 
 /* Palace Footer */
 .palace-footer {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #e2e8f0;
+    align-items: baseline;
+    border-top: 1px solid #e5e5e5;
     padding-top: 1px;
     margin-top: 1px;
-    font-size: 0.58rem;
+    font-size: 0.55rem;
     font-weight: 700;
-    color: #475569;
+    color: #525252;
+    line-height: 1;
 }
 
 /* Trung Cung (Spans 2 cols, 2 rows in center) */
 .trung-cung-box {
     grid-column: 2 / span 2;
     grid-row: 2 / span 2;
-    background: #faf8f5;
-    color: #111827;
-    padding: 6px 8px;
+    background: #faf6ee;
+    color: #171717;
+    padding: 4px 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: 1.5px solid #cbd5e1;
+    border: 1px solid #d4d4d4;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .tc-header {
     text-align: center;
-    border-bottom: 1.5px solid #b91c1c;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
+    border-bottom: 1px solid #dc2626;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
 }
 
 .tc-title {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
     font-weight: 900;
-    color: #b91c1c;
-    letter-spacing: 0.04em;
+    color: #dc2626;
+    letter-spacing: 0.02em;
     text-align: center;
+    line-height: 1.15;
 }
 
 .tc-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px 6px;
-    font-size: 0.64rem;
-    line-height: 1.25;
+    gap: 1.5px 6px;
+    font-size: 0.58rem;
+    line-height: 1.2;
 }
 
 .tc-row {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.06);
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
     padding: 0.5px 0;
 }
 
 .tc-label {
-    color: #475569;
+    color: #525252;
     font-weight: 600;
+    font-size: 0.58rem;
 }
 
 .tc-value {
     font-weight: 700;
-    color: #0f172a;
+    color: #171717;
+    font-size: 0.58rem;
 }
 
 .tc-author-box {
-    border-top: 1px solid #e2e8f0;
-    padding-top: 3px;
-    margin-top: 3px;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 2px;
+    margin-top: 2px;
     text-align: center;
 }
 
 .tc-author-contact {
     font-weight: 800;
-    color: #1e293b;
-    font-size: 0.65rem;
+    color: #171717;
+    font-size: 0.58rem;
 }
 
 .tc-author-quote {
     font-style: italic;
-    color: #64748b;
-    font-size: 0.56rem;
-    margin-top: 2px;
+    color: #737373;
+    font-size: 0.52rem;
+    margin-top: 1px;
 }
 
 /* Tuần & Triệt Floating Badges */
 .badge-tuan, .badge-triet {
     position: absolute;
-    background: #0f172a;
-    color: #ffffff;
-    border: 1px solid #e2e8f0;
-    padding: 3px 12px;
-    border-radius: 6px;
-    font-weight: 800;
-    font-size: 0.78rem;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     transform: translate(-50%, -50%);
+    font-size: 0.55rem;
+    font-weight: 900;
+    padding: 1px 4px;
+    border-radius: 3px;
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.04em;
+    pointer-events: none;
 }
 
-/* Colors for Elements */
-.color-kim { color: var(--color-kim) !important; }
-.color-moc { color: var(--color-moc) !important; }
-.color-thuy { color: var(--color-thuy) !important; }
-.color-hoa { color: var(--color-hoa) !important; }
-.color-tho { color: var(--color-tho) !important; }
+.badge-tuan {
+    background: #000000;
+    color: #fbbf24;
+    border: 1px solid #fbbf24;
+}
 
-/* Reference Section */
+.badge-triet {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* Reference Dictionary Section */
 .reference-card {
     background: #111827;
     border: 1px solid #374151;
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 16px;
+    max-width: 680px;
+    margin: 0 auto;
 }
 
 .ref-tabs {
     display: flex;
     gap: 8px;
-    border-bottom: 1px solid #374151;
-    padding-bottom: 12px;
     margin-bottom: 16px;
     flex-wrap: wrap;
 }
@@ -550,10 +563,10 @@ body {
     background: #1f2937;
     color: #cbd5e1;
     border: 1px solid #374151;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -566,149 +579,46 @@ body {
 
 .ref-content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
 }
 
 .ref-star-card {
     background: #1f2937;
     border: 1px solid #374151;
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 8px;
+    padding: 10px;
 }
 
 .ref-star-title {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 800;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .ref-star-nature {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #fbbf24;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .ref-star-desc {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     color: #cbd5e1;
-    line-height: 1.5;
-}
-
-/* ==========================================================================
-   FIT SCREEN MODE & MOBILE RESPONSIVE
-   ========================================================================== */
-.chart-container-wrapper.fit-screen-mode .tuvi-grid {
-    min-width: unset !important;
-    width: 100% !important;
+    line-height: 1.4;
 }
 
 @media (max-width: 768px) {
     .container {
-        padding: 10px 6px;
+        padding: 6px 4px 20px !important;
     }
-    
     .chart-container-wrapper {
-        padding: 8px 4px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
-
     .chart-header-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-
-    .chart-header-actions > div:last-child {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    /* In Fit Screen Mode on mobile, scale elements to fit screen exactly */
-    .chart-container-wrapper.fit-screen-mode .tuvi-grid {
-        min-width: unset !important;
-        width: 100% !important;
-        gap: 1px !important;
-        border-width: 1px !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .palace-box {
-        min-height: 145px !important;
-        padding: 4px 3px !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .palace-header .palace-can {
-        font-size: 0.72rem !important;
-        font-weight: 900 !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .palace-header .palace-cung-name {
-        font-size: 0.65rem !important;
-        font-weight: 800 !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .palace-header .palace-daihan {
-        font-size: 0.65rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .main-star-item {
-        font-size: 0.7rem !important;
-        line-height: 1.15 !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .stars-column-left span,
-    .chart-container-wrapper.fit-screen-mode .stars-column-right span {
-        font-size: 0.58rem !important;
-        line-height: 1.15 !important;
-        white-space: nowrap;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .palace-footer {
-        font-size: 0.55rem !important;
-        padding-top: 2px !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .trung-cung-box {
-        padding: 4px !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-header .tc-title {
-        font-size: 0.78rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-info-grid {
-        gap: 2px 4px !important;
-        font-size: 0.6rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-label {
-        font-size: 0.58rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-value {
-        font-size: 0.6rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-author-box {
-        margin-top: 4px !important;
-        padding-top: 4px !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-author-contact {
-        font-size: 0.62rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .tc-author-quote {
-        font-size: 0.55rem !important;
-    }
-
-    .chart-container-wrapper.fit-screen-mode .badge-tuan,
-    .chart-container-wrapper.fit-screen-mode .badge-triet {
-        font-size: 0.55rem !important;
-        padding: 1px 4px !important;
+        padding: 0;
     }
 }
-
