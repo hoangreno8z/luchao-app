@@ -102,6 +102,13 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied thai-at module recursively to public/thai-at!');
     }
 
+    // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
+    const vercelStaticDir = path.join(projectRoot, '.vercel', 'output', 'static');
+    if (fs.existsSync(vercelStaticDir)) {
+        copyDirRecursiveSync(publicDir, vercelStaticDir);
+        console.log('Successfully synced public assets to .vercel/output/static!');
+    }
+
 } catch (err) {
     console.error('Compilation failed:', err);
     process.exit(1);
