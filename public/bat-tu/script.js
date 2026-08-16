@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const genderInput = document.getElementById("inp-gender");
     const dateInput = document.getElementById("inp-date");
     const timeInput = document.getElementById("inp-time");
-    const chartImg = document.getElementById("chart-img");
+    const htmlMount = document.getElementById("battu-html-mount");
     const btnDownload = document.getElementById("btn-download-png");
+    const btnPrint = document.getElementById("btn-print-chart");
     const refContent = document.getElementById("ref-content");
     const tabBtns = document.querySelectorAll(".ref-tab-btn");
 
@@ -42,8 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const is100Years = toggle100Years ? toggle100Years.checked : false;
             currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
-            const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, is100Years);
-            chartImg.src = dataUrl;
+            
+            if (htmlMount && window.BatTuRenderer) {
+                htmlMount.innerHTML = window.BatTuRenderer.renderBatTuHtmlTable(currentBatTuData, is100Years);
+            }
         } catch (err) {
             console.error("Lỗi khi lập lá số Bát Tự:", err);
             alert("Có lỗi khi lập lá số: " + err.message);
@@ -58,15 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Download PNG Button
     btnDownload.addEventListener("click", () => {
-        if (!chartImg.src) return;
+        if (!currentBatTuData) return;
+        const is100Years = toggle100Years ? toggle100Years.checked : false;
+        const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, is100Years);
+        if (!dataUrl) return;
+
         const a = document.createElement("a");
-        a.href = chartImg.src;
+        a.href = dataUrl;
         const cleanName = (nameInput.value.trim() || "VoDanh").replace(/\s+/g, "_");
         a.download = `La_So_Bat_Tu_${cleanName}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     });
+
+    // Print Chart Button
+    if (btnPrint) {
+        btnPrint.addEventListener("click", () => {
+            window.print();
+        });
+    }
 
     // Reference Dictionary Tabs
     function loadRefTab(tabId) {
