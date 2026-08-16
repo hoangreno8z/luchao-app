@@ -162,7 +162,7 @@ function renderChart(data) {
     tcBox.className = 'trung-cung-box';
     tcBox.innerHTML = `
         <div class="tc-header">
-            <div class="tc-title" style="font-size: 1.2rem; font-weight: 900; color: #b91c1c; letter-spacing: 0.05em; text-align: center;">DỊCH SƯ NGUYỄN HUY HOÀNG</div>
+            <div class="tc-title">DỊCH SƯ NGUYỄN HUY HOÀNG</div>
         </div>
         <div class="tc-info-grid">
             <div class="tc-row"><span class="tc-label">Họ tên:</span><span class="tc-value" style="color:#1d4ed8;">${data.metadata.name}</span></div>
@@ -187,8 +187,8 @@ function renderChart(data) {
             <div class="tc-row"><span class="tc-label">Tương tác:</span><span class="tc-value">${data.metadata.cucMenhTuongTac}</span></div>
         </div>
         <div class="tc-author-box">
-            <div class="tc-author-contact" style="font-weight: 700; color: #1e293b; font-size: 0.88rem; text-align: center;">Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ</div>
-            <div class="tc-author-quote" style="font-style: italic; color: #64748b; font-size: 0.76rem; text-align: center; margin-top: 4px;">“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”</div>
+            <div class="tc-author-contact">Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ</div>
+            <div class="tc-author-quote">“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”</div>
         </div>
     `;
 
