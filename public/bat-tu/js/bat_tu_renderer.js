@@ -167,8 +167,8 @@
                 <table class="battu-table battu-dayun-10-table">
                     <thead>
                         <tr>
-                            <th style="width: 12%;">10 ĐẠI VẬN</th>
-                            ${daYunList.slice(0, 10).map((dy, idx) => {
+                            <th style="width: 10%;">10 ĐẠI VẬN</th>
+                            ${daYunList.slice(0, 10).map((dy) => {
                                 const sAge = Math.max(1, parseInt(dy.startYear, 10) - birthYear + 1);
                                 const eAge = sAge + 9;
                                 const isActive = (currentAge >= sAge && currentAge <= eAge);
@@ -197,7 +197,7 @@
                     <table class="battu-table battu-liunian-10-table" style="margin-top: 6px;">
                         <tbody>
                             <tr>
-                                <td class="row-label" style="width: 12%; font-weight: 800;">
+                                <td class="row-label" style="width: 10%; font-weight: 800;">
                                     LƯU NIÊN<br><small style="color:#27ae60;">(${activeDaYun.ganZhi})</small>
                                 </td>
                                 ${activeDaYun.liuNian.slice(0, 10).map((ln) => {
@@ -206,10 +206,10 @@
                                     const isCurYear = (lnYear === 2026);
                                     return `
                                     <td class="${isCurYear ? 'active-year-cell' : ''}">
-                                        <div style="font-weight:700; color:${getStemColor(ln.ganZhi.split(' ')[0])};">${ln.ganZhi}</div>
-                                        <div style="font-size:0.85rem; font-weight:700; color:${isCurYear ? '#b91c1c' : '#1e293b'};">${lnYear}</div>
-                                        <div style="color:#c0392b; font-weight:800; font-size:0.82rem;">${lnAge}t</div>
-                                        <div style="color:#64748b; font-size:0.78rem;">${ln.shiShen}</div>
+                                        <div style="font-weight:700; color:${getStemColor(ln.ganZhi.split(' ')[0])}; font-size:0.88rem;">${ln.ganZhi}</div>
+                                        <div style="font-size:0.82rem; font-weight:700; color:${isCurYear ? '#b91c1c' : '#1e293b'};">${lnYear}</div>
+                                        <div style="color:#c0392b; font-weight:800; font-size:0.8rem;">${lnAge}t</div>
+                                        <div style="color:#64748b; font-size:0.75rem;">${ln.shiShen}</div>
                                     </td>`;
                                 }).join('')}
                             </tr>
@@ -221,11 +221,11 @@
                 <table class="battu-table battu-thansat-table" style="margin-top: 6px;">
                     <thead>
                         <tr>
-                            <th style="width: 12%;">THẦN SÁT NGUYÊN CỤC</th>
-                            <th style="width: 22%;">NIÊN THẦN (NĂM)</th>
-                            <th style="width: 22%;">NGUYỆT THẦN (THÁNG)</th>
-                            <th style="width: 22%;">NHẬT THẦN (NGÀY)</th>
-                            <th style="width: 22%;">THỜI THẦN (GIỜ)</th>
+                            <th style="width: 10%;">THẦN SÁT</th>
+                            <th style="width: 22.5%;">NIÊN THẦN (NĂM)</th>
+                            <th style="width: 22.5%;">NGUYỆT THẦN (THÁNG)</th>
+                            <th style="width: 22.5%;">NHẬT THẦN (NGÀY)</th>
+                            <th style="width: 22.5%;">THỜI THẦN (GIỜ)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -251,39 +251,39 @@
                 ${[row1, row2].map((rowGroup, gIdx) => {
                     if (rowGroup.length === 0) return '';
                     return `
-                    <table class="battu-table battu-dayun-100-table" style="margin-bottom: 8px;">
+                    <table class="battu-table battu-dayun-100-table" style="margin-bottom: 8px; min-width: 660px;">
                         <thead>
                             <tr>
-                                <th style="width: 10%; vertical-align: middle;">${gIdx === 0 ? 'ĐẠI VẬN (1 - 5)' : 'ĐẠI VẬN (6 - 10)'}</th>
+                                <th style="width: 8%; vertical-align: middle; font-size: 0.8rem;">${gIdx === 0 ? 'ĐẠI VẬN' : 'ĐẠI VẬN'}</th>
                                 ${rowGroup.map(dy => {
                                     const sYear = parseInt(dy.startYear, 10);
                                     const sAge = Math.max(1, sYear - birthYear + 1);
-                                    const eAge = sAge + 9;
                                     const sM = data.yun?.startMonthNum || 6;
                                     const mStr = sM < 10 ? '0' + sM : sM;
                                     return `
-                                    <th style="width: 18%;">
-                                        <div style="color:#8b0000; font-size:0.82rem; font-weight:700;">${mStr}/${dy.startYear} — ${sAge}-${eAge}t</div>
-                                        <div style="color:${dy.stemColor || '#27ae60'}; font-size:0.95rem; font-weight:800;">${dy.ganZhi} - ${dy.shiShen}</div>
+                                    <th style="width: 18.4%; background: #fffdf8; border: 1px solid #2b5797; padding: 4px 2px;">
+                                        <div style="color:#b91c1c; font-size:0.8rem; font-weight:800;">${mStr}/${dy.startYear} — ${sAge}t</div>
+                                        <div style="color:${dy.stemColor || '#27ae60'}; font-size:0.92rem; font-weight:900;">${dy.ganZhi} - ${dy.shiShen}</div>
                                     </th>`;
                                 }).join('')}
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="row-label">LƯU NIÊN</td>
+                                <td class="row-label" style="font-size: 0.76rem; width: 8%;">${gIdx === 0 ? 'LƯU NIÊN' : 'LƯU NIÊN'}</td>
                                 ${rowGroup.map(dy => {
                                     const lnList = dy.liuNian || [];
                                     return `
-                                    <td class="cell-liunian-list">
+                                    <td class="cell-liunian-list" style="padding: 4px 3px !important; text-align: left; vertical-align: top;">
                                         ${lnList.map(ln => {
                                             const lnYear = parseInt(ln.year, 10);
-                                            const lnAge = Math.max(1, lnYear - birthYear + 1);
+                                            const gzFirst = ln.ganZhi.split(' ')[0];
                                             return `
-                                            <div class="ln-row">
-                                                <span class="ln-year">${lnYear}</span>
-                                                <span class="ln-age">(${lnAge}t)</span>
-                                                <span class="ln-gz">${ln.ganZhi}</span>
+                                            <div class="ln-single-line">
+                                                <span class="ln-y">${lnYear}</span>
+                                                <span class="ln-sep">-</span>
+                                                <span class="ln-gz" style="color:${getStemColor(gzFirst)};">${ln.ganZhi}</span>
+                                                <span class="ln-sep">-</span>
                                                 <span class="ln-ss">${ln.shiShen}</span>
                                             </div>`;
                                         }).join('')}
