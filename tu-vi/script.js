@@ -47,6 +47,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Toggle Sao Luu Events
+    const cbSaoLuu = document.getElementById('checkboxSaoLuu');
+    if (cbSaoLuu) {
+        cbSaoLuu.addEventListener('change', () => {
+            generateHoroscope();
+        });
+    }
+
+    const cbDaoHong = document.getElementById('checkboxDaoHongLuu');
+    if (cbDaoHong) {
+        cbDaoHong.addEventListener('change', () => {
+            generateHoroscope();
+        });
+    }
+
+    // Toggle Mobile View Mode (Fit Screen vs Zoom)
+    const btnToggleFit = document.getElementById('btnToggleFitScreen');
+    const chartWrapper = document.querySelector('.chart-container-wrapper');
+    if (btnToggleFit && chartWrapper) {
+        btnToggleFit.addEventListener('click', () => {
+            chartWrapper.classList.toggle('fit-screen-mode');
+            if (chartWrapper.classList.contains('fit-screen-mode')) {
+                btnToggleFit.innerHTML = '<span>🔍 Chế Độ Phóng To</span>';
+            } else {
+                btnToggleFit.innerHTML = '<span>📱 Vừa Màn Hình</span>';
+            }
+        });
+    }
+
     // Set default values (e.g. 2008 Mậu Tý like example)
     document.getElementById('inputName').value = 'Nguyễn Văn A';
     document.getElementById('inputGender').value = 'Nam';
@@ -68,6 +97,9 @@ function generateHoroscope() {
     const solarYear = parseInt(document.getElementById('inputSolarYear').value);
     const hourIndex = parseInt(document.getElementById('inputHour').value);
     const viewYear = parseInt(document.getElementById('inputViewYear').value) || 2026;
+
+    const showSaoLuu = document.getElementById('checkboxSaoLuu') ? document.getElementById('checkboxSaoLuu').checked : true;
+    const showDaoHongLuu = document.getElementById('checkboxDaoHongLuu') ? document.getElementById('checkboxDaoHongLuu').checked : true;
 
     // Convert Solar to Lunar using Lunar-JS
     let lunarDay = solarDay, lunarMonth = solarMonth, lunarYear = solarYear, isLeap = false;
@@ -91,7 +123,9 @@ function generateHoroscope() {
         solarDay, solarMonth, solarYear,
         lunarDay, lunarMonth, lunarYear, isLeap,
         hourIndex,
-        viewYear
+        viewYear,
+        showSaoLuu,
+        showDaoHongLuu
     });
 
     // Render to Grid
@@ -120,8 +154,7 @@ function renderChart(data) {
     tcBox.className = 'trung-cung-box';
     tcBox.innerHTML = `
         <div class="tc-header">
-            <div class="tc-sub">DIỄN ĐÀN TỬ VI ĐẨU SỐ ĐẠI TOÀN</div>
-            <div class="tc-title">LÁ SỐ TỬ VI</div>
+            <div class="tc-title" style="font-size: 1.2rem; font-weight: 900; color: #b91c1c; letter-spacing: 0.05em; text-align: center;">DỊCH SƯ NGUYỄN HUY HOÀNG</div>
         </div>
         <div class="tc-info-grid">
             <div class="tc-row"><span class="tc-label">Họ tên:</span><span class="tc-value" style="color:#1d4ed8;">${data.metadata.name}</span></div>
@@ -146,9 +179,8 @@ function renderChart(data) {
             <div class="tc-row"><span class="tc-label">Tương tác:</span><span class="tc-value">${data.metadata.cucMenhTuongTac}</span></div>
         </div>
         <div class="tc-author-box">
-            <div class="tc-author-name">DỊCH SƯ NGUYỄN HUY HOÀNG</div>
-            <div class="tc-author-contact">Zalo: 0933 116 860  •  Sacombank: 0602 1664 4258  •  FB: Hoàng ngủ mơ</div>
-            <div class="tc-author-quote">“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”</div>
+            <div class="tc-author-contact" style="font-weight: 700; color: #1e293b; font-size: 0.88rem; text-align: center;">Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ</div>
+            <div class="tc-author-quote" style="font-style: italic; color: #64748b; font-size: 0.76rem; text-align: center; margin-top: 4px;">“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”</div>
         </div>
     `;
 
