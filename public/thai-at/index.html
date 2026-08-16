@@ -32,14 +32,62 @@
             ⚠️ Vui lòng bật JavaScript trên trình duyệt của bạn để sử dụng ứng dụng Thái Ất Thần Số.
         </div>
     </noscript>
-    <!-- CỔNG DỊCH HỌC HỢP NHẤT MENU -->
-    <nav class="app-switcher-nav">
-        <div class="nav-container">
-            <a href="/" class="nav-item"><span class="icon">☰</span> KINH DỊCH ĐẠI TOÀN</a>
-            <a href="/thai-at/" class="nav-item active"><span class="icon">☯</span> THÁI ẤT THẦN SỐ</a>
-            <a href="/bat-tu/" class="nav-item"><span class="icon">🏛️</span> BÁT TỰ TỨ TRỤ</a>
+    <!-- UNIVERSAL DROPDOWN HEADER -->
+    <header class="app-universal-header">
+        <div class="header-inner">
+            <a href="/" class="brand-link">
+                <div>
+                    <span class="brand-title">NGUYỄN HUY HOÀNG</span>
+                    <span class="brand-sub">Thái Ất Thần Số (16 Cung & 72 Cục)</span>
+                </div>
+            </a>
+
+            <div class="menu-dropdown-wrapper">
+                <button id="menu-btn" class="menu-toggle-btn" aria-label="Mở Menu">
+                    <span>☰ MENU</span>
+                    <span class="arrow-icon">▼</span>
+                </button>
+
+                <nav id="dropdown-menu" class="portal-dropdown-menu">
+                    <a href="/" class="menu-item">
+                        <span class="menu-icon">🏠</span>
+                        <div>
+                            <div>Trang Chủ</div>
+                            <span class="menu-desc">Giới thiệu & Triết lý</span>
+                        </div>
+                    </a>
+                    <a href="/kinh-dich/" class="menu-item">
+                        <span class="menu-icon">☰</span>
+                        <div>
+                            <div>Kinh Dịch</div>
+                            <span class="menu-desc">Gieo quẻ Lục Hào Cổ Bốc</span>
+                        </div>
+                    </a>
+                    <a href="/tu-vi/" class="menu-item">
+                        <span class="menu-icon">⭐</span>
+                        <div>
+                            <div>Tử Vi</div>
+                            <span class="menu-desc">Lá số Tử Vi Đẩu Số 12 Cung</span>
+                        </div>
+                    </a>
+                    <a href="/thai-at/" class="menu-item active">
+                        <span class="menu-icon">☯</span>
+                        <div>
+                            <div>Thái Ất</div>
+                            <span class="menu-desc">Sa bàn 16 cung & 72 cục</span>
+                        </div>
+                    </a>
+                    <a href="/bat-tu/" class="menu-item">
+                        <span class="menu-icon">🏛️</span>
+                        <div>
+                            <div>Bát Tự</div>
+                            <span class="menu-desc">Tứ Trụ, Thập Thần & Đại Vận</span>
+                        </div>
+                    </a>
+                </nav>
+            </div>
         </div>
-    </nav>
+    </header>
 
     <div class="stars-bg"></div>
     
@@ -287,9 +335,36 @@
     <script src="js/thai_at_nguyet_engine.js?v=58.0.0"></script>
     <script src="js/thai_at_nhat_engine.js?v=58.0.0"></script>
     <script src="js/thai_at_thoi_engine.js?v=58.0.0"></script>
-    <script src="js/astro_vsop87.js?v=58.0.0"></script>
-    <script src="js/thai_at_astronomical_engine.js?v=58.0.0"></script>
-    <script src="js/png_exporter.js?v=58.0.0"></script>
-    <script src="script_v4.js?v=58.0.0"></script>
+    <script src="js/astro_vsop87.js?v=60.0.0"></script>
+    <script src="js/thai_at_astronomical_engine.js?v=60.0.0"></script>
+    <script src="js/png_exporter.js?v=60.0.0"></script>
+    <script src="script_v4.js?v=60.0.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menu-btn');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            if (!menuBtn || !dropdownMenu) return;
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+                menuBtn.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    menuBtn.classList.remove('active');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    dropdownMenu.classList.remove('show');
+                    menuBtn.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
