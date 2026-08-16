@@ -3,498 +3,628 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinh Dịch - Thái Ất thần quẻ.</title>
-    <meta name="description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <link rel="stylesheet" href="style.css?v=5.9.0">
+    <title>Nguyễn Huy Hoàng — Nghiên cứu & Ứng dụng Kinh Dịch • Tử Vi • Bát Tự • Thái Ất</title>
+    <meta name="description" content="Nguyễn Huy Hoàng (1994) — Nghiên cứu và ứng dụng Kinh Dịch, Lục Hào Cổ Bốc, Tử Vi, Bát Tự, Thái Ất Thần Số. Website an quẻ và an lá số tự động.">
     
     <!-- Open Graph / Zalo / Facebook / Messenger Sharing -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://luchao-app.vercel.app/">
-    <meta property="og:title" content="Kinh Dịch - Thái Ất thần quẻ.">
-    <meta property="og:description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <meta property="og:image" content="https://luchao-app.vercel.app/og_share_v2.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:title" content="Nguyễn Huy Hoàng — Kinh Dịch • Tử Vi • Bát Tự • Thái Ất">
+    <meta property="og:description" content="Nghiên cứu & ứng dụng Kinh Dịch, Tử Vi, Bát Tự, Thái Ất. An quẻ & an lá số tự động. Zalo: 0933 116 860">
+    <meta property="og:image" content="https://luchao-app.vercel.app/hoang_intro_card.png">
 
-    <!-- Twitter / TikTok Sharing Cards -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Kinh Dịch - Thái Ất thần quẻ.">
-    <meta name="twitter:description" content="Gieo Quẻ 3 đồng xu giả lập - Dịch Sư Nguyễn Huy Hoàng - Zalo 0933116860 - Sacombank: 060216644258">
-    <meta name="twitter:image" content="https://luchao-app.vercel.app/og_share_v2.png">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- html2canvas library for screenshotting hexagram card -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&family=Cinzel:wght@600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #060814;
+            --bg-card: rgba(14, 18, 40, 0.75);
+            --gold: #fbbf24;
+            --gold-bright: #ffd700;
+            --gold-glow: rgba(251, 191, 36, 0.4);
+            --gold-border: rgba(251, 191, 36, 0.35);
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+            --font-main: 'Be Vietnam Pro', 'Inter', -apple-system, sans-serif;
+            --font-title: 'Cinzel', 'Be Vietnam Pro', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 15%, rgba(99, 102, 241, 0.22) 0%, transparent 60%),
+                radial-gradient(circle at 10% 80%, rgba(212, 175, 55, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 70%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+                linear-gradient(180deg, #060814 0%, #0c0b22 100%);
+            background-attachment: fixed;
+            color: var(--text-light);
+            font-family: var(--font-main);
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Top Header & Dropdown Navigation */
+        .portal-header {
+            position: sticky;
+            top: 0;
+            z-index: 10000;
+            background: rgba(6, 8, 20, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--gold-border);
+            padding: 12px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-title {
+            color: var(--gold-bright);
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+
+        /* Dropdown Menu Button & Menu */
+        .menu-dropdown-wrapper {
+            position: relative;
+        }
+
+        .menu-toggle-btn {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(180, 83, 9, 0.25));
+            border: 1px solid var(--gold-bright);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.92rem;
+            padding: 9px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.35);
+            transition: all 0.25s ease;
+            outline: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .menu-toggle-btn:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.45), rgba(180, 83, 9, 0.45));
+            box-shadow: 0 0 22px rgba(251, 191, 36, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .menu-toggle-btn .arrow-icon {
+            font-size: 0.75rem;
+            transition: transform 0.25s ease;
+        }
+
+        .menu-toggle-btn.active .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Popup Menu */
+        .portal-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            width: 280px;
+            background: rgba(14, 18, 42, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--gold-border);
+            border-radius: 14px;
+            padding: 10px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(251, 191, 36, 0.25);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10001;
+        }
+
+        .portal-dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #f8fafc;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .menu-item .menu-icon {
+            font-size: 1.25rem;
+            width: 28px;
+            text-align: center;
+        }
+
+        .menu-item .menu-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            display: block;
+        }
+
+        .menu-item:hover {
+            background: rgba(251, 191, 36, 0.15);
+            border-color: rgba(251, 191, 36, 0.4);
+            color: var(--gold-bright);
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(180, 83, 9, 0.35));
+            border-color: var(--gold-bright);
+            color: var(--gold-bright);
+        }
+
+        /* Container */
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Hero Profile Card Showcase */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-card-img-wrapper {
+            max-width: 580px;
+            margin: 0 auto 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--gold-border);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(251, 191, 36, 0.2);
+            transition: transform 0.3s ease;
+            background: #0d1124;
+        }
+
+        .hero-card-img-wrapper:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(251, 191, 36, 0.35);
+        }
+
+        .hero-card-img-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 4 Quick Launch Tool Cards */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin: 35px 0 50px;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--gold-border);
+            border-radius: 12px;
+            padding: 18px 16px;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold-bright);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(251, 191, 36, 0.3);
+            background: rgba(22, 28, 60, 0.9);
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.4));
+        }
+
+        .tool-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gold-bright);
+            margin-bottom: 6px;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        .tool-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Rich Article Content */
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--gold-border);
+            border-radius: 16px;
+            padding: 40px 35px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .article-card {
+                padding: 25px 20px;
+            }
+        }
+
+        .article-title {
+            font-family: 'Be Vietnam Pro', serif;
+            color: var(--gold-bright);
+            font-size: 1.85rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .article-subtitle {
+            text-align: center;
+            color: #e2e8f0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--gold-border);
+        }
+
+        .article-card h3 {
+            color: var(--gold);
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 32px 0 14px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .article-card h3::before {
+            content: '☯';
+            font-size: 1rem;
+            color: var(--gold-bright);
+        }
+
+        .article-card h2 {
+            color: var(--gold-bright);
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin: 40px 0 16px;
+            border-left: 4px solid var(--gold);
+            padding-left: 12px;
+        }
+
+        .article-card p {
+            margin-bottom: 16px;
+            font-size: 1rem;
+            color: #e2e8f0;
+            text-align: justify;
+        }
+
+        .article-card blockquote {
+            background: rgba(251, 191, 36, 0.08);
+            border-left: 4px solid var(--gold-bright);
+            padding: 16px 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 24px 0;
+            font-style: italic;
+            color: #ffd700;
+            font-size: 1.05rem;
+        }
+
+        .article-card strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-border), transparent);
+            margin: 35px 0;
+        }
+
+        .author-box {
+            background: rgba(5, 8, 22, 0.9);
+            border: 1px solid var(--gold-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .author-box h4 {
+            color: var(--gold-bright);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(4, 6, 16, 0.98);
+            border-top: 1px solid var(--gold-border);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: auto;
+        }
+    </style>
 </head>
 <body>
-    <noscript>
-        <div style="background:#8b0000; color:#fff; text-align:center; padding:15px; font-weight:bold;">
-            ⚠️ Vui lòng bật JavaScript trên trình duyệt của bạn để sử dụng ứng dụng Kinh Dịch Lục Hào.
-        </div>
-    </noscript>
 
-    <!-- CỔNG DỊCH HỌC HỢP NHẤT MENU -->
-    <nav class="app-switcher-nav">
-        <div class="nav-container">
-            <a href="/" class="nav-item active"><span class="icon">☰</span> KINH DỊCH ĐẠI TOÀN</a>
-            <a href="/thai-at/" class="nav-item"><span class="icon">☯</span> THÁI ẤT THẦN SỐ</a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- Tiêu đề trang -->
-        <header>
-            <h1>NGUYỄN HUY HOÀNG</h1>
-            <p>zalo: 0933116860</p>
-        </header>
-
-        <!-- MÀN HÌNH 1: BẢNG ĐIỀU KHOẢN VÀ ĐỒNG Ý -->
-        <div id="disclaimer-screen" class="card">
-            <h2 class="disclaimer-title">BẢNG ĐIỀU KHOẢN & KHUYẾN CÁO SỬ DỤNG</h2>
-            <div class="disclaimer-content">
-                <p><strong>Chào mừng bạn đến với hệ thống Luận Giải Kinh Dịch Lục Hào. Trước khi tham gia gieo quẻ, vui lòng đọc kỹ các khuyến cáo dưới đây:</strong></p>
-                <p>1. Không gieo quẻ phục vụ cho các mục đích cờ bạc, cá cược dưới mọi hình thức.</p>
-                <p>2. Không gieo quẻ nhằm mục đích vi phạm pháp luật hoặc xâm phạm quyền lợi hợp pháp của người khác.</p>
-                <p>3. Không hỏi giới tính thai nhi hay các yếu tố liên quan đến tranh chấp chính trị.</p>
-                <p>4. Các kết quả luận giải hoàn toàn dựa trên các công thức nạp giáp, ngũ hành sinh khắc được lưu truyền từ trí tuệ cổ xưa, mang tính chất chiêm nghiệm khách quan và tham khảo.</p>
-                <p>5. Hệ thống giải đoán không thay thế cho các quyết định y tế chuyên nghiệp, quyết định đầu tư tài chính hoặc các quyết định liên quan đến tài sản cá nhân lớn.</p>
-                <p>6. Mọi câu trả lời từ quẻ dịch đều có thể xảy ra sai sót tùy thuộc vào ý niệm lúc gieo, hãy tự kiểm tra và chịu trách nhiệm trước khi đưa ra quyết định thực tế.</p>
-                <p>7. Đảm bảo bạn trên 18 tuổi và có đầy đủ năng lực nhận thức hành vi dân sự trước khi tiếp tục.</p>
-            </div>
-
-            <label class="disclaimer-checkbox-container" id="agree-label">
-                <input type="checkbox" id="disclaimer-checkbox">
-                <span>Tôi đã đọc hết toàn bộ nội dung khuyến cáo trên và đồng ý hoàn toàn với các điều khoản này.</span>
-            </label>
-
-            <button id="proceed-btn" class="btn btn-primary" disabled>Tiếp Tục Vào Gieo Quẻ</button>
-        </div>
-
-        <!-- MÀN HÌNH 2: KHU VỰC GIEO QUẺ CHÍNH (ẨN BAN ĐẦU) -->
-        <div id="main-screen" class="card hidden">
-            <!-- Đồng hồ thời gian thực của hệ thống -->
-            <div class="live-clock-container">
-                <span>Thời gian gieo quẻ hiện tại (Giờ chuẩn Việt Nam GMT+7): <span id="live-clock">--:--:--</span></span>
-            </div>
-
-            <!-- Khởi tạo thiết lập ban đầu -->
-            <div id="casting-stage">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="current-date-time">Ngày Giờ Lập Quẻ</label>
-                        <input type="datetime-local" id="current-date-time" class="form-control">
-                    </div>
-                    <!-- Ẩn ô giới tính và chủ đề để giao diện tối giản theo yêu cầu -->
-                    <div class="form-group" style="display: none;">
-                        <label for="gender-select">Giới Tính Người Xem</label>
-                        <select id="gender-select" class="form-control">
-                            <option value="Nam" selected>Nam</option>
-                            <option value="Nữ">Nữ</option>
-                        </select>
-                    </div>
+    <!-- Top Sticky Header with Dropdown Menu -->
+    <header class="portal-header">
+        <div class="header-content">
+            <a href="/" class="brand-link">
+                <div>
+                    <span class="brand-title">NGUYỄN HUY HOÀNG</span>
+                    <span class="brand-sub">Kinh Dịch • Tử Vi • Bát Tự • Thái Ất</span>
                 </div>
+            </a>
 
-                <div class="form-group" style="margin-bottom: 20px; display: none;">
-                    <label for="topic-select">Chủ Đề Cần Chiêm Nghiệm</label>
-                    <select id="topic-select" class="form-control">
-                        <option value="công việc" selected>Công việc & Sự nghiệp</option>
-                        <option value="thi cử">Thi cử & Học hành</option>
-                        <option value="tình yêu">Tình yêu & Gặp gỡ</option>
-                        <option value="hôn nhân">Hôn nhân & Gia đạo</option>
-                        <option value="sức khỏe">Sức khỏe & Tật bệnh</option>
-                        <option value="kinh doanh">Kinh doanh & Buôn bán</option>
-                        <option value="dự án">Hợp đồng & Đấu thầu</option>
-                        <option value="phong thủy">Phong thủy & Nhà cửa</option>
-                        <option value="kiện tụng">Kiện tụng & Tranh chấp pháp lý</option>
-                        <option value="tìm kiếm">Tìm kiếm (Người, Vật, Thú cưng)</option>
-                        <option value="thai sản">Thai sản & Sinh nở</option>
-                        <option value="ông bà cha mẹ">Ông bà, Cha mẹ</option>
-                        <option value="con cháu">Con cái, Cháu chắt</option>
-                        <option value="anh em">Anh chị em ruột thịt</option>
-                        <option value="xem thay mặt vợ">Xem thay mặt Vợ</option>
-                        <option value="xem thay mặt chồng">Xem thay mặt Chồng</option>
-                    </select>
-                </div>
+            <!-- Dropdown Toggle Button -->
+            <div class="menu-dropdown-wrapper">
+                <button id="menu-btn" class="menu-toggle-btn" aria-label="Mở Menu Ứng Dụng">
+                    <span>☰ MENU</span>
+                    <span class="arrow-icon">▼</span>
+                </button>
 
-                <!-- TABS LỰA CHỌN PHƯƠNG PHÁP -->
-                <div class="method-tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid rgba(223,177,91,0.2); padding-bottom: 12px;">
-                    <button id="tab-toss" class="btn active-tab-btn" onclick="switchMethodTab('toss')" ontouchend="switchMethodTab('toss')" style="flex: 1; min-width: 140px; padding: 10px 14px; background: var(--gold-dark); border: 1px solid var(--gold); color: #fff; font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tung Xu Trực Tuyến</button>
-                    <button id="tab-manual" class="btn" onclick="switchMethodTab('manual')" ontouchend="switchMethodTab('manual')" style="flex: 1; min-width: 160px; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(223,177,91,0.2); color: var(--text-muted); font-weight: bold; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">Tự Nhập 6 Hào (Gieo Ngoài)</button>
-                    <button id="tab-number" class="btn" onclick="switchMethodTab('number')" ontouchend="switchMethodTab('number')" style="flex: 1; min-width: 120px; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(168,85,247,0.3); color: #fbbf24; font-weight: 600; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">✨ Nhập Số</button>
-                    <button id="tab-intent" class="btn" onclick="switchMethodTab('intent')" ontouchend="switchMethodTab('intent')" style="flex: 1; min-width: 140px; padding: 10px 14px; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(255,215,0,0.15)); border: 1.5px solid #a855f7; color: #e9d5ff; font-weight: 800; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(168,85,247,0.25);">🔮 Gieo Ý Niệm</button>
-                </div>
-
-                <!-- PHÂN VÙNG 1: TUNG XU TRỰC TUYẾN -->
-                <div id="method-toss-area" style="animation: fadeIn 0.5s ease;">
-                    <div class="toss-layout-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 20px; width: 100%;">
-                        
-                        <!-- Cột trái: Đồng xu và nút tung -->
-                        <div class="toss-left" style="flex: 1.2; min-width: 280px; max-width: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(223, 177, 91, 0.08); border-radius: 12px; padding: 20px; box-sizing: border-box;">
-                            <!-- Khu vực 3 Đồng Xu Thuận Trị Cổ Kính -->
-                            <div class="coins-container" style="display: flex; gap: 15px; justify-content: center; align-items: center; min-height: 100px;">
-                                <div class="coin-wrapper">
-                                    <div class="coin" id="coin-1">
-                                        <div class="coin-inner">
-                                            <!-- Mặt Dương: 2 chữ Hán Càn Long ở hai bên -->
-                                            <div class="coin-face coin-yang">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-left-2">乾</span>
-                                                <span class="coin-text ct-right-2">隆</span>
-                                            </div>
-                                            <!-- Mặt Âm: 4 chữ Hán Càn Long Thông Bảo -->
-                                            <div class="coin-face coin-yin">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-top">乾</span>
-                                                <span class="coin-text ct-bottom">隆</span>
-                                                <span class="coin-text ct-left">通</span>
-                                                <span class="coin-text ct-right">寶</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="coin-wrapper">
-                                    <div class="coin" id="coin-2">
-                                        <div class="coin-inner">
-                                            <!-- Mặt Dương -->
-                                            <div class="coin-face coin-yang">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-left-2">乾</span>
-                                                <span class="coin-text ct-right-2">隆</span>
-                                            </div>
-                                            <!-- Mặt Âm -->
-                                            <div class="coin-face coin-yin">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-top">乾</span>
-                                                <span class="coin-text ct-bottom">隆</span>
-                                                <span class="coin-text ct-left">通</span>
-                                                <span class="coin-text ct-right">寶</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="coin-wrapper">
-                                    <div class="coin" id="coin-3">
-                                        <div class="coin-inner">
-                                            <!-- Mặt Dương -->
-                                            <div class="coin-face coin-yang">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-left-2">乾</span>
-                                                <span class="coin-text ct-right-2">隆</span>
-                                            </div>
-                                            <!-- Mặt Âm -->
-                                            <div class="coin-face coin-yin">
-                                                <div class="coin-hole"></div>
-                                                <span class="coin-text ct-top">乾</span>
-                                                <span class="coin-text ct-bottom">隆</span>
-                                                <span class="coin-text ct-left">通</span>
-                                                <span class="coin-text ct-right">寶</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button id="toss-trigger-btn" class="btn btn-primary" style="margin-top: 25px; width: 100%; max-width: 250px; font-weight: bold; padding: 12px 20px; font-size: 1rem;">TUNG ĐỒNG XU</button>
+                <!-- Dropdown Menu -->
+                <nav id="dropdown-menu" class="portal-dropdown-menu">
+                    <a href="/kinh-dich/" class="menu-item">
+                        <span class="menu-icon">☰</span>
+                        <div>
+                            <div>Kinh Dịch</div>
+                            <span class="menu-desc">Gieo quẻ Lục Hào Cổ Bốc</span>
                         </div>
-
-                        <!-- Cột phải: Tiến trình vẽ các hào đang gieo (từ Hào 1 đến Hào 6) -->
-                        <div class="toss-right" style="flex: 1; min-width: 260px; max-width: 350px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(223, 177, 91, 0.08); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
-                            <h4 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; font-family: var(--font-serif); font-size: 1.05rem;">TIẾN TRÌNH GIEO HÀO</h4>
-                            
-                            <div class="toss-progress-display" style="display: flex; flex-direction: column; gap: 8px; width: 100%; min-height: 180px; justify-content: center; align-items: center;">
-                                <!-- Hào 1 đến 6 sẽ được vẽ động bằng JavaScript từ dưới lên -->
-                                <div id="progress-line-6" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 6: Đang chờ...</div>
-                                <div id="progress-line-5" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 5: Đang chờ...</div>
-                                <div id="progress-line-4" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 4: Đang chờ...</div>
-                                <div id="progress-line-3" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 3: Đang chờ...</div>
-                                <div id="progress-line-2" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 2: Đang chờ...</div>
-                                <div id="progress-line-1" class="toss-progress-line" style="font-family: monospace; font-size: 0.95rem; color: #888; padding: 3px 0;">Hào 1: Đang chờ...</div>
-                            </div>
-
-                            <div class="question-progress" style="margin-top: 15px; font-size: 0.9rem; text-align: center; color: var(--text-muted);">
-                                <span id="progress-text" style="font-weight: bold; color: var(--gold);">Lần gieo: 0/6</span>
-                            </div>
+                    </a>
+                    <a href="/tu-vi/" class="menu-item">
+                        <span class="menu-icon">⭐</span>
+                        <div>
+                            <div>Tử Vi</div>
+                            <span class="menu-desc">Lá số Tử Vi Đẩu Số 12 Cung</span>
                         </div>
-
-                    </div>
-
-                    <!-- Nút hoàn tất sau khi gieo xong 6 lần -->
-                    <div id="finish-container" class="hidden" style="text-align: center; margin-top: 20px;">
-                        <p style="margin-bottom: 15px; color: var(--gold); font-size: 1.1rem; font-weight: bold;">Đã gieo đủ 6 hào của quẻ dịch!</p>
-                        <button id="finish-btn" class="btn btn-primary" style="max-width: 280px; margin: 0 auto;">Lập Bản Đồ Quẻ Dịch</button>
-                    </div>
-
-                </div>
-
-                <!-- PHÂN VÙNG 2: TỰ NHẬP HÀO (ẨN MẶC ĐỊNH) -->
-                <div id="method-manual-area" class="hidden" style="animation: fadeIn 0.5s ease;">
-                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(223, 177, 91, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                        <h4 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; text-align: center; font-family: var(--font-serif); font-size: 1.1rem;">THIẾT LẬP 6 HÀO (Hào 6 ở trên, Hào 1 ở dưới)</h4>
-                        
-                        <div class="manual-lines-grid" style="display: flex; flex-direction: column; gap: 12px; max-width: 450px; margin: 0 auto;">
-                            <!-- Hào 6 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 6 (Trên):</strong>
-                                <select id="manual-hao-6" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-6" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
-                            <!-- Hào 5 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 5:</strong>
-                                <select id="manual-hao-5" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-5" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
-                            <!-- Hào 4 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 4:</strong>
-                                <select id="manual-hao-4" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-4" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
-                            <!-- Hào 3 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 3:</strong>
-                                <select id="manual-hao-3" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-3" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
-                            <!-- Hào 2 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 2:</strong>
-                                <select id="manual-hao-2" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-2" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
-                            <!-- Hào 1 -->
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                                <strong style="color: var(--text-light); width: 100px;">Hào 1 (Dưới):</strong>
-                                <select id="manual-hao-1" class="form-control" style="flex: 2;">
-                                    <option value="1">Dương (— Nét liền)</option>
-                                    <option value="2">Âm (- - Nét đứt)</option>
-                                </select>
-                                <label style="display: flex; align-items: center; gap: 6px; color: var(--text-light); cursor: pointer; flex: 1; user-select: none;">
-                                    <input type="checkbox" id="manual-dong-1" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span style="font-size: 0.95rem;">Động</span>
-                                </label>
-                            </div>
+                    </a>
+                    <a href="/thai-at/" class="menu-item">
+                        <span class="menu-icon">☯</span>
+                        <div>
+                            <div>Thái Ất</div>
+                            <span class="menu-desc">Sa bàn 16 cung & 72 cục</span>
                         </div>
-                    </div>
-
-                    <button id="manual-submit-btn" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Lập Bản Đồ Quẻ Dịch (Nhập Hào)</button>
-                </div>
-
-                <!-- PHÂN VÙNG 3: NHẬP SỐ (MAI HOA DỊCH SỐ - ẨN MẶC ĐỊNH) -->
-                <div id="method-number-area" class="hidden" style="animation: fadeIn 0.5s ease;">
-                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 16px; padding: 26px 20px; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
-                        <!-- Ô nhập số nổi bật -->
-                        <div style="max-width: 480px; margin: 0 auto 16px auto;">
-                            <input type="text" id="number-input" class="form-control" 
-                                placeholder="Nhập dãy số tự nhiên... (VD: 10009000, 1001200, 357, 20 30, 12)" 
-                                style="font-size: 1.25rem; font-weight: 700; text-align: center; letter-spacing: 2px; padding: 14px 20px; border-radius: 30px; border: 2px solid #ffd700; background: rgba(15, 20, 35, 0.9); color: #fff; box-shadow: 0 0 15px rgba(255,215,0,0.25); transition: all 0.3s ease;"
-                                autocomplete="off" autocorrect="off" spellcheck="false">
+                    </a>
+                    <a href="/bat-tu/" class="menu-item">
+                        <span class="menu-icon">🏛️</span>
+                        <div>
+                            <div>Bát Tự</div>
+                            <span class="menu-desc">Tứ Trụ, Thập Thần & Đại Vận</span>
                         </div>
-
-                        <!-- Khung xem trước quẻ trực quan thời gian thực -->
-                        <div id="number-preview-box" style="max-width: 500px; margin: 0 auto 20px auto; padding: 14px 16px; background: rgba(255, 215, 0, 0.06); border: 1px dashed rgba(255, 215, 0, 0.35); border-radius: 12px; font-size: 0.92rem; color: #e0e6ed; line-height: 1.7; display: none;">
-                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; text-align: center;">
-                                <div style="flex: 1; min-width: 120px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #00d2ff;">
-                                    <span style="font-size: 0.8rem; color: #888; display: block;">Thượng Quái</span>
-                                    <strong id="np-thuong" style="color: #00d2ff; font-size: 1.05rem;">--</strong>
-                                </div>
-                                <div style="flex: 1; min-width: 120px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #2ecc71;">
-                                    <span style="font-size: 0.8rem; color: #888; display: block;">Hạ Quái</span>
-                                    <strong id="np-ha" style="color: #2ecc71; font-size: 1.05rem;">--</strong>
-                                </div>
-                                <div style="flex: 1; min-width: 120px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; border-left: 3px solid #ff4757;">
-                                    <span style="font-size: 0.8rem; color: #888; display: block;">Hào Động</span>
-                                    <strong id="np-dong" style="color: #ff4757; font-size: 1.05rem;">--</strong>
-                                </div>
-                            </div>
-                            <div id="np-result-name" style="text-align: center; color: #ffd700; font-weight: 700; font-size: 1.1rem; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,215,0,0.25);"></div>
-                        </div>
-
-                        <!-- Nút Lập Quẻ thiết kế hình Oval màu sáng nổi bật -->
-                        <div style="text-align: center; margin-top: 8px;">
-                            <button id="number-submit-btn" class="btn" 
-                                style="border-radius: 35px; padding: 14px 45px; min-width: 220px; background: linear-gradient(135deg, #ffd700, #ffae00); color: #1a0f00; font-weight: 800; font-size: 1.15rem; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.45); transition: all 0.3s ease; letter-spacing: 1px;">
-                                LẬP QUẺ
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PHÂN VÙNG 4: GIEO Ý NIỆM (ẨN MẶC ĐỊNH) -->
-                <div id="method-intent-area" class="hidden" style="animation: fadeIn 0.5s ease;">
-                    <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 16px; padding: 26px 20px; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
-                        <div style="max-width: 560px; margin: 0 auto 16px auto;">
-                            <label for="intent-input" style="display: block; font-weight: 700; color: #e9d5ff; font-size: 1rem; margin-bottom: 8px; text-align: center;">
-                                🔮 Nhập Ý Niệm / Câu Hỏi Chiêm Bốc
-                            </label>
-                            <textarea id="intent-input" class="form-control" rows="3"
-                                placeholder="Nhập câu hỏi cụ thể của bạn... (VD: ngày mai có mưa không? / công việc sắp tới thế nào?)"
-                                style="font-size: 1.1rem; font-weight: 600; text-align: left; padding: 14px 18px; border-radius: 16px; border: 2px solid #a855f7; background: rgba(15, 20, 35, 0.9); color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.25); transition: all 0.3s ease; resize: vertical; width: 100%; min-height: 85px;"
-                                autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
-                            <p style="font-size: 0.85rem; color: #fcd34d; font-style: italic; margin-top: 10px; margin-bottom: 0; text-align: center; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
-                                ⚠️ <strong>Lưu ý:</strong> Mọi ký tự gõ sai trong vô thức cũng là điềm báo quẻ, chữ nào sai thì sửa, không nên khởi quẻ khác.
-                            </p>
-                        </div>
-
-                        <!-- Khung xem trước quẻ ý niệm thời gian thực -->
-                        <div id="intent-preview-box" style="max-width: 560px; margin: 0 auto 20px auto; padding: 14px 16px; background: rgba(168, 85, 247, 0.08); border: 1px dashed rgba(168, 85, 247, 0.45); border-radius: 12px; font-size: 0.92rem; color: #e0e6ed; line-height: 1.7; display: none;">
-                            <!-- Badges: Tổng số toán, Thượng, Hạ, Động -->
-                            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; text-align: center;">
-                                <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #fbbf24;">
-                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Tổng Số Toán</span>
-                                    <strong id="ip-total" style="color: #fbbf24; font-size: 1.1rem;">0</strong>
-                                    <div id="ip-sub-detail" style="font-size: 0.7rem; color: #aaa; display: none;"></div>
-                                </div>
-                                <div style="flex: 1; min-width: 105px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #00d2ff;">
-                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Thượng Quái</span>
-                                    <strong id="ip-thuong" style="color: #00d2ff; font-size: 1.05rem;">--</strong>
-                                </div>
-                                <div style="flex: 1; min-width: 105px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #ff7b00;">
-                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Hạ Quái</span>
-                                    <strong id="ip-ha" style="color: #ff7b00; font-size: 1.05rem;">--</strong>
-                                </div>
-                                <div style="flex: 1; min-width: 90px; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 8px; border-left: 3px solid #ff2a6d;">
-                                    <span style="font-size: 0.75rem; color: #aaa; display: block;">Hào Động</span>
-                                    <strong id="ip-dong" style="color: #ff2a6d; font-size: 1.05rem;">--</strong>
-                                </div>
-                            </div>
-
-                            <!-- Chi tiết phân đoạn từ ngữ tròn nghĩa -->
-                            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.88rem;">
-                                <div>🔹 <strong>Thượng quái (<span id="ip-thuong-count">0</span> số):</strong> <span id="ip-thuong-text" style="color: #00d2ff; font-style: italic;">--</span></div>
-                                <div style="margin-top: 5px;">🔸 <strong>Hạ quái (<span id="ip-ha-count">0</span> số):</strong> <span id="ip-ha-text" style="color: #ff7b00; font-style: italic;">--</span></div>
-                            </div>
-
-                            <!-- Tên quẻ chủ & quẻ biến -->
-                            <div style="text-align: center; font-size: 0.95rem; padding-top: 4px;">
-                                <span>Quẻ Chủ: <strong id="ip-main-hex" style="color: #fbbf24;">--</strong></span>
-                                <span style="margin: 0 8px; color: #888;">➔</span>
-                                <span>Quẻ Biến: <strong id="ip-changed-hex" style="color: #00f2fe;">--</strong></span>
-                            </div>
-                        </div>
-
-                        <!-- Nút Lập Quẻ Ý Niệm -->
-                        <div style="text-align: center; margin-top: 8px;">
-                            <button id="intent-submit-btn" class="btn" 
-                                style="border-radius: 35px; padding: 14px 45px; min-width: 240px; background: linear-gradient(135deg, #a855f7, #ec4899); color: #ffffff; font-weight: 800; font-size: 1.15rem; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.45); transition: all 0.3s ease; letter-spacing: 1px;">
-                                LẬP QUẺ Ý NIỆM
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MÀN HÌNH 3: HIỂN THỊ KẾT QUẢ QUẺ DỊCH -->
-            <div id="result-area" class="hidden">
-                <h3 class="disclaimer-title" style="margin-top: 15px;">KẾT QUẢ LẬP QUẺ LỤC HÀO</h3>
-                
-                <div class="result-stage">
-                    <div class="hexagram-card-wrapper">
-                        <!-- Ảnh PNG hiển thị và cho phép nhấn giữ lưu ảnh trên di động -->
-                        <img id="hexagram-img" class="hexagram-image-output" alt="Thẻ Quẻ Lục Hào Cổ Kính">
-                    </div>
-                    <p class="download-tip">Mẹo: Bạn có thể nhấn nút Tải ảnh dưới đây để lưu về máy.</p>
-                </div>
-
-                <div class="action-row" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; width: 100%;">
-                    <button id="download-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Tải Ảnh Quẻ</button>
-                    <button id="back-to-cast-btn" class="btn btn-primary" style="background: #3a2e24; border-color: #524133; color: var(--text-light); padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Sửa Hào</button>
-                    <button onclick="window.location.reload();" class="btn btn-primary" style="background: #2b1f15; border-color: #3d2a19; color: var(--text-light); padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Gieo Mới</button>
-                </div>
-
-                <!-- Thông Tin Liên Hệ Luận Giải & Lưu Ý -->
-                <div class="interpretation-panel" style="padding: 15px; margin-top: 15px;">
-                    <h3 class="interpretation-title" style="letter-spacing: 2px; font-size: 0.75rem; color: #ff4d4d; border-bottom: 1px solid rgba(255, 77, 77, 0.3); padding-bottom: 5px; margin-bottom: 15px; font-family: var(--font-ancient); text-align: center;">LIÊN HỆ</h3>
-                    <div class="interpretation-body" style="font-family: var(--font-serif); font-size: 0.95rem; line-height: 1.6; color: #ebd9c5; padding: 0;">
-                        
-                        <!-- Thông tin phẳng, tối ưu hóa không gian, không khung viền -->
-                        <div style="margin-bottom: 15px; text-align: left; padding: 0 5px;">
-                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9;">☯ Dịch Sư:</span>
-                                <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">HUY HOÀNG</span>
-                            </div>
-                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9;">💬 Zalo:</span>
-                                <a href="https://zalo.me/0933116860" target="_blank" style="color: #66b2ff; text-decoration: underline; font-weight: 600; font-size: 0.95rem;">0933116860</a>
-                            </div>
-                            <div style="margin-top: 10px; border-top: 1px dashed rgba(223, 177, 91, 0.15); padding-top: 10px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 4px; opacity: 0.9;">🏦 Tài khoản ngân hàng (Cúng dường / Tùy hỷ):</span>
-                                <span style="display: block; font-size: 0.9rem; color: #e5c392;">Ngân hàng: <strong>Sacombank</strong> - STK: <strong style="font-size: 1rem; color: var(--gold); font-family: monospace;">060216644258</strong></span>
-                            </div>
-                        </div>
-
-                        <!-- Khung lưu ý cảnh báo màu đỏ -->
-                        <div class="warning-info-box" style="border: 1px solid rgba(255, 77, 77, 0.4); background: rgba(255, 77, 77, 0.03); border-radius: 6px; padding: 12px; text-align: justify;">
-                            <p style="color: #ff6666; font-weight: bold; margin: 0 0 6px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-                                ⚠️ LƯU Ý QUAN TRỌNG:
-                            </p>
-                            <p style="color: #ffb3b3; margin: 0; font-size: 0.82rem; line-height: 1.5;">
-                                Sau khi tải ảnh, hãy <strong>chụp màn hình ảnh quẻ</strong> trước khi thoát web để đảm bảo an toàn. Vì khi thoát web và gieo lại sẽ không còn quẻ hiện tại nữa, thông tin luận đoán chắc chắn sai lệch.
-                            </p>
-                        </div>
-
-                    </div>
-                </div>
+                    </a>
+                </nav>
             </div>
         </div>
+    </header>
 
-        <!-- Bản quyền chân trang -->
-        <footer>
-            <p>&copy; 2026 Website Kinh Dịch Lục Hào. Triển khai miễn phí trên Vercel qua GitHub.</p>
-        </footer>
-    </div>
+    <main class="main-container">
+        <!-- Hero Section with Profile Card -->
+        <section class="hero-section">
+            <div class="hero-card-img-wrapper">
+                <img src="hoang_intro_card.png" alt="Nguyễn Huy Hoàng — Hoàng ngủ mơ • Lục Hào Cổ Bốc • Kinh Dịch • Tử Vi • Bát Tự • Thái Ất">
+            </div>
 
-    <!-- Hidden Capture Area for html2canvas -->
-    <div id="captureArea">
-        <div id="captureTarget"></div>
-    </div>
+            <!-- Quick Launch 4 Big Cards -->
+            <div class="tools-grid">
+                <a href="/kinh-dich/" class="tool-card">
+                    <div class="tool-icon">☰</div>
+                    <div class="tool-name">Kinh Dịch</div>
+                    <div class="tool-sub">Gieo Quẻ 3 Đồng Xu, Lục Hào Cổ Bốc, Dụng Thần & Biến Hào</div>
+                </a>
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay">
-        <div class="loader-content">
-            <div class="spinner"></div>
-            <p>Đang tạo ảnh kết quả...</p>
-        </div>
-    </div>
+                <a href="/tu-vi/" class="tool-card">
+                    <div class="tool-icon">⭐</div>
+                    <div class="tool-name">Tử Vi</div>
+                    <div class="tool-sub">Lá Số 12 Cung, 108 Tinh Tú, Vận Hạn & Tinh Hệ Chi Tiết</div>
+                </a>
 
-    <!-- Nạp các thư viện logic -->
-    <!-- Lightning Flash overlay -->
-    <div id="lightning-strike-overlay"></div>
+                <a href="/thai-at/" class="tool-card">
+                    <div class="tool-icon">☯</div>
+                    <div class="tool-name">Thái Ất</div>
+                    <div class="tool-sub">Sa Bàn 16 Cung, 72 Cục, Quẻ Dịch & Sa Bàn Nhân Mệnh</div>
+                </a>
 
-    <script src="calendar.js?v=5.9.0"></script>
-    <script src="iching_core.js?v=5.9.0"></script>
-    <script src="app.js?v=5.9.0"></script>
+                <a href="/bat-tu/" class="tool-card">
+                    <div class="tool-icon">🏛️</div>
+                    <div class="tool-name">Bát Tự</div>
+                    <div class="tool-sub">Tứ Trụ Mệnh Lý, Thập Thần, Nạp Âm, Thần Sát & Đại Vận</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Rich Article Section -->
+        <article class="article-card">
+            <h1 class="article-title">NGUYỄN HUY HOÀNG</h1>
+            <div class="article-subtitle">Nghiên cứu & ứng dụng Kinh Dịch • Tử Vi • Bát Tự • Thái Ất</div>
+
+            <p>Có những tri thức đã tồn tại qua hàng nghìn năm, được truyền lại không chỉ bằng sách vở, mà bằng cả một hệ thống tư tưởng sâu sắc về <strong>Thiên – Địa – Nhân</strong>, về quy luật vận động của thời gian, hoàn cảnh và con người.</p>
+
+            <p><strong>Kinh Dịch, Tử Vi, Bát Tự và Thái Ất</strong> là những hệ thống mà tôi đã dành thời gian tìm hiểu, học tập và nghiên cứu từ <strong>năm 2020 đến nay</strong>.</p>
+
+            <p>Tôi là <strong>Nguyễn Huy Hoàng</strong>, sinh năm 1994. Trên hành trình này, tôi không đặt mục tiêu tìm kiếm những lời phán đoán huyền bí, mà hướng tới việc <strong>hiểu nguyên lý phía sau mỗi phương pháp</strong>, hệ thống hóa kiến thức và tìm cách đưa những giá trị của cổ học phương Đông đến gần hơn với đời sống hiện đại.</p>
+
+            <div class="divider"></div>
+
+            <h3>KINH DỊCH – THẤY SỰ BIẾN ĐỔI</h3>
+            <p>Kinh Dịch không chỉ là những quẻ tượng dùng để dự đoán.</p>
+            <p>Đằng sau 64 quẻ là một hệ thống tư duy về <strong>biến dịch – bất dịch – giản dịch</strong>, về âm dương, động tĩnh, sinh khắc và sự chuyển hóa không ngừng của vạn vật.</p>
+            <p>Từ Lục Hào Cổ Bốc, tôi nghiên cứu cách một quẻ được hình thành, cách xác lập Dụng Thần, Thế – Ứng, Lục Thân, Lục Thú, Ngũ Hành, hào động cùng những quan hệ tương tác giữa các hào để từng bước xây dựng phương pháp luận rõ ràng và có hệ thống hơn.</p>
+
+            <h3>TỬ VI – NHÌN VẬN MỆNH TRONG DÒNG THỜI GIAN</h3>
+            <p>Tử Vi là một hệ thống phức tạp về <strong>thời gian, không gian và các tổ hợp tinh hệ</strong>.</p>
+            <p>Việc nghiên cứu lá số không chỉ nằm ở việc ghi nhớ ý nghĩa của từng sao, mà quan trọng hơn là nhận ra <strong>mối quan hệ giữa các cung, các tinh hệ và vận trình</strong>, từ đó nhìn một lá số như một chỉnh thể thay vì những mảnh thông tin rời rạc.</p>
+
+            <h3>BÁT TỰ – TÌM QUY LUẬT TRONG CAN CHI NGŨ HÀNH</h3>
+            <p>Bát Tự đưa con người trở về với nền tảng <strong>Thiên Can – Địa Chi – Âm Dương – Ngũ Hành</strong>.</p>
+            <p>Thông qua tứ trụ năm, tháng, ngày, giờ sinh, có thể nghiên cứu sự phân bố và vận động của Ngũ Hành, từ đó tiếp cận các vấn đề về tính chất, xu hướng và những giai đoạn biến đổi trong cuộc đời.</p>
+
+            <h3>THÁI ẤT – TƯ DUY VỀ THIÊN THỜI</h3>
+            <p>Trong các hệ thống dự đoán cổ phương Đông, <strong>Thái Ất</strong> đặc biệt hấp dẫn tôi bởi tư duy về đại cục, thời vận và sự vận động của thiên thời.</p>
+            <p>Đây cũng là lĩnh vực tôi dành nhiều sự quan tâm trong việc tìm hiểu cách người xưa xây dựng những chu kỳ, quy tắc và mô hình tính toán để quan sát sự biến chuyển của thời cuộc.</p>
+
+            <div class="divider"></div>
+
+            <h2>TỪ TRI THỨC CỔ ĐẾN CÔNG CỤ HIỆN ĐẠI</h2>
+            <p>Một phần quan trọng trong hành trình của tôi là <strong>số hóa và hệ thống hóa kiến thức</strong>.</p>
+            <p>Thay vì chỉ lưu giữ phương pháp trong sách vở, tôi xây dựng các công cụ trực tuyến hỗ trợ <strong>an quẻ, lập lá số và xử lý dữ liệu tự động</strong>, nhằm giúp việc tiếp cận những hệ thống cổ học trở nên thuận tiện, trực quan và có tính hệ thống hơn.</p>
+
+            <blockquote>
+                <strong>“Tri thức cổ không nhất thiết phải bị giới hạn bởi hình thức truyền thống.”</strong>
+            </blockquote>
+
+            <p>Điều quan trọng là giữ được <strong>cốt lõi của nguyên lý</strong>, đồng thời sử dụng công nghệ hiện đại để nghiên cứu, kiểm chứng, hệ thống hóa và phổ biến kiến thức một cách dễ tiếp cận hơn.</p>
+            <p>Website và các nền tảng tôi xây dựng vì vậy không đơn thuần là những công cụ “xem quẻ” hay “xem lá số”, mà là một phần trong quá trình <strong>nghiên cứu, thực hành và số hóa tri thức huyền học phương Đông</strong>.</p>
+
+            <h2>MỘT GÓC NHÌN KHÔNG CỰC ĐOAN</h2>
+            <p>Tôi không xem huyền học là thứ để con người phó mặc số phận.</p>
+            <p>Ngược lại, giá trị lớn nhất của việc nghiên cứu những hệ thống này, theo tôi, nằm ở khả năng giúp con người <strong>quan sát hoàn cảnh, nhận diện xu hướng, suy xét trước – sau và thận trọng hơn trước những quyết định quan trọng</strong>.</p>
+
+            <p>Quẻ có thể cho ta một góc nhìn.<br>
+            Lá số có thể cho ta một hệ quy chiếu.<br>
+            Nhưng <strong>người đưa ra quyết định cuối cùng vẫn là chính mình</strong>.</p>
+
+            <blockquote>
+                <strong>Hiểu Dịch để hiểu sự biến đổi.<br>
+                Hiểu mệnh để hiểu chính mình.<br>
+                Biết thời để thuận thế.<br>
+                Biết biến để hành động.</strong>
+            </blockquote>
+
+            <div class="author-box">
+                <h4>NGUYỄN HUY HOÀNG</h4>
+                <p><strong>Nghiên cứu & ứng dụng:</strong> Kinh Dịch • Lục Hào Cổ Bốc • Tử Vi • Bát Tự • Thái Ất</p>
+                <p><strong>Hành trình nghiên cứu:</strong> 2020 – nay</p>
+                <p><strong>Facebook:</strong> Hoàng ngủ mơ  |  <strong>Zalo:</strong> 0933 116 860</p>
+                <p style="margin-top: 10px; font-size: 0.95rem; color: #ffd700;">
+                    <em>“Gìn giữ tinh hoa của người xưa — dùng trí tuệ của hôm nay để soi chiếu cuộc sống.”</em>
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>© 2026 Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258</p>
+    </footer>
+
+    <!-- Dropdown Menu Interaction Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menu-btn');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = dropdownMenu.classList.contains('show');
+                if (isOpen) {
+                    dropdownMenu.classList.remove('show');
+                    menuBtn.classList.remove('active');
+                } else {
+                    dropdownMenu.classList.add('show');
+                    menuBtn.classList.add('active');
+                }
+            });
+
+            // Close on click outside
+            document.addEventListener('click', (e) => {
+                if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                    menuBtn.classList.remove('active');
+                }
+            });
+
+            // Close on ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    dropdownMenu.classList.remove('show');
+                    menuBtn.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
