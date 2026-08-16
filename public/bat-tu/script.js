@@ -16,33 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const refContent = document.getElementById("ref-content");
     const tabBtns = document.querySelectorAll(".ref-tab-btn");
 
-    const btnCompact = document.getElementById("btn-mode-compact");
-    const btnFull100 = document.getElementById("btn-mode-full100");
+    const toggle100Years = document.getElementById("toggle-100-years");
 
-    if (btnCompact && btnFull100) {
-        btnCompact.addEventListener("click", () => {
-            currentViewMode = 'compact';
-            btnCompact.style.background = "linear-gradient(135deg, #d4af37, #aa820a)";
-            btnCompact.style.color = "#050711";
-            btnCompact.style.border = "none";
-
-            btnFull100.style.background = "rgba(212, 175, 55, 0.15)";
-            btnFull100.style.color = "#ffd700";
-            btnFull100.style.border = "1px solid var(--accent-gold)";
-
-            renderChart();
-        });
-
-        btnFull100.addEventListener("click", () => {
-            currentViewMode = 'full100';
-            btnFull100.style.background = "linear-gradient(135deg, #d4af37, #aa820a)";
-            btnFull100.style.color = "#050711";
-            btnFull100.style.border = "none";
-
-            btnCompact.style.background = "rgba(212, 175, 55, 0.15)";
-            btnCompact.style.color = "#ffd700";
-            btnCompact.style.border = "1px solid var(--accent-gold)";
-
+    if (toggle100Years) {
+        toggle100Years.addEventListener("change", () => {
             renderChart();
         });
     }
@@ -63,8 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const minute = parseInt(minStr, 10);
 
         try {
+            const is100Years = toggle100Years ? toggle100Years.checked : false;
             currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
-            const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, currentViewMode);
+            const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, is100Years);
             chartImg.src = dataUrl;
         } catch (err) {
             console.error("Lỗi khi lập lá số Bát Tự:", err);
