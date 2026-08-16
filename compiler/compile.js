@@ -60,8 +60,8 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         fs.mkdirSync(publicDir);
     }
     
-    // Sao chép các tệp giao diện tĩnh của phân hệ Kinh Dịch
-    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share_v2.png', 'lightning_bg.jpg', 'robots.txt', 'sitemap.xml'];
+    // Sao chép các tệp giao diện tĩnh của phân hệ Trang Chủ & Kinh Dịch
+    const staticFiles = ['index.html', 'app.js', 'style.css', 'iching_core.js', 'calendar.js', 'seal_stamp.jpg', 'og_share_v2.png', 'lightning_bg.jpg', 'hoang_intro_card.png', 'robots.txt', 'sitemap.xml'];
     staticFiles.forEach(file => {
         const src = path.join(projectRoot, file);
         const dest = path.join(publicDir, file);
@@ -94,6 +94,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         }
     }
 
+    // Sao chép đệ quy thư mục phân hệ Kinh Dịch sang public/kinh-dich
+    const srcKinhDich = path.join(projectRoot, 'kinh-dich');
+    const destKinhDich = path.join(publicDir, 'kinh-dich');
+    if (fs.existsSync(srcKinhDich)) {
+        copyDirRecursiveSync(srcKinhDich, destKinhDich);
+        console.log('Successfully copied kinh-dich module recursively to public/kinh-dich!');
+    }
+
     // Sao chép đệ quy thư mục phân hệ Thái Ất sang public/thai-at
     const srcThaiAt = path.join(projectRoot, 'thai-at');
     const destThaiAt = path.join(publicDir, 'thai-at');
@@ -108,6 +116,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
     if (fs.existsSync(srcBatTu)) {
         copyDirRecursiveSync(srcBatTu, destBatTu);
         console.log('Successfully copied bat-tu module recursively to public/bat-tu!');
+    }
+
+    // Sao chép đệ quy thư mục phân hệ Tử Vi sang public/tu-vi
+    const srcTuVi = path.join(projectRoot, 'tu-vi');
+    const destTuVi = path.join(publicDir, 'tu-vi');
+    if (fs.existsSync(srcTuVi)) {
+        copyDirRecursiveSync(srcTuVi, destTuVi);
+        console.log('Successfully copied tu-vi module recursively to public/tu-vi!');
     }
 
     // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
