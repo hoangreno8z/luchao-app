@@ -194,6 +194,17 @@
                         <input type="time" id="inp-time" class="form-control" value="00:00">
                     </div>
 
+                    <!-- Nút Gạt Switch 100 Năm Đại Vận -->
+                    <div class="toggle-group">
+                        <label for="toggle-100-years" style="margin-bottom: 0; color: #ffd700; font-weight: 600; font-size: 0.88rem; cursor: pointer;">
+                            📜 Hiển thị 100 năm Đại Vận
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-100-years">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
                     <button type="submit" id="btn-submit" class="btn-primary">
                         🔮 LẬP LÁ SỐ BÁT TỰ
                     </button>
@@ -208,20 +219,10 @@
 
             <!-- Main Chart Display -->
             <section class="chart-container">
-                <div class="chart-actions">
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between;">
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" id="btn-mode-compact" class="btn-mode active" style="background: linear-gradient(135deg, #d4af37, #aa820a); color: #050711; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                                📊 10 Đại Vận (Mệnh Bàn)
-                            </button>
-                            <button type="button" id="btn-mode-full100" class="btn-mode" style="background: rgba(212, 175, 55, 0.15); color: #ffd700; border: 1px solid var(--accent-gold); padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                                📜 100 Năm Lưu Niên
-                            </button>
-                        </div>
-                        <button id="btn-download-png" class="btn-secondary">
-                            📥 Tải Ảnh HD
-                        </button>
-                    </div>
+                <div class="chart-actions" style="justify-content: flex-end; padding: 6px 12px;">
+                    <button id="btn-download-png" class="btn-secondary" style="font-size: 0.88rem; padding: 6px 16px;">
+                        📥 Tải Ảnh HD (PNG)
+                    </button>
                 </div>
 
                 <div class="chart-img-wrapper">
