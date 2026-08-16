@@ -4,6 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     let currentBatTuData = null;
+    let currentViewMode = 'compact'; // 'compact' (10 Đại Vận Mệnh Bàn) | 'full100' (100 Năm)
 
     const form = document.getElementById("battu-form");
     const nameInput = document.getElementById("inp-name");
@@ -14,6 +15,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnDownload = document.getElementById("btn-download-png");
     const refContent = document.getElementById("ref-content");
     const tabBtns = document.querySelectorAll(".ref-tab-btn");
+
+    const btnCompact = document.getElementById("btn-mode-compact");
+    const btnFull100 = document.getElementById("btn-mode-full100");
+
+    if (btnCompact && btnFull100) {
+        btnCompact.addEventListener("click", () => {
+            currentViewMode = 'compact';
+            btnCompact.style.background = "linear-gradient(135deg, #d4af37, #aa820a)";
+            btnCompact.style.color = "#050711";
+            btnCompact.style.border = "none";
+
+            btnFull100.style.background = "rgba(212, 175, 55, 0.15)";
+            btnFull100.style.color = "#ffd700";
+            btnFull100.style.border = "1px solid var(--accent-gold)";
+
+            renderChart();
+        });
+
+        btnFull100.addEventListener("click", () => {
+            currentViewMode = 'full100';
+            btnFull100.style.background = "linear-gradient(135deg, #d4af37, #aa820a)";
+            btnFull100.style.color = "#050711";
+            btnFull100.style.border = "none";
+
+            btnCompact.style.background = "rgba(212, 175, 55, 0.15)";
+            btnCompact.style.color = "#ffd700";
+            btnCompact.style.border = "1px solid var(--accent-gold)";
+
+            renderChart();
+        });
+    }
 
     function renderChart() {
         const name = nameInput.value.trim() || "VÔ DANH KHÁCH";
@@ -32,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
-            const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData);
+            const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, currentViewMode);
             chartImg.src = dataUrl;
 
             document.getElementById("chart-summary-title").textContent = 
