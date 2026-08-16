@@ -66,9 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
             currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
             const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, currentViewMode);
             chartImg.src = dataUrl;
-
-            document.getElementById("chart-summary-title").textContent = 
-                `📊 Lá Số Bát Tự: ${name} (${currentBatTuData.genderLabel}) — ${currentBatTuData.pillars.year.fullGanZhi} / ${currentBatTuData.pillars.month.fullGanZhi} / ${currentBatTuData.pillars.day.fullGanZhi} / ${currentBatTuData.pillars.time.fullGanZhi}`;
         } catch (err) {
             console.error("Lỗi khi lập lá số Bát Tự:", err);
             alert("Có lỗi khi lập lá số: " + err.message);
