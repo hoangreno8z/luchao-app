@@ -211,10 +211,151 @@ class ThaiAtLuanDoan {
 }
 
 /**
+ * BÁO CÁO LUẬN GIẢI CHUYÊN SÂU SA BÀN NHÂN MỆNH THÁI ẤT THẦN SỐ
+ * Dịch sư Nguyễn Huy Hoàng - zalo 0933116860
+ */
+function generateNhanMenhDetailedAnalysisReport(data) {
+    const nm = data.nhanMenhData || {};
+    const lp = nm.lifePalaces || data.lifePalaces || {};
+    const lh = nm || data.lifeHex || {};
+    const destinyAux = nm.destinyAux || data.destinyAux || {};
+    const auxStars = destinyAux.starsByBranch || {};
+    const pMap = nm.palaces12Map || data.palaces12Map || {};
+
+    const isYang = lp.isYangYear;
+    const sexStr = (data.sex === "nam") ? "Nam Mệnh" : "Nữ Mệnh";
+    const amDuongSex = `${isYang ? 'Dương' : 'Âm'} ${data.sex === 'nam' ? 'Nam' : 'Nữ'}`;
+    const tuTruStr = (data.tuTru && data.tuTru.fullString) ? data.tuTru.fullString : "Tứ Trụ Can Chi";
+
+    // Mệnh Cung & Thân Cung info
+    const menhBranch = lp.lifeBranchName || "Dần";
+    const thanBranch = lp.bodyBranchName || "Dần";
+    const isMenhThanDongCung = (lp.lifeBranchIdx === lp.bodyBranchIdx);
+
+    // Stars in Mệnh & Thân
+    const CHI_TO_PAL_ID = { 0: "ty", 1: "suu", 2: "dan", 3: "mao", 4: "thin", 5: "ty_chi", 6: "ngo", 7: "mui", 8: "than", 9: "dau", 10: "tuat", 11: "hoi" };
+    const menhPalId = CHI_TO_PAL_ID[lp.lifeBranchIdx] || "dan";
+    const thanPalId = CHI_TO_PAL_ID[lp.bodyBranchIdx] || "dan";
+
+    const menhStars = (data.placement && data.placement[menhPalId]) ? data.placement[menhPalId].filter(s => !s.name.startsWith("[")) : [];
+    const thanStars = (data.placement && data.placement[thanPalId]) ? data.placement[thanPalId].filter(s => !s.name.startsWith("[")) : [];
+
+    // Quan Lộc & Tài Bạch
+    const quanBranchInfo = lp.palaceToBranch ? lp.palaceToBranch["Quan Lộc"] : null;
+    const taiBranchInfo = lp.palaceToBranch ? lp.palaceToBranch["Tài Bạch"] : null;
+    const phucBranchInfo = lp.palaceToBranch ? lp.palaceToBranch["Phúc Đức"] : null;
+    const phuTheBranchInfo = lp.palaceToBranch ? lp.palaceToBranch["Phu Thê"] : null;
+    const tatAchBranchInfo = lp.palaceToBranch ? lp.palaceToBranch["Tật Ách"] : null;
+
+    return `
+    <div class="luan-doan-report-card">
+        <!-- HEADER TRUNG TÂM -->
+        <div style="background: rgba(212, 175, 55, 0.1); border: 1.5px solid var(--gold); border-radius: 8px; padding: 14px; margin-bottom: 16px; text-align: center;">
+            <h3 style="color: #ffd700; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1.15rem; margin: 0 0 4px 0;">Dịch sư Nguyễn Huy Hoàng - zalo 0933116860</h3>
+            <p style="color: #00d2ff; font-weight: bold; margin: 0 0 6px 0; font-size: 0.9rem;">☯ BẢN TIN LUẬN GIẢI SA BÀN NHÂN MỆNH THÁI ẤT THẦN SỐ ☯</p>
+            <div style="font-size: 0.85rem; color: #e0e6ed; line-height: 1.6;">
+                • <strong>Đương Số:</strong> ${sexStr} (${amDuongSex}) · Đi ${lp.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}<br/>
+                • <strong>Tứ Trụ Can Chi:</strong> ${tuTruStr}<br/>
+                • <strong>Trọng Cung:</strong> Mệnh Cung tại <strong>Cung ${menhBranch}</strong> — Thân Cung tại <strong>Cung ${thanBranch}</strong> ${isMenhThanDongCung ? '<span style="color:#e74c3c; font-weight:bold;">(Mệnh Thân Đồng Cung)</span>' : ''}<br/>
+                • <strong>Độn Cục Giờ Sinh:</strong> ${data.donCucName || 'Dương Độn'}
+            </div>
+        </div>
+
+        <!-- 1. TỔNG QUAN BẢN MỆNH & TRỌNG CUNG MỆNH - THÂN -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">👤 1. Tổng Quan Bản Mệnh & Trọng Cung Mệnh — Thân</h4>
+            <p class="luan-doan-item">
+                <strong>🔹 Mệnh Cung (Tiền Vận — Từ 1 đến 35 tuổi):</strong> Tọa tại <strong>Cung ${menhBranch}</strong>.<br/>
+                - Ý nghĩa: Mệnh Cung biểu thị cốt cách, năng khiếu bẩm sinh, tư chất trí tuệ và chặng đường khởi nghiệp tiền vận.<br/>
+                - Thần tinh hội tụ tại Mệnh: ${menhStars.length > 0 ? menhStars.map(s => `<span style="color:#ffd700; font-weight:bold;">${s.name}</span>`).join(", ") : 'Chính tinh bình hòa'}.
+            </p>
+            <p class="luan-doan-item">
+                <strong>🔹 Thân Cung (Hậu Vận — Từ 35 tuổi về già):</strong> Tọa tại <strong>Cung ${thanBranch}</strong>.<br/>
+                - Ý nghĩa: Thân Cung chủ về sự nghiệp thành tựu, đời sống tinh thần và kết quả nhân sinh hậu vận.<br/>
+                - Thần tinh hội tụ tại Thân: ${thanStars.length > 0 ? thanStars.map(s => `<span style="color:#2ecc71; font-weight:bold;">${s.name}</span>`).join(", ") : 'Chính tinh bình hòa'}.<br/>
+                ${isMenhThanDongCung ? '- <em>Đặc tính Mệnh Thân Đồng Cung:</em> Đương số là người có lập trường kiên định, tự lực cánh sinh, số phận sướng khổ do chính bàn tay và ý chí tự định đoạt.' : ''}
+            </p>
+        </div>
+
+        <!-- 2. TAM ĐẠI QUẺ DỊCH ĐỜI NGƯỜI -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">🔮 2. Hệ Thống Tam Đại Quẻ Dịch Đời Người (Thái Ất Vận Quái)</h4>
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #e67e22;">
+                <p style="margin:0 0 4px 0; color:#e67e22; font-weight:bold;">👶 Quẻ Vào Đời (Lập Nghiệp / Tiền Vận): Quẻ ${lh.hexVaoDoiName || '—'}</p>
+                <div style="font-size: 0.85rem; color: #dfe6e9;">
+                    - Tổng số Nạp Âm Tứ Trụ: ${lh.sumTuTru || 0} + 55 Đại Diễn = ${(lh.sumTuTru || 0) + 55} ➔ Quẻ thứ <strong>${lh.queVaoDoiNum}/64</strong>.<br/>
+                    - <strong>Ngày Chịu Khí (Thai Nguyên):</strong> Can Chi <strong>${lh.thaiNguyenCanChi || '—'}</strong> (${lh.thaiNguyenChiName} - ${lh.isDuongThai ? 'Dương' : 'Âm'}).<br/>
+                    - <strong>Hào Động Vào Đời:</strong> Hào ${lh.haoDongVaoDoi} Động. <em>(${lh.thaiNguyenRuleText || ''})</em>
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #2ecc71;">
+                <p style="margin:0 0 4px 0; color:#2ecc71; font-weight:bold;">🏛️ Quẻ Dựng Nghiệp (Trung Niên Hưng Sự): Quẻ ${lh.hexDungNghiepName || '—'}</p>
+                <div style="font-size: 0.85rem; color: #dfe6e9;">
+                    - Biến quái chuyển hóa từ Hào ${lh.haoDongVaoDoi} Động quẻ Vào Đời. Biểu thị giai đoạn trung vận (từ 35-50 tuổi) bứt phá công danh, thành lập cơ nghiệp vững vàng.
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #9b59b6;">
+                <p style="margin:0 0 4px 0; color:#9b59b6; font-weight:bold;">📅 Quẻ Lưu Niên (Vận Hạn Năm Hiện Tại): Quẻ ${lh.hexNamName || '—'}</p>
+                <div style="font-size: 0.85rem; color: #dfe6e9;">
+                    - Ứng theo Tuổi Mụ <strong>${lh.tuoiMu || '—'} tuổi</strong> (Quẻ thứ ${lh.queNamNum}/64). Soi sáng xu hướng thời vận, cơ hội làm ăn và các quyết sách trọng đại trong năm xem.
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CÔNG DANH, SỰ NGHIỆP & TÀI LỘC -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">💼 3. Luận Công Danh, Sự Nghiệp & Tài Bạch</h4>
+            <p class="luan-doan-item">
+                <strong>🔹 Cung Quan Lộc:</strong> Tọa tại <strong>Cung ${quanBranchInfo ? quanBranchInfo.branchName : '-'}</strong>. Chủ về vị trí xã hội, quyền hạn, công việc và đường thăng tiến.<br/>
+                <strong>🔹 Cung Tài Bạch:</strong> Tọa tại <strong>Cung ${taiBranchInfo ? taiBranchInfo.branchName : '-'}</strong>. Chủ về nguồn tiền, năng lực kiếm tiền, quản lý tài chính và tài sản tích lũy.<br/>
+                <strong>🔹 Cát Thần Tài Lộc:</strong> Lộc Tồn (Thiên Lộc) đóng tại Cung <strong>${CHI_TO_PAL_ID[destinyAux.locTonIdx] ? CHI_TO_PAL_ID[destinyAux.locTonIdx].toUpperCase() : '-'}</strong>; Thiên Mã (vận chuyển, bứt phá) đóng tại Cung <strong>${CHI_TO_PAL_ID[destinyAux.thienMaIdx] ? CHI_TO_PAL_ID[destinyAux.thienMaIdx].toUpperCase() : '-'}</strong>.
+            </p>
+        </div>
+
+        <!-- 4. GIA ĐẠO, PHU THÊ & PHÚC ĐỨC -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">🏡 4. Luận Gia Đạo, Phu Thê & Phúc Đức</h4>
+            <p class="luan-doan-item">
+                <strong>🔹 Cung Phúc Đức:</strong> Tọa tại <strong>Cung ${phucBranchInfo ? phucBranchInfo.branchName : '-'}</strong>. Cội nguồn phúc thọ tổ tiên, tinh thần an lạc.<br/>
+                <strong>🔹 Cung Phu Thê:</strong> Tọa tại <strong>Cung ${phuTheBranchInfo ? phuTheBranchInfo.branchName : '-'}</strong>. Tình cảm hôn nhân, sự tương trợ của người phối ngẫu.<br/>
+                <strong>🔹 Thần Sát Duyên Phận:</strong> Đào Hoa tại Cung <strong>${CHI_TO_PAL_ID[destinyAux.daoHoaIdx] ? CHI_TO_PAL_ID[destinyAux.daoHoaIdx].toUpperCase() : '-'}</strong>; Quý Nhân tại Cung <strong>${CHI_TO_PAL_ID[destinyAux.duongQuyIdx] ? CHI_TO_PAL_ID[destinyAux.duongQuyIdx].toUpperCase() : '-'} / ${CHI_TO_PAL_ID[destinyAux.amQuyIdx] ? CHI_TO_PAL_ID[destinyAux.amQuyIdx].toUpperCase() : '-'}</strong> (luôn có quý nhân tương trợ).
+            </p>
+        </div>
+
+        <!-- 5. SỨC KHỎE & PHÒNG NGỪA TAI HỌA -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">⚠️ 5. Sức Khỏe, Tật Ách & Vận Hạn Cần Đề Phòng</h4>
+            <p class="luan-doan-item">
+                <strong>🔹 Cung Tật Ách:</strong> Tọa tại <strong>Cung ${tatAchBranchInfo ? tatAchBranchInfo.branchName : '-'}</strong>.<br/>
+                <strong>🔹 Vị trí Hung Tinh:</strong> Kình Dương đóng tại <strong>Cung ${CHI_TO_PAL_ID[destinyAux.kinhDuongIdx] ? CHI_TO_PAL_ID[destinyAux.kinhDuongIdx].toUpperCase() : '-'}</strong> (chủ về hình thương, dao kéo); Đà La đóng tại <strong>Cung ${CHI_TO_PAL_ID[destinyAux.daLaIdx] ? CHI_TO_PAL_ID[destinyAux.daLaIdx].toUpperCase() : '-'}</strong> (chủ về ám hại, thị phi dây dưa). Cần cẩn trọng khi vận hạn đi qua các cung này.
+            </p>
+        </div>
+
+        <!-- 6. ĐỊNH HƯỚNG CẢI BIẾN VẬN MỆNH -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">🧭 6. Tổng Kết Định Hướng & Phương Sách Cải Mệnh</h4>
+            <div class="luan-doan-summary-box">
+                <p style="margin: 0; line-height: 1.7;">
+                    📌 <strong>Lời khuyên từ Dịch sư Nguyễn Huy Hoàng:</strong><br/>
+                    Vận Mệnh con người là sự kết hợp giữa <em>Thiên Mệnh (Tứ Trụ Can Chi)</em>, <em>Địa Lợi (Phương vị hành sự)</em> và <em>Nhân Đức (Hành vi, tu dưỡng)</em>. Nương theo Quẻ Vào Đời <strong>${lh.hexVaoDoiName}</strong> để giữ vững chí hướng ban đầu, thuận theo biến chuyển Quẻ Dựng Nghiệp <strong>${lh.hexDungNghiepName}</strong> để vững vàng trung vận, tích đức hành thiện thì phúc lộc tự nhiên tăng trưởng!
+                </p>
+            </div>
+        </div>
+    </div>`;
+}
+
+/**
  * BÁO CÁO LUẬN GIẢI CHUYÊN SÂU CỤC DIỆN SA BÀN THÁI ẤT (TỰ ĐỘNG THEO THUẬT TOÁN)
  */
 function generateDetailedAnalysisReport(data) {
     if (!data || !data.placement) return "<p style='color: var(--text-muted);'>Chưa có dữ liệu sa bàn.</p>";
+    
+    // Nếu là Bàn Nhân Mệnh, xuất Báo Cáo Nhân Mệnh Chuyên Sâu
+    if (data.mode === "menh" || data.isMenh || data.nhanMenhData) {
+        return generateNhanMenhDetailedAnalysisReport(data);
+    }
 
     const CUNG_NAMES = {
         "kien": "Kiền (Càn)", "hoi": "Hợi", "ty": "Tý", "suu": "Sửu",
@@ -358,85 +499,163 @@ function generateDetailedAnalysisReport(data) {
         khoiText += `Đang vận hành tại Cục/Khối số ${khoiNum} thuộc sa bàn Thái Ất. Cần đối chiếu thế Thái Ất (${taName}), phối hợp Toán Chủ (${tcGoc}) và Toán Khách (${tkGoc}) để định hướng tiến thủ hoặc phòng thủ.`;
     }
 
-    // 4. Cách Cục & Thể Thức & Bát Hung
+    // 4. Cách Cục & Thể Thức & Bát Hung (Theo Thái Ất Kim Kính Thức Kinh & Xác Minh Thái Ất Thần Kinh)
     let cachCucItems = [];
     if (dtcPalace && dtcPalace === taPalace) {
-        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THỂ THỨC TÙ - Đại Tướng Chủ Bị Tù]</span> Đại Tướng Chủ đóng cùng cung <strong>${taName}</strong> với Thái Ất. Mang ý nghĩa bất lợi lớn cho phe Chủ, chủ về kẻ dưới phạm thượng, nội bộ mâu thuẫn hoặc tướng sĩ bị cầm chân.`);
+        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THẾ TÙ - Đại Tướng Chủ Bị Tù]</span> Đại Tướng Chủ đóng cùng cung <strong>${taName}</strong> với Thái Ất. Chủ về nội bộ mâu thuẫn, kẻ dưới lấn quyền, tướng soái bị giam chân, mưu sự đại bại.`);
     }
     if (dtkPalace && dtkPalace === taPalace) {
-        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THỂ THỨC TÙ - Đại Tướng Khách Bị Tù]</span> Đại Tướng Khách đóng cùng cung <strong>${taName}</strong> với Thái Ất. Phe Khách bị bế tắc tiến công, tướng quân sa lầy.`);
+        cachCucItems.push(`<span style="color:#ff4757; font-weight:bold;">[THẾ TÙ - Đại Tướng Khách Bị Tù]</span> Đại Tướng Khách đóng cùng cung <strong>${taName}</strong> với Thái Ất. Phe Khách bị bế tắc tiến công, quân viễn chinh sa lầy.`);
     }
     if (vxPalace && vxPalace === taPalace) {
-        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THỂ THỨC YỂM - Chủ Mục Bị Yểm]</span> Văn Xương đóng cùng cung Thái Ất, mưu sĩ bị che mắt, trù tính kế sách gặp sai lầm.`);
+        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THẾ YỂM - Chủ Mục Bị Yểm]</span> Văn Xương đóng cùng cung Thái Ất, mưu sĩ bị che mắt, trù tính kế sách gặp sai lầm.`);
     }
     if (tkPalace && tkPalace === taPalace) {
-        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THỂ THỨC YỂM - Khách Mục Bị Yểm]</span> Thủy Kích đóng cùng cung Thái Ất, phó tướng Khách bị khống chế vision, trinh sát bế tắc.`);
+        cachCucItems.push(`<span style="color:#ffa94d; font-weight:bold;">[THẾ YỂM - Khách Mục Bị Yểm]</span> Thủy Kích đóng cùng cung Thái Ất, chủ về bề tôi lấn át vua, dễ xảy ra đánh úp, ám sát hoặc nội biến.`);
     }
-    if (data.batHung && data.batHung !== "Không thuộc Bát Hung.") {
-        cachCucItems.push(`<strong>[BIẾN ĐỘNG BÁT HUNG]:</strong> ${data.batHung} — Tác động trực tiếp lên vận khí Tinh Bàn, cần cẩn trọng các nguy cơ đột biến.`);
+    if (dtcPalace && dtkPalace && dtcPalace === dtkPalace) {
+        cachCucItems.push(`<span style="color:#3498db; font-weight:bold;">[THẾ QUAN / KHÓA - Đại Tướng Chủ & Khách Đồng Cung]</span> Cả 2 đại tướng cùng đóng tại <strong>${dtcName}</strong>. Hai bên gầm ghè, tướng soái kỵ húy lẫn nhau, cục diện giằng co bế tắc.`);
+    }
+    if (data.batHung && data.batHung !== "Không thuộc Bát Hung." && data.batHung !== "-") {
+        cachCucItems.push(`<strong>[BIẾN ĐỘNG BÁT HUNG]:</strong> ${data.batHung}`);
     }
     if (cachCucItems.length === 0) {
-        cachCucItems.push("<span style='color:#51cf66;'>Không có thể thức hung hiểm đặc biệt (Tù, Yểm, Bách, Kích). Cục diện ổn định.</span>");
+        cachCucItems.push("<span style='color:#51cf66;'>Không có thể thức hung hiểm đặc biệt (Tù, Yểm, Bách, Kích, Quan). Cục diện ổn định.</span>");
     }
 
-    // 5. Phương vị & Khuyến cáo
+    // 5. Tìm Vị Trí Nhóm Tứ Thái Ất & Tam Cơ từ Placement
+    let tuThanStar = null, thienAtStar = null, diaAtStar = null, trucPhuStar = null;
+    let quanCoStar = null, thanCoStar = null, danCoStar = null, nguPhucStar = null, daiDuStar = null, tieuDuStar = null;
+
+    if (data.placement) {
+        for (const [palId, stars] of Object.entries(data.placement)) {
+            stars.forEach(s => {
+                const sName = s.name || "";
+                if (sName.startsWith("Tứ Thần")) tuThanStar = { palId, label: sName };
+                if (sName.startsWith("Thiên Ất")) thienAtStar = { palId, label: sName };
+                if (sName.startsWith("Địa Ất")) diaAtStar = { palId, label: sName };
+                if (sName.startsWith("Trực Phù")) trucPhuStar = { palId, label: sName };
+                if (sName.startsWith("Quân Cơ")) quanCoStar = { palId, label: sName };
+                if (sName.startsWith("Thần Cơ")) thanCoStar = { palId, label: sName };
+                if (sName.startsWith("Dân Cơ")) danCoStar = { palId, label: sName };
+                if (sName.startsWith("Ngũ Phúc")) nguPhucStar = { palId, label: sName };
+                if (sName.startsWith("Đại Du")) daiDuStar = { palId, label: sName };
+                if (sName.startsWith("Tiểu Du")) tieuDuStar = { palId, label: sName };
+            });
+        }
+    }
+
+    // 6. Luận Trận Đồ & Màu Cờ Theo Toán Số (Thái Ất Bí Thư)
+    const getTranDo = (toanNum) => {
+        const lastDigit = toanNum % 10;
+        if ([1, 8].includes(lastDigit)) return { tran: "Khúc Trận (Vòng Cung / Uốn Lượn)", co: "Cờ Đen", phuong: "Phương Bắc (Hành Thủy)" };
+        if ([3, 7].includes(lastDigit)) return { tran: "Trực Trận (Thẳng Hàng)", co: "Cờ Xanh", phuong: "Phương Đông (Hành Mộc)" };
+        if ([4, 9].includes(lastDigit)) return { tran: "Nhuệ Trận (Mũi Nhọn Tam Giác)", co: "Cờ Đỏ", phuong: "Phương Nam (Hành Hỏa)" };
+        if ([2, 5].includes(lastDigit)) return { tran: "Viên Trận (Hình Tròn)", co: "Cờ Vàng", phuong: "Trung Cung (Hành Thổ)" };
+        return { tran: "Phương Trận (Hình Vuông)", co: "Cờ Trắng", phuong: "Phương Tây (Hành Kim)" };
+    };
+
+    const tranChu = getTranDo(tcGoc);
+    const tranKhach = getTranDo(tkGoc);
+
+    // 7. Phương vị & Khuyến cáo
     const huongChu = CUNG_HUONG[vxPalace] || CUNG_HUONG[taPalace] || "Đông Bắc";
     const huongKhach = CUNG_HUONG[tkPalace] || "Chính Nam";
 
     return `
     <div class="luan-doan-report-card">
+        <!-- TẦNG 1: TỔNG QUAN THỜI CUỘC & VẬN VĨ MÔ -->
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">1. Phân Tích Vị Thế Thần Tinh & Tướng Soái</h4>
+            <h4 class="luan-doan-section-title">🏛️ 1. Tổng Quan Thời Cuộc & Vận Trị Thiên - Địa - Dân</h4>
             <p class="luan-doan-item"><strong>Thái Ất Vị Thế:</strong> ${taVitheText}</p>
-            <p class="luan-doan-item"><strong>Chủ Mục (Văn Xương - Phụ Tướng Phe Chủ):</strong> Đóng tại cung <strong>${vxName}</strong> (${CUNG_HUONG[vxPalace] || ''}), giữ vai trò trù tính kế sách nơi màn trướng và nắm quyền sinh sát.</p>
-            <p class="luan-doan-item"><strong>Khách Mục (Thủy Kích - Phụ Tướng Phe Khách):</strong> Đóng tại cung <strong>${tkName}</strong> (${CUNG_HUONG[tkPalace] || ''}), quan sát trận địa và chỉ huy lực lượng tiến công.</p>
-            <p class="luan-doan-item"><strong>Đại Tướng Chủ & Khách:</strong> Đại Tướng Chủ tọa tại <strong>${dtcName}</strong>; Đại Tướng Khách tọa tại <strong>${dtkName}</strong>.</p>
-        </div>
-
-        <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">2. Phân Tích Thuật Toán Tam Tài & Cát Hung Toán Số</h4>
-            
-            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #e74c3c;">
-                <p style="margin-bottom:4px;"><strong>🔴 TOÁN CHỦ (Kết quả: ${tcGoc}):</strong> Phân loại: ${tcAnalysis.classification} | Trạng thái: ${tcAnalysis.hoaText} | Cấp độ: ${tcAnalysis.capDo}</p>
-                <ul style="padding-left: 18px; font-size: 0.88rem; color: #dedede;">
-                    ${tcAnalysis.items.map(it => `<li>${it}</li>`).join("")}
-                </ul>
-            </div>
-
-            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid #3498db;">
-                <p style="margin-bottom:4px;"><strong>🔵 TOÁN KHÁCH (Kết quả: ${tkGoc}):</strong> Phân loại: ${tkAnalysis.classification} | Trạng thái: ${tkAnalysis.hoaText} | Cấp độ: ${tkAnalysis.capDo}</p>
-                <ul style="padding-left: 18px; font-size: 0.88rem; color: #dedede;">
-                    ${tkAnalysis.items.map(it => `<li>${it}</li>`).join("")}
-                </ul>
-            </div>
-
-            <p class="luan-doan-item"><strong>🟢 TOÁN ĐỊNH (Kết quả: ${tdGoc}):</strong> Toán Định đạt số ${tdGoc}, biểu thị nhịp vận định sẵn giữa nhân sự và thiên thời, làm cầu nối dung hòa giữa Chủ và Khách.</p>
-            ${toanTrungCungMsg}
-        </div>
-
-        <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">3. Luận Giải Đặc Điểm KHỐI / CỤC SỐ SA BÀN</h4>
-            <div style="background: rgba(212, 175, 55, 0.08); padding: 12px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.3); font-size: 0.9rem;">
+            <div style="background: rgba(212, 175, 55, 0.08); padding: 12px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.3); font-size: 0.9rem; line-height: 1.7;">
                 ${khoiText}
             </div>
         </div>
 
+        <!-- TẦNG 2: NHÓM TỨ THÁI ẤT & DỰ BÁO TAI ÁCH VĨ MÔ CHUYÊN BIỆT -->
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">4. Phân Tích Thể Thức Hung Hiểm & Bát Hung</h4>
-            <ul style="padding-left: 20px; margin-top: 5px;">
+            <h4 class="luan-doan-section-title">⚠️ 2. Dự Báo Tai Ách Vĩ Mô Chuyên Biệt (Tứ Thái Ất)</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 8px;">
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(231,76,60,0.3); padding: 10px; border-radius: 6px;">
+                    <strong style="color: #ff7675;">⚔️ Thiên Ất (Kim Thần):</strong><br/>
+                    <span style="font-size: 0.85rem; color: #dfe6e9;">Vị trí: <strong>${thienAtStar ? thienAtStar.palId.toUpperCase() : 'Cấn'}</strong>. Mang khí Kim túc sát, chuyên chủ về đao binh, vũ khí, chiến tranh sát phạt và tranh chấp biên giới.</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(243,156,18,0.3); padding: 10px; border-radius: 6px;">
+                    <strong style="color: #f39c12;">🔥 Trực Phù (Hỏa Thần):</strong><br/>
+                    <span style="font-size: 0.85rem; color: #dfe6e9;">Vị trí: <strong>${trucPhuStar ? trucPhuStar.palId.toUpperCase() : 'Khôn'}</strong>. Sứ giả Thiên Đế mang khí Hỏa, chủ hạn hán khốc liệt, hỏa hoạn, dịch bệnh nhiệt đới, nạn cào cào châu chấu phá hoại mùa màng và suy thoái kỷ cương.</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(46,204,113,0.3); padding: 10px; border-radius: 6px;">
+                    <strong style="color: #2ecc71;">🌾 Địa Ất (Thổ Thần):</strong><br/>
+                    <span style="font-size: 0.85rem; color: #dfe6e9;">Vị trí: <strong>${diaAtStar ? diaAtStar.palId.toUpperCase() : 'Cấn'}</strong>. Nắm giữ khí Thổ đất đai, chủ chỉ điểm vùng mất mùa ngũ cốc, địa chấn, sạt lở đất đai và nạn đói.</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(52,152,219,0.3); padding: 10px; border-radius: 6px;">
+                    <strong style="color: #00d2ff;">🌊 Tứ Thần (Thủy Thần):</strong><br/>
+                    <span style="font-size: 0.85rem; color: #dfe6e9;">Vị trí: <strong>${tuThanStar ? tuThanStar.palId.toUpperCase() : 'Khôn'}</strong>. Đại diện khí Thủy kỷ cương, chủ về lũ lụt diện rộng, vỡ đê, triều cường và biến động sông ngòi duyên hải.</span>
+                </div>
+            </div>
+            ${(tuThanStar && trucPhuStar && tuThanStar.palId === trucPhuStar.palId) ? `
+            <div style="margin-top: 10px; padding: 10px; background: rgba(231,76,60,0.15); border-left: 4px solid #e74c3c; border-radius: 4px; font-size: 0.86rem;">
+                <strong style="color: #ff6b6b;">🔥🌊 HIỆN TƯỢNG HỘI TỤ ĐỒNG CUNG (TRỰC PHÙ & TỨ THẦN TẠI ${tuThanStar.palId.toUpperCase()}):</strong><br/>
+                Hỏa Thần (Trực Phù) và Thủy Thần (Tứ Thần) cùng tụ tại một phương. Báo hiệu sự giao tranh khốc liệt giữa hai hành Thủy - Hỏa, cảnh báo biến động kỷ cương chính trị kết hợp thiên tai thời tiết cực đoan (nắng hạn xen kẽ lũ lớn) tại phương vị này.
+            </div>` : ''}
+        </div>
+
+        <!-- TẦNG 3: BÁT TƯỚNG & HÌNH HỌC KHẮC SÁT -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">⚔️ 3. Ma Trận Bát Tướng & Thể Thức Khắc Sát (Bát Hung)</h4>
+            <p class="luan-doan-item"><strong>Chủ Mục (Văn Xương - Phụ Tướng Phe Chủ):</strong> Đóng tại cung <strong>${vxName}</strong> (${CUNG_HUONG[vxPalace] || ''}).</p>
+            <p class="luan-doan-item"><strong>Khách Mục (Thủy Kích - Phụ Tướng Phe Khách):</strong> Đóng tại cung <strong>${tkName}</strong> (${CUNG_HUONG[tkPalace] || ''}).</p>
+            <p class="luan-doan-item"><strong>Đại Tướng Chủ & Khách:</strong> Đại Chủ tại <strong>${dtcName}</strong> — Đại Khách tại <strong>${dtkName}</strong>.</p>
+            <ul style="padding-left: 20px; margin-top: 8px;">
                 ${cachCucItems.map(c => `<li style="margin-bottom: 6px;">${c}</li>`).join("")}
             </ul>
         </div>
 
+        <!-- TẦNG 4: ĐỊNH LƯỢNG TOÁN SỐ, TRẬN ĐỒ & CỜ HIỆU QUÂN SỰ -->
         <div class="luan-doan-section">
-            <h4 class="luan-doan-section-title">5. Phương Vị Tác Chiến & Chiến Lược Cục Diện</h4>
-            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Chủ:</strong> Phòng bị tại <strong>Hướng ${huongChu}</strong> (ứng với cung ${vxName} nơi Chủ Mục đóng giữ).</p>
-            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Khách:</strong> Tiến công / Quan sát tại <strong>Hướng ${huongKhach}</strong> (ứng với cung ${tkName} nơi Khách Mục đóng giữ).</p>
+            <h4 class="luan-doan-section-title">🚩 4. Toán Số Tam Tài, Trận Đồ & Cờ Hiệu Binh Pháp</h4>
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #e74c3c;">
+                <p style="margin-bottom:4px;"><strong>🔴 TOÁN CHỦ (${tcGoc}):</strong> Phân loại: ${tcAnalysis.classification} | ${tcAnalysis.hoaText} | ${tcAnalysis.capDo}</p>
+                <div style="font-size: 0.85rem; color: #dfe6e9; margin-top: 4px;">
+                    - Độ dài toán: ${tcGoc >= 11 ? '<strong>Trường Toán (Dài)</strong> ➔ Lợi thâm nhập quy mô lớn, phát động tấn công sâu.' : '<strong>Đoản Toán (Ngắn)</strong> ➔ Chỉ lợi thiển nhập, phòng ngự, du kích chớp nhoáng.'}<br/>
+                    - Trận đồ khuyên dùng: <strong>${tranChu.tran}</strong> | Màu cờ: <strong>${tranChu.co}</strong> (${tranChu.phuong}).
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #3498db;">
+                <p style="margin-bottom:4px;"><strong>🔵 TOÁN KHÁCH (${tkGoc}):</strong> Phân loại: ${tkAnalysis.classification} | ${tkAnalysis.hoaText} | ${tkAnalysis.capDo}</p>
+                <div style="font-size: 0.85rem; color: #dfe6e9; margin-top: 4px;">
+                    - Độ dài toán: ${tkGoc >= 11 ? '<strong>Trường Toán (Dài)</strong> ➔ Quân lực dồi dào, thâm nhập sâu.' : '<strong>Đoản Toán (Ngắn)</strong> ➔ Quân lực hạn chế, chỉ nên thăm dò nhẹ.'}<br/>
+                    - Trận đồ khuyên dùng: <strong>${tranKhach.tran}</strong> | Màu cờ: <strong>${tranKhach.co}</strong> (${tranKhach.phuong}).
+                </div>
+            </div>
+
+            <p class="luan-doan-item"><strong>🟢 TOÁN ĐỊNH (${tdGoc}):</strong> Nhịp vận dung hòa giữa Thiên Thời và Nhân Sự.</p>
+            ${toanTrungCungMsg}
+        </div>
+
+        <!-- TẦNG 5: TAM CƠ & CẤU TRÚC XÃ HỘI -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">👥 5. Tam Cơ Xã Hội & Cát Thần Phúc Lộc</h4>
+            <div style="font-size: 0.88rem; line-height: 1.8; color: #dedede;">
+                <p style="margin: 3px 0;">👑 <strong>Quân Cơ (30 năm/cung):</strong> ${quanCoStar ? quanCoStar.label : 'Quân Cơ'} ➔ Chủ về nguyên thủ quốc gia, đường lối lãnh đạo và thể chế vĩ mô.</p>
+                <p style="margin: 3px 0;">🛡️ <strong>Thần Cơ (3 năm/cung):</strong> ${thanCoStar ? thanCoStar.label : 'Thần Cơ'} ➔ Chủ về quan lại, tướng lĩnh thực thi chính sách và bộ máy hành chính.</p>
+                <p style="margin: 3px 0;">🌾 <strong>Dân Cơ (1 năm/cung):</strong> ${danCoStar ? danCoStar.label : 'Dân Cơ'} ➔ Chủ về đời sống nhân dân, kinh tế dân sinh, giá cả mùa màng và lòng dân.</p>
+                <p style="margin: 3px 0;">🌟 <strong>Ngũ Phúc Cát Tinh:</strong> ${nguPhucStar ? nguPhucStar.label : 'Ngũ Phúc'} ➔ Đệ nhất phúc thần giải ách cứu khổ, ban ân lộc tài chính.</p>
+            </div>
+        </div>
+
+        <!-- TẦNG 6: PHƯƠNG VỊ TÁC CHIẾN & CHIẾN LƯỢC TOÀN CỤC -->
+        <div class="luan-doan-section">
+            <h4 class="luan-doan-section-title">🎯 6. Phương Vị Tác Chiến & Quyết Sách Hành Động</h4>
+            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Chủ:</strong> Phòng bị tại <strong>Hướng ${huongChu}</strong> (Cung ${vxName} nơi Chủ Mục đóng giữ).</p>
+            <p class="luan-doan-item"><strong>Hướng Trọng Tâm Phe Khách:</strong> Tiến công / Quan sát tại <strong>Hướng ${huongKhach}</strong> (Cung ${tkName} nơi Khách Mục đóng giữ).</p>
             
             <div class="luan-doan-summary-box" style="margin-top: 10px;">
-                <strong>📌 KHUYẾN CÁO TỔNG QUAN BẢN TIN TÁC CHIẾN:</strong>
+                <strong>📌 TỔNG KẾT BẢN TIN QUÂN CƠ CHIẾN LƯỢC:</strong>
                 <p style="margin-top: 6px;">${(tkGoc % 10 === 5 || (dtcPalace === taPalace)) 
-                    ? "<span style='color:#ff6b6b; font-weight:bold;'>[THẾ THỦ]</span> Phe Khách bế tắc hoặc Đại Tướng Chủ bị tù. Cả 2 bên nên giằng co phòng ngự, giữ vững trận địa, tuyệt đối không vội vã liều lĩnh." 
+                    ? "<span style='color:#ff6b6b; font-weight:bold;'>[THẾ THỦ]</span> Phe Khách bế tắc hoặc Đại Tướng Chủ bị tù. Nên giữ vững trận địa phòng ngự chiều sâu, giăng phục binh ở các cung tốt, tuyệt đối không xuất quân liều lĩnh." 
                     : "<span style='color:#51cf66; font-weight:bold;'>[THẾ TIẾN]</span> Cục diện phân định rõ ràng. Bên nào nắm được Toán Hòa và nương theo Bát Môn Sinh/Khai sẽ chiếm ưu thế tuyệt đối trên sa bàn."}</p>
             </div>
         </div>
@@ -659,3 +878,12 @@ function generateVanQuaiAnalysisReport(du) {
         </div>
     </div>`;
 }
+
+if (typeof window === 'undefined') {
+    global.generateDetailedAnalysisReport = generateDetailedAnalysisReport;
+    global.generateVanQuaiAnalysisReport = generateVanQuaiAnalysisReport;
+    global.calcQueBien = calcQueBien;
+    global.getNapGiapForHao = getNapGiapForHao;
+    global.getHaoPositionInterpretation = getHaoPositionInterpretation;
+}
+
