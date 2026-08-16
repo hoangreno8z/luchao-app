@@ -1,6 +1,6 @@
 {
   "name": "luchao-app",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "description": "Kinh Dich Luc Hao & Thai At Than So Divination App",
   "main": "app.js",
   "type": "module",
@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "html2canvas": "^1.4.1"
+    "html2canvas": "^1.4.1",
+    "lunar-javascript": "^1.7.7"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
