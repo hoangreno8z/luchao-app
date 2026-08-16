@@ -237,7 +237,7 @@
             if (pBranch === KINH_DUONG_MAP[dayStem] || pBranch === KINH_DUONG_MAP[yearStem]) list.add("Kình Dương");
 
             // 13. Kim Dư
-            if (pBranch === KIM_DU_MAP[dayStem] || pBranch === KIM_DUONG_MAP[yearStem]) list.add("Kim Dư");
+            if (pBranch === KIM_DU_MAP[dayStem] || pBranch === KIM_DU_MAP[yearStem]) list.add("Kim Dư");
 
             // 14. Hồng Diễm
             const hd1 = HONG_DIEM_MAP[dayStem] || [];
