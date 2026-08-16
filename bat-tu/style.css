@@ -1,0 +1,373 @@
+:root {
+    --primary: #0A3871;
+    --primary-light: #1A5276;
+    --accent-gold: #D4AF37;
+    --gold: #D4AF37;
+    --bg-dark: #070913;
+    --card-bg: rgba(18, 24, 48, 0.95);
+    --border-color: rgba(212, 175, 55, 0.35);
+    --text-light: #F5F6FA;
+    --text-muted: #A0AEC0;
+    --kim: #7f8c8d;
+    --moc: #27ae60;
+    --thuy: #2980b9;
+    --hoa: #c0392b;
+    --tho: #8e5a2b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Inter', 'Be Vietnam Pro', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* App Switcher Nav - Imperial Capsule Styling */
+.app-switcher-nav {
+    background: rgba(7, 8, 23, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+    padding: 10px 0;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.5);
+}
+
+.app-switcher-nav .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 0 15px;
+    flex-wrap: wrap;
+}
+
+.app-switcher-nav .nav-item {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 9px 22px;
+    border-radius: 9999px;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 1px rgba(255, 240, 180, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.6px;
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, sans-serif;
+    min-height: 42px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.app-switcher-nav .nav-item .icon {
+    font-size: 1.05rem;
+}
+
+.app-switcher-nav .nav-item:hover {
+    color: #ffffff;
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.18);
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.app-switcher-nav .nav-item.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.85), rgba(180, 83, 9, 0.85));
+    border-color: #fbbf24;
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+    .app-switcher-nav {
+        padding: 8px 0;
+    }
+    .app-switcher-nav .nav-container {
+        gap: 8px;
+        padding: 0 8px;
+    }
+    .app-switcher-nav .nav-item {
+        font-size: 0.78rem;
+        padding: 7px 12px;
+        min-height: 36px;
+        letter-spacing: 0.2px;
+    }
+    .app-switcher-nav .nav-item .icon {
+        font-size: 0.9rem;
+    }
+}
+
+/* App Header */
+header {
+    text-align: center;
+    padding: 25px 20px 15px;
+}
+
+.logo-badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid var(--accent-gold);
+    color: #ffd700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: #ffd700;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Main Layout */
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 10px 20px 40px;
+    flex: 1;
+    width: 100%;
+}
+
+.battu-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+@media (max-width: 960px) {
+    .battu-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Sidebar Input Card */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-title {
+    color: #ffd700;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 1.15rem;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(5, 8, 20, 0.8);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #d4af37, #aa820a);
+    color: #050711;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.btn-secondary {
+    padding: 8px 16px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid var(--accent-gold);
+    color: #ffd700;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background: rgba(212, 175, 55, 0.3);
+}
+
+/* Chart Preview Container */
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chart-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 12px 18px;
+    border-radius: 8px;
+}
+
+.chart-img-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 8px;
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.chart-img-wrapper img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+}
+
+/* Reference Dictionary Section */
+.ref-section {
+    margin-top: 30px;
+}
+
+.ref-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.ref-tab-btn {
+    background: rgba(18, 24, 48, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.2s ease;
+}
+
+.ref-tab-btn.active, .ref-tab-btn:hover {
+    color: #ffd700;
+    background: rgba(212, 175, 55, 0.2);
+    border-color: var(--accent-gold);
+}
+
+.ref-content-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 0.92rem;
+    line-height: 1.8;
+}
+
+.ref-item {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ref-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.ref-item-title {
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.ref-item-desc {
+    color: #e2e8f0;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 25px 20px;
+    background: rgba(5, 8, 20, 0.98);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: auto;
+}
