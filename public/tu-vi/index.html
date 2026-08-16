@@ -204,6 +204,18 @@
                     </div>
                 </div>
 
+                <div class="toggle-switches-grid" style="display: flex; flex-wrap: wrap; gap: 15px; margin: 15px 0; padding: 12px; background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #f8fafc; font-size: 0.9rem; font-weight: 600;">
+                        <input type="checkbox" id="checkboxSaoLuu" checked style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+                        <span>✨ Hiển thị Sao Lưu (L.Thái Tuế, L.Kình, L.Đà, L.Tang, L.Hổ, L.Khốc, L.Hư, L.Mã...)</span>
+                    </label>
+
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #f8fafc; font-size: 0.9rem; font-weight: 600;">
+                        <input type="checkbox" id="checkboxDaoHongLuu" checked style="width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer;">
+                        <span>🌸 Hiển thị Lưu Đào Hoa & Lưu Hồng Loan</span>
+                    </label>
+                </div>
+
                 <button type="submit" class="btn-submit">
                     <span>⚡ LẬP LÁ SỐ TỬ VI ĐẨU SỐ</span>
                 </button>
@@ -211,12 +223,17 @@
         </div>
 
         <!-- 12-Palace Traditional Chart -->
-        <div class="chart-container-wrapper">
+        <div class="chart-container-wrapper fit-screen-mode">
             <div class="chart-header-actions">
-                <div class="chart-header-title">ĐỒ HÌNH THẬP NHỊ CUNG — LÁ SỐ TỬ VI</div>
-                <button type="button" class="btn-export-png" id="btnExportPng">
-                    <span>📥 Tải Ảnh Lá Số HD (PNG)</span>
-                </button>
+                <div class="chart-header-title">ĐỒ HÌNH THẬP NHỊ CUNG — TỬ VI</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-toggle-fit" id="btnToggleFitScreen" style="background: #1e293b; color: #fbbf24; border: 1px solid #f59e0b; padding: 8px 14px; font-weight: 700; font-size: 0.85rem; border-radius: 8px; cursor: pointer;">
+                        <span>🔍 Chế Độ Phóng To</span>
+                    </button>
+                    <button type="button" class="btn-export-png" id="btnExportPng">
+                        <span>📥 Tải Ảnh HD (PNG)</span>
+                    </button>
+                </div>
             </div>
 
             <!-- The Grid Element -->
