@@ -102,6 +102,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied thai-at module recursively to public/thai-at!');
     }
 
+    // Sao chép đệ quy thư mục phân hệ Bát Tự sang public/bat-tu
+    const srcBatTu = path.join(projectRoot, 'bat-tu');
+    const destBatTu = path.join(publicDir, 'bat-tu');
+    if (fs.existsSync(srcBatTu)) {
+        copyDirRecursiveSync(srcBatTu, destBatTu);
+        console.log('Successfully copied bat-tu module recursively to public/bat-tu!');
+    }
+
     // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
     const vercelStaticDir = path.join(projectRoot, '.vercel', 'output', 'static');
     if (fs.existsSync(vercelStaticDir)) {
