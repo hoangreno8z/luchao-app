@@ -20,6 +20,26 @@
         '偏印': 'Kiêu', '正印': 'Ấn', '日主': 'Nhật Chủ'
     };
 
+    const CN_TO_VI_NAYIN = {
+        '海中金': 'Hải Trung Kim', '炉中火': 'Lư Trung Hỏa', '大林木': 'Đại Lâm Mộc', '路旁土': 'Lộ Bàng Thổ',
+        '剑锋金': 'Kiếm Phong Kim', '山头火': 'Sơn Đầu Hỏa', '涧下水': 'Giản Hạ Thủy', '城头土': 'Thành Đầu Thổ',
+        '白蜡金': 'Bạch Lạp Kim', '杨柳木': 'Dương Liễu Mộc', '泉中水': 'Tuyền Trung Thủy', '屋上土': 'Ốc Thượng Thổ',
+        '霹雳火': 'Tích Lịch Hỏa', '松柏木': 'Tùng Bách Mộc', '长流水': 'Trường Lưu Thủy', '沙中金': 'Sa Trung Kim',
+        '山下火': 'Sơn Hạ Hỏa', '平地木': 'Bình Địa Mộc', '壁上土': 'Bích Thượng Thổ', '金箔金': 'Kim Bạc Kim',
+        '覆灯火': 'Phúc Đăng Hỏa', '天河水': 'Thiên Hà Thủy', '大驿土': 'Đại Dịch Thổ', '钗钏金': 'Thoa Xuyến Kim',
+        '桑柘木': 'Tang Đố Mộc', '大溪水': 'Đại Khê Thủy', '沙中土': 'Sa Trung Thổ', '天上火': 'Thiên Thượng Hỏa',
+        '石榴木': 'Thạch Lựu Mộc', '大海水': 'Đại Hải Thủy'
+    };
+
+    const CN_TO_VI_SOLAR_TERM = {
+        '立春': 'Lập Xuân', '雨水': 'Vũ Thủy', '惊蛰': 'Kinh Trập', '春分': 'Xuân Phân',
+        '清明': 'Thanh Minh', '谷雨': 'Cốc Vũ', '立夏': 'Lập Hạ', '小满': 'Tiểu Mãn',
+        '芒种': 'Mang Chủng', '夏至': 'Hạ Chí', '小暑': 'Tiểu Thử', '大暑': 'Đại Thử',
+        '立秋': 'Lập Thu', '处暑': 'Xử Thử', '白露': 'Bạch Lộ', '秋分': 'Thu Phân',
+        '寒露': 'Hàn Lộ', '霜降': 'Sương Giáng', '立冬': 'Lập Đông', '小雪': 'Tiểu Tuyết',
+        '大雪': 'Đại Tuyết', '冬至': 'Đông Chí', '小寒': 'Tiểu Hàn', '大寒': 'Đại Hàn'
+    };
+
     const STEM_ELEMENTS = {
         'Giáp': { el: 'Mộc', color: '#27ae60', yinYang: 1 },
         'Ất':   { el: 'Mộc', color: '#27ae60', yinYang: 0 },
@@ -82,6 +102,14 @@
         return toViGan(gz[0]) + ' ' + toViZhi(gz[1]);
     }
 
+    function toViNaYin(cn) {
+        return CN_TO_VI_NAYIN[cn] || cn || '';
+    }
+
+    function toViSolarTerm(cn) {
+        return CN_TO_VI_SOLAR_TERM[cn] || cn || '';
+    }
+
     /**
      * Tính toán toàn bộ Lá Số Bát Tự Tứ Trụ
      */
@@ -112,7 +140,7 @@
                 fullGanZhi: yearStem + " " + yearBranch,
                 stemColor: STEM_ELEMENTS[yearStem]?.color || '#8e5a2b',
                 branchColor: BRANCH_ELEMENTS[yearBranch]?.color || '#8e5a2b',
-                nayin: eightChar.getYearNaYin(),
+                nayin: toViNaYin(eightChar.getYearNaYin()),
                 chuTinh: CN_TO_VI_SHISHEN[eightChar.getYearShiShenGan()] || getShiShenName(dayStem, yearStem),
                 hiddenStems: (eightChar.getYearHideGan() || []).map(toViGan),
                 phoTinh: (eightChar.getYearShiShenZhi() || []).map(x => CN_TO_VI_SHISHEN[x] || x)
@@ -125,7 +153,7 @@
                 fullGanZhi: monthStem + " " + monthBranch,
                 stemColor: STEM_ELEMENTS[monthStem]?.color || '#27ae60',
                 branchColor: BRANCH_ELEMENTS[monthBranch]?.color || '#27ae60',
-                nayin: eightChar.getMonthNaYin(),
+                nayin: toViNaYin(eightChar.getMonthNaYin()),
                 chuTinh: CN_TO_VI_SHISHEN[eightChar.getMonthShiShenGan()] || getShiShenName(dayStem, monthStem),
                 hiddenStems: (eightChar.getMonthHideGan() || []).map(toViGan),
                 phoTinh: (eightChar.getMonthShiShenZhi() || []).map(x => CN_TO_VI_SHISHEN[x] || x)
@@ -138,7 +166,7 @@
                 fullGanZhi: dayStem + " " + dayBranch,
                 stemColor: STEM_ELEMENTS[dayStem]?.color || '#c0392b',
                 branchColor: BRANCH_ELEMENTS[dayBranch]?.color || '#8e5a2b',
-                nayin: eightChar.getDayNaYin(),
+                nayin: toViNaYin(eightChar.getDayNaYin()),
                 chuTinh: "NHẬT CHỦ",
                 hiddenStems: (eightChar.getDayHideGan() || []).map(toViGan),
                 phoTinh: (eightChar.getDayShiShenZhi() || []).map(x => CN_TO_VI_SHISHEN[x] || x)
@@ -151,7 +179,7 @@
                 fullGanZhi: timeStem + " " + timeBranch,
                 stemColor: STEM_ELEMENTS[timeStem]?.color || '#8e5a2b',
                 branchColor: BRANCH_ELEMENTS[timeBranch]?.color || '#2980b9',
-                nayin: eightChar.getTimeNaYin(),
+                nayin: toViNaYin(eightChar.getTimeNaYin()),
                 chuTinh: CN_TO_VI_SHISHEN[eightChar.getTimeShiShenGan()] || getShiShenName(dayStem, timeStem),
                 hiddenStems: (eightChar.getTimeHideGan() || []).map(toViGan),
                 phoTinh: (eightChar.getTimeShiShenZhi() || []).map(x => CN_TO_VI_SHISHEN[x] || x)
@@ -222,7 +250,9 @@
         // Thông tin Tiết Khí lệnh tháng
         const prevJie = lunar.getPrevJie();
         const nextJie = lunar.getNextJie();
-        const jieStr = `Tiết ${prevJie ? prevJie.getName() : 'Lập Xuân'} bắt đầu ${prevJie ? prevJie.getSolar().toYmdHms() : ''} và kết thúc ${nextJie ? nextJie.getSolar().toYmdHms() : ''}`;
+        const prevJieName = prevJie ? toViSolarTerm(prevJie.getName()) : 'Lập Xuân';
+        const nextJieName = nextJie ? toViSolarTerm(nextJie.getName()) : 'Kinh Trập';
+        const jieStr = `Tiết ${prevJieName} bắt đầu ${prevJie ? prevJie.getSolar().toYmdHms() : ''} và kết thúc ${nextJie ? nextJie.getSolar().toYmdHms() : ''}`;
 
         return {
             name: name || 'VÔ DANH KHÁCH',
@@ -232,8 +262,7 @@
             solarStr: `${hour < 10 ? '0' + hour : hour}:${minute < 10 ? '0' + minute : minute} ${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year}`,
             lunarStr: `${hour < 10 ? '0' + hour : hour}:${minute < 10 ? '0' + minute : minute} ${lunar.getDay() < 10 ? '0' + lunar.getDay() : lunar.getDay()}/${lunar.getMonth() < 10 ? '0' + lunar.getMonth() : lunar.getMonth()}/${lunar.getYear()}`,
             lunarYearGanZhi: yearStem + ' ' + yearBranch,
-            banMenhNaYin: eightChar.getYearNaYin(),
-            dayNaYin: eightChar.getDayNaYin(),
+            banMenhNaYin: toViNaYin(eightChar.getYearNaYin()),
             pillars,
             yun: {
                 startYearNum,
