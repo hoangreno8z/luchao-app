@@ -942,84 +942,159 @@ footer a:hover {
 /* =========================================================================
    CỔNG DỊCH HỌC HỢP NHẤT - LUXURY FLOATING SEGMENTED SWITCHER
    ========================================================================= */
-.app-switcher-nav {
-    background: rgba(7, 8, 23, 0.88);
-    border-bottom: 1px solid rgba(251, 191, 36, 0.25);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 10px 0;
+/* =========================================================================
+   CỔNG DỊCH HỌC HỢP NHẤT - UNIVERSAL DROPDOWN HEADER
+   ========================================================================= */
+.app-universal-header {
+    background: rgba(6, 8, 20, 0.92);
+    border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 10px 20px;
     width: 100%;
-    position: relative;
-    z-index: 9999;
-    box-shadow: 0 4px 22px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
-.app-switcher-nav .nav-container {
-    max-width: 1200px;
+
+.app-universal-header .header-inner {
+    max-width: 1300px;
     margin: 0 auto;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    padding: 0 15px;
 }
-.app-switcher-nav .nav-item {
-    color: #e2e8f0;
+
+.brand-link {
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-title {
+    color: #ffd700;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.brand-sub {
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    display: block;
+    letter-spacing: 0.4px;
+}
+
+.menu-dropdown-wrapper {
+    position: relative;
+}
+
+.menu-toggle-btn {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(180, 83, 9, 0.25));
+    border: 1px solid #ffd700;
+    color: #ffffff;
+    font-weight: bold;
     font-size: 0.88rem;
-    font-weight: 700;
-    padding: 9px 22px;
-    border-radius: 9999px;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: inset 0 1px 1px rgba(255, 240, 180, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    letter-spacing: 0.6px;
-    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, sans-serif;
-    min-height: 42px;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.35);
+    transition: all 0.25s ease;
+    outline: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
-.app-switcher-nav .nav-item .icon {
-    font-size: 1.05rem;
-}
-.app-switcher-nav .nav-item:hover {
-    color: #ffffff;
-    border-color: #fbbf24;
-    background: rgba(251, 191, 36, 0.18);
-    box-shadow: 0 0 16px rgba(251, 191, 36, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+
+.menu-toggle-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.45), rgba(180, 83, 9, 0.45));
+    box-shadow: 0 0 22px rgba(251, 191, 36, 0.6);
     transform: translateY(-1px);
 }
-.app-switcher-nav .nav-item:active {
-    transform: scale(0.98);
-}
-.app-switcher-nav .nav-item.active {
-    color: #ffffff;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.85), rgba(180, 83, 9, 0.85));
-    border-color: #fbbf24;
-    box-shadow: 0 0 18px rgba(251, 191, 36, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+
+.menu-toggle-btn .arrow-icon {
+    font-size: 0.75rem;
+    transition: transform 0.25s ease;
 }
 
-@media (max-width: 768px) {
-    .app-switcher-nav {
-        padding: 8px 0;
-    }
-    .app-switcher-nav .nav-container {
-        gap: 8px;
-    }
-    .app-switcher-nav .nav-item {
-        font-size: 13px;
-        padding: 6px 12px;
-        gap: 6px;
-    }
-    .app-switcher-nav .nav-item .icon {
-        font-size: 14px;
-    }
+.menu-toggle-btn.active .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.portal-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 270px;
+    background: rgba(14, 18, 42, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(251, 191, 36, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10001;
+}
+
+.portal-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    color: #f8fafc;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+    border: 1px solid transparent;
+}
+
+.menu-item:last-child {
+    margin-bottom: 0;
+}
+
+.menu-item .menu-icon {
+    font-size: 1.2rem;
+    width: 26px;
+    text-align: center;
+}
+
+.menu-item .menu-desc {
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    font-weight: normal;
+    display: block;
+}
+
+.menu-item:hover {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: #ffd700;
+    transform: translateX(4px);
+}
+
+.menu-item.active {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.35), rgba(180, 83, 9, 0.35));
+    border-color: #ffd700;
+    color: #ffd700;
 }
 
 /* =========================================================================
