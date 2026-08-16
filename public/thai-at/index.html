@@ -10,6 +10,97 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style_v4.css?v=60.0.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+    /* CRITICAL INLINE CSS - PREVENTS FOUC & HIDES MENU DEFAULT */
+    .portal-dropdown-menu { display: none !important; }
+    .portal-dropdown-menu.show { display: flex !important; }
+    .app-universal-header {
+        background: rgba(15, 23, 42, 0.96) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-bottom: 1px solid rgba(245, 158, 11, 0.3) !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 99999 !important;
+        width: 100% !important;
+    }
+    .header-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .brand-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none !important;
+    }
+    .brand-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #fbbf24 !important;
+        letter-spacing: 0.05em;
+    }
+    .brand-sub {
+        font-size: 0.72rem;
+        color: #94a3b8 !important;
+        margin-left: 6px;
+        border-left: 1px solid #475569;
+        padding-left: 6px;
+    }
+    .menu-dropdown-wrapper { position: relative; }
+    .menu-toggle-btn {
+        background: linear-gradient(135deg, #d97706, #b45309) !important;
+        color: #ffffff !important;
+        border: 1px solid #f59e0b !important;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+    }
+    .portal-dropdown-menu {
+        position: absolute !important;
+        right: 0 !important;
+        top: calc(100% + 8px) !important;
+        background: #0f172a !important;
+        border: 1px solid #d97706 !important;
+        border-radius: 12px;
+        width: 240px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(245, 158, 11, 0.15) !important;
+        padding: 8px !important;
+        flex-direction: column;
+        gap: 4px;
+        z-index: 100000 !important;
+    }
+    .menu-item {
+        display: flex !important;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        color: #e2e8f0 !important;
+        text-decoration: none !important;
+        font-weight: 600;
+        font-size: 0.88rem;
+        border-radius: 8px;
+    }
+    .menu-item:hover {
+        background: rgba(245, 158, 11, 0.15) !important;
+        color: #fbbf24 !important;
+    }
+    .menu-item.active {
+        background: linear-gradient(90deg, rgba(217, 119, 6, 0.3), rgba(217, 119, 6, 0.1)) !important;
+        color: #fbbf24 !important;
+        border-left: 3px solid #f59e0b !important;
+    }
+    </style>
 </head>
 <body>
     <!-- Fullscreen Dynamic Cinematic Transition Overlay -->
