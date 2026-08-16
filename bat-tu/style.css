@@ -436,39 +436,42 @@ input:checked + .slider:before {
 .battu-sheet {
     background: #ffffff;
     color: #1e293b;
-    border-radius: 8px;
-    border: 2px solid #1a5276;
-    padding: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border: 1px solid #1a5276;
+    padding: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 .battu-header-grid {
     display: grid;
     grid-template-columns: 1.2fr 1fr 1.2fr;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
-    border-bottom: 2px solid #1a5276;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    border-bottom: 1px solid #2b5797;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .battu-brand-name {
     color: #0a3871;
-    font-weight: 900;
-    font-size: 1.05rem;
+    font-weight: 700;
+    font-size: 0.98rem;
 }
 
 .battu-brand-contact {
     color: #8b0000;
-    font-weight: 700;
-    font-size: 0.82rem;
-    margin: 2px 0;
+    font-weight: 600;
+    font-size: 0.78rem;
+    margin: 1px 0;
 }
 
 .battu-brand-sub {
     color: #64748b;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 .battu-title-col {
@@ -477,23 +480,23 @@ input:checked + .slider:before {
 
 .battu-main-title {
     color: #0a3871;
-    font-weight: 900;
-    font-size: 1.25rem;
-    letter-spacing: 0.5px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.4px;
 }
 
 .battu-sub-title {
     color: #2980b9;
-    font-weight: 800;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 0.88rem;
 }
 
 .battu-meta-col {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     color: #334155;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .battu-meta-row {
@@ -514,112 +517,115 @@ input:checked + .slider:before {
     border-collapse: collapse;
     table-layout: fixed;
     font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    border: 1px solid #1a5276;
+    font-size: 0.8rem;
+    border: 1px solid #2b5797;
     text-align: center;
     background: #ffffff;
 }
 
 .battu-table th, .battu-table td {
-    border: 1px solid #2b5797;
-    padding: 5px 3px;
+    border: 1px solid #93c5fd;
+    padding: 3px 2px;
     vertical-align: middle;
 }
 
 .battu-table th {
     background: #0a3871;
     color: #ffffff;
-    font-weight: 800;
-    font-size: 0.85rem;
+    font-weight: 700;
+    font-size: 0.8rem;
 }
 
 .battu-table .row-label {
-    background: #f1f5f9;
+    background: #f8fafc;
     color: #0a3871;
-    font-weight: 800;
-    font-size: 0.82rem;
+    font-weight: 700;
+    font-size: 0.76rem;
 }
 
 .cell-chutinh {
-    font-weight: 700;
+    font-weight: 600;
     color: #1a5276;
+    font-size: 0.8rem;
 }
 
 .cell-nhatchu {
     color: #c0392b;
-    font-weight: 900;
+    font-weight: 700;
+    font-size: 0.82rem;
 }
 
 .row-battu {
-    height: 64px;
+    height: 52px;
 }
 
 .stem-txt {
-    font-size: 1.35rem;
-    font-weight: 900;
-    line-height: 1.1;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.05;
     font-family: 'Be Vietnam Pro', sans-serif;
+    letter-spacing: 0.2px;
 }
 
 .branch-txt {
-    font-size: 1.35rem;
-    font-weight: 900;
-    line-height: 1.1;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.05;
     font-family: 'Be Vietnam Pro', sans-serif;
+    letter-spacing: 0.2px;
 }
 
 .hidden-stems-flex, .pho-tinh-flex {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
 }
 
 .than-sat-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 3px;
+    gap: 2px;
     justify-content: center;
     align-items: center;
 }
 
 .than-sat-tag {
     color: #1e40af;
-    font-size: 0.78rem;
-    font-weight: 700;
-    background: rgba(30, 64, 175, 0.08);
-    padding: 1px 4px;
-    border-radius: 3px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    background: transparent;
+    padding: 0 2px;
 }
 
 .cell-nayin {
     color: #27ae60;
-    font-weight: 800;
-    font-size: 0.85rem;
+    font-weight: 700;
+    font-size: 0.8rem;
 }
 
 .battu-dayun-header {
     background: #f8fafc;
     border: 1px solid #cbd5e1;
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
-    margin: 8px 0 6px;
-    font-size: 0.82rem;
+    margin: 6px 0 5px;
+    font-size: 0.78rem;
     color: #0a3871;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 
 .battu-dayun-summary {
     color: #475569;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
 }
 
 .active-dayun-col {
     background: #fff4de !important;
-    border: 2px solid #d4af37 !important;
+    border: 1px solid #d4af37 !important;
 }
 
 .dy-ganzhi {
