@@ -1,0 +1,597 @@
+/* ==========================================================================
+   TỬ VI ĐẨU SỐ — PHONG CÁCH CỔ ĐIỂN HOÀNG GIA ĐẠI TOÀN
+   Design System for Dich Su Nguyen Huy Hoang
+   ========================================================================== */
+
+:root {
+    --bg-main: #0b0f19;
+    --bg-card: #111827;
+    --bg-palace: #ffffff;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --gold: #f59e0b;
+    --gold-light: #fbbf24;
+    --border-dark: #374151;
+
+    /* Ngũ Hành Phong Thủy */
+    --color-kim: #708090;  /* Xám Bạc */
+    --color-moc: #16a34a;  /* Xanh Lá */
+    --color-thuy: #0284c7; /* Xanh Dương */
+    --color-hoa: #dc2626;  /* Đỏ Thắm */
+    --color-tho: #d97706;  /* Vàng Nâu */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+/* ==========================================================================
+   UNIVERSAL DROPDOWN HEADER
+   ========================================================================== */
+.app-universal-header {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.brand-icon {
+    font-size: 1.5rem;
+}
+
+.brand-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #fbbf24;
+}
+
+.brand-sub {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-left: 8px;
+    border-left: 1px solid #475569;
+    padding-left: 8px;
+}
+
+.menu-dropdown-wrapper {
+    position: relative;
+}
+
+.menu-toggle-btn {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff;
+    border: 1px solid #f59e0b;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+.menu-toggle-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-1px);
+}
+
+.portal-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #0f172a;
+    border: 1px solid #d97706;
+    border-radius: 12px;
+    width: 240px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(245, 158, 11, 0.15);
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1001;
+}
+
+.portal-dropdown-menu.show {
+    display: flex;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.menu-item:hover {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.menu-item.active {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.3), rgba(217, 119, 6, 0.1));
+    color: #fbbf24;
+    border-left: 3px solid #f59e0b;
+}
+
+/* ==========================================================================
+   PAGE CONTAINER & INPUT FORM
+   ========================================================================== */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.logo-badge {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fbbf24;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: 0.02em;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+/* Input Form Card */
+.form-card {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-control {
+    background: #1f2937;
+    border: 1px solid #4b5563;
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff;
+    border: none;
+    padding: 14px 24px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6);
+}
+
+/* ==========================================================================
+   TỬ VI 12 CUNG GRID LAYOUT (TRADITIONAL CHART)
+   ========================================================================== */
+.chart-container-wrapper {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+}
+
+.chart-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 8px;
+}
+
+.chart-header-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fbbf24;
+}
+
+.btn-export-png {
+    background: #047857;
+    color: #ffffff;
+    border: 1px solid #10b981;
+    padding: 8px 18px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-export-png:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+/* The 4x4 Grid */
+.tuvi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 2px;
+    background: #1e293b;
+    border: 3px solid #0f172a;
+    border-radius: 10px;
+    min-width: 960px;
+    position: relative;
+}
+
+/* 12 Palaces */
+.palace-box {
+    background: var(--bg-palace);
+    color: #111827;
+    padding: 8px;
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Palace Header */
+.palace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+.can-cung {
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.cung-name {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #111827;
+}
+
+.cung-name.menh {
+    color: #b91c1c;
+}
+
+.dai-han {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+/* Main Stars */
+.main-stars-list {
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.main-star-item {
+    font-size: 0.92rem;
+    font-weight: 800;
+    display: block;
+    line-height: 1.3;
+}
+
+/* Star Columns */
+.stars-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.col-good {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.col-bad {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Palace Footer */
+.palace-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 4px;
+    margin-top: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+/* Trung Cung (Spans 2 cols, 2 rows in center) */
+.trung-cung-box {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    background: #faf8f5;
+    color: #111827;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid #e2e8f0;
+}
+
+.tc-header {
+    text-align: center;
+    border-bottom: 2px solid #b91c1c;
+    padding-bottom: 8px;
+}
+
+.tc-sub {
+    font-size: 0.8rem;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.tc-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #b91c1c;
+    margin-top: 2px;
+}
+
+.tc-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    font-size: 0.82rem;
+    margin: 10px 0;
+}
+
+.tc-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tc-label {
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.tc-value {
+    font-weight: 800;
+    color: #111827;
+}
+
+.tc-author-box {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+}
+
+.tc-author-name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #b91c1c;
+}
+
+.tc-author-contact {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 2px;
+}
+
+.tc-author-quote {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+/* Tuần & Triệt Floating Badges */
+.badge-tuan, .badge-triet {
+    position: absolute;
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 0.78rem;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transform: translate(-50%, -50%);
+}
+
+/* Colors for Elements */
+.color-kim { color: var(--color-kim) !important; }
+.color-moc { color: var(--color-moc) !important; }
+.color-thuy { color: var(--color-thuy) !important; }
+.color-hoa { color: var(--color-hoa) !important; }
+.color-tho { color: var(--color-tho) !important; }
+
+/* Reference Section */
+.reference-card {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.ref-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.ref-tab-btn {
+    background: #1f2937;
+    color: #cbd5e1;
+    border: 1px solid #374151;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ref-tab-btn.active {
+    background: var(--gold);
+    color: #111827;
+    border-color: var(--gold);
+}
+
+.ref-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.ref-star-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.ref-star-title {
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.ref-star-nature {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-bottom: 6px;
+}
+
+.ref-star-desc {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
