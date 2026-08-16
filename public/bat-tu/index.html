@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lá Số Bát Tự Tứ Trụ — Dịch Sư Nguyễn Huy Hoàng</title>
+    <meta name="description" content="Lập lá số Bát Tự Tứ Trụ, Thập Thần, Can Tàng, Nạp Âm, Thần Sát, Khởi Đại Vận và 100 năm Lưu Niên — Dịch Sư Nguyễn Huy Hoàng">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css?v=1.0.0">
+</head>
+<body>
+
+    <!-- Unified App Switcher Nav -->
+    <nav class="app-switcher-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-item">
+                <span>☰</span> KINH DỊCH & LỤC HÀO
+            </a>
+            <a href="../thai-at/index.html" class="nav-item">
+                <span>☯</span> THÁI ẤT THẦN SỐ
+            </a>
+            <a href="index.html" class="nav-item active">
+                <span>🏛️</span> BÁT TỰ TỨ TRỤ
+            </a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="logo-badge">TỨ TRỤ MỆNH LÝ — TỬ BÌNH CAO CẤP</div>
+        <h1>LÁ SỐ BÁT TỰ — CẢI VẬN BỔ KHUYẾT</h1>
+        <p class="subtitle">Hệ thống Thập Thần, Can Tàng, Ngũ Hành Nạp Âm, Thần Sát, Đại Vận & 100 Năm Lưu Niên</p>
+    </header>
+
+    <main class="container">
+        <div class="battu-grid">
+            <!-- Sidebar Input Card -->
+            <aside class="glass-card">
+                <h2 class="card-title">
+                    <span>⚙️</span> THÔNG TIN ĐƯƠNG SỐ
+                </h2>
+                <form id="battu-form">
+                    <div class="form-group">
+                        <label for="inp-name">Họ và Tên</label>
+                        <input type="text" id="inp-name" class="form-control" value="VÔ DANH KHÁCH" placeholder="Nhập họ và tên...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inp-gender">Giới Tính</label>
+                        <select id="inp-gender" class="form-control">
+                            <option value="nam" selected>Nam Mệnh</option>
+                            <option value="nu">Nữ Mệnh</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inp-date">Ngày Sinh (Dương Lịch)</label>
+                        <input type="date" id="inp-date" class="form-control" value="1988-03-02">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inp-time">Giờ Sinh (24h)</label>
+                        <input type="time" id="inp-time" class="form-control" value="00:00">
+                    </div>
+
+                    <button type="submit" id="btn-submit" class="btn-primary">
+                        🔮 LẬP LÁ SỐ BÁT TỰ
+                    </button>
+                </form>
+
+                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+                    <p style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">Dịch Sư Nguyễn Huy Hoàng</p>
+                    <p>Zalo / Hotline: <strong style="color: #ffffff;">0933116860</strong></p>
+                    <p>Ngân hàng Sacombank: <strong style="color: #ffffff;">060216644258</strong></p>
+                </div>
+            </aside>
+
+            <!-- Main Chart Display -->
+            <section class="chart-container">
+                <div class="chart-actions">
+                    <div style="font-weight: bold; color: #ffd700; font-size: 1.05rem;" id="chart-summary-title">
+                        📊 Đồ Hình Lá Số Bát Tự
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-download-png" class="btn-secondary">
+                            📥 Tải Ảnh PNG HD
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chart-img-wrapper">
+                    <img id="chart-img" alt="Lá Số Bát Tự Tứ Trụ" src="" />
+                </div>
+
+                <!-- Reference Section (Tra cứu ý nghĩa) -->
+                <div class="ref-section glass-card">
+                    <h3 class="card-title">
+                        <span>📖</span> BẢNG TRA CỨU CHÚ THÍCH Ý NGHĨA
+                    </h3>
+
+                    <div class="ref-tabs">
+                        <button class="ref-tab-btn active" data-tab="thap-than">1. Ý Nghĩa Thập Thần</button>
+                        <button class="ref-tab-btn" data-tab="than-sat">2. Ý Nghĩa Thần Sát</button>
+                        <button class="ref-tab-btn" data-tab="nap-am">3. Bảng 60 Hoa Giáp Nạp Âm</button>
+                    </div>
+
+                    <div id="ref-content" class="ref-content-box">
+                        <!-- Dynamic Reference Content -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Hệ Thống Mệnh Lý & Dịch Học Toàn Thư</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/lunar.js?v=1.0.0"></script>
+    <script src="js/bat_tu_than_sat.js?v=1.0.0"></script>
+    <script src="js/bat_tu_reference.js?v=1.0.0"></script>
+    <script src="js/bat_tu_engine.js?v=1.0.0"></script>
+    <script src="js/bat_tu_png_exporter.js?v=1.0.0"></script>
+    <script src="script.js?v=1.0.0"></script>
+</body>
+</html>
