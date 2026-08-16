@@ -78,3 +78,5 @@ Trang web này được viết hoàn toàn bằng HTML, CSS và JavaScript thu�
 5. Vào tab **Deployments** trên Vercel, chọn lượt deploy gần nhất, click vào dấu ba chấm ở góc phải chọn **Redeploy** (Triển khai lại) để Vercel nạp các biến môi trường này vào code backend.
 
 Chúc bạn thành công!
+
+<!-- Trigger build: 2026-08-16T07:29:25.153Z -->
