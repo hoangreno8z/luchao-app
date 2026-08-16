@@ -357,17 +357,46 @@ h1 {
     margin-bottom: 4px;
 }
 
-.ref-item-desc {
-    color: #e2e8f0;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 25px 20px;
-    background: rgba(5, 8, 20, 0.98);
-    border-top: 1px solid var(--border-color);
-    color: var(--text-muted);
-    font-size: 0.88rem;
-    margin-top: auto;
+/* ==========================================================================
+   MOBILE OPTIMIZATIONS FOR BÁT TỰ (100% VIEWPORT WIDTH & CLAMP FONT)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 4px 2px 20px !important;
+        max-width: 100% !important;
+    }
+    .battu-grid {
+        gap: 10px !important;
+    }
+    .glass-card {
+        padding: 12px 8px !important;
+        border-radius: 8px !important;
+    }
+    .chart-container {
+        gap: 8px !important;
+    }
+    .chart-actions {
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+    .chart-actions #chart-summary-title {
+        font-size: 0.9rem !important;
+        width: 100% !important;
+    }
+    .chart-img-wrapper {
+        padding: 0 !important;
+        border-width: 1px !important;
+        border-radius: 4px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+        width: 100% !important;
+    }
+    .chart-img-wrapper img {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 3px !important;
+    }
+    .ref-content-box {
+        padding: 12px 10px !important;
+        font-size: 0.85rem !important;
+    }
 }
