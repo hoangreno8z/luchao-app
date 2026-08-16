@@ -209,16 +209,15 @@
             <!-- Main Chart Display -->
             <section class="chart-container">
                 <div class="chart-actions">
-                    <div style="font-weight: bold; color: #ffd700; font-size: 1rem;" id="chart-summary-title">
-                        📊 Đồ Hình Lá Số Bát Tự
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button type="button" id="btn-mode-compact" class="btn-mode active" style="background: linear-gradient(135deg, #d4af37, #aa820a); color: #050711; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                            📊 10 Đại Vận (Mệnh Bàn)
-                        </button>
-                        <button type="button" id="btn-mode-full100" class="btn-mode" style="background: rgba(212, 175, 55, 0.15); color: #ffd700; border: 1px solid var(--accent-gold); padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                            📜 100 Năm Lưu Niên
-                        </button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between;">
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" id="btn-mode-compact" class="btn-mode active" style="background: linear-gradient(135deg, #d4af37, #aa820a); color: #050711; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                                📊 10 Đại Vận (Mệnh Bàn)
+                            </button>
+                            <button type="button" id="btn-mode-full100" class="btn-mode" style="background: rgba(212, 175, 55, 0.15); color: #ffd700; border: 1px solid var(--accent-gold); padding: 7px 12px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                                📜 100 Năm Lưu Niên
+                            </button>
+                        </div>
                         <button id="btn-download-png" class="btn-secondary">
                             📥 Tải Ảnh HD
                         </button>
@@ -230,11 +229,7 @@
                 </div>
 
                 <!-- Reference Section (Tra cứu ý nghĩa) -->
-                <div class="ref-section glass-card">
-                    <h3 class="card-title">
-                        <span>📖</span> BẢNG TRA CỨU CHÚ THÍCH Ý NGHĨA
-                    </h3>
-
+                <div class="ref-section glass-card" style="padding-top: 14px;">
                     <div class="ref-tabs">
                         <button class="ref-tab-btn active" data-tab="thap-than">1. Ý Nghĩa Thập Thần</button>
                         <button class="ref-tab-btn" data-tab="than-sat">2. Ý Nghĩa Thần Sát</button>
