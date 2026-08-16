@@ -426,45 +426,279 @@ input:checked + .slider:before {
 }
 
 /* ==========================================================================
-   MOBILE OPTIMIZATIONS FOR BÁT TỰ (100% VIEWPORT WIDTH & CLAMP FONT)
+   BÁT TỰ PURE HTML SHEET STYLING (THEO CHUẨN NGUHANH.NET)
    ========================================================================== */
+.battu-sheet-wrapper {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.battu-sheet {
+    background: #ffffff;
+    color: #1e293b;
+    border-radius: 8px;
+    border: 2px solid #1a5276;
+    padding: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    width: 100%;
+}
+
+.battu-header-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.2fr;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 2px solid #1a5276;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.battu-brand-name {
+    color: #0a3871;
+    font-weight: 900;
+    font-size: 1.05rem;
+}
+
+.battu-brand-contact {
+    color: #8b0000;
+    font-weight: 700;
+    font-size: 0.82rem;
+    margin: 2px 0;
+}
+
+.battu-brand-sub {
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.battu-title-col {
+    text-align: center;
+}
+
+.battu-main-title {
+    color: #0a3871;
+    font-weight: 900;
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+}
+
+.battu-sub-title {
+    color: #2980b9;
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.battu-meta-col {
+    font-size: 0.8rem;
+    color: #334155;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.battu-meta-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-responsive-box {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 8px;
+}
+
+.battu-table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    border: 1px solid #1a5276;
+    text-align: center;
+    background: #ffffff;
+}
+
+.battu-table th, .battu-table td {
+    border: 1px solid #2b5797;
+    padding: 5px 3px;
+    vertical-align: middle;
+}
+
+.battu-table th {
+    background: #0a3871;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.battu-table .row-label {
+    background: #f1f5f9;
+    color: #0a3871;
+    font-weight: 800;
+    font-size: 0.82rem;
+}
+
+.cell-chutinh {
+    font-weight: 700;
+    color: #1a5276;
+}
+
+.cell-nhatchu {
+    color: #c0392b;
+    font-weight: 900;
+}
+
+.row-battu {
+    height: 64px;
+}
+
+.stem-txt {
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.1;
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.branch-txt {
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.1;
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.hidden-stems-flex, .pho-tinh-flex {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 0.82rem;
+}
+
+.than-sat-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+    align-items: center;
+}
+
+.than-sat-tag {
+    color: #1e40af;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: rgba(30, 64, 175, 0.08);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.cell-nayin {
+    color: #27ae60;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.battu-dayun-header {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin: 8px 0 6px;
+    font-size: 0.82rem;
+    color: #0a3871;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.battu-dayun-summary {
+    color: #475569;
+    font-size: 0.78rem;
+}
+
+.active-dayun-col {
+    background: #fff4de !important;
+    border: 2px solid #d4af37 !important;
+}
+
+.dy-ganzhi {
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.dy-shishen {
+    color: #1a5276;
+    font-size: 0.8rem;
+}
+
+.dy-age {
+    color: #c0392b;
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+
+.dy-year {
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.active-year-cell {
+    background: #fff9d2 !important;
+    border: 2px solid #d4af37 !important;
+}
+
+.cell-liunian-list {
+    padding: 3px 2px !important;
+    text-align: left !important;
+}
+
+.cell-liunian-list .ln-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    border-bottom: 1px dashed #e2e8f0;
+    padding: 1px 2px;
+}
+
+.cell-liunian-list .ln-row:last-child {
+    border-bottom: none;
+}
+
+.ln-year { font-weight: 700; color: #1e293b; width: 36px; }
+.ln-age { color: #c0392b; font-weight: 800; width: 32px; }
+.ln-gz { font-weight: 700; color: #27ae60; width: 55px; }
+.ln-ss { color: #64748b; width: 36px; text-align: right; }
+
+.battu-sheet-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.battu-legend {
+    display: flex;
+    gap: 12px;
+}
+
 @media (max-width: 768px) {
-    .container {
-        padding: 4px 2px 20px !important;
-        max-width: 100% !important;
+    .battu-header-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 6px;
     }
-    .battu-grid {
-        gap: 10px !important;
+    .battu-brand-col, .battu-title-col, .battu-meta-col {
+        text-align: center;
     }
-    .glass-card {
-        padding: 12px 8px !important;
-        border-radius: 8px !important;
+    .battu-meta-row {
+        justify-content: center;
+        gap: 8px;
     }
-    .chart-container {
-        gap: 8px !important;
-    }
-    .chart-actions {
-        padding: 8px !important;
-        gap: 6px !important;
-    }
-    .chart-actions #chart-summary-title {
-        font-size: 0.9rem !important;
-        width: 100% !important;
-    }
-    .chart-img-wrapper {
-        padding: 0 !important;
-        border-width: 1px !important;
-        border-radius: 4px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
-        width: 100% !important;
-    }
-    .chart-img-wrapper img {
-        width: 100% !important;
-        max-width: 100% !important;
-        border-radius: 3px !important;
-    }
-    .ref-content-box {
-        padding: 12px 10px !important;
-        font-size: 0.85rem !important;
+    .battu-sheet {
+        padding: 6px;
     }
 }
