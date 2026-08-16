@@ -38,6 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Print Button
+    const btnPrint = document.getElementById('btnPrintTuVi');
+    if (btnPrint) {
+        btnPrint.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
     // Form Submit
     const form = document.getElementById('tuViForm');
     if (form) {
