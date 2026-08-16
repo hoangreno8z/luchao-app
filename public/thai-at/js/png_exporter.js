@@ -153,22 +153,34 @@ function draw5x5ThaiAtSaBan(data, callback) {
     ctx.lineWidth = 1;
     ctx.strokeRect(20, 20, 1160, 1010);
 
+    const isMenhMode = Boolean(data && (data.mode === "menh" || data.isMenh || data.nhanMenhData));
+
     // Header Title
     ctx.fillStyle = pal.headerTitle;
-    ctx.font = "bold 25px 'Be Vietnam Pro', 'Inter', sans-serif";
+    ctx.font = "bold 24px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("☯ THÁI ẤT THẦN SỐ — SA BÀN 16 CUNG ☯", 600, 52);
+    if (isMenhMode) {
+        ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", 600, 50);
+    } else {
+        ctx.fillText("☯ THÁI ẤT THẦN SỐ — SA BÀN 16 CUNG ☯", 600, 52);
+    }
 
     // Subtitle / Tứ Trụ Date
     ctx.fillStyle = pal.headerSub;
-    ctx.font = "bold 14px 'Inter', sans-serif";
+    ctx.font = "bold 13.5px 'Inter', sans-serif";
     const tuTruStr = (data && data.tuTru && data.tuTru.fullString) ? data.tuTru.fullString : "Năm Bính Ngọ - Tháng Ất Mùi - Ngày Mậu Tý - Giờ Nhâm Tuất";
-    ctx.fillText(`Tứ Trụ Can Chi: ${tuTruStr}`, 600, 78);
+    if (isMenhMode) {
+        ctx.fillText(`☯ THÁI ẤT THẦN SỐ — SA BÀN NHÂN MỆNH (16 CUNG) ☯`, 600, 75);
+    } else {
+        ctx.fillText(`Tứ Trụ Can Chi: ${tuTruStr}`, 600, 78);
+    }
 
     ctx.fillStyle = pal.textMuted;
-    ctx.font = "13px 'Inter', sans-serif";
-    const modeText = `Chế Độ: ${data ? (data.modeName || 'Tuế Kể') : 'Tuế Kể'}  |  Tiết Khí: ${data ? (data.solarTerm || '-') : '-'}  |  Cục Số: ${data ? (data.donCucName || '-') : '-'}`;
-    ctx.fillText(modeText, 600, 100);
+    ctx.font = "12.5px 'Inter', sans-serif";
+    const modeText = isMenhMode 
+        ? `Tứ Trụ: ${tuTruStr}  |  Độn Cục: ${data ? (data.donCucName || 'Dương Độn') : 'Dương Độn'}`
+        : `Chế Độ: ${data ? (data.modeName || 'Tuế Kể') : 'Tuế Kể'}  |  Tiết Khí: ${data ? (data.solarTerm || '-') : '-'}  |  Cục Số: ${data ? (data.donCucName || '-') : '-'}`;
+    ctx.fillText(modeText, 600, 98);
 
     // 5x5 Matrix Layout Geometry
     const startX = 30;
@@ -178,50 +190,79 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const gapX = 7;
     const gapY = 6;
 
-
-
     // Draw 16 Outer Cells
     Object.keys(THAN_GRID_DEF).forEach(id => {
         const def = THAN_GRID_DEF[id];
         const cx = startX + def.col * (cellW + gapX);
         const cy = startY + def.row * (cellH + gapY);
 
-        // Cell Box Background
-        ctx.fillStyle = pal.cellBg;
-        ctx.fillRect(cx, cy, cellW, cellH);
-        ctx.strokeStyle = pal.cellBorder;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(cx, cy, cellW, cellH);
+        const rawStars = (data && data.placement && data.placement[id]) ? data.placement[id] : [];
+        let palaceTag = null;
+        const stars = [];
 
-        // Stars List inside Cell
-        const stars = (data && data.placement && data.placement[id]) ? data.placement[id] : [];
-
-        // Check Bát Môn and Primary Elements for Cung
-        let batMonType = null;
-
-        stars.forEach(st => {
-            const isBatMon = (st.class && st.class.includes("bat-mon")) || st.name.startsWith("Cửa ") || Boolean(st.gateName);
-            if (isBatMon) {
-                if (st.name.includes("Khai") || st.name.includes("Hưu") || st.name.includes("Sinh")) {
-                    batMonType = 'cat';
-                } else if (st.name.includes("Tử") || st.name.includes("Kinh") || st.name.includes("Thương")) {
-                    batMonType = 'hung';
-                } else if (st.name.includes("Đỗ") || st.name.includes("Cảnh")) {
-                    batMonType = 'trung';
-                }
+        rawStars.forEach(st => {
+            if (st.name.startsWith("[") && st.name.endsWith("]")) {
+                palaceTag = st.name.replace(/[\[\]]/g, "").trim();
+            } else {
+                stars.push(st);
             }
         });
 
-        // Cell Header Line 1: Palace Title & Khí
-        ctx.fillStyle = pal.palaceTitle;
+        const isMenh = palaceTag && palaceTag.includes("MỆNH");
+        const isThan = palaceTag && palaceTag.includes("THÂN");
+
+        // Cell Box Background
+        ctx.fillStyle = pal.cellBg;
+        ctx.fillRect(cx, cy, cellW, cellH);
+
+        // Highlight Cell Border if Mệnh / Thân
+        if (isMenh) {
+            ctx.fillStyle = "rgba(255, 215, 0, 0.08)";
+            ctx.fillRect(cx, cy, cellW, cellH);
+            ctx.strokeStyle = "#ffd700";
+            ctx.lineWidth = 2.5;
+        } else if (isThan) {
+            ctx.fillStyle = "rgba(46, 204, 113, 0.06)";
+            ctx.fillRect(cx, cy, cellW, cellH);
+            ctx.strokeStyle = "#2ecc71";
+            ctx.lineWidth = 2;
+        } else {
+            ctx.strokeStyle = pal.cellBorder;
+            ctx.lineWidth = 1;
+        }
+        ctx.strokeRect(cx, cy, cellW, cellH);
+
+        // Header Title
+        ctx.fillStyle = isMenh ? "#ffd700" : pal.palaceTitle;
         ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
         ctx.textAlign = "left";
         ctx.fillText(def.name, cx + 8, cy + 20);
 
-        ctx.fillStyle = pal.palaceKhi;
-        ctx.font = "11px 'Inter', sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText(def.khi, cx + cellW - 8, cy + 20);
+        if (palaceTag) {
+            ctx.textAlign = "right";
+            if (isMenh) {
+                ctx.fillStyle = "#e74c3c";
+                ctx.fillRect(cx + cellW - 90, cy + 6, 82, 16);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 10px 'Inter', sans-serif";
+                ctx.fillText(`★ MỆNH CUNG`, cx + cellW - 12, cy + 18);
+            } else if (isThan) {
+                ctx.fillStyle = "#27ae60";
+                ctx.fillRect(cx + cellW - 80, cy + 6, 72, 16);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 10px 'Inter', sans-serif";
+                ctx.fillText(`✦ THÂN CUNG`, cx + cellW - 12, cy + 18);
+            } else {
+                ctx.fillStyle = pal.headerTitle;
+                ctx.font = "bold 11px 'Inter', sans-serif";
+                ctx.fillText(`[ ${palaceTag} ]`, cx + cellW - 8, cy + 18);
+            }
+        } else {
+            ctx.fillStyle = pal.palaceKhi;
+            ctx.font = "11px 'Inter', sans-serif";
+            ctx.textAlign = "right";
+            ctx.fillText(def.khi, cx + cellW - 8, cy + 20);
+        }
 
         // Divider
         ctx.strokeStyle = pal.divider;
@@ -230,62 +271,32 @@ function draw5x5ThaiAtSaBan(data, callback) {
         ctx.lineTo(cx + cellW - 8, cy + 26);
         ctx.stroke();
 
-        // Line 2: Alias & Phận Dã
-        ctx.fillStyle = "#a0aec0";
-        ctx.font = "11px 'Inter', sans-serif";
+        // Stars
+        let sy = cy + 42;
         ctx.textAlign = "left";
-        ctx.fillText(`${def.alias} • ${def.phanDa}`, cx + 8, cy + 41);
+        const sortedStars = [...stars].sort((a, b) => {
+            const getPrio = (s) => {
+                if (s.class === "thai-at" || s.name.includes("Thái Ất")) return 1;
+                if (s.class === "van-xuong" || s.name.includes("Văn Xương")) return 2;
+                if (s.class === "thuy-kich" || s.name.includes("Thủy Kích")) return 3;
+                if (s.class === "chu-tuong" || s.name.includes("Chủ Tướng")) return 4;
+                if (s.class === "khach-tuong" || s.name.includes("Khách Tướng")) return 5;
+                if (s.class?.includes("bat-mon") || s.name.startsWith("Cửa ")) return 6;
+                if (s.name.includes("Lộc Tồn") || s.name.includes("Thiên Mã")) return 7;
+                if (s.class === "ngu-phuc" || s.name.includes("Ngũ Phúc")) return 8;
+                if (s.class === "dai-du" || s.class === "tieu-du") return 9;
+                return 99;
+            };
+            return getPrio(a) - getPrio(b);
+        });
 
-        // Draw Bát Môn Nature Badge in Line 2 (right aligned)
-        if (batMonType) {
-            ctx.font = "bold 10px 'Be Vietnam Pro', 'Inter', sans-serif";
-            ctx.textAlign = "right";
-            if (batMonType === 'cat') {
-                ctx.fillStyle = "#27ae60";
-                ctx.fillText("🟢 CÁT MÔN", cx + cellW - 8, cy + 41);
-            } else if (batMonType === 'hung') {
-                ctx.fillStyle = "#c0392b";
-                ctx.fillText("🔴 HUNG MÔN", cx + cellW - 8, cy + 41);
-            } else if (batMonType === 'trung') {
-                ctx.fillStyle = "#d35400";
-                ctx.fillText("🟡 TRUNG MÔN", cx + cellW - 8, cy + 41);
+        sortedStars.forEach((st) => {
+            if (sy <= cy + cellH - 12) {
+                ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
+                ctx.fillText(`• ${st.name}`, cx + 8, sy);
+                sy += 16;
             }
-        }
-
-        let sy = cy + 58;
-        ctx.textAlign = "left";
-
-        if (stars.length === 0) {
-            ctx.fillStyle = activeThemeKey === "huyen-khong" ? "#555" : "#999";
-            ctx.font = "italic 11px 'Inter', sans-serif";
-            ctx.fillText("(Không có sao)", cx + 8, sy);
-        } else {
-            ctx.font = "bold 11px 'Inter', sans-serif";
-            
-            // Priority sort stars: Key strategic stars (Thái Ất, Bát Môn, Tướng) first
-            const sortedStars = [...stars].sort((a, b) => {
-                const getPrio = (s) => {
-                    if (s.class === "thai-at" || s.name.includes("Thái Ất")) return 1;
-                    if (s.class === "van-xuong" || s.name.includes("Văn Xương")) return 2;
-                    if (s.class === "thuy-kich" || s.name.includes("Thủy Kích")) return 3;
-                    if (s.class === "chu-tuong" || s.name.includes("Chủ Tướng")) return 4;
-                    if (s.class === "khach-tuong" || s.name.includes("Khách Tướng")) return 5;
-                    if (s.class?.includes("bat-mon") || s.name.startsWith("Cửa ")) return 6; // Bát môn always visible!
-                    if (s.class === "ngu-phuc" || s.name.includes("Ngũ Phúc")) return 7;
-                    if (s.class === "dai-du" || s.class === "tieu-du") return 8;
-                    return 99;
-                };
-                return getPrio(a) - getPrio(b);
-            });
-
-            sortedStars.forEach((st, idx) => {
-                if (sy <= cy + cellH - 12) {
-                    ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
-                    ctx.fillText(`• ${st.name}`, cx + 8, sy);
-                    sy += 16;
-                }
-            });
-        }
+        });
     });
 
     // Draw TRUNG CUNG 3x3 Block
@@ -294,229 +305,586 @@ function draw5x5ThaiAtSaBan(data, callback) {
     const tcW = cellW * 3 + gapX * 2;
     const tcH = cellH * 3 + gapY * 2;
 
-    ctx.fillStyle = "#F4EEDD";
+    ctx.fillStyle = pal.tcBg;
     ctx.fillRect(tcX, tcY, tcW, tcH);
-    ctx.strokeStyle = "#8B4513";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = pal.tcBorder;
+    ctx.lineWidth = 2.5;
     ctx.strokeRect(tcX, tcY, tcW, tcH);
 
-    ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
+    ctx.strokeStyle = pal.innerBorder;
     ctx.lineWidth = 1;
     ctx.strokeRect(tcX + 4, tcY + 4, tcW - 8, tcH - 8);
 
-    ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 19px 'Be Vietnam Pro', 'Inter', sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("TRUNG CUNG THÁI ẤT", tcX + tcW / 2, tcY + 32);
+    if (isMenhMode) {
+        // RENDER TRUNG CUNG CHO BÀN NHÂN MỆNH
+        const lp = data.lifePalaces || {};
+        const lh = data.lifeHex || {};
 
-    ctx.fillStyle = "#553311";
-    ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
-    ctx.fillText("Thái Cực — Hoàng Cực — Bàn Luận", tcX + tcW / 2, tcY + 52);
+        ctx.fillStyle = pal.headerTitle;
+        ctx.font = "bold 20px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", tcX + tcW / 2, tcY + 34);
 
-    ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
-    ctx.beginPath();
-    ctx.moveTo(tcX + 30, tcY + 62);
-    ctx.lineTo(tcX + tcW - 30, tcY + 62);
-    ctx.stroke();
+        ctx.fillStyle = pal.accentGold;
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.fillText("THÁI ẤT THẦN SỐ — SA BÀN NHÂN MỆNH (16 CUNG)", tcX + tcW / 2, tcY + 56);
 
-    ctx.font = "13px 'Inter', sans-serif";
-    ctx.textAlign = "left";
+        ctx.strokeStyle = pal.divider;
+        ctx.beginPath();
+        ctx.moveTo(tcX + 30, tcY + 66);
+        ctx.lineTo(tcX + tcW - 30, tcY + 66);
+        ctx.stroke();
 
-    // Left Column
-    const col1X = tcX + 30;
-    let py1 = tcY + 90;
-    const dy = 24;
+        ctx.font = "12.5px 'Inter', sans-serif";
+        ctx.textAlign = "left";
+        let py = tcY + 90;
 
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Tứ Trụ: `, col1X, py1);
-    ctx.fillStyle = "#8B0000";
-    ctx.fillText(data ? (data.tuTru ? data.tuTru.fullString : '-') : '-', col1X + 65, py1);
-    py1 += dy;
+        ctx.fillStyle = pal.textColor;
+        ctx.fillText(`• Đương Số: ${data.sex === 'nam' ? 'Nam Mệnh' : 'Nữ Mệnh'} (${lp.isYangYear ? 'Dương' : 'Âm'} ${data.sex === 'nam' ? 'Nam' : 'Nữ'})  —  Hướng An Cung: ${lp.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}`, tcX + 30, py);
+        py += 22;
 
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Cục Số: `, col1X, py1);
-    ctx.fillStyle = "#8B0000";
-    ctx.fillText(data ? (data.donCucName || '-') : '-', col1X + 65, py1);
-    py1 += dy;
+        ctx.fillText(`• Tứ Trụ Can Chi: ${tuTruStr}`, tcX + 30, py);
+        py += 22;
 
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Tiết Khí: `, col1X, py1);
-    ctx.fillStyle = "#332211";
-    ctx.fillText(data ? (data.solarTerm || '-') : '-', col1X + 75, py1);
-    py1 += dy;
+        ctx.fillText(`• Trọng Cung: Mệnh tại Cung ${lp.lifeBranchName || '-'}  —  Thân tại Cung ${lp.bodyBranchName || '-'}`, tcX + 30, py);
+        py += 22;
 
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Kế Đại (Tích): `, col1X, py1);
-    ctx.fillStyle = "#8B4513";
-    ctx.fillText(data && data.keDai !== undefined ? data.keDai.toLocaleString('vi-VN') : '-', col1X + 115, py1);
-    py1 += dy;
+        ctx.fillText(`• Độn Cục Giờ Sinh: ${data.donCucName || 'Dương Độn'}  |  Tiết Khí: ${data.solarTerm || 'Lập Xuân'}`, tcX + 30, py);
+        py += 26;
 
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Kế Tiểu (Dư): `, col1X, py1);
-    ctx.fillStyle = "#8B4513";
-    ctx.fillText(data && data.keTieu !== undefined ? String(data.keTieu) : '-', col1X + 110, py1);
-    py1 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Kế Định: `, col1X, py1);
-    ctx.fillStyle = "#8B4513";
-    ctx.fillText(data && data.keDinh !== undefined ? String(data.keDinh) : '-', col1X + 75, py1);
-
-    // Right Column
-    const col2X = tcX + 360;
-    let py2 = tcY + 90;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Bát Môn: `, col2X, py2);
-    ctx.fillStyle = "#196f3d";
-    ctx.fillText(data ? (data.batMon || '-') : '-', col2X + 80, py2);
-    py2 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Cửu Tinh: `, col2X, py2);
-    ctx.fillStyle = "#1a5276";
-    ctx.fillText(data ? (data.cuuTinh || '-') : '-', col2X + 85, py2);
-    py2 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Toán Chủ: `, col2X, py2);
-    ctx.fillStyle = "#c0392b";
-    ctx.fillText(data ? (data.toanChuGoc !== undefined ? `${data.toanChu} (Nguyên: ${data.toanChuGoc})` : String(data.toanChu || '-')) : '-', col2X + 85, py2);
-    py2 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Toán Khách: `, col2X, py2);
-    ctx.fillStyle = "#2980b9";
-    ctx.fillText(data ? (data.toanKhachGoc !== undefined ? `${data.toanKhach} (Nguyên: ${data.toanKhachGoc})` : String(data.toanKhach || '-')) : '-', col2X + 100, py2);
-    py2 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Toán Định: `, col2X, py2);
-    ctx.fillStyle = "#d35400";
-    ctx.fillText(data ? (data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên: ${data.toanDinhGoc})` : String(data.toanDinh || '-')) : '-', col2X + 90, py2);
-    py2 += dy;
-
-    ctx.fillStyle = "#5C2C0C";
-    ctx.fillText(`• Bát Hung: `, col2X, py2);
-    ctx.fillStyle = "#c0392b";
-    ctx.fillText(data ? (data.batHung || '-') : '-', col2X + 80, py2);
-
-    // SECTION A: Trung Cung Stars & Tướng Bất Xuất Alert Banner
-    const tcStarsY = tcY + 232;
-    const tcStars = (data && data.placement && data.placement["trung_cung"]) ? data.placement["trung_cung"] : [];
-    
-    ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 13px 'Inter', sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText("⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):", tcX + 30, tcStarsY);
-
-    let starStrY = tcStarsY + 20;
-    if (tcStars.length > 0) {
-        let sx = tcX + 30;
-        tcStars.forEach(st => {
-            const stName = `• ${st.name}  `;
-            ctx.fillStyle = getStarColorCanvas(st.class, "thu-tich-co");
-            ctx.font = "bold 12px 'Inter', sans-serif";
-            const w = ctx.measureText(stName).width;
-            if (sx + w > tcX + tcW - 30) {
-                sx = tcX + 30;
-                starStrY += 18;
-            }
-            ctx.fillText(stName, sx, starStrY);
-            sx += w;
-        });
-        starStrY += 22;
-    } else {
-        ctx.fillStyle = "#888888";
-        ctx.font = "italic 12px 'Inter', sans-serif";
-        ctx.fillText("Không có thần tinh trú ngụ", tcX + 30, starStrY);
-        starStrY += 22;
-    }
-
-    // Check for Tướng Bất Xuất Alerts (Toán Chủ % 10 === 5 or Toán Khách % 10 === 5)
-    const toanChuVal = data ? parseInt(data.toanChuGoc ?? data.toanChu, 10) : NaN;
-    const toanKhachVal = data ? parseInt(data.toanKhachGoc ?? data.toanKhach, 10) : NaN;
-
-    if (!isNaN(toanChuVal) && toanChuVal % 10 === 5) {
-        ctx.fillStyle = "rgba(231, 76, 60, 0.12)";
-        ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
-        ctx.strokeStyle = "#c0392b";
+        // Box Tam Đại Quẻ Dịch Đời Người
+        const hexBoxH = 185;
+        ctx.fillStyle = pal.cellBg;
+        ctx.fillRect(tcX + 20, py, tcW - 40, hexBoxH);
+        ctx.strokeStyle = pal.cellBorder;
         ctx.lineWidth = 1;
-        ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+        ctx.strokeRect(tcX + 20, py, tcW - 40, hexBoxH);
+
+        ctx.fillStyle = pal.headerTitle;
+        ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("☯ HỆ THỐNG TAM ĐẠI QUẺ DỊCH ĐỜI NGƯỜI ☯", tcX + tcW / 2, py + 22);
+
+        ctx.textAlign = "left";
+        let hy = py + 46;
 
         ctx.fillStyle = "#c0392b";
         ctx.font = "bold 12px 'Inter', sans-serif";
-        ctx.fillText("🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
-
-        ctx.fillStyle = "#332211";
+        ctx.fillText(`1. Quẻ Vào Đời (Lập Nghiệp / Tiền Vận): Quẻ ${lh.hexVaoDoiName || '—'} (Hào ${lh.haoDongVaoDoi || 1} Động)`, tcX + 35, hy);
+        hy += 18;
+        ctx.fillStyle = pal.textColor;
         ctx.font = "11px 'Inter', sans-serif";
-        ctx.fillText(`Toán Chủ = ${data.toanChuGoc || toanChuVal} (đuôi 5): Đại Tướng Chủ & Tham Tướng Chủ đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
-        starStrY += 48;
-    }
-
-    if (!isNaN(toanKhachVal) && toanKhachVal % 10 === 5) {
-        ctx.fillStyle = "rgba(41, 128, 185, 0.12)";
-        ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
-        ctx.strokeStyle = "#2980b9";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+        ctx.fillText(`- Ngày Chịu Khí (Thai Nguyên): ${lh.thaiNguyenCanChi || '—'}  |  ${lh.thaiNguyenRuleText || ''}`, tcX + 45, hy);
+        hy += 22;
 
         ctx.fillStyle = "#2980b9";
         ctx.font = "bold 12px 'Inter', sans-serif";
-        ctx.fillText("🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
+        ctx.fillText(`2. Quẻ Dựng Nghiệp (Trung Niên Khởi Sắc): Quẻ ${lh.hexDungNghiepName || '—'}`, tcX + 35, hy);
+        hy += 18;
+        ctx.fillStyle = pal.textColor;
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.fillText(`- Biến quái chuyển hóa từ Hào Động, định hướng xây dựng sự nghiệp trung vận.`, tcX + 45, hy);
+        hy += 22;
+
+        ctx.fillStyle = "#27ae60";
+        ctx.font = "bold 12px 'Inter', sans-serif";
+        ctx.fillText(`3. Quẻ Lưu Niên (Vận Hạn Năm Xem): Quẻ ${lh.hexNamName || '—'} (Tuổi Mụ: ${lh.tuoiMu || '—'} tuổi)`, tcX + 35, hy);
+
+        // Footer Contact
+        ctx.fillStyle = "#8B0000";
+        ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", tcX + tcW / 2, tcY + tcH - 18);
+
+    } else {
+        // RENDER TRUNG CUNG CHO BÀN VĨ MÔ (TUẾ/NGUYỆT/NHẬT/THỜI)
+        ctx.fillStyle = "#8B0000";
+        ctx.font = "bold 19px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("TRUNG CUNG THÁI ẤT", tcX + tcW / 2, tcY + 32);
+
+        ctx.fillStyle = "#553311";
+        ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.fillText("Thái Cực — Hoàng Cực — Bàn Luận", tcX + tcW / 2, tcY + 52);
+
+        ctx.strokeStyle = "rgba(139, 69, 19, 0.25)";
+        ctx.beginPath();
+        ctx.moveTo(tcX + 30, tcY + 62);
+        ctx.lineTo(tcX + tcW - 30, tcY + 62);
+        ctx.stroke();
+
+        ctx.font = "13px 'Inter', sans-serif";
+        ctx.textAlign = "left";
+
+        // Left Column
+        const col1X = tcX + 30;
+        let py1 = tcY + 90;
+        const dy = 24;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Tứ Trụ: `, col1X, py1);
+        ctx.fillStyle = "#8B0000";
+        ctx.fillText(data ? (data.tuTru ? data.tuTru.fullString : '-') : '-', col1X + 65, py1);
+        py1 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Cục Số: `, col1X, py1);
+        ctx.fillStyle = "#8B0000";
+        ctx.fillText(data ? (data.donCucName || '-') : '-', col1X + 65, py1);
+        py1 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Tiết Khí: `, col1X, py1);
+        ctx.fillStyle = "#332211";
+        ctx.fillText(data ? (data.solarTerm || '-') : '-', col1X + 75, py1);
+        py1 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Kế Đại (Tích): `, col1X, py1);
+        ctx.fillStyle = "#8B4513";
+        ctx.fillText(data && data.keDai !== undefined ? data.keDai.toLocaleString('vi-VN') : '-', col1X + 115, py1);
+        py1 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Kế Tiểu (Dư): `, col1X, py1);
+        ctx.fillStyle = "#8B4513";
+        ctx.fillText(data && data.keTieu !== undefined ? String(data.keTieu) : '-', col1X + 110, py1);
+        py1 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Kế Định: `, col1X, py1);
+        ctx.fillStyle = "#8B4513";
+        ctx.fillText(data && data.keDinh !== undefined ? String(data.keDinh) : '-', col1X + 75, py1);
+
+        // Right Column
+        const col2X = tcX + 360;
+        let py2 = tcY + 90;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Bát Môn: `, col2X, py2);
+        ctx.fillStyle = "#196f3d";
+        ctx.fillText(data ? (data.batMon || '-') : '-', col2X + 80, py2);
+        py2 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Cửu Tinh: `, col2X, py2);
+        ctx.fillStyle = "#1a5276";
+        ctx.fillText(data ? (data.cuuTinh || '-') : '-', col2X + 85, py2);
+        py2 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Toán Chủ: `, col2X, py2);
+        ctx.fillStyle = "#c0392b";
+        ctx.fillText(data ? (data.toanChuGoc !== undefined ? `${data.toanChu} (Nguyên: ${data.toanChuGoc})` : String(data.toanChu || '-')) : '-', col2X + 85, py2);
+        py2 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Toán Khách: `, col2X, py2);
+        ctx.fillStyle = "#2980b9";
+        ctx.fillText(data ? (data.toanKhachGoc !== undefined ? `${data.toanKhach} (Nguyên: ${data.toanKhachGoc})` : String(data.toanKhach || '-')) : '-', col2X + 100, py2);
+        py2 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Toán Định: `, col2X, py2);
+        ctx.fillStyle = "#d35400";
+        ctx.fillText(data ? (data.toanDinhGoc !== undefined ? `${data.toanDinh} (Nguyên: ${data.toanDinhGoc})` : String(data.toanDinh || '-')) : '-', col2X + 90, py2);
+        py2 += dy;
+
+        ctx.fillStyle = "#5C2C0C";
+        ctx.fillText(`• Bát Hung: `, col2X, py2);
+        ctx.fillStyle = "#c0392b";
+        ctx.fillText(data ? (data.batHung || '-') : '-', col2X + 80, py2);
+
+        // SECTION A: Trung Cung Stars & Tướng Bất Xuất Alert Banner
+        const tcStarsY = tcY + 232;
+        const tcStars = (data && data.placement && data.placement["trung_cung"]) ? data.placement["trung_cung"] : [];
+        
+        ctx.fillStyle = "#8B0000";
+        ctx.font = "bold 13px 'Inter', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("⭐ CÁC THẦN TINH TỌA TRUNG CUNG (CUNG 5):", tcX + 30, tcStarsY);
+
+        let starStrY = tcStarsY + 20;
+        if (tcStars.length > 0) {
+            let sx = tcX + 30;
+            tcStars.forEach(st => {
+                const stName = `• ${st.name}  `;
+                ctx.fillStyle = getStarColorCanvas(st.class, "thu-tich-co");
+                ctx.font = "bold 12px 'Inter', sans-serif";
+                const w = ctx.measureText(stName).width;
+                if (sx + w > tcX + tcW - 30) {
+                    sx = tcX + 30;
+                    starStrY += 18;
+                }
+                ctx.fillText(stName, sx, starStrY);
+                sx += w;
+            });
+            starStrY += 22;
+        } else {
+            ctx.fillStyle = "#888888";
+            ctx.font = "italic 12px 'Inter', sans-serif";
+            ctx.fillText("Không có thần tinh trú ngụ", tcX + 30, starStrY);
+            starStrY += 22;
+        }
+
+        // Check for Tướng Bất Xuất Alerts
+        const toanChuVal = data ? parseInt(data.toanChuGoc ?? data.toanChu, 10) : NaN;
+        const toanKhachVal = data ? parseInt(data.toanKhachGoc ?? data.toanKhach, 10) : NaN;
+
+        if (!isNaN(toanChuVal) && toanChuVal % 10 === 5) {
+            ctx.fillStyle = "rgba(231, 76, 60, 0.12)";
+            ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
+            ctx.strokeStyle = "#c0392b";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+
+            ctx.fillStyle = "#c0392b";
+            ctx.font = "bold 12px 'Inter', sans-serif";
+            ctx.fillText("🔒 ĐẠI TIỂU CHỦ KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
+
+            ctx.fillStyle = "#332211";
+            ctx.font = "11px 'Inter', sans-serif";
+            ctx.fillText(`Toán Chủ = ${data.toanChuGoc || toanChuVal} (đuôi 5): Đại Tướng Chủ & Tham Tướng Chủ đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
+            starStrY += 48;
+        }
+
+        if (!isNaN(toanKhachVal) && toanKhachVal % 10 === 5) {
+            ctx.fillStyle = "rgba(41, 128, 185, 0.12)";
+            ctx.fillRect(tcX + 25, starStrY, tcW - 50, 42);
+            ctx.strokeStyle = "#2980b9";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(tcX + 25, starStrY, tcW - 50, 42);
+
+            ctx.fillStyle = "#2980b9";
+            ctx.font = "bold 12px 'Inter', sans-serif";
+            ctx.fillText("🔒 ĐẠI TIỂU KHÁCH KHÔNG RA KHỎI CUNG GIỮA (TƯỚNG BẤT XUẤT - CỬA ĐÓNG)", tcX + 35, starStrY + 18);
+
+            ctx.fillStyle = "#332211";
+            ctx.font = "11px 'Inter', sans-serif";
+            ctx.fillText(`Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
+            starStrY += 48;
+        }
+
+        // SECTION B: Luận Đoán Verdict Box
+        const vBoxY = Math.max(starStrY + 4, tcY + 345);
+        const vBoxH = Math.max(65, tcY + tcH - vBoxY - 32);
+
+        ctx.fillStyle = "rgba(139, 69, 19, 0.08)";
+        ctx.fillRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
+        ctx.strokeStyle = "rgba(139, 69, 19, 0.3)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
+
+        ctx.fillStyle = "#8B0000";
+        ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.fillText("📜 TỔNG QUAN CỤC DIỆN:", tcX + 35, vBoxY + 20);
 
         ctx.fillStyle = "#332211";
-        ctx.font = "11px 'Inter', sans-serif";
-        ctx.fillText(`Toán Khách = ${data.toanKhachGoc || toanKhachVal} (đuôi 5): Đại Tướng Khách & Tham Tướng Khách đồng thời nhập Trung Cung (Cửa Đóng).`, tcX + 35, starStrY + 34);
-        starStrY += 48;
-    }
+        ctx.font = "12px 'Inter', sans-serif";
+        const verdictText = data ? (data.verdict || '-') : '-';
+        const words = verdictText.split(' ');
+        let line = '';
+        let vy = vBoxY + 38;
+        const maxW = tcW - 70;
 
-    // SECTION B: Luận Đoán Verdict Box (Dynamically rebalanced!)
-    const vBoxY = Math.max(starStrY + 4, tcY + 345);
-    const vBoxH = Math.max(65, tcY + tcH - vBoxY - 32);
-
-    ctx.fillStyle = "rgba(139, 69, 19, 0.08)";
-    ctx.fillRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
-    ctx.strokeStyle = "rgba(139, 69, 19, 0.3)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(tcX + 25, vBoxY, tcW - 50, vBoxH);
-
-    ctx.fillStyle = "#8B0000";
-    ctx.font = "bold 13px 'Inter', sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText("☯ LUẬN ĐOÁN CỤC DIỆN THÁI ẤT:", tcX + 35, vBoxY + 22);
-
-    ctx.fillStyle = "#332211";
-    ctx.font = "12px 'Inter', sans-serif";
-    const verdictText = data ? (data.verdict || 'Thái Ất Tọa Cung, Vận Quái Thông Suốt.') : 'Thái Ất Tọa Cung';
-    
-    const maxW = tcW - 80;
-    const words = verdictText.split(" ");
-    let line = "";
-    let vy = vBoxY + 42;
-
-    for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + " ";
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxW && n > 0) {
-            ctx.fillText(line, tcX + 35, vy);
-            line = words[n] + " ";
-            vy += 18;
-            if (vy > vBoxY + vBoxH - 8) break;
-        } else {
-            line = testLine;
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxW && n > 0) {
+                ctx.fillText(line, tcX + 35, vy);
+                line = words[n] + " ";
+                vy += 18;
+                if (vy > vBoxY + vBoxH - 8) break;
+            } else {
+                line = testLine;
+            }
         }
-    }
-    if (line && vy <= vBoxY + vBoxH - 8) {
-        ctx.fillText(line, tcX + 35, vy);
+        if (line && vy <= vBoxY + vBoxH - 8) {
+            ctx.fillText(line, tcX + 35, vy);
+        }
+
+        ctx.fillStyle = "#8B0000";
+        ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);
     }
 
+    // Return synchronous DataURL immediately
+    return canvas.toDataURL("image/png");
+}
+
+/**
+ * Renders 12-Palace Destiny Chart (Sa Bàn Nhân Mệnh 12 Cung)
+ * Header title: Dịch sư Nguyễn Huy Hoàng - zalo 0933116860
+ */
+function draw12PalaceThaiAtNhanMenh(data) {
+    const activeThemeKey = window.currentSaBanTheme || localStorage.getItem("thai_at_saban_theme") || "thu-tich-co";
+    const pal = THEME_PALETTES_CANVAS[activeThemeKey] || THEME_PALETTES_CANVAS["thu-tich-co"];
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200 * 2; // 2x HD Resolution: 2400px width
+    canvas.height = 1050 * 2; // 2100px height
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return "";
+
+    ctx.scale(2, 2);
+
+    // Background
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, 1200, 1050);
+
+    // Outer Double Border
+    ctx.strokeStyle = pal.outerBorder;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(15, 15, 1170, 1020);
+
+    ctx.strokeStyle = pal.innerBorder;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(20, 20, 1160, 1010);
+
+    // Header Title
+    ctx.fillStyle = pal.headerTitle;
+    ctx.font = "bold 23px 'Be Vietnam Pro', 'Inter', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", 600, 48);
+
+    // Subtitle
+    ctx.fillStyle = pal.headerSub;
+    ctx.font = "bold 13px 'Inter', sans-serif";
+    const tuTruStr = (data && data.tuTru && data.tuTru.fullString) ? data.tuTru.fullString : "Năm Bính Ngọ - Tháng Ất Mùi - Ngày Mậu Tý - Giờ Nhâm Tuất";
+    ctx.fillText(`☯ THÁI ẤT THẦN SỐ — BÀN NHÂN MỆNH THẬP NHỊ CUNG ☯`, 600, 70);
+
+    ctx.fillStyle = pal.textMuted;
+    ctx.font = "12px 'Inter', sans-serif";
+    const modeSub = `Tứ Trụ: ${tuTruStr}  |  Độn Cục: ${data ? (data.donCucName || 'Dương Độn') : 'Dương Độn'}`;
+    ctx.fillText(modeSub, 600, 88);
+
+    // 12 Outer Palaces Layout Mapping (4x4 Grid)
+    const NHAN_MENH_GRID_DEF = {
+        ty_chi: { row: 0, col: 0, branchIdx: 5, name: "TỊ", el: "Âm Hỏa" },
+        ngo:    { row: 0, col: 1, branchIdx: 6, name: "NGỌ", el: "Dương Hỏa" },
+        mui:    { row: 0, col: 2, branchIdx: 7, name: "MÙI", el: "Âm Thổ" },
+        than:   { row: 0, col: 3, branchIdx: 8, name: "THÂN", el: "Dương Kim" },
+
+        dau:    { row: 1, col: 3, branchIdx: 9, name: "DẬU", el: "Âm Kim" },
+        tuat:   { row: 2, col: 3, branchIdx: 10, name: "TUẤT", el: "Dương Thổ" },
+
+        hoi:    { row: 3, col: 3, branchIdx: 11, name: "HỢI", el: "Âm Thủy" },
+        ty:     { row: 3, col: 2, branchIdx: 0, name: "TÝ", el: "Dương Thủy" },
+        suu:    { row: 3, col: 1, branchIdx: 1, name: "SỬU", el: "Âm Thổ" },
+        dan:    { row: 3, col: 0, branchIdx: 2, name: "DẦN", el: "Dương Mộc" },
+
+        mao:    { row: 2, col: 0, branchIdx: 3, name: "MÃO", el: "Âm Mộc" },
+        thin:   { row: 1, col: 0, branchIdx: 4, name: "THÌN", el: "Dương Thổ" }
+    };
+
+    const startX = 25;
+    const startY = 100;
+    const cellW = 280;
+    const cellH = 215;
+    const gapX = 8;
+    const gapY = 8;
+
+    const lifePalaces = data?.lifePalaces || {};
+    const branchToPalace = lifePalaces.branchToPalace || {};
+    const destinyAux = data?.destinyAux || {};
+    const auxStars = destinyAux.starsByBranch || {};
+
+    // Render 12 Outer Cells
+    Object.keys(NHAN_MENH_GRID_DEF).forEach(id => {
+        const def = NHAN_MENH_GRID_DEF[id];
+        const cx = startX + def.col * (cellW + gapX);
+        const cy = startY + def.row * (cellH + gapY);
+
+        const isMenh = (def.branchIdx === lifePalaces.lifeBranchIdx);
+        const isThan = (def.branchIdx === lifePalaces.bodyBranchIdx);
+        const palaceName = branchToPalace[def.branchIdx] || "Cung Vận";
+
+        // Cell Box Background
+        ctx.fillStyle = pal.cellBg;
+        ctx.fillRect(cx, cy, cellW, cellH);
+
+        // Highlight Cell Border if Mệnh / Thân
+        if (isMenh) {
+            ctx.fillStyle = "rgba(255, 215, 0, 0.08)";
+            ctx.fillRect(cx, cy, cellW, cellH);
+            ctx.strokeStyle = "#ffd700";
+            ctx.lineWidth = 2.5;
+        } else if (isThan) {
+            ctx.fillStyle = "rgba(46, 204, 113, 0.06)";
+            ctx.fillRect(cx, cy, cellW, cellH);
+            ctx.strokeStyle = "#2ecc71";
+            ctx.lineWidth = 2;
+        } else {
+            ctx.strokeStyle = pal.cellBorder;
+            ctx.lineWidth = 1;
+        }
+        ctx.strokeRect(cx, cy, cellW, cellH);
+
+        // Cell Header Left: Chi Name & Ngũ Hành
+        ctx.fillStyle = isMenh ? "#ffd700" : pal.palaceTitle;
+        ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(`CUNG ${def.name}`, cx + 8, cy + 18);
+
+        ctx.fillStyle = pal.palaceKhi;
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.fillText(`(${def.el})`, cx + 80, cy + 18);
+
+        // Cell Header Right: Palace Name Badge
+        ctx.textAlign = "right";
+        if (isMenh) {
+            ctx.fillStyle = "#e74c3c";
+            ctx.fillRect(cx + cellW - 105, cy + 5, 98, 18);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 11px 'Inter', sans-serif";
+            ctx.fillText(`★ MỆNH CUNG`, cx + cellW - 12, cy + 18);
+        } else if (isThan) {
+            ctx.fillStyle = "#27ae60";
+            ctx.fillRect(cx + cellW - 95, cy + 5, 88, 18);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 11px 'Inter', sans-serif";
+            ctx.fillText(`✦ THÂN CUNG`, cx + cellW - 12, cy + 18);
+        } else {
+            ctx.fillStyle = pal.headerTitle;
+            ctx.font = "bold 12px 'Inter', sans-serif";
+            ctx.fillText(`[ ${palaceName} ]`, cx + cellW - 8, cy + 18);
+        }
+
+        // Horizontal Divider
+        ctx.strokeStyle = pal.divider;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx + 6, cy + 26);
+        ctx.lineTo(cx + cellW - 6, cy + 26);
+        ctx.stroke();
+
+        // Stars List inside Cell
+        let sy = cy + 42;
+        ctx.textAlign = "left";
+
+        // 1. Destiny Auxiliary Stars
+        const dStars = auxStars[def.branchIdx] || [];
+        dStars.forEach(st => {
+            if (sy > cy + cellH - 12) return;
+            ctx.fillStyle = st.type === "cat" ? "#27ae60" : (st.type === "hung" ? "#c0392b" : "#d35400");
+            ctx.font = "bold 11.5px 'Inter', sans-serif";
+            ctx.fillText(`✦ ${st.name}`, cx + 8, sy);
+            sy += 16;
+        });
+
+        // 2. Thai At Stars falling into this Palace
+        const thaiAtStars = (data && data.placement && data.placement[id]) ? data.placement[id] : [];
+        thaiAtStars.forEach(st => {
+            if (sy > cy + cellH - 12) return;
+            const isBatMon = (st.class && st.class.includes("bat-mon")) || st.name.startsWith("Cửa ");
+            ctx.fillStyle = getStarColorCanvas(st.class, activeThemeKey);
+            ctx.font = isBatMon ? "bold 11.5px 'Inter', sans-serif" : "11px 'Inter', sans-serif";
+            const icon = isBatMon ? "🚪 " : "⭐ ";
+            ctx.fillText(icon + st.name, cx + 8, sy);
+            sy += 16;
+        });
+    });
+
+    // Central Area (2x2 at Rows 1-2, Cols 1-2)
+    const tcX = startX + 1 * (cellW + gapX);
+    const tcY = startY + 1 * (cellH + gapY);
+    const tcW = 2 * cellW + gapX;
+    const tcH = 2 * cellH + gapY;
+
+    // Central Box Background
+    ctx.fillStyle = pal.tcBg;
+    ctx.fillRect(tcX, tcY, tcW, tcH);
+    ctx.strokeStyle = pal.tcBorder;
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(tcX, tcY, tcW, tcH);
+
+    ctx.strokeStyle = pal.innerBorder;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tcX + 4, tcY + 4, tcW - 8, tcH - 8);
+
+    // Central Content
+    ctx.textAlign = "center";
+    ctx.fillStyle = pal.headerTitle;
+    ctx.font = "bold 18px 'Be Vietnam Pro', 'Inter', sans-serif";
+    ctx.fillText("Dịch sư Nguyễn Huy Hoàng - zalo 0933116860", tcX + tcW / 2, tcY + 30);
+
+    ctx.fillStyle = pal.accentGold;
+    ctx.font = "bold 13px 'Inter', sans-serif";
+    ctx.fillText("THÁI ẤT THẦN SỐ — BÀN NHÂN MỆNH THẬP NHỊ CUNG", tcX + tcW / 2, tcY + 52);
+
+    // Divider
+    ctx.strokeStyle = pal.divider;
+    ctx.beginPath();
+    ctx.moveTo(tcX + 25, tcY + 62);
+    ctx.lineTo(tcX + tcW - 25, tcY + 62);
+    ctx.stroke();
+
+    // Subject Information
+    const isYangYear = lifePalaces.isYangYear;
+    const sexStr = (data.sex === "nam") ? "Nam Mệnh" : "Nữ Mệnh";
+    const amDuongSex = `${isYangYear ? 'Dương' : 'Âm'} ${data.sex === 'nam' ? 'Nam' : 'Nữ'}`;
+
+    ctx.textAlign = "left";
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillStyle = pal.textColor;
+    ctx.fillText(`• Đương Số: ${sexStr} (${amDuongSex})  —  Hướng An Cung: ${lifePalaces.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}`, tcX + 30, tcY + 84);
+    ctx.fillText(`• Tứ Trụ: ${tuTruStr}`, tcX + 30, tcY + 104);
+    ctx.fillText(`• Trọng Cung: Mệnh tại Cung ${lifePalaces.lifeBranchName}  —  Thân tại Cung ${lifePalaces.bodyBranchName}`, tcX + 30, tcY + 124);
+
+    // 3 Life Hexagrams Container Box
+    const hexBoxY = tcY + 138;
+    const hexBoxH = 210;
+    ctx.fillStyle = pal.cellBg;
+    ctx.fillRect(tcX + 20, hexBoxY, tcW - 40, hexBoxH);
+    ctx.strokeStyle = pal.cellBorder;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tcX + 20, hexBoxY, tcW - 40, hexBoxH);
+
+    ctx.fillStyle = pal.headerTitle;
+    ctx.font = "bold 13px 'Be Vietnam Pro', 'Inter', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("☯ HỆ THỐNG TAM ĐẠI QUẺ DỊCH ĐỜI NGƯỜI ☯", tcX + tcW / 2, hexBoxY + 22);
+
+    const lifeHex = data.lifeHex || {};
+    ctx.textAlign = "left";
+    let hy = hexBoxY + 46;
+
+    // 1. Quẻ Vào Đời
+    ctx.fillStyle = "#c0392b";
+    ctx.font = "bold 12.5px 'Inter', sans-serif";
+    ctx.fillText(`1. Quẻ Vào Đời (Lập Nghiệp / Tiền Vận): Quẻ ${lifeHex.hexVaoDoiName || '—'}`, tcX + 35, hy);
+    hy += 18;
+    ctx.fillStyle = pal.textColor;
+    ctx.font = "11.5px 'Inter', sans-serif";
+    ctx.fillText(`- Hào ${lifeHex.haoDongVaoDoi || 1} Động  |  Thai Nguyên (Ngày Chịu Khí): ${lifeHex.thaiNguyenCanChi || '—'}`, tcX + 45, hy);
+    hy += 24;
+
+    // 2. Quẻ Dựng Nghiệp
+    ctx.fillStyle = "#2980b9";
+    ctx.font = "bold 12.5px 'Inter', sans-serif";
+    ctx.fillText(`2. Quẻ Dựng Nghiệp (Trung Niên Hưng Sự): Quẻ ${lifeHex.hexDungNghiepName || '—'}`, tcX + 35, hy);
+    hy += 18;
+    ctx.fillStyle = pal.textColor;
+    ctx.font = "11.5px 'Inter', sans-serif";
+    ctx.fillText(`- Biến quái chuyển hóa từ Hào Động quẻ Vào Đời, chủ vận trung niên lập thân.`, tcX + 45, hy);
+    hy += 24;
+
+    // 3. Quẻ Lưu Niên
+    ctx.fillStyle = "#27ae60";
+    ctx.font = "bold 12.5px 'Inter', sans-serif";
+    ctx.fillText(`3. Quẻ Lưu Niên (Vận Hạn Năm Hiện Tại): Quẻ ${lifeHex.hexNamName || '—'}`, tcX + 35, hy);
+    hy += 18;
+    ctx.fillStyle = pal.textColor;
+    ctx.font = "11.5px 'Inter', sans-serif";
+    ctx.fillText(`- Ứng theo Tuổi Mụ ${lifeHex.tuoiMu || '—'} tuổi, soi sáng thời vận và sách lược trong năm.`, tcX + 45, hy);
+
+    // Footer Contact
     ctx.fillStyle = "#8B0000";
     ctx.font = "bold 12px 'Be Vietnam Pro', 'Inter', sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", 600, 1000);
+    ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933116860 — Sacombank: 060216644258", tcX + tcW / 2, tcY + tcH - 22);
 
-    // Return synchronous DataURL immediately
     return canvas.toDataURL("image/png");
 }
 
@@ -529,7 +897,9 @@ function generateThaiAtPNG(data) {
     if (loaderElement) loaderElement.style.display = "flex";
 
     try {
+        const isMenhMode = (chartData && (chartData.mode === "menh" || chartData.isMenh));
         const syncImgSrc = draw5x5ThaiAtSaBan(chartData);
+
         if (syncImgSrc) {
             if (imgElement) {
                 imgElement.src = syncImgSrc;
@@ -544,6 +914,7 @@ function generateThaiAtPNG(data) {
 
             if (downloadBtn) {
                 downloadBtn.href = syncImgSrc;
+                downloadBtn.download = isMenhMode ? "SaBan_NhanMenh_ThaiAt_HD.png" : "SaBan_ThaiAt_HD.png";
                 downloadBtn.style.display = "inline-flex";
             }
             const aiBtn = document.getElementById("btn-ai-luan-giai");
@@ -552,7 +923,7 @@ function generateThaiAtPNG(data) {
             }
         }
     } catch (err) {
-        console.error("Lỗi vẽ Sa Bàn 5x5 Canvas:", err);
+        console.error("Lỗi vẽ Sa Bàn Canvas:", err);
     } finally {
         if (loaderElement) loaderElement.style.display = "none";
     }
