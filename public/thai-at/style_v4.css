@@ -1405,19 +1405,23 @@ h1 {
 
 @media (max-width: 768px) {
     .app-switcher-nav {
-        padding: 8px 0;
+        padding: 6px 0;
     }
     .app-switcher-nav .nav-container {
-        gap: 8px;
+        gap: 6px;
+        padding: 0 6px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     .app-switcher-nav .nav-item {
-        font-size: 0.78rem;
-        padding: 7px 14px;
-        min-height: 38px;
-        letter-spacing: 0.3px;
+        font-size: 11px;
+        padding: 5px 9px;
+        gap: 4px;
+        min-height: 32px;
+        letter-spacing: 0.2px;
     }
     .app-switcher-nav .nav-item .icon {
-        font-size: 0.9rem;
+        font-size: 12px;
     }
 }
 
