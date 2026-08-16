@@ -223,33 +223,24 @@ export class TuViPngExporter {
         ctx.fillStyle = '#faf8f5';
         ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
 
-        // Header
-        ctx.font = 'bold 36px "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#1d4ed8';
-        ctx.textAlign = 'center';
-        ctx.fillText('DIỄN ĐÀN TỬ VI ĐẨU SỐ ĐẠI TOÀN', x + w / 2, y + 70);
-
-        ctx.font = 'italic 26px "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#4b5563';
-        ctx.fillText('Hệ thống an quẻ & lập lá số Tử Vi chuẩn truyền thống', x + w / 2, y + 115);
-
-        // Big Title
-        ctx.font = '900 68px "Be Vietnam Pro", sans-serif';
+        // Header Title
+        ctx.font = '900 64px "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#b91c1c';
-        ctx.fillText('LÁ SỐ TỬ VI', x + w / 2, y + 200);
+        ctx.textAlign = 'center';
+        ctx.fillText('DỊCH SƯ NGUYỄN HUY HOÀNG', x + w / 2, y + 100);
 
         // Line under title
         ctx.strokeStyle = '#b91c1c';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(x + w / 2 - 200, y + 225);
-        ctx.lineTo(x + w / 2 + 200, y + 225);
+        ctx.moveTo(x + w / 2 - 250, y + 130);
+        ctx.lineTo(x + w / 2 + 250, y + 130);
         ctx.stroke();
 
         // Info Table
         const leftX = x + 100;
         const valX = x + 340;
-        let infoY = y + 300;
+        let infoY = y + 210;
         const stepY = 56;
 
         ctx.font = 'bold 32px "Be Vietnam Pro", sans-serif';
@@ -283,24 +274,20 @@ export class TuViPngExporter {
         drawRow('Thân cư:', `Thân cư ${meta.thanCungName}`, '#b91c1c');
 
         // Author & Contact Footer Box
-        const footerY = y + h - 160;
+        const footerY = y + h - 140;
         ctx.fillStyle = '#f3f4f6';
-        ctx.fillRect(x + 40, footerY - 40, w - 80, 170);
+        ctx.fillRect(x + 40, footerY - 30, w - 80, 130);
         ctx.strokeStyle = '#d1d5db';
-        ctx.strokeRect(x + 40, footerY - 40, w - 80, 170);
+        ctx.strokeRect(x + 40, footerY - 30, w - 80, 130);
 
-        ctx.font = 'bold 30px "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#b91c1c';
-        ctx.textAlign = 'center';
-        ctx.fillText('DỊCH SƯ NGUYỄN HUY HOÀNG', x + w / 2, footerY);
-
-        ctx.font = '600 24px "Be Vietnam Pro", sans-serif';
+        ctx.font = 'bold 28px "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#1f2937';
-        ctx.fillText('Zalo: 0933 116 860  •  Sacombank: 0602 1664 4258  •  FB: Hoàng ngủ mơ', x + w / 2, footerY + 42);
+        ctx.textAlign = 'center';
+        ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, footerY + 25);
 
         ctx.font = 'italic 22px "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#6b7280';
-        ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, footerY + 85);
+        ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, footerY + 70);
 
         // Red Seal Stamp
         ctx.strokeStyle = '#b91c1c';
