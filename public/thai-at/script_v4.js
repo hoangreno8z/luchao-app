@@ -175,10 +175,23 @@ function initThaiAtApp() {
             document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentMode = btn.getAttribute("data-mode");
+
+            const genderGroup = document.getElementById("gender-group");
+            if (genderGroup) {
+                genderGroup.style.display = (currentMode === "menh") ? "block" : "none";
+            }
+
             updateTimeTravelLabels();
             castChart();
         };
     });
+
+    const genderSelect = document.getElementById("input-gender");
+    if (genderSelect) {
+        genderSelect.onchange = () => {
+            if (currentMode === "menh") castChart();
+        };
+    }
 
     // Form Submit
     const form = document.getElementById("control-form");
@@ -307,7 +320,8 @@ function renderWithDate(dObj) {
 
 function render(year, month, day, hour) {
     try {
-        let data = calculateThaiAtChart(currentMode, year, month, day, hour, currentEngineType);
+        const sex = document.getElementById("input-gender")?.value || "nam";
+        let data = calculateThaiAtChart(currentMode, year, month, day, hour, currentEngineType, sex);
 
         // NASA Astronomical Auto-Calibration Overlay
         if (currentEngineType === "astronomical" && data.astroInfo) {
@@ -369,22 +383,22 @@ function render(year, month, day, hour) {
             }
         }
 
-        // Ẩn/Hiện các khối phân tích và bản đồ cửu châu cho tab Quẻ Dịch & Bàn Nhân Mệnh
-        const isNoSaBanMode = (currentMode === "dich" || currentMode === "menh");
+        // Ẩn/Hiện các khối phân tích và bản đồ cửu châu cho tab Quẻ Dịch (chỉ ẩn ở Quẻ Dịch, còn Bàn Nhân Mệnh hiển thị Sa Bàn 16 cung đầy đủ)
+        const isDichOnlyMode = (currentMode === "dich");
 
         const analysisSec = document.getElementById("analysis-accordion-section");
         if (analysisSec) {
-            analysisSec.style.display = isNoSaBanMode ? "none" : "block";
+            analysisSec.style.display = "block";
         }
 
         const phanDaSec = document.getElementById("phan-da-map-section");
         if (phanDaSec) {
-            phanDaSec.style.display = isNoSaBanMode ? "none" : "block";
+            phanDaSec.style.display = isDichOnlyMode ? "none" : "block";
         }
 
         const imgSec = document.querySelector(".chart-image-section");
         if (imgSec) {
-            imgSec.style.display = isNoSaBanMode ? "none" : "flex";
+            imgSec.style.display = isDichOnlyMode ? "none" : "flex";
         }
 
         // Cập nhật tiêu đề khối Quẻ
@@ -460,11 +474,63 @@ function renderHexagramGraphic(title, subtitle, hexName, lines6, haoDong, accent
     `;
 }
 
-// Populate Vận Quái Thái Ất (Đại Du, Tiểu Du & Thái Tuế Lưu Niên)
+// Populate Vận Quái Thái Ất (Đại Du, Tiểu Du, Thái Tuế & Thập Nhị Cung Nhân Mệnh)
 function renderVanQuaiSection(data) {
     const ldContent = document.getElementById("luan-doan-content");
     if (!ldContent) return;
 
+    // 1. CHẾ ĐỘ QUẺ DỊCH THÁI ẤT (3 ĐẠI QUẺ: THÁI TUẾ, ĐẠI DU, TIỂU DU)
+    if (data.daiDuData && data.tieuDuData && data.thaiTueData) {
+        const tt = data.thaiTueData;
+        const dd = data.daiDuData;
+        const td = data.tieuDuData;
+
+        const ttHtml = renderHexagramGraphic(
+            "☯ 1. QUẺ THÁI TUẾ (LƯU NIÊN TRỰC QUÁI)",
+            `Tích Niên (${tt.tueTich}) % 64 ➔ Quẻ ${tt.queNum}/64 · Hào ${tt.haoDong} Động`,
+            tt.hexName,
+            tt.lines6 || tt.lines,
+            tt.haoDong,
+            "#e74c3c"
+        );
+
+        const ddHtml = renderHexagramGraphic(
+            "📜 2. QUẺ ĐẠI DU QUỸ VẬN (288 NĂM)",
+            `Nội: ${dd.neiGua} (${dd.neiYears}y - Hào ${dd.neiYao}) · Ngoại: ${dd.waiGua} (${dd.waiYears}y - Hào ${dd.waiYao})`,
+            dd.chongGuaName,
+            dd.lines || [1,1,1,0,0,0],
+            dd.neiYao,
+            "#f39c12"
+        );
+
+        const tdHtml = renderHexagramGraphic(
+            "⚡ 3. QUẺ TIỂU DU QUỸ VẬN (192 NĂM)",
+            `Nội: ${td.neiGua} (${td.neiYears}y - Hào ${td.neiYao}) · Ngoại: ${td.waiGua} (${td.waiYears}y - ${td.tamTai})`,
+            td.chongGuaName,
+            td.lines || [0,1,0,1,0,1],
+            td.neiYao,
+            "#00d2ff"
+        );
+
+        ldContent.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                ${ttHtml}
+                ${ddHtml}
+                ${tdHtml}
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(15, 20, 42, 0.9); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 0.85rem; color: #e0e6ed; line-height: 1.8;">
+                <h4 style="color: var(--gold); margin-bottom: 8px; font-family: 'Be Vietnam Pro', 'Inter', sans-serif;">📜 TỔNG HỢP TAM ĐẠI QUẺ DỊCH THÁI ẤT THẦN SỐ</h4>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li><strong>🔹 1. Quẻ Thái Tuế Lưu Niên:</strong> ${tt.ruleText || `Quẻ ${tt.hexName}, Hào ${tt.haoDong} Động ➔ Biến thành Quẻ ${tt.hexBienName}.`}</li>
+                    <li><strong>🔹 2. Quẻ Đại Du Quỹ Vận (288 năm):</strong> Đại Du ngự Nội quái <strong>${dd.neiGua}</strong> (đã đi ${dd.neiYears}/36 năm, Hào ${dd.neiYao}) hợp cùng Ngoại quái <strong>${dd.waiGua}</strong> (năm ${dd.waiYears}/10) thành Trùng Quái <strong>${dd.chongGuaName}</strong>. <em>(${dd.keyNote})</em></li>
+                    <li><strong>🔹 3. Quẻ Tiểu Du Quỹ Vận (192 năm):</strong> Tiểu Du ngự Nội quái <strong>${td.neiGua}</strong> (đã đi ${td.neiYears}/24 năm, Hào ${td.neiYao}) hợp cùng Ngoại quái <strong>${td.waiGua}</strong> (năm ${td.waiYears}/3 - Đang quản <strong>${td.tamTai}</strong>) thành Trùng Quái <strong>${td.chongGuaName}</strong>. <em>(${td.keyNote})</em></li>
+                </ul>
+            </div>
+        `;
+        return;
+    }
+
+    // 2. CHẾ ĐỘ THÁI TUẾ ĐƠN LẺ (Fallback)
     if (data.thaiTueData) {
         const tt = data.thaiTueData;
         const subtitle = `Tích Niên Thái Ất (${tt.tueTich}) chia 64 ➔ Quẻ thứ ${tt.queNum}/64 · ${tt.yearChiName} (${tt.isDuongYear ? 'Năm Dương' : 'Năm Âm'})`;
@@ -473,7 +539,7 @@ function renderVanQuaiSection(data) {
             "☯ QUẺ THÁI TUẾ LƯU NIÊN TRỰC QUÁI",
             subtitle,
             tt.hexName,
-            tt.lines6,
+            tt.lines6 || tt.lines,
             tt.haoDong,
             "#e74c3c"
         );
@@ -490,8 +556,92 @@ function renderVanQuaiSection(data) {
         return;
     }
 
+    // 3. CHẾ ĐỘ BÀN NHÂN MỆNH (THẬP NHỊ CUNG 4x4 GRID & QUẺ NHÂN MỆNH)
     if (data.nhanMenhData) {
         const nm = data.nhanMenhData;
+        const lp = nm.lifePalaces;
+        const pMap = nm.palaces12Map || {};
+        const destinyAux = nm.destinyAux || {};
+        const auxStars = destinyAux.starsByBranch || {};
+
+        // 12 Outer Palaces Layout Mapping (4x4 Grid)
+        const NHAN_MENH_GRID_LAYOUT = [
+            [ { b: 5, id: "ty_chi", name: "TỊ", el: "Âm Hỏa" }, { b: 6, id: "ngo", name: "NGỌ", el: "Dương Hỏa" }, { b: 7, id: "mui", name: "MÙI", el: "Âm Thổ" }, { b: 8, id: "than", name: "THÂN", el: "Dương Kim" } ],
+            [ { b: 4, id: "thin", name: "THÌN", el: "Dương Thổ" }, null, null, { b: 9, id: "dau", name: "DẬU", el: "Âm Kim" } ],
+            [ { b: 3, id: "mao", name: "MÃO", el: "Âm Mộc" }, null, null, { b: 10, id: "tuat", name: "TUẤT", el: "Dương Thổ" } ],
+            [ { b: 2, id: "dan", name: "DẦN", el: "Dương Mộc" }, { b: 1, id: "suu", name: "SỬU", el: "Âm Thổ" }, { b: 0, id: "ty", name: "TÝ", el: "Dương Thủy" }, { b: 11, id: "hoi", name: "HỢI", el: "Âm Thủy" } ]
+        ];
+
+        let gridCellsHtml = "";
+
+        NHAN_MENH_GRID_LAYOUT.forEach((row, rIdx) => {
+            row.forEach((cell, cIdx) => {
+                if (cell) {
+                    const bIdx = cell.b;
+                    const pInfo = pMap[bIdx] || {};
+                    const isMenh = (bIdx === lp.lifeBranchIdx);
+                    const isThan = (bIdx === lp.bodyBranchIdx);
+                    const pName = lp.branchToPalace[bIdx] || "Cung Vận";
+
+                    // Stars in this palace
+                    const dStars = auxStars[bIdx] || [];
+                    const thaiAtStars = (data && data.placement && data.placement[cell.id]) ? data.placement[cell.id] : [];
+
+                    let starsListHtml = "";
+                    dStars.forEach(st => {
+                        const color = st.type === "cat" ? "#2ecc71" : (st.type === "hung" ? "#e74c3c" : "#f39c12");
+                        starsListHtml += `<div style="color: ${color}; font-size: 0.72rem; font-weight: bold; margin: 1px 0;">✦ ${st.name}</div>`;
+                    });
+
+                    thaiAtStars.forEach(st => {
+                        if (st.name.startsWith("[") && st.name.endsWith("]")) return; // Skip palace name tag
+                        const isBatMon = (st.class && st.class.includes("bat-mon")) || st.name.startsWith("Cửa ");
+                        const color = isBatMon ? "#00d2ff" : "#ffd700";
+                        const icon = isBatMon ? "🚪 " : "⭐ ";
+                        starsListHtml += `<div style="color: ${color}; font-size: 0.72rem; margin: 1px 0;">${icon}${st.name}</div>`;
+                    });
+
+                    gridCellsHtml += `
+                        <div style="grid-row: ${rIdx + 1}; grid-column: ${cIdx + 1}; background: ${isMenh ? 'rgba(255,215,0,0.08)' : (isThan ? 'rgba(46,204,113,0.06)' : 'rgba(15,20,42,0.95)')}; border: 1.5px solid ${isMenh ? '#ffd700' : (isThan ? '#2ecc71' : 'rgba(212,175,55,0.3)')}; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; min-height: 140px; box-shadow: ${isMenh ? '0 0 12px rgba(255,215,0,0.2)' : 'none'};">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 4px;">
+                                <span style="font-weight: bold; font-size: 0.82rem; color: ${isMenh ? '#ffd700' : '#ffffff'};">CUNG ${cell.name} <small style="color:#a0aec0; font-size: 0.68rem;">(${cell.el})</small></span>
+                                <span style="font-size: 0.72rem; font-weight: bold; padding: 2px 6px; border-radius: 3px; background: ${isMenh ? '#e74c3c' : (isThan ? '#27ae60' : 'rgba(212,175,55,0.15)')}; color: #ffffff;">${isMenh ? '★ MỆNH CUNG' : (isThan ? '✦ THÂN CUNG' : pName)}</span>
+                            </div>
+                            <div style="flex: 1; overflow-y: auto; max-height: 110px;">
+                                ${starsListHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        // Center 2x2 Cell (Thiên Bàn Nhân Mệnh)
+        const centerHtml = `
+            <div style="grid-row: 2 / span 2; grid-column: 2 / span 2; background: rgba(5,7,17,0.96); border: 2px solid #d4af37; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                <h4 style="color: #ffd700; font-family: 'Be Vietnam Pro', 'Inter', sans-serif; font-size: 1.15rem; margin: 0 0 4px 0; letter-spacing: 0.5px;">Dịch sư Nguyễn Huy Hoàng - zalo 0933116860</h4>
+                <div style="color: #00d2ff; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px;">☯ THÁI ẤT THẦN SỐ — BÀN NHÂN MỆNH THẬP NHỊ CUNG ☯</div>
+                <div style="font-size: 0.8rem; color: #dfe6e9; margin: 2px 0;">• <strong>Đương Số:</strong> ${lp.sex === 'nam' ? 'Nam Mệnh' : 'Nữ Mệnh'} (${lp.isYangYear ? 'Dương' : 'Âm'} ${lp.sex === 'nam' ? 'Nam' : 'Nữ'}) · Đi ${lp.forward ? 'Thuận (+1)' : 'Nghịch (-1)'}</div>
+                <div style="font-size: 0.8rem; color: #dfe6e9; margin: 2px 0;">• <strong>Tứ Trụ:</strong> ${(data.tuTru && data.tuTru.fullString) ? data.tuTru.fullString : '-'}</div>
+                <div style="font-size: 0.8rem; color: #ffd700; margin: 2px 0;">• <strong>Trọng Cung:</strong> Mệnh tại <strong>Cung ${lp.lifeBranchName}</strong> — Thân tại <strong>Cung ${lp.bodyBranchName}</strong></div>
+                <div style="font-size: 0.78rem; color: #a0aec0; margin-top: 4px;">• <strong>Độn Cục:</strong> ${data.donCucName || '-'}</div>
+            </div>
+        `;
+
+        const palacesHtml = `
+            <div style="margin-bottom: 25px; padding: 15px; background: rgba(10, 14, 30, 0.95); border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.4);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+                    <h4 style="color: var(--gold); margin: 0; font-size: 1.05rem;">🏛️ SA BÀN NHÂN MỆNH 12 CUNG (DỊCH SƯ NGUYỄN HUY HOÀNG)</h4>
+                    <span style="font-size: 0.82rem; color: #ffd700; background: rgba(212,175,55,0.15); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.4);">
+                        Zalo: 0933116860
+                    </span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(135px, auto)); gap: 8px;">
+                    ${gridCellsHtml}
+                    ${centerHtml}
+                </div>
+            </div>
+        `;
 
         const vaoDoiHtml = renderHexagramGraphic(
             "👶 QUẺ VÀO ĐỜI LẬP NGHIỆP",
@@ -521,6 +671,7 @@ function renderVanQuaiSection(data) {
         );
 
         ldContent.innerHTML = `
+            ${palacesHtml}
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 ${vaoDoiHtml}
                 ${dungNghiepHtml}
@@ -529,6 +680,7 @@ function renderVanQuaiSection(data) {
             <div style="margin-top: 20px; padding: 15px; background: rgba(15, 20, 42, 0.9); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 0.85rem; color: #e0e6ed; line-height: 1.8;">
                 <h4 style="color: var(--gold); margin-bottom: 8px; font-family: 'Be Vietnam Pro', 'Inter', sans-serif;">📜 THÔNG TIN NẠP GIÁP & THAI NGUYÊN BÀN NHÂN MỆNH</h4>
                 <ul style="list-style: none; padding-left: 0;">
+                    <li><strong>🔹 Mệnh Cung & Thân Cung:</strong> Mệnh Cung tại <strong>Cung ${lp ? lp.lifeBranchName : '-'}</strong>, Thân Cung tại <strong>Cung ${lp ? lp.bodyBranchName : '-'}</strong>.</li>
                     <li><strong>🔹 Tổng số Nạp Âm Nạp Giáp Tứ Trụ:</strong> ${nm.sumTuTru} (+ 55 Đại Diễn = ${nm.sumTuTru + 55}) ➔ Quẻ Vào Đời thứ <strong>${nm.queVaoDoiNum} (${nm.hexVaoDoiName})</strong></li>
                     <li><strong>🔹 Ngày Chịu Khí (Thai Nguyên):</strong> Ngày + Giờ = ${nm.sumNgayGio} ➔ Số Hạn = <strong>${nm.soHan}</strong>. Lùi ${nm.soHan} bước từ Ngày sinh ➔ <strong>Ngày Chịu Khí: ${nm.thaiNguyenCanChi}</strong> (${nm.thaiNguyenChiName} - ${nm.isDuongThai ? 'Dương' : 'Âm'})</li>
                     <li><strong>🔹 Hào Động Quẻ Vào Đời:</strong> ${nm.thaiNguyenRuleText}</li>
