@@ -219,15 +219,17 @@
 
             <!-- Main Chart Display -->
             <section class="chart-container">
-                <div class="chart-actions" style="justify-content: flex-end; padding: 6px 12px;">
-                    <button id="btn-download-png" class="btn-secondary" style="font-size: 0.88rem; padding: 6px 16px;">
+                <div class="chart-actions" style="justify-content: flex-end; padding: 6px 12px; gap: 8px;">
+                    <button type="button" id="btn-print-chart" class="btn-secondary" style="font-size: 0.88rem; padding: 6px 14px;">
+                        🖨️ In Lá Số
+                    </button>
+                    <button type="button" id="btn-download-png" class="btn-primary" style="margin-top: 0; width: auto; font-size: 0.88rem; padding: 6px 16px;">
                         📥 Tải Ảnh HD (PNG)
                     </button>
                 </div>
 
-                <div class="chart-img-wrapper">
-                    <img id="chart-img" alt="Lá Số Bát Tự Tứ Trụ" src="" />
-                </div>
+                <!-- Bảng Lá Số Bát Tự HTML Thuần Chuẩn nguhanh.net -->
+                <div id="battu-html-mount" class="battu-sheet-wrapper"></div>
 
                 <!-- Reference Section (Tra cứu ý nghĩa) -->
                 <div class="ref-section glass-card" style="padding-top: 14px;">
@@ -246,12 +248,13 @@
     </main>
 
     <!-- Scripts -->
-    <script src="js/lunar.js?v=3.0.0"></script>
-    <script src="js/bat_tu_than_sat.js?v=3.0.0"></script>
-    <script src="js/bat_tu_reference.js?v=3.0.0"></script>
-    <script src="js/bat_tu_engine.js?v=3.0.0"></script>
-    <script src="js/bat_tu_png_exporter.js?v=3.0.0"></script>
-    <script src="script.js?v=3.1.0"></script>
+    <script src="js/lunar.js?v=3.2.0"></script>
+    <script src="js/bat_tu_than_sat.js?v=3.2.0"></script>
+    <script src="js/bat_tu_reference.js?v=3.2.0"></script>
+    <script src="js/bat_tu_engine.js?v=3.2.0"></script>
+    <script src="js/bat_tu_png_exporter.js?v=3.2.0"></script>
+    <script src="js/bat_tu_renderer.js?v=3.2.0"></script>
+    <script src="script.js?v=3.2.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('menu-btn');
