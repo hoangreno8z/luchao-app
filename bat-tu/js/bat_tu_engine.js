@@ -187,10 +187,11 @@
         };
 
         // 2. Tra cứu Thần Sát cho 4 Trụ
+        const isMale = (gender === 'nam' || gender === '1' || gender === 1);
         const thanSatEngine = global.BatTuThanSat || (typeof require !== 'undefined' ? require('./bat_tu_than_sat').BatTuThanSat : null);
         let thanSat = { year: [], month: [], day: [], time: [] };
         if (thanSatEngine && typeof thanSatEngine.calculatePillarsThanSat === 'function') {
-            thanSat = thanSatEngine.calculatePillarsThanSat(pillars);
+            thanSat = thanSatEngine.calculatePillarsThanSat(pillars, isMale);
         }
         pillars.year.thanSat = thanSat.year || [];
         pillars.month.thanSat = thanSat.month || [];
@@ -198,7 +199,6 @@
         pillars.time.thanSat = thanSat.time || [];
 
         // 3. Khởi Đại Vận & 10 Cột Đại Vận + 100 năm Lưu Niên
-        const isMale = (gender === 'nam' || gender === '1' || gender === 1);
         const isYangYear = (STEM_ELEMENTS[yearStem]?.yinYang === 1);
         const isForward = (isMale && isYangYear) || (!isMale && !isYangYear);
         const genderLabel = isYangYear ? (isMale ? "Dương Nam" : "Dương Nữ") : (isMale ? "Âm Nam" : "Âm Nữ");
