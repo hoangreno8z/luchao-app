@@ -1,313 +1,293 @@
 /**
- * Trình Xuất Ảnh & Vẽ Lá Số Bát Tự HD Canvas — Dịch Sư Nguyễn Huy Hoàng
- * Chuẩn hóa tối đa không gian, chữ to rõ nét, loại bỏ viền dày & khoảng trống thừa
- * - Hiển thị đầy đủ Phó Tinh, Thần Sát (bỏ hàng Trường Sinh)
- * - Chiều cao Canvas vừa khít 100% nội dung (không có khoảng trắng thừa phía dưới)
- * - Tuổi Lưu Niên và Đại Vận tính chính xác theo năm sinh
+ * Trình Xuất Ảnh & Vẽ Lá Số Bát Tự HD Canvas (2400x3200 px) — Dịch Sư Nguyễn Huy Hoàng
+ * - Cố định 100% kích thước khung hình (2400x3200 px) cho cả 2 chế độ (20 năm và 100 năm)
+ * - Tông màu nền giấy kem ngà ấm áp truyền thống (#faf6ee / #f6f0e2)
+ * - Hệ màu ngũ hành chuẩn High Contrast
+ * - Không có logo thừa hay tiêu đề thừa theo yêu cầu
  */
 
 (function(global) {
+    const STEM_COLORS = {
+        'Giáp': '#15803d', 'Ất': '#15803d',
+        'Bính': '#dc2626', 'Đinh': '#dc2626',
+        'Mậu': '#92400e', 'Kỷ': '#92400e',
+        'Canh': '#475569', 'Tân': '#475569',
+        'Nhâm': '#1d4ed8', 'Quý': '#1d4ed8'
+    };
+
+    const BRANCH_COLORS = {
+        'Dần': '#15803d', 'Mão': '#15803d',
+        'Tị': '#dc2626', 'Ngọ': '#dc2626',
+        'Thìn': '#92400e', 'Tuất': '#92400e', 'Sửu': '#92400e', 'Mùi': '#92400e',
+        'Thân': '#475569', 'Dậu': '#475569',
+        'Hợi': '#1d4ed8', 'Tý': '#1d4ed8'
+    };
+
     function getStemColor(stem) {
-        if (!stem) return '#333333';
-        const map = {
-            'Giáp': '#27ae60', 'Ất': '#27ae60',
-            'Bính': '#c0392b', 'Đinh': '#c0392b',
-            'Mậu': '#8e5a2b', 'Kỷ': '#8e5a2b',
-            'Canh': '#7f8c8d', 'Tân': '#7f8c8d',
-            'Nhâm': '#2980b9', 'Quý': '#2980b9'
-        };
-        return map[stem] || '#333333';
+        if (!stem) return '#0f172a';
+        return STEM_COLORS[stem] || '#0f172a';
     }
 
     function getBranchColor(branch) {
-        if (!branch) return '#333333';
-        const map = {
-            'Dần': '#27ae60', 'Mão': '#27ae60',
-            'Tị': '#c0392b', 'Ngọ': '#c0392b',
-            'Thìn': '#8e5a2b', 'Tuất': '#8e5a2b', 'Sửu': '#8e5a2b', 'Mùi': '#8e5a2b',
-            'Thân': '#7f8c8d', 'Dậu': '#7f8c8d',
-            'Hợi': '#2980b9', 'Tý': '#2980b9'
-        };
-        return map[branch] || '#333333';
+        if (!branch) return '#0f172a';
+        return BRANCH_COLORS[branch] || '#0f172a';
     }
 
     /**
-     * Vẽ Lá Số Bát Tự lên Canvas 2D
-     * is100Years: false (10 năm gần nhất) | true (100 năm toàn cảnh)
+     * Render Canvas Bát Tự HD Cố Định 2400 x 3200 px
      */
-    function drawBatTuChart(data, is100Years = false) {
-        if (!data) return "";
+    function renderToCanvas(data, is100Years = false) {
+        if (!data) return null;
 
+        const width = 2400;
+        const height = 3200;
         const canvas = document.createElement("canvas");
-        
-        // Chiều rộng & Chiều cao tính toán chuẩn xác không có khoảng trắng thừa
-        const W = 1100;
-        const H = is100Years ? 1190 : 780;
-        canvas.width = W * 2;
-        canvas.height = H * 2;
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext("2d");
-        if (!ctx) return "";
+        if (!ctx) return null;
 
-        ctx.scale(2, 2);
+        // 1. Nền kem ngà ấm áp truyền thống
+        ctx.fillStyle = "#faf6ee";
+        ctx.fillRect(0, 0, width, height);
 
-        // 1. Nền & Viền mỏng sát mép
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillRect(0, 0, W, H);
+        const margin = 24;
+        const gridW = width - margin * 2;
+        const gridH = height - margin * 2;
 
-        ctx.strokeStyle = "#1A5276";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(6, 6, W - 12, H - 12);
+        // Viền ngoài sang trọng
+        ctx.strokeStyle = "#1e293b";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(margin, margin, gridW, gridH);
 
-        ctx.strokeStyle = "#2980B9";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(9, 9, W - 18, H - 18);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(margin + 6, margin + 6, gridW - 12, gridH - 12);
 
         // ==========================================
-        // 2. HEADER BANNER
+        // 2. HEADER: THÔNG TIN DỊCH SƯ & ĐƯƠNG SỐ
         // ==========================================
-        const headY = 16;
-        
-        // Left Branding
-        ctx.fillStyle = "#0A3871";
-        ctx.font = "900 21px 'Be Vietnam Pro', sans-serif";
+        const headY = 46;
+
+        // Bên Trái: Thương hiệu Dịch Sư
+        ctx.fillStyle = "#b91c1c";
+        ctx.font = "700 44px 'Inter', 'Be Vietnam Pro', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("☯ DỊCH SƯ NGUYỄN HUY HOÀNG", 18, headY + 26);
+        ctx.fillText("DỊCH SƯ NGUYỄN HUY HOÀNG", margin + 30, headY + 45);
 
-        ctx.fillStyle = "#8B0000";
-        ctx.font = "bold 13.5px 'Inter', sans-serif";
-        ctx.fillText("Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ", 18, headY + 48);
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "600 30px 'Inter', sans-serif";
+        ctx.fillText("Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ", margin + 30, headY + 95);
 
-        ctx.fillStyle = "#555555";
-        ctx.font = "12px 'Inter', sans-serif";
-        ctx.fillText("Chuyên gia Bát Tự — Tử Bình — Cải Vận Bổ Khuyết", 18, headY + 68);
+        ctx.fillStyle = "#64748b";
+        ctx.font = "italic 400 24px 'Inter', sans-serif";
+        ctx.fillText("Chuyên gia Bát Tự — Tử Bình — Cải Vận Bổ Khuyết", margin + 30, headY + 140);
 
-        // Center Title
-        ctx.fillStyle = "#0A3871";
-        ctx.font = "900 24px 'Be Vietnam Pro', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("TỨ TRỤ MỆNH BÀN", 510, headY + 30);
+        // Bên Phải: Thông Tin Đương Số
+        const metaX = margin + 1380;
+        const valX = metaX + 220;
+        let mY = headY + 25;
+        const mStep = 44;
 
-        ctx.fillStyle = "#2980B9";
-        ctx.font = "bold 15px 'Be Vietnam Pro', sans-serif";
-        ctx.fillText("LÁ SỐ BÁT TỰ", 510, headY + 58);
-
-        // Right Metadata
-        const metaX = 720;
-        ctx.textAlign = "left";
-        ctx.font = "13px 'Inter', sans-serif";
-
-        ctx.fillStyle = "#555555";
-        ctx.fillText("Họ và tên", metaX, headY + 18);
-        ctx.fillStyle = "#0A3871";
-        ctx.font = "bold 14px 'Inter', sans-serif";
-        ctx.fillText(`: ${data.name || 'VÔ DANH KHÁCH'}`, metaX + 85, headY + 18);
-
-        ctx.fillStyle = "#555555";
-        ctx.fillText("Giới tính", metaX, headY + 38);
-        ctx.fillStyle = "#27ae60";
-        ctx.font = "bold 13.5px 'Inter', sans-serif";
-        ctx.fillText(`: ${data.genderLabel || 'Nam Mệnh'}`, metaX + 85, headY + 38);
-
-        ctx.fillStyle = "#555555";
-        ctx.fillText("Dương lịch", metaX, headY + 58);
-        ctx.fillStyle = "#c0392b";
-        ctx.font = "bold 13px 'Inter', sans-serif";
-        ctx.fillText(`: ${data.solarStr || ''}`, metaX + 85, headY + 58);
-
-        ctx.fillStyle = "#555555";
-        ctx.fillText("Âm lịch", metaX, headY + 78);
-        ctx.fillStyle = "#2980b9";
-        ctx.font = "bold 13px 'Inter', sans-serif";
-        ctx.fillText(`: ${data.lunarStr || ''}`, metaX + 85, headY + 78);
-
-        // ==========================================
-        // 3. BẢNG TỨ TRỤ (ĐẦY ĐỦ PHÓ TINH, THẦN SÁT - BỎ TRƯỜNG SINH)
-        // ==========================================
-        const tblX = 14;
-        const tblY = 104;
-        const tblW = W - 28;
-        const colLabelW = 115;
-        const colW = (tblW - colLabelW) / 4;
-
-        const rows = [
-            { label: "DƯƠNG LỊCH", h: 32, key: "solar" },
-            { label: "CHỦ TINH", h: 36, key: "chuTinh" },
-            { label: "BÁT TỰ", h: 68, key: "batTu" },
-            { label: "TÀNG ẨN", h: 36, key: "tangAn" },
-            { label: "PHÓ TINH", h: 36, key: "phoTinh" },
-            { label: "THẦN SÁT", h: 54, key: "thanSat" },
-            { label: "NẠP ÂM", h: 34, key: "napAm" }
+        const metaRows = [
+            { label: "Họ và tên:", val: data.name || "VÔ DANH KHÁCH", color: "#1d4ed8" },
+            { label: "Giới tính:", val: data.genderLabel || (data.gender === "nam" ? "Nam Mệnh" : "Nữ Mệnh"), color: "#0f172a" },
+            { label: "Dương lịch:", val: data.solarStr || "", color: "#b91c1c" },
+            { label: "Âm lịch:", val: data.lunarStr || "", color: "#15803d" },
+            { label: "Nạp âm:", val: data.napAm || "Đại Lâm Mộc", color: "#92400e" }
         ];
 
-        let curY = tblY;
+        metaRows.forEach(row => {
+            ctx.font = "500 28px 'Inter', sans-serif";
+            ctx.fillStyle = "#475569";
+            ctx.textAlign = "left";
+            ctx.fillText(row.label, metaX, mY);
 
-        // Header Cột Trụ
-        ctx.fillStyle = "#0A3871";
-        ctx.fillRect(tblX, curY, colLabelW, 36);
-        ctx.strokeStyle = "#2980B9";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(tblX, curY, colLabelW, 36);
+            ctx.font = "700 29px 'Inter', sans-serif";
+            ctx.fillStyle = row.color;
+            ctx.fillText(row.val, valX, mY);
 
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "bold 14px 'Be Vietnam Pro', sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("TRỤ", tblX + colLabelW / 2, curY + 23);
-
-        const pillarTitles = ["NĂM (NIÊN)", "THÁNG (NGUYỆT)", "NGÀY (NHẬT)", "GIỜ (THỜI)"];
-        pillarTitles.forEach((t, i) => {
-            const cx = tblX + colLabelW + i * colW;
-            ctx.fillStyle = "#0A3871";
-            ctx.fillRect(cx, curY, colW, 36);
-            ctx.strokeStyle = "#2980B9";
-            ctx.strokeRect(cx, curY, colW, 36);
-
-            ctx.fillStyle = "#FFFFFF";
-            ctx.font = "bold 14px 'Be Vietnam Pro', sans-serif";
-            ctx.fillText(t, cx + colW / 2, curY + 23);
+            mY += mStep;
         });
 
-        curY += 36;
+        // Đường kẻ ngăn cách Header
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(margin + 20, 275);
+        ctx.lineTo(margin + gridW - 20, 275);
+        ctx.stroke();
 
-        // Vẽ từng hàng dữ liệu Tứ Trụ
-        const pillars = [data.pillars.year, data.pillars.month, data.pillars.day, data.pillars.time];
+        // ==========================================
+        // 3. BẢNG TỨ TRỤ (NĂM, THÁNG, NGÀY, GIỜ)
+        // ==========================================
+        const tblX = margin + 20;
+        const tblY = 295;
+        const tblW = gridW - 40;
+        const colLabelW = 280;
+        const colW = (tblW - colLabelW) / 4;
 
-        rows.forEach(row => {
-            ctx.fillStyle = "#F4F9FD";
-            ctx.fillRect(tblX, curY, colLabelW, row.h);
-            ctx.strokeStyle = "#2980B9";
-            ctx.strokeRect(tblX, curY, colLabelW, row.h);
+        const pillars = [
+            data.yearPillar || { name: 'Năm', gan: 'Kỷ', zhi: 'Tỵ', solar: '1990', mainGod: 'Thực', hidden: ['Bính', 'Canh', 'Mậu'], hiddenGods: ['Kiếp', 'Tài', 'Thương'], thanSat: ['Kình Dương', 'Không Vong'] },
+            data.monthPillar || { name: 'Tháng', gan: 'Đinh', zhi: 'Sửu', solar: '02', mainGod: 'Tỷ', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái'] },
+            data.dayPillar || { name: 'Ngày', gan: 'Đinh', zhi: 'Dậu', solar: '01', mainGod: 'NHẬT CHỦ', hidden: ['Tân'], hiddenGods: ['T.Tài'], thanSat: ['Văn Xương', 'Thiên Ất', 'Tướng Tinh'] },
+            data.hourPillar || { name: 'Giờ', gan: 'Tân', zhi: 'Sửu', solar: '01:00', mainGod: 'T.Tài', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái', 'Thiên Đức'] }
+        ];
 
-            ctx.fillStyle = "#0A3871";
-            ctx.font = "bold 12.5px 'Be Vietnam Pro', sans-serif";
+        // 3.1. Hàng Tiêu Đề Cột
+        ctx.fillStyle = "#f6f0e2";
+        ctx.fillRect(tblX, tblY, tblW, 60);
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(tblX, tblY, tblW, 60);
+
+        ctx.font = "700 28px 'Inter', sans-serif";
+        ctx.fillStyle = "#0f172a";
+        ctx.textAlign = "center";
+        ctx.fillText("TRỤ NĂM", tblX + colLabelW + colW * 0.5, tblY + 40);
+        ctx.fillText("TRỤ THÁNG", tblX + colLabelW + colW * 1.5, tblY + 40);
+        ctx.fillText("TRỤ NGÀY (MỆNH)", tblX + colLabelW + colW * 2.5, tblY + 40);
+        ctx.fillText("TRỤ GIỜ", tblX + colLabelW + colW * 3.5, tblY + 40);
+
+        let curY = tblY + 60;
+
+        const rows = [
+            { label: "DƯƠNG LỊCH", h: 65, key: "solar" },
+            { label: "CHỦ TINH", h: 70, key: "mainGod" },
+            { label: "BÁT TỰ", h: 145, key: "batTu" },
+            { label: "TÀNG ẨN", h: 70, key: "hidden" },
+            { label: "PHÓ TINH", h: 70, key: "hiddenGods" },
+            { label: "THẦN SÁT", h: 130, key: "thanSat" }
+        ];
+
+        rows.forEach(r => {
+            // Label Cell
+            ctx.fillStyle = "#f6f0e2";
+            ctx.fillRect(tblX, curY, colLabelW, r.h);
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(tblX, curY, colLabelW, r.h);
+
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "700 26px 'Inter', sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(row.label, tblX + colLabelW / 2, curY + row.h / 2 + 5);
+            ctx.fillText(r.label, tblX + colLabelW / 2, curY + r.h / 2 + 9);
 
-            pillars.forEach((item, colIdx) => {
-                const cx = tblX + colLabelW + colIdx * colW;
+            // 4 Cột Trụ
+            pillars.forEach((p, cIdx) => {
+                const cX = tblX + colLabelW + cIdx * colW;
+                ctx.fillStyle = cIdx % 2 === 0 ? "#ffffff" : "#fdfaf4";
+                ctx.fillRect(cX, curY, colW, r.h);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.strokeRect(cX, curY, colW, r.h);
 
-                ctx.fillStyle = (colIdx % 2 === 0) ? "#FFFFFF" : "#FAFCFF";
-                ctx.fillRect(cx, curY, colW, row.h);
-                ctx.strokeStyle = "#2980B9";
-                ctx.strokeRect(cx, curY, colW, row.h);
+                const centerX = cX + colW / 2;
 
-                ctx.textAlign = "center";
+                if (r.key === "solar") {
+                    ctx.fillStyle = "#0f172a";
+                    ctx.font = "600 30px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.solar || "", centerX, curY + 42);
+                } else if (r.key === "mainGod") {
+                    const isMaster = (cIdx === 2);
+                    ctx.fillStyle = isMaster ? "#b91c1c" : "#0f172a";
+                    ctx.font = isMaster ? "700 32px 'Inter', sans-serif" : "600 28px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.mainGod || (isMaster ? "NHẬT CHỦ" : ""), centerX, curY + 45);
+                } else if (r.key === "batTu") {
+                    // Thiên Can
+                    ctx.fillStyle = getStemColor(p.gan);
+                    ctx.font = "700 58px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.gan || "", centerX, curY + 60);
 
-                if (row.key === "solar") {
-                    ctx.fillStyle = "#111827";
-                    ctx.font = "bold 14px 'Inter', sans-serif";
-                    let val = item.solarYear || item.solarMonth || item.solarDay || item.solarTime || item.solarValue || '-';
-                    ctx.fillText(String(val), cx + colW / 2, curY + row.h / 2 + 5);
-
-                } else if (row.key === "chuTinh") {
-                    if (colIdx === 2) {
-                        ctx.fillStyle = "#c0392b";
-                        ctx.font = "900 14px 'Inter', sans-serif";
-                        ctx.fillText("NHẬT CHỦ", cx + colW / 2, curY + row.h / 2 + 5);
-                    } else {
-                        ctx.fillStyle = "#1A5276";
-                        ctx.font = "bold 14px 'Inter', sans-serif";
-                        ctx.fillText(item.chuTinh || item.shiShen || "-", cx + colW / 2, curY + row.h / 2 + 5);
-                    }
-
-                } else if (row.key === "batTu") {
-                    ctx.font = "900 27px 'Be Vietnam Pro', sans-serif";
-                    ctx.fillStyle = getStemColor(item.stem);
-                    ctx.fillText(item.stem, cx + colW / 2, curY + 30);
-
-                    ctx.fillStyle = getBranchColor(item.branch);
-                    ctx.fillText(item.branch, cx + colW / 2, curY + 58);
-
-                } else if (row.key === "tangAn") {
-                    ctx.font = "bold 13.5px 'Inter', sans-serif";
-                    const hidden = item.hiddenStems || [];
-                    if (hidden.length > 0) {
-                        const step = colW / (hidden.length + 1);
-                        hidden.forEach((hs, hIdx) => {
-                            ctx.fillStyle = getStemColor(hs);
-                            ctx.fillText(hs, cx + (hIdx + 1) * step, curY + row.h / 2 + 5);
-                        });
-                    } else {
-                        ctx.fillStyle = "#999999";
-                        ctx.fillText("-", cx + colW / 2, curY + row.h / 2 + 5);
-                    }
-
-                } else if (row.key === "phoTinh") {
-                    ctx.font = "bold 12px 'Inter', sans-serif";
-                    ctx.fillStyle = "#475569";
-                    const phoTinhList = item.phoTinh || item.hiddenShiShen || [];
-                    if (phoTinhList.length > 0) {
-                        const step = colW / (phoTinhList.length + 1);
-                        phoTinhList.forEach((hss, hIdx) => {
-                            ctx.fillText(hss, cx + (hIdx + 1) * step, curY + row.h / 2 + 5);
-                        });
-                    } else {
-                        ctx.fillStyle = "#94a3b8";
-                        ctx.fillText("-", cx + colW / 2, curY + row.h / 2 + 5);
-                    }
-
-                } else if (row.key === "thanSat") {
-                    const stars = item.thanSat || item.stars || [];
-                    if (stars.length > 0) {
-                        ctx.fillStyle = "#1e40af";
-                        ctx.font = "bold 12px 'Inter', sans-serif";
-                        stars.slice(0, 3).forEach((st, sIdx) => {
-                            ctx.fillText(st, cx + colW / 2, curY + 16 + sIdx * 17);
-                        });
-                    } else {
-                        ctx.fillStyle = "#94a3b8";
-                        ctx.fillText("-", cx + colW / 2, curY + row.h / 2 + 5);
-                    }
-
-                } else if (row.key === "napAm") {
-                    ctx.fillStyle = "#27ae60";
-                    ctx.font = "bold 13.5px 'Inter', sans-serif";
-                    ctx.fillText(item.nayin || '-', cx + colW / 2, curY + 23);
+                    // Địa Chi
+                    ctx.fillStyle = getBranchColor(p.zhi);
+                    ctx.font = "700 58px 'Inter', sans-serif";
+                    ctx.fillText(p.zhi || "", centerX, curY + 125);
+                } else if (r.key === "hidden") {
+                    const hStems = p.hidden || [];
+                    const count = hStems.length || 1;
+                    const subW = colW / count;
+                    hStems.forEach((st, sIdx) => {
+                        ctx.fillStyle = getStemColor(st);
+                        ctx.font = "600 28px 'Inter', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText(st, cX + sIdx * subW + subW / 2, curY + 45);
+                    });
+                } else if (r.key === "hiddenGods") {
+                    const hGods = p.hiddenGods || [];
+                    const count = hGods.length || 1;
+                    const subW = colW / count;
+                    hGods.forEach((hg, sIdx) => {
+                        ctx.fillStyle = "#475569";
+                        ctx.font = "500 26px 'Inter', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText(hg, cX + sIdx * subW + subW / 2, curY + 45);
+                    });
+                } else if (r.key === "thanSat") {
+                    const stars = p.thanSat || p.stars || [];
+                    ctx.fillStyle = "#1e40af";
+                    ctx.font = "500 26px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    let tsY = curY + 36;
+                    stars.slice(0, 4).forEach(st => {
+                        ctx.fillText(st, centerX, tsY);
+                        tsY += 34;
+                    });
                 }
             });
 
-            curY += row.h;
+            curY += r.h;
         });
 
         // ==========================================
-        // 4. PHẦN ĐẠI VẬN & LƯU NIÊN
+        // 4. KHỐI THÔNG TIN ĐẠI VẬN & LƯU NIÊN
         // ==========================================
-        curY += 10;
-        
-        ctx.fillStyle = "#0A3871";
-        ctx.font = "900 16px 'Be Vietnam Pro', sans-serif";
+        curY += 20;
+
+        // Header info bar
+        ctx.fillStyle = "#f6f0e2";
+        ctx.fillRect(tblX, curY, tblW, 55);
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(tblX, curY, tblW, 55);
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "700 26px 'Inter', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("ĐẠI VẬN & LƯU NIÊN", tblX + 4, curY + 15);
+        ctx.fillText("Đại vận lưu niên:", tblX + 20, curY + 36);
 
-        ctx.font = "12px 'Inter', sans-serif";
-        ctx.fillStyle = "#555555";
-        ctx.fillText(data.yun?.summaryText || "Khởi Đại Vận theo Tiết Khí", tblX + 4, curY + 32);
+        ctx.fillStyle = "#475569";
+        ctx.font = "500 24px 'Inter', sans-serif";
+        const startAgeStr = data.yun?.startAgeFormatted || "8 tuổi 9 tháng";
+        const solarTermStr = data.solarTermInfo || "Tiểu hàn bắt đầu 05-01-1990 và kết thúc 04-02-1990";
+        ctx.fillText(`Số tính đại vận = ${data.yun?.startAgeDecimal || '26.14'}; Nhập đại vận lúc ${startAgeStr}. ${solarTermStr}`, tblX + 240, curY + 36);
 
-        curY += 40;
+        curY += 65;
 
         const daYunList = data.daYun || [];
-        const birthYear = parseInt(data.solarYear || data.pillars?.year?.solarYear || 1988, 10);
-        const currentAge = Math.max(1, 2026 - birthYear + 1);
+        const birthYear = data.birthYear || 1990;
+        const currentYear = 2026;
+        const currentAge = currentYear - birthYear + 1;
 
         if (!is100Years) {
             // ========================================================
-            // CHẾ ĐỘ 10 NĂM TRONG 1 ĐẠI VẬN GẦN NHẤT (VỪA KHÍT MÀN HÌNH)
+            // CHẾ ĐỘ 1: BẢNG 10 ĐẠI VẬN + 2 HÀNG LƯU NIÊN (20 NĂM)
             // ========================================================
             const col10W = (tblW - colLabelW) / 10;
-            const dyBoxH = 88;
+            const dyH = 220;
 
-            // Nhãn 10 Đại Vận
-            ctx.fillStyle = "#F4F9FD";
-            ctx.fillRect(tblX, curY, colLabelW, dyBoxH);
-            ctx.strokeStyle = "#2980B9";
-            ctx.strokeRect(tblX, curY, colLabelW, dyBoxH);
+            // Header Cột Label 10 Đại Vận
+            ctx.fillStyle = "#f6f0e2";
+            ctx.fillRect(tblX, curY, colLabelW, dyH);
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.strokeRect(tblX, curY, colLabelW, dyH);
 
-            ctx.fillStyle = "#0A3871";
-            ctx.font = "900 13.5px 'Be Vietnam Pro', sans-serif";
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "700 28px 'Inter', sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText("10 ĐẠI VẬN", tblX + colLabelW / 2, curY + 38);
-            ctx.font = "bold 12px 'Inter', sans-serif";
-            ctx.fillStyle = "#c0392b";
-            ctx.fillText("(TUỔI & NĂM)", tblX + colLabelW / 2, curY + 58);
+            ctx.fillText("ĐẠI VẬN", tblX + colLabelW / 2, curY + dyH / 2 + 10);
 
             // 10 Cột Đại Vận
             daYunList.slice(0, 10).forEach((dy, idx) => {
@@ -316,139 +296,144 @@
                 const endAge = startAge + 9;
                 const isActive = (currentAge >= startAge && currentAge <= endAge);
 
-                ctx.fillStyle = isActive ? "#FFF4DE" : (idx % 2 === 0 ? "#FFFFFF" : "#F9FBFE");
-                ctx.fillRect(dyX, curY, col10W, dyBoxH);
-                ctx.strokeStyle = isActive ? "#D4AF37" : "#2980B9";
+                ctx.fillStyle = isActive ? "#fffbeb" : (idx % 2 === 0 ? "#ffffff" : "#fdfaf4");
+                ctx.fillRect(dyX, curY, col10W, dyH);
+                ctx.strokeStyle = isActive ? "#f59e0b" : "#cbd5e1";
                 ctx.lineWidth = isActive ? 2 : 1;
-                ctx.strokeRect(dyX, curY, col10W, dyBoxH);
+                ctx.strokeRect(dyX, curY, col10W, dyH);
 
-                // Can Chi Đại Vận
-                ctx.fillStyle = dy.stemColor || "#27ae60";
-                ctx.font = "900 17px 'Be Vietnam Pro', sans-serif";
+                const cX = dyX + col10W / 2;
+
+                // Can Đại Vận
+                ctx.fillStyle = getStemColor(dy.gan);
+                ctx.font = "700 36px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(dy.ganZhi, dyX + col10W / 2, curY + 26);
+                ctx.fillText(dy.gan || "", cX, curY + 48);
 
-                // Thập thần Đại Vận
-                ctx.fillStyle = "#1A5276";
-                ctx.font = "bold 12.5px 'Inter', sans-serif";
-                ctx.fillText(dy.shiShen, dyX + col10W / 2, curY + 46);
+                // Chi Đại Vận
+                ctx.fillStyle = getBranchColor(dy.zhi);
+                ctx.font = "700 36px 'Inter', sans-serif";
+                ctx.fillText(dy.zhi || "", cX, curY + 95);
+
+                // Thập thần
+                ctx.fillStyle = "#475569";
+                ctx.font = "600 24px 'Inter', sans-serif";
+                ctx.fillText(dy.shiShen || "", cX, curY + 135);
 
                 // Tuổi
-                ctx.fillStyle = "#c0392b";
-                ctx.font = "900 12.5px 'Inter', sans-serif";
-                ctx.fillText(`${startAge}-${endAge}t`, dyX + col10W / 2, curY + 65);
+                ctx.fillStyle = "#1d4ed8";
+                ctx.font = "700 24px 'Inter', sans-serif";
+                ctx.fillText(`${startAge}-${endAge}t`, cX, curY + 172);
 
                 // Năm bắt đầu
-                ctx.fillStyle = "#555555";
-                ctx.font = "500 11px 'Inter', sans-serif";
-                ctx.fillText(String(dy.startYear), dyX + col10W / 2, curY + 80);
+                ctx.fillStyle = "#0f172a";
+                ctx.font = "600 24px 'Inter', sans-serif";
+                ctx.fillText(String(dy.startYear), cX, curY + 204);
             });
 
-            curY += dyBoxH + 8;
+            curY += dyH + 20;
 
-            // Hàng 10 Năm Lưu Niên (Đại Vận Hiện Tại)
-            const activeDaYun = daYunList.find(d => {
+            // 2 HÀNG LƯU NIÊN (MỖI HÀNG 10 NĂM)
+            const activeIdx = daYunList.findIndex(d => {
                 const sAge = Math.max(1, parseInt(d.startYear, 10) - birthYear + 1);
                 return currentAge >= sAge && currentAge <= sAge + 9;
-            }) || daYunList[0];
+            });
 
-            if (activeDaYun && activeDaYun.liuNian) {
-                const lnBoxH = 82;
+            const dy1 = daYunList[activeIdx >= 0 ? activeIdx : 2] || daYunList[0];
+            const dy2 = daYunList[(activeIdx >= 0 ? activeIdx : 2) + 1] || daYunList[1];
 
-                ctx.fillStyle = "#F4F9FD";
-                ctx.fillRect(tblX, curY, colLabelW, lnBoxH);
-                ctx.strokeStyle = "#2980B9";
-                ctx.strokeRect(tblX, curY, colLabelW, lnBoxH);
+            const lnGroups = [
+                { dy: dy1, label: `LƯU NIÊN\n(${dy1?.ganZhi || ''})` },
+                { dy: dy2, label: `LƯU NIÊN\n(${dy2?.ganZhi || ''})` }
+            ];
 
-                ctx.fillStyle = "#0A3871";
-                ctx.font = "900 13px 'Be Vietnam Pro', sans-serif";
+            const lnH = 210;
+
+            lnGroups.forEach(group => {
+                ctx.fillStyle = "#f6f0e2";
+                ctx.fillRect(tblX, curY, colLabelW, lnH);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.strokeRect(tblX, curY, colLabelW, lnH);
+
+                ctx.fillStyle = "#0f172a";
+                ctx.font = "700 26px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText("LƯU NIÊN", tblX + colLabelW / 2, curY + 36);
-                ctx.font = "bold 11px 'Inter', sans-serif";
-                ctx.fillStyle = "#27ae60";
-                ctx.fillText(`(${activeDaYun.ganZhi})`, tblX + colLabelW / 2, curY + 56);
+                ctx.fillText("LƯU NIÊN", tblX + colLabelW / 2, curY + lnH / 2 - 10);
+                ctx.font = "600 22px 'Inter', sans-serif";
+                ctx.fillStyle = "#15803d";
+                ctx.fillText(`(${group.dy?.ganZhi || ''})`, tblX + colLabelW / 2, curY + lnH / 2 + 20);
 
-                activeDaYun.liuNian.slice(0, 10).forEach((ln, idx) => {
-                    const lnX = tblX + colLabelW + idx * col10W;
-                    const lnYear = parseInt(ln.year, 10);
-                    const isCurYear = (lnYear === 2026);
+                const lnList = group.dy?.liuNian || [];
+                for (let i = 0; i < 10; i++) {
+                    const lnX = tblX + colLabelW + i * col10W;
+                    const ln = lnList[i] || {};
+                    const lnYear = parseInt(ln.year, 10) || (birthYear + i);
+                    const isCur = (lnYear === currentYear);
 
-                    ctx.fillStyle = isCurYear ? "#FFF9D2" : (idx % 2 === 0 ? "#FFFFFF" : "#F9FBFE");
-                    ctx.fillRect(lnX, curY, col10W, lnBoxH);
-                    ctx.strokeStyle = isCurYear ? "#D4AF37" : "#2980B9";
-                    ctx.lineWidth = isCurYear ? 2 : 1;
-                    ctx.strokeRect(lnX, curY, col10W, lnBoxH);
+                    ctx.fillStyle = isCur ? "#fffbeb" : (i % 2 === 0 ? "#ffffff" : "#fdfaf4");
+                    ctx.fillRect(lnX, curY, col10W, lnH);
+                    ctx.strokeStyle = isCur ? "#f59e0b" : "#cbd5e1";
+                    ctx.lineWidth = isCur ? 2 : 1;
+                    ctx.strokeRect(lnX, curY, col10W, lnH);
 
-                    // Can Chi Năm
-                    ctx.fillStyle = getStemColor(ln.ganZhi.split(' ')[0]);
-                    ctx.font = "bold 14px 'Be Vietnam Pro', sans-serif";
+                    const cX = lnX + col10W / 2;
+
+                    // Can Chi
+                    const parts = (ln.ganZhi || '').split(' ');
+                    ctx.fillStyle = getStemColor(parts[0]);
+                    ctx.font = "700 30px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(ln.ganZhi, lnX + col10W / 2, curY + 24);
+                    ctx.fillText(parts[0] || "", cX, curY + 44);
+
+                    ctx.fillStyle = getBranchColor(parts[1]);
+                    ctx.fillText(parts[1] || "", cX, curY + 84);
 
                     // Năm DL
-                    ctx.fillStyle = isCurYear ? "#b91c1c" : "#111827";
-                    ctx.font = "bold 12.5px 'Inter', sans-serif";
-                    ctx.fillText(String(lnYear), lnX + col10W / 2, curY + 44);
+                    ctx.fillStyle = isCur ? "#b91c1c" : "#0f172a";
+                    ctx.font = "700 26px 'Inter', sans-serif";
+                    ctx.fillText(String(lnYear), cX, curY + 124);
 
                     // Tuổi
                     const ageNum = Math.max(1, lnYear - birthYear + 1);
-                    ctx.fillStyle = "#c0392b";
-                    ctx.font = "900 11.5px 'Inter', sans-serif";
-                    ctx.fillText(`${ageNum}t`, lnX + col10W / 2, curY + 62);
+                    ctx.fillStyle = "#1d4ed8";
+                    ctx.font = "600 24px 'Inter', sans-serif";
+                    ctx.fillText(`${ageNum}t`, cX, curY + 158);
 
                     // Thập thần
-                    ctx.fillStyle = "#555555";
-                    ctx.font = "500 11px 'Inter', sans-serif";
-                    ctx.fillText(ln.shiShen, lnX + col10W / 2, curY + 76);
-                });
-
-                curY += lnBoxH + 8;
-            }
-
-            // Bảng Thần Sát Nguyên Cục
-            const tsH = 70;
-            ctx.fillStyle = "#F4F9FD";
-            ctx.fillRect(tblX, curY, colLabelW, tsH);
-            ctx.strokeStyle = "#2980B9";
-            ctx.strokeRect(tblX, curY, colLabelW, tsH);
-
-            ctx.fillStyle = "#0A3871";
-            ctx.font = "900 12.5px 'Be Vietnam Pro', sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("THẦN SÁT", tblX + colLabelW / 2, curY + 30);
-            ctx.fillText("NGUYÊN CỤC", tblX + colLabelW / 2, curY + 48);
-
-            const tsColW = (tblW - colLabelW) / 4;
-            const tsHeaders = ["NIÊN THẦN", "NGUYỆT THẦN", "NHẬT THẦN", "THỜI THẦN"];
-            pillars.forEach((p, idx) => {
-                const tsX = tblX + colLabelW + idx * tsColW;
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillRect(tsX, curY, tsColW, tsH);
-                ctx.strokeStyle = "#2980B9";
-                ctx.strokeRect(tsX, curY, tsColW, tsH);
-
-                ctx.fillStyle = "#0A3871";
-                ctx.font = "bold 12px 'Inter', sans-serif";
-                ctx.textAlign = "center";
-                ctx.fillText(tsHeaders[idx], tsX + tsColW / 2, curY + 20);
-
-                ctx.fillStyle = "#1e40af";
-                ctx.font = "bold 12px 'Inter', sans-serif";
-                const stars = p.thanSat || p.stars || [];
-                if (stars.length > 0) {
-                    ctx.fillText(stars.slice(0, 2).join(' • '), tsX + tsColW / 2, curY + 46);
-                } else {
-                    ctx.fillStyle = "#94a3b8";
-                    ctx.fillText("-", tsX + tsColW / 2, curY + 46);
+                    ctx.fillStyle = "#475569";
+                    ctx.font = "500 22px 'Inter', sans-serif";
+                    ctx.fillText(ln.shiShen || "", cX, curY + 190);
                 }
+
+                curY += lnH + 16;
             });
+
+            // Nhận định Cải Vận Bổ Khuyết / Dụng Thần
+            const remH = 3000 - curY;
+            if (remH > 100) {
+                ctx.fillStyle = "#f6f0e2";
+                ctx.fillRect(tblX, curY, tblW, remH);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.strokeRect(tblX, curY, tblW, remH);
+
+                ctx.fillStyle = "#b91c1c";
+                ctx.font = "700 30px 'Inter', sans-serif";
+                ctx.textAlign = "left";
+                ctx.fillText("PHƯƠNG PHÁP CẢI VẬN BỔ KHUYẾT & DỤNG THẦN", tblX + 30, curY + 50);
+
+                ctx.fillStyle = "#0f172a";
+                ctx.font = "500 26px 'Inter', sans-serif";
+                ctx.fillText(`• Dụng Thần: ${data.analysis?.dungThan || 'Hỏa'}   • Hỷ Thần: ${data.analysis?.hyThan || 'Mộc'}   • Kỵ Thần: ${data.analysis?.kyThan || 'Thủy'}`, tblX + 30, curY + 100);
+                ctx.fillText(`• Thân Vượng/Nhược: ${data.analysis?.thanVuongNhuoc || 'Thân Nhược'}   • Cách Cục: ${data.analysis?.cachCuc || 'Chính Quan Cách'}`, tblX + 30, curY + 150);
+                ctx.fillText(`• Lời khuyên: Bổ sung hành Dụng Thần qua phương hướng, màu sắc y phục, nghề nghiệp và lối sống hàng ngày.`, tblX + 30, curY + 200);
+            }
 
         } else {
             // ========================================================
-            // CHẾ ĐỘ 100 NĂM TRONG 10 ĐẠI VẬN (2 HÀNG x 5 CỘT)
+            // CHẾ ĐỘ 2: 100 NĂM TOÀN CẢNH TRONG CÙNG KHUNG HÌNH (2 HÀNG x 5 CỘT)
             // ========================================================
             const dyColW = (tblW - colLabelW) / 5;
-            const dyRowH = 330;
+            const dyRowH = 820;
 
             const row1 = daYunList.slice(0, 5);
             const row2 = daYunList.slice(5, 10);
@@ -456,17 +441,21 @@
             [row1, row2].forEach((rowGroup, gIdx) => {
                 if (rowGroup.length === 0) return;
 
-                const gY = curY + gIdx * (dyRowH + 6);
+                const gY = curY + gIdx * (dyRowH + 16);
 
-                ctx.fillStyle = "#F4F9FD";
+                // Label Cột Bên Trái
+                ctx.fillStyle = "#f6f0e2";
                 ctx.fillRect(tblX, gY, colLabelW, dyRowH);
-                ctx.strokeStyle = "#2980B9";
+                ctx.strokeStyle = "#cbd5e1";
                 ctx.strokeRect(tblX, gY, colLabelW, dyRowH);
 
-                ctx.fillStyle = "#0A3871";
-                ctx.font = "900 14px 'Be Vietnam Pro', sans-serif";
+                ctx.fillStyle = "#0f172a";
+                ctx.font = "700 28px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(gIdx === 0 ? "ĐẠI VẬN (1 - 5)" : "ĐẠI VẬN (6 - 10)", tblX + colLabelW / 2, gY + dyRowH / 2);
+                ctx.fillText(gIdx === 0 ? "ĐẠI VẬN" : "ĐẠI VẬN", tblX + colLabelW / 2, gY + dyRowH / 2 - 15);
+                ctx.fillStyle = "#1d4ed8";
+                ctx.font = "700 24px 'Inter', sans-serif";
+                ctx.fillText(gIdx === 0 ? "(VẬN 1 - 5)" : "(VẬN 6 - 10)", tblX + colLabelW / 2, gY + dyRowH / 2 + 20);
 
                 rowGroup.forEach((dy, cIdx) => {
                     const dyX = tblX + colLabelW + cIdx * dyColW;
@@ -474,67 +463,137 @@
                     const startAge = Math.max(1, startYear - birthYear + 1);
                     const endAge = startAge + 9;
 
-                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillStyle = "#ffffff";
                     ctx.fillRect(dyX, gY, dyColW, dyRowH);
-                    ctx.strokeStyle = "#2980B9";
+                    ctx.strokeStyle = "#cbd5e1";
                     ctx.strokeRect(dyX, gY, dyColW, dyRowH);
 
-                    // Header of DaYun
-                    ctx.fillStyle = "#FFF9ED";
-                    ctx.fillRect(dyX, gY, dyColW, 46);
-                    ctx.strokeStyle = "#2980B9";
-                    ctx.strokeRect(dyX, gY, dyColW, 46);
+                    // Header Đại Vận Box
+                    ctx.fillStyle = "#fdfaf4";
+                    ctx.fillRect(dyX, gY, dyColW, 90);
+                    ctx.strokeStyle = "#cbd5e1";
+                    ctx.strokeRect(dyX, gY, dyColW, 90);
 
-                    ctx.fillStyle = "#8B0000";
-                    ctx.font = "bold 13px 'Inter', sans-serif";
+                    const cX = dyX + dyColW / 2;
+
+                    ctx.fillStyle = "#b91c1c";
+                    ctx.font = "700 25px 'Inter', sans-serif";
                     ctx.textAlign = "center";
                     const startM = data.yun?.startMonthNum || 6;
                     const mStr = startM < 10 ? '0' + startM : startM;
-                    ctx.fillText(`${mStr}/${dy.startYear} — ${startAge}-${endAge}t`, dyX + dyColW / 2, gY + 18);
+                    ctx.fillText(`${mStr}/${dy.startYear} — ${startAge}t`, cX, gY + 38);
 
-                    ctx.fillStyle = dy.stemColor || "#27ae60";
-                    ctx.font = "bold 14px 'Inter', sans-serif";
-                    ctx.fillText(`${dy.ganZhi} - ${dy.shiShen}`, dyX + dyColW / 2, gY + 38);
+                    // Can Chi & Thập Thần
+                    ctx.fillStyle = getStemColor(dy.gan);
+                    ctx.font = "700 27px 'Inter', sans-serif";
+                    ctx.fillText(`${dy.ganZhi} - ${dy.shiShen}`, cX, gY + 74);
 
-                    let lny = gY + 66;
+                    // 10 Dòng Lưu Niên
+                    let lny = gY + 128;
                     const lnList = dy.liuNian || [];
-                    lnList.forEach(ln => {
-                        const lnYear = parseInt(ln.year, 10);
-                        const lnAge = Math.max(1, lnYear - birthYear + 1);
-                        ctx.fillStyle = "#333333";
-                        ctx.font = "12px 'Inter', sans-serif";
+
+                    for (let i = 0; i < 10; i++) {
+                        const ln = lnList[i] || {};
+                        const lnYear = parseInt(ln.year, 10) || (startYear + i);
+                        const isCurYear = (lnYear === currentYear);
+
+                        if (isCurYear) {
+                            ctx.fillStyle = "#fffbeb";
+                            ctx.fillRect(dyX + 4, lny - 26, dyColW - 8, 56);
+                            ctx.strokeStyle = "#f59e0b";
+                            ctx.lineWidth = 1.5;
+                            ctx.strokeRect(dyX + 4, lny - 26, dyColW - 8, 56);
+                        }
+
                         ctx.textAlign = "left";
-                        ctx.fillText(`${lnYear} (${lnAge}t) - ${ln.ganZhi} - ${ln.shiShen}`, dyX + 8, lny);
-                        lny += 26;
-                    });
+                        ctx.font = isCurYear ? "700 27px 'Inter', sans-serif" : "500 25px 'Inter', sans-serif";
+                        ctx.fillStyle = isCurYear ? "#b91c1c" : "#0f172a";
+                        ctx.fillText(`${lnYear}`, dyX + 16, lny + 10);
+
+                        ctx.font = "600 25px 'Inter', sans-serif";
+                        ctx.fillStyle = getStemColor((ln.ganZhi || '').split(' ')[0]);
+                        ctx.fillText(`- ${ln.ganZhi || ''}`, dyX + 90, lny + 10);
+
+                        ctx.font = "500 24px 'Inter', sans-serif";
+                        ctx.fillStyle = "#475569";
+                        ctx.textAlign = "right";
+                        ctx.fillText(`- ${ln.shiShen || ''}`, dyX + dyColW - 14, lny + 10);
+
+                        lny += 68;
+                    }
                 });
             });
         }
 
         // ==========================================
-        // 5. CHÚ GIẢI NGŨ HÀNH (Sát đáy bảng)
+        // 5. CHÂN TRANG & CHÚ GIẢI NGŨ HÀNH
         // ==========================================
-        const footY = H - 18;
-        ctx.textAlign = "right";
-        ctx.font = "bold 12px 'Inter', sans-serif";
-        const legendX = W - 20;
-        
-        ctx.fillStyle = "#8e5a2b";
-        ctx.fillText("■ Thổ", legendX, footY);
-        ctx.fillStyle = "#c0392b";
-        ctx.fillText("■ Hỏa  ", legendX - 50, footY);
-        ctx.fillStyle = "#2980b9";
-        ctx.fillText("■ Thủy  ", legendX - 105, footY);
-        ctx.fillStyle = "#27ae60";
-        ctx.fillText("■ Mộc  ", legendX - 165, footY);
-        ctx.fillStyle = "#7f8c8d";
-        ctx.fillText("■ Kim  ", legendX - 225, footY);
+        const footY = height - margin - 85;
 
-        return canvas.toDataURL("image/png");
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(margin + 20, footY);
+        ctx.lineTo(margin + gridW - 20, footY);
+        ctx.stroke();
+
+        // Bên trái: Website & Tác giả
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "600 27px 'Inter', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("Lá số lập tại: lapque.vercel.app  •  Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933 116 860", margin + 30, footY + 48);
+
+        // Bên phải: Chú giải Ngũ Hành
+        const legendX = margin + gridW - 650;
+        ctx.textAlign = "left";
+        ctx.font = "600 26px 'Inter', sans-serif";
+
+        const elements = [
+            { name: "Kim", color: "#475569" },
+            { name: "Mộc", color: "#15803d" },
+            { name: "Thủy", color: "#1d4ed8" },
+            { name: "Hỏa", color: "#dc2626" },
+            { name: "Thổ", color: "#92400e" }
+        ];
+
+        let curLx = legendX;
+        elements.forEach(el => {
+            ctx.fillStyle = el.color;
+            ctx.fillRect(curLx, footY + 28, 22, 22);
+            ctx.fillStyle = "#0f172a";
+            ctx.fillText(el.name, curLx + 30, footY + 48);
+            curLx += 120;
+        });
+
+        return canvas;
+    }
+
+    function generateChartDataUrl(data, is100Years = false) {
+        const canvas = renderToCanvas(data, is100Years);
+        return canvas ? canvas.toDataURL('image/png') : "";
+    }
+
+    function exportToPng(data, is100Years = false, fileName = 'La_So_Bat_Tu.png') {
+        const canvas = renderToCanvas(data, is100Years);
+        if (!canvas) return;
+
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }, 'image/png');
     }
 
     global.BatTuPngExporter = {
-        drawBatTuChart
+        renderToCanvas,
+        generateChartDataUrl,
+        exportToPng
     };
 
-})(typeof window !== "undefined" ? window : globalThis);
+})(typeof window !== 'undefined' ? window : this);

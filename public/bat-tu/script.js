@@ -4,19 +4,16 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     let currentBatTuData = null;
-    let currentViewMode = 'compact'; // 'compact' (10 Đại Vận Mệnh Bàn) | 'full100' (100 Năm)
 
     const form = document.getElementById("battu-form");
     const nameInput = document.getElementById("inp-name");
     const genderInput = document.getElementById("inp-gender");
     const dateInput = document.getElementById("inp-date");
     const timeInput = document.getElementById("inp-time");
-    const htmlMount = document.getElementById("battu-html-mount");
+    const imgMount = document.getElementById("battuImageMount");
     const btnDownload = document.getElementById("btn-download-png");
-    const btnPrint = document.getElementById("btn-print-chart");
     const refContent = document.getElementById("ref-content");
     const tabBtns = document.querySelectorAll(".ref-tab-btn");
-
     const toggle100Years = document.getElementById("toggle-100-years");
 
     if (toggle100Years) {
@@ -28,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderChart() {
         const name = nameInput.value.trim() || "VÔ DANH KHÁCH";
         const gender = genderInput.value;
-        const dateVal = dateInput.value || "1988-03-02";
-        const timeVal = timeInput.value || "00:00";
+        const dateVal = dateInput.value || "1990-02-01";
+        const timeVal = timeInput.value || "01:00";
 
         const [yStr, mStr, dStr] = dateVal.split("-");
         const [hStr, minStr] = timeVal.split(":");
@@ -44,8 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const is100Years = toggle100Years ? toggle100Years.checked : false;
             currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
             
-            if (htmlMount && window.BatTuRenderer) {
-                htmlMount.innerHTML = window.BatTuRenderer.renderBatTuHtmlTable(currentBatTuData, is100Years);
+            if (imgMount && window.BatTuPngExporter) {
+                const dataUrl = window.BatTuPngExporter.generateChartDataUrl(currentBatTuData, is100Years);
+                imgMount.src = dataUrl;
             }
         } catch (err) {
             console.error("Lỗi khi lập lá số Bát Tự:", err);
@@ -60,25 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Download PNG Button
-    btnDownload.addEventListener("click", () => {
-        if (!currentBatTuData) return;
-        const is100Years = toggle100Years ? toggle100Years.checked : false;
-        const dataUrl = window.BatTuPngExporter.drawBatTuChart(currentBatTuData, is100Years);
-        if (!dataUrl) return;
-
-        const a = document.createElement("a");
-        a.href = dataUrl;
-        const cleanName = (nameInput.value.trim() || "VoDanh").replace(/\s+/g, "_");
-        a.download = `La_So_Bat_Tu_${cleanName}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    });
-
-    // Print Chart Button
-    if (btnPrint) {
-        btnPrint.addEventListener("click", () => {
-            window.print();
+    if (btnDownload) {
+        btnDownload.addEventListener("click", () => {
+            if (!currentBatTuData || !window.BatTuPngExporter) return;
+            const is100Years = toggle100Years ? toggle100Years.checked : false;
+            const cleanName = (nameInput.value.trim() || "VoDanh").replace(/\s+/g, "_");
+            window.BatTuPngExporter.exportToPng(currentBatTuData, is100Years, `La_So_Bat_Tu_${cleanName}.png`);
         });
     }
 
@@ -138,6 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
             loadRefTab(btn.getAttribute("data-tab"));
         });
     });
+
+    // Default values like example (1990-02-01, 01:00)
+    dateInput.value = "1990-02-01";
+    timeInput.value = "01:00";
 
     // Initial Load
     renderChart();

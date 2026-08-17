@@ -281,22 +281,30 @@ h1 {
     border-radius: 8px;
 }
 
-.chart-img-wrapper {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 8px;
-    border: 2px solid var(--accent-gold);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
+.battu-image-container {
+    width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    background: transparent;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.chart-img-wrapper img {
-    max-width: 100%;
+.battu-chart-img {
+    width: 100%;
+    max-width: 580px;
     height: auto;
     display: block;
     border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+    user-select: auto;
+    -webkit-user-select: auto;
+    -webkit-touch-callout: default;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 /* Reference Dictionary Section */
