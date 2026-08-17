@@ -1,10 +1,10 @@
 :root {
-    --primary: #0A3871;
-    --primary-light: #1A5276;
+    --primary: #8b5a2b;
+    --primary-light: #a06830;
     --accent-gold: #D4AF37;
     --gold: #D4AF37;
-    --bg-dark: #070913;
-    --card-bg: rgba(18, 24, 48, 0.95);
+    --bg-dark: #090807;
+    --card-bg: rgba(20, 16, 12, 0.95);
     --border-color: rgba(212, 175, 55, 0.35);
     --text-light: #F5F6FA;
     --text-muted: #A0AEC0;
