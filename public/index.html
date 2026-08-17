@@ -267,60 +267,157 @@
         }
 
         /* ==========================================
-           HERO SECTION: THIÊN CƠ LUÂN & NGUYỄN HUY HOÀNG
+           HERO SECTION: THIÊN CƠ LUÂN & HỆ THỐNG THIÊN VĂN QUỸ ĐẠO
+           Mặt Trời — Trái Đất — Mặt Trăng — Ngân Hà
            ========================================== */
         .hero {
             position: relative;
             max-width: 900px;
-            margin: 20px auto 65px;
+            margin: 15px auto 60px;
             text-align: center;
         }
 
-        .hero-emblem {
+        .celestial-solar-system {
             position: relative;
-            width: 210px;
-            height: 210px;
-            margin: 5px auto 22px;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto 28px;
             display: grid;
             place-items: center;
         }
 
-        .emblem-ring {
+        /* Nền Dải Ngân Hà Vũ Trụ khổng lồ phía sau */
+        .galaxy-backdrop {
             position: absolute;
-            inset: 0;
-            border: 1px solid rgba(214, 168, 79, 0.45);
+            width: 440px;
+            height: 440px;
             border-radius: 50%;
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0.35;
+            filter: blur(1.5px) contrast(1.15);
+            pointer-events: none;
+            animation: galaxySlowSpin 180s linear infinite;
+            mix-blend-mode: screen;
         }
 
-        .ring-outer {
-            box-shadow: 0 0 45px rgba(214, 168, 79, 0.12);
-            animation: orbitSpin 55s linear infinite;
+        .galaxy-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.4);
+            display: block;
         }
 
-        .ring-inner {
-            inset: 18px;
-            border-style: dashed;
-            opacity: 0.7;
-            animation: orbitSpinRev 38s linear infinite;
-        }
-
-        .taiji {
-            font: 82px/1 serif;
-            color: var(--bright);
-            text-shadow: 0 0 28px rgba(244, 213, 138, 0.35);
-            animation: breatheAnimation 5s ease-in-out infinite;
-        }
-
-        .trigram {
+        /* Vòng quỹ đạo thiên văn bên ngoài (trang trí) */
+        .orbit-guide-outer {
             position: absolute;
-            font: 27px serif;
-            color: var(--gold);
+            width: 310px;
+            height: 310px;
+            border-radius: 50%;
+            border: 1px dashed rgba(214, 168, 79, 0.28);
+            pointer-events: none;
+            z-index: 2;
+            animation: orbitSpinRev 50s linear infinite;
         }
-        .trigram-top {
-            top: 17px;
+
+        /* Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời */
+        .earth-orbit-track {
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            border: 1px solid rgba(214, 168, 79, 0.4);
+            pointer-events: none;
+            z-index: 3;
+            animation: earthOrbitSpin 24s linear infinite;
+            box-shadow: 0 0 25px rgba(214, 168, 79, 0.08);
+            display: grid;
+            place-items: center;
         }
-        .trigram-bottom {
-            bottom: 17px;
+
+        /* Trái Đất Container */
+        .earth-satellite-node {
+            position: absolute;
+            top: -19px;
+            left: calc(50% - 19px);
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            animation: earthCounterSpin 24s linear infinite;
+            pointer-events: auto;
+        }
+
+        .earth-planet-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.7), 0 0 8px rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(147, 197, 253, 0.5);
+            display: block;
+        }
+
+        /* Quỹ Đạo Mặt Trăng quay quanh Trái Đất */
+        .moon-orbit-track {
+            position: absolute;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 1px dotted rgba(244, 213, 138, 0.4);
+            animation: moonOrbitSpin 5s linear infinite;
+            pointer-events: none;
+            display: grid;
+            place-items: center;
+        }
+
+        .moon-satellite-img {
+            position: absolute;
+            top: -7px;
+            left: calc(50% - 7px);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: block;
+        }
+
+        /* Mặt Trời rực rỡ tại Trung Tâm */
+        .sun-core-center {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            z-index: 4;
+            display: grid;
+            place-items: center;
+        }
+
+        .sun-ambient-halo {
+            position: absolute;
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.55) 0%, rgba(214, 168, 79, 0.25) 45%, transparent 70%);
+            filter: blur(14px);
+            animation: sunBreathPulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .sun-star-img {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.85), 0 0 65px rgba(214, 168, 79, 0.45);
+            border: 1.5px solid rgba(254, 240, 138, 0.8);
+            animation: sunRotateSlow 60s linear infinite;
+            display: block;
+            position: relative;
+            z-index: 5;
         }
 
         .eyebrow {
@@ -654,10 +751,35 @@
             background: rgba(214, 168, 79, 0.12);
         }
 
-        /* Celestial Animations */
+        /* Celestial Animations & Orbit Physics */
         @keyframes breatheAnimation {
             0%, 100% { transform: scale(1); opacity: 0.82; }
             50% { transform: scale(1.025); opacity: 1; }
+        }
+
+        @keyframes earthOrbitSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes earthCounterSpin {
+            to { transform: rotate(-360deg); }
+        }
+
+        @keyframes moonOrbitSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes galaxySlowSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes sunBreathPulse {
+            0%, 100% { transform: scale(1); opacity: 0.82; }
+            50% { transform: scale(1.16); opacity: 1; }
+        }
+
+        @keyframes sunRotateSlow {
+            to { transform: rotate(360deg); }
         }
 
         @keyframes orbitSpin {
@@ -665,7 +787,7 @@
         }
 
         @keyframes orbitSpinRev {
-            to { transform: translateX(-50%) rotate(-360deg); }
+            to { transform: rotate(-360deg); }
         }
 
         @keyframes starsDrift {
@@ -684,15 +806,57 @@
             .celestial-page {
                 padding: 20px 12px 40px;
             }
-            .hero-emblem {
-                width: 170px;
-                height: 170px;
+            .celestial-solar-system {
+                width: 250px;
+                height: 250px;
+                margin-bottom: 20px;
             }
-            .taiji {
-                font-size: 68px;
+            .galaxy-backdrop {
+                width: 320px;
+                height: 320px;
+            }
+            .orbit-guide-outer {
+                width: 240px;
+                height: 240px;
+            }
+            .earth-orbit-track {
+                width: 180px;
+                height: 180px;
+            }
+            .earth-satellite-node {
+                width: 30px;
+                height: 30px;
+                top: -15px;
+                left: calc(50% - 15px);
+            }
+            .earth-planet-img {
+                width: 30px;
+                height: 30px;
+            }
+            .moon-orbit-track {
+                width: 52px;
+                height: 52px;
+            }
+            .moon-satellite-img {
+                width: 11px;
+                height: 11px;
+                top: -6px;
+                left: calc(50% - 6px);
+            }
+            .sun-core-center {
+                width: 68px;
+                height: 68px;
+            }
+            .sun-star-img {
+                width: 68px;
+                height: 68px;
+            }
+            .sun-ambient-halo {
+                width: 115px;
+                height: 115px;
             }
             .hero h1 {
-                font-size: 38px;
+                font-size: 36px;
             }
             .hero-subtitle {
                 font-size: 13px;
@@ -782,13 +946,36 @@
 
         <!-- Hero Section: Thiên Cơ Luân & Nguyễn Huy Hoàng -->
         <section class="hero">
-            <div class="hero-emblem">
-                <div class="emblem-ring ring-outer"></div>
-                <div class="emblem-ring ring-inner"></div>
-                <div class="trigram trigram-top">☰</div>
-                <div class="taiji">☯</div>
-                <div class="trigram trigram-bottom">☷</div>
+            <!-- Hệ Thống Mô Phỏng Thiên Văn Quỹ Đạo: Mặt Trời — Trái Đất — Mặt Trăng & Nền Ngân Hà -->
+            <div class="celestial-solar-system">
+                <!-- Nền Dải Ngân Hà khổng lồ phóng to xoay trôi chậm -->
+                <div class="galaxy-backdrop">
+                    <img src="nganha.jpg" alt="Dải Ngân Hà" class="galaxy-img" loading="eager">
+                </div>
+
+                <!-- Vòng quỹ đạo thiên văn bên ngoài -->
+                <div class="orbit-guide-outer"></div>
+
+                <!-- Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời -->
+                <div class="earth-orbit-track">
+                    <!-- Trái Đất Node -->
+                    <div class="earth-satellite-node">
+                        <img src="traidat.jpg" alt="Trái Đất" class="earth-planet-img" loading="eager">
+                        
+                        <!-- Quỹ Đạo Mặt Trăng quay quanh Trái Đất -->
+                        <div class="moon-orbit-track">
+                            <img src="mattrang.jpg" alt="Mặt Trăng" class="moon-satellite-img" loading="eager">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mặt Trời rực rỡ tại Tâm Điểm -->
+                <div class="sun-core-center">
+                    <div class="sun-ambient-halo"></div>
+                    <img src="mattroi.jpg" alt="Mặt Trời" class="sun-star-img" loading="eager">
+                </div>
             </div>
+
             <p class="eyebrow">THIÊN • NHÂN • ĐỊA • BIẾN</p>
             <h1>NGUYỄN HUY HOÀNG</h1>
             <p class="hero-subtitle">Kinh Dịch <span>•</span> Tử Vi <span>•</span> Bát Tự <span>•</span> Thái Ất</p>
