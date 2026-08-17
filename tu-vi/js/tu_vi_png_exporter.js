@@ -75,7 +75,7 @@ export class TuViPngExporter {
         // Draw Trung Cung (Center Box) BEFORE Tuần Triệt so it never covers badges
         this.drawTrungCung(ctx, horoscopeData.metadata, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
 
-        // Draw Tuần & Triệt Badges on top layer at exact palace boundary edges (between the 2 palaces)
+        // Draw Tuần & Triệt Badges on top layer at exact perimeter boundary edges (between the 2 palaces)
         this.drawTuanTriet(ctx, horoscopeData.metadata.tuanCungs, 'Tuần', margin, cellW, cellH);
         this.drawTuanTriet(ctx, horoscopeData.metadata.trietCungs, 'Triệt', margin, cellW, cellH);
 
@@ -143,7 +143,7 @@ export class TuViPngExporter {
             mainY += 54;
         });
 
-        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - FONT 38px, WEIGHT 500 (NÉT MẢNH, TO RÕ, KHÔNG NHÒE)
+        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - GIẢM ĐỘ DÀY NÉT (FONT WEIGHT 400), TO RÕ, NÉT GẦY SẮC SẢO
         const colLeftX = x + padding + 4;
         const colRightX = x + w - padding - 4;
         let starYLeft = mainY + 20;
@@ -152,7 +152,7 @@ export class TuViPngExporter {
 
         palace.goodStars.forEach(star => {
             if (starYLeft < y + h - 65) {
-                ctx.font = '500 38px "Inter", "Be Vietnam Pro", sans-serif';
+                ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803d';
                 ctx.textAlign = 'left';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
@@ -163,7 +163,7 @@ export class TuViPngExporter {
 
         palace.badStars.forEach(star => {
             if (starYRight < y + h - 65) {
-                ctx.font = '500 38px "Inter", "Be Vietnam Pro", sans-serif';
+                ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#dc2626';
                 ctx.textAlign = 'right';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
@@ -199,20 +199,20 @@ export class TuViPngExporter {
     static drawTuanTriet(ctx, cungs, label, margin, cellW, cellH) {
         if (!cungs || cungs.length < 2) return;
 
-        // Vị trí chuẩn tâm của 12 vách ngăn ranh giới giữa 2 cung kề nhau
+        // Vị trí chuẩn xác 100% tại 6 cặp ranh giới kinh điển của Tử Vi
         const boundaryMap = {
-            "2_3":   { colRatio: 0.5, rowRatio: 3.0 }, // Dần - Mão (vách ngăn ngang giữa cột 0)
-            "3_4":   { colRatio: 0.5, rowRatio: 2.0 }, // Mão - Thìn (vách ngăn ngang giữa cột 0)
-            "4_5":   { colRatio: 0.5, rowRatio: 1.0 }, // Thìn - Tị (vách ngăn ngang giữa cột 0)
-            "5_6":   { colRatio: 1.0, rowRatio: 0.5 }, // Tị - Ngọ (vách ngăn dọc giữa hàng 0)
-            "6_7":   { colRatio: 2.0, rowRatio: 0.5 }, // Ngọ - Mùi (vách ngăn dọc giữa hàng 0)
-            "7_8":   { colRatio: 3.0, rowRatio: 0.5 }, // Mùi - Thân (vách ngăn dọc giữa hàng 0)
-            "8_9":   { colRatio: 3.5, rowRatio: 1.0 }, // Thân - Dậu (vách ngăn ngang giữa cột 3)
-            "9_10":  { colRatio: 3.5, rowRatio: 2.0 }, // Dậu - Tuất (vách ngăn ngang giữa cột 3)
-            "10_11": { colRatio: 3.5, rowRatio: 3.0 }, // Tuất - Hợi (vách ngăn ngang giữa cột 3)
-            "11_0":  { colRatio: 3.0, rowRatio: 3.5 }, // Hợi - Tý (vách ngăn dọc giữa hàng 3)
-            "0_1":   { colRatio: 2.0, rowRatio: 3.5 }, // Tý - Sửu (vách ngăn dọc giữa hàng 3)
-            "1_2":   { colRatio: 1.0, rowRatio: 3.5 }  // Sửu - Dần (vách ngăn dọc giữa hàng 3)
+            "2_3":   { colRatio: 0.5, rowRatio: 3.0 }, // Dần - Mão (vách ngăn ngang giữa Dần và Mão)
+            "3_4":   { colRatio: 0.5, rowRatio: 2.0 }, // Mão - Thìn (vách ngăn ngang giữa Mão và Thìn)
+            "4_5":   { colRatio: 0.5, rowRatio: 1.0 }, // Thìn - Tị (vách ngăn ngang giữa Thìn và Tị)
+            "5_6":   { colRatio: 1.0, rowRatio: 1.0 }, // Tị - Ngọ
+            "6_7":   { colRatio: 2.0, rowRatio: 1.0 }, // Ngọ - Mùi (ở mép dưới Ngọ-Mùi, trên đỉnh Trung Cung)
+            "7_8":   { colRatio: 3.0, rowRatio: 1.0 }, // Mùi - Thân
+            "8_9":   { colRatio: 3.5, rowRatio: 1.0 }, // Thân - Dậu (vách ngăn ngang giữa Thân và Dậu)
+            "9_10":  { colRatio: 3.5, rowRatio: 2.0 }, // Dậu - Tuất (vách ngăn ngang giữa Dậu và Tuất)
+            "10_11": { colRatio: 3.5, rowRatio: 3.0 }, // Tuất - Hợi (vách ngăn ngang giữa Tuất và Hợi)
+            "11_0":  { colRatio: 3.0, rowRatio: 3.0 }, // Hợi - Tý
+            "0_1":   { colRatio: 2.0, rowRatio: 3.0 }, // Tý - Sửu (ở mép trên Sửu-Tý, dưới đáy Trung Cung)
+            "1_2":   { colRatio: 1.0, rowRatio: 3.0 }  // Sửu - Dần
         };
 
         const c1 = cungs[0];
@@ -227,19 +227,19 @@ export class TuViPngExporter {
         const midX = margin + boundary.colRatio * cellW;
         const midY = margin + boundary.rowRatio * cellH;
 
-        // Badge Dimensions: Nhỏ gọn, mỏng thanh lịch
-        const bw = 92;
-        const bh = 34;
+        // Badge Dimensions: Nhỏ gọn, mỏng thanh lịch, không che chữ
+        const bw = 80;
+        const bh = 28;
 
         ctx.fillStyle = '#000000';
         ctx.fillRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
         const isTuan = label === 'Tuần';
         ctx.strokeStyle = isTuan ? '#fbbf24' : '#ffffff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.2;
         ctx.strokeRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
-        ctx.font = 'bold 20px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = 'bold 18px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = isTuan ? '#fbbf24' : '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -271,36 +271,37 @@ export class TuViPngExporter {
         ctx.lineTo(x + w / 2 + 240, y + 104);
         ctx.stroke();
 
-        // 1 CỘT DỌC DUY NHẤT (SINGLE COLUMN LAYOUT) - TO RÕ, TRẢI ĐỀU TOÀN BỘ Ô GIỮA
-        const labelX = x + 90;
-        const valX = x + 350;
+        // 1 CỘT DỌC DUY NHẤT (SINGLE COLUMN LAYOUT) - TÁCH BIỆT CHỦ MỆNH & CHỦ THÂN RIÊNG DÒNG, TO RÕ KHÔNG ĐÈ NHAU
+        const labelX = x + 80;
+        const valX = x + 310;
 
-        let curY = y + 175;
-        const stepY = 76;
+        let curY = y + 165;
+        const stepY = 70;
 
         const infoList = [
-            { label: 'Họ và tên:', value: meta.name, color: '#1d4ed8' },
-            { label: 'Âm Dương:', value: `${meta.amDuongNamNu} • ${meta.amDuongLy}`, color: '#0f172a' },
+            { label: 'Họ tên:', value: meta.name, color: '#1d4ed8' },
+            { label: 'Âm Dương:', value: `${meta.amDuongNamNu} (${meta.amDuongLy})`, color: '#0f172a' },
             { label: 'Năm sinh:', value: `${meta.solarDate.split('/')[2]} (${meta.lunarYearCanChi})`, color: '#0f172a' },
             { label: 'Tháng sinh:', value: `${meta.solarDate.split('/')[1]} (${meta.lunarMonthCanChi})`, color: '#0f172a' },
             { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (${meta.lunarDayCanChi})`, color: '#0f172a' },
             { label: 'Giờ sinh:', value: `Giờ ${meta.hourName}`, color: '#0f172a' },
             { label: 'Bản Mệnh:', value: meta.banMenh, color: ELEMENT_COLORS[meta.banMenhElement] || '#92400e' },
             { label: 'Cục:', value: `${meta.cucInfo.name} (${meta.cucMenhTuongTac})`, color: ELEMENT_COLORS[meta.cucInfo.element] || '#1d4ed8' },
-            { label: 'Chủ Mệnh & Thân:', value: `Mệnh: ${meta.chuMenh}  •  Thân: ${meta.chuThan}`, color: '#0f172a' },
+            { label: 'Chủ Mệnh:', value: meta.chuMenh, color: '#0f172a' },
+            { label: 'Chủ Thân:', value: meta.chuThan, color: '#0f172a' },
             { label: 'Thân cư:', value: `Thân cư ${meta.thanCungName}`, color: '#b91c1c' },
             { label: 'Năm xem:', value: `${meta.viewYear} (${meta.viewYearCanChi}) — ${meta.age} tuổi`, color: '#0f172a' }
         ];
 
         infoList.forEach(item => {
             // Label
-            ctx.font = '500 35px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '400 32px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = '#475569';
             ctx.textAlign = 'left';
             ctx.fillText(item.label, labelX, curY);
 
             // Value
-            ctx.font = '700 35px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = item.color;
             ctx.fillText(item.value, valX, curY);
 
@@ -308,8 +309,8 @@ export class TuViPngExporter {
             ctx.strokeStyle = '#e2e8f0';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(labelX, curY + 18);
-            ctx.lineTo(x + w - 80, curY + 18);
+            ctx.moveTo(labelX, curY + 16);
+            ctx.lineTo(x + w - 70, curY + 16);
             ctx.stroke();
 
             curY += stepY;
@@ -319,17 +320,17 @@ export class TuViPngExporter {
         ctx.strokeStyle = '#cbd5e1';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(x + 60, y + h - 120);
-        ctx.lineTo(x + w - 60, y + h - 120);
+        ctx.moveTo(x + 60, y + h - 110);
+        ctx.lineTo(x + w - 60, y + h - 110);
         ctx.stroke();
 
-        ctx.font = '700 34px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '700 32px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'center';
-        ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, y + h - 75);
+        ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, y + h - 68);
 
-        ctx.font = 'italic 500 26px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = 'italic 500 24px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#64748b';
-        ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, y + h - 32);
+        ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, y + h - 28);
     }
 }
