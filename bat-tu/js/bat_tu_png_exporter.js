@@ -585,11 +585,11 @@
         ctx.lineTo(margin + gridW - 20, footY);
         ctx.stroke();
 
-        // Bên trái: Website & Tác giả
+        // Bên trái: Thông tin Dịch Sư & Hotline
         ctx.fillStyle = "#0f172a";
         ctx.font = "600 28px 'Inter', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("Lá số lập tại: lapque.vercel.app  •  Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933 116 860", margin + 30, footY + 48);
+        ctx.fillText("Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933 116 860", margin + 30, footY + 48);
 
         // Bên phải: Chú giải Ngũ Hành
         const legendX = margin + gridW - 650;
