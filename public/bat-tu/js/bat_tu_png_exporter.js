@@ -94,7 +94,7 @@
             { label: "Giới tính:", val: data.genderLabel || (data.gender === "nam" ? "Nam Mệnh" : "Nữ Mệnh"), color: "#0f172a" },
             { label: "Dương lịch:", val: data.solarStr || "", color: "#b91c1c" },
             { label: "Âm lịch:", val: data.lunarStr || "", color: "#15803d" },
-            { label: "Nạp âm:", val: data.napAm || "Đại Lâm Mộc", color: "#92400e" }
+            { label: "Nạp âm:", val: data.banMenhNaYin || data.napAm || "Đại Lâm Mộc", color: "#92400e" }
         ];
 
         metaRows.forEach(row => {
@@ -127,11 +127,52 @@
         const colLabelW = 260;
         const colW = (tblW - colLabelW) / 4;
 
+        const pYear = data.pillars?.year || {};
+        const pMonth = data.pillars?.month || {};
+        const pDay = data.pillars?.day || {};
+        const pHour = data.pillars?.time || {};
+
         const pillars = [
-            data.yearPillar || { name: 'Năm', gan: 'Kỷ', zhi: 'Tỵ', solar: '1990', mainGod: 'Thực', hidden: ['Bính', 'Canh', 'Mậu'], hiddenGods: ['Kiếp', 'Tài', 'Thương'], thanSat: ['Kình Dương', 'Không Vong'], nayin: 'Đại Lâm Mộc' },
-            data.monthPillar || { name: 'Tháng', gan: 'Đinh', zhi: 'Sửu', solar: '02', mainGod: 'Tỷ', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái'], nayin: 'Giản Hạ Thủy' },
-            data.dayPillar || { name: 'Ngày', gan: 'Đinh', zhi: 'Dậu', solar: '01', mainGod: 'NHẬT CHỦ', hidden: ['Tân'], hiddenGods: ['T.Tài'], thanSat: ['Văn Xương', 'Thiên Ất', 'Tướng Tinh'], nayin: 'Sơn Hạ Hỏa' },
-            data.hourPillar || { name: 'Giờ', gan: 'Tân', zhi: 'Sửu', solar: '01:00', mainGod: 'T.Tài', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái', 'Thiên Đức'], nayin: 'Bích Thượng Thổ' }
+            {
+                name: 'Năm',
+                gan: pYear.stem || 'Kỷ',
+                zhi: pYear.branch || 'Tỵ',
+                solar: String(data.solarYear || pYear.solarYear || '1990'),
+                mainGod: pYear.chuTinh || 'Thực',
+                hidden: pYear.hiddenStems || ['Bính', 'Canh', 'Mậu'],
+                hiddenGods: pYear.phoTinh || ['Kiếp', 'Tài', 'Thương'],
+                thanSat: pYear.thanSat || ['Kình Dương', 'Không Vong']
+            },
+            {
+                name: 'Tháng',
+                gan: pMonth.stem || 'Đinh',
+                zhi: pMonth.branch || 'Sửu',
+                solar: (data.solarMonth < 10 ? '0' + data.solarMonth : String(data.solarMonth || '02')),
+                mainGod: pMonth.chuTinh || 'Tỷ',
+                hidden: pMonth.hiddenStems || ['Kỷ', 'Quý', 'Tân'],
+                hiddenGods: pMonth.phoTinh || ['Thực', 'Sát', 'T.Tài'],
+                thanSat: pMonth.thanSat || ['Hoa Cái']
+            },
+            {
+                name: 'Ngày',
+                gan: pDay.stem || 'Đinh',
+                zhi: pDay.branch || 'Dậu',
+                solar: (data.solarDay < 10 ? '0' + data.solarDay : String(data.solarDay || '01')),
+                mainGod: 'NHẬT CHỦ',
+                hidden: pDay.hiddenStems || ['Tân'],
+                hiddenGods: pDay.phoTinh || ['T.Tài'],
+                thanSat: pDay.thanSat || ['Văn Xương', 'Thiên Ất', 'Tướng Tinh']
+            },
+            {
+                name: 'Giờ',
+                gan: pHour.stem || 'Tân',
+                zhi: pHour.branch || 'Sửu',
+                solar: pHour.solarTime || ((data.solarHour < 10 ? '0' + data.solarHour : String(data.solarHour || '01')) + ':' + (data.solarMinute < 10 ? '0' + data.solarMinute : String(data.solarMinute || '00'))),
+                mainGod: pHour.chuTinh || 'T.Tài',
+                hidden: pHour.hiddenStems || ['Kỷ', 'Quý', 'Tân'],
+                hiddenGods: pHour.phoTinh || ['Thực', 'Sát', 'T.Tài'],
+                thanSat: pHour.thanSat || ['Hoa Cái', 'Thiên Đức']
+            }
         ];
 
         // 3.1. Hàng Tiêu Đề Cột

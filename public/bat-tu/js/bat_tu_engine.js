@@ -242,6 +242,11 @@
                 ganZhi: dyStem + ' ' + dyBranch,
                 shiShen: dyShiShen,
                 stemColor: STEM_ELEMENTS[dyStem]?.color || '#8e5a2b',
+                branchColor: BRANCH_ELEMENTS[dyBranch]?.color || '#8e5a2b',
+                liuNian: lnResult
+            });
+        }
+
         const STEM_NAMES = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
         const BRANCH_NAMES = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
 
