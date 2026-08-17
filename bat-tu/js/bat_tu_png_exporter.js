@@ -1,9 +1,9 @@
 /**
  * Trình Xuất Ảnh & Vẽ Lá Số Bát Tự HD Canvas (2400x3200 px) — Dịch Sư Nguyễn Huy Hoàng
- * - Cố định 100% kích thước khung hình (2400x3200 px) cho cả 2 chế độ (20 năm và 100 năm)
- * - Tông màu nền giấy kem ngà ấm áp truyền thống (#faf6ee / #f6f0e2)
- * - Hệ màu ngũ hành chuẩn High Contrast
- * - Không có logo thừa hay tiêu đề thừa theo yêu cầu
+ * - Cố định 100% kích thước khung hình (2400x3200 px) cho cả 2 chế độ (10 năm / 100 năm)
+ * - Kéo dãn cân bằng chiều dọc, tăng kích cỡ chữ & giãn cách dòng, lấp đầy toàn bộ không gian
+ * - Thu nhỏ khung nhãn bên trái cho chế độ 100 năm, kéo dãn 5 cột rộng rãi và thoáng đãng
+ * - Nền kem ngà ấm áp truyền thống (#faf6ee / #f6f0e2), hệ màu ngũ hành chuẩn High Contrast
  */
 
 (function(global) {
@@ -71,23 +71,23 @@
 
         // Bên Trái: Thương hiệu Dịch Sư
         ctx.fillStyle = "#b91c1c";
-        ctx.font = "700 44px 'Inter', 'Be Vietnam Pro', sans-serif";
+        ctx.font = "700 48px 'Inter', 'Be Vietnam Pro', sans-serif";
         ctx.textAlign = "left";
         ctx.fillText("DỊCH SƯ NGUYỄN HUY HOÀNG", margin + 30, headY + 45);
 
         ctx.fillStyle = "#0f172a";
-        ctx.font = "600 30px 'Inter', sans-serif";
-        ctx.fillText("Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ", margin + 30, headY + 95);
+        ctx.font = "600 32px 'Inter', sans-serif";
+        ctx.fillText("Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ", margin + 30, headY + 98);
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "italic 400 24px 'Inter', sans-serif";
-        ctx.fillText("Chuyên gia Bát Tự — Tử Bình — Cải Vận Bổ Khuyết", margin + 30, headY + 140);
+        ctx.font = "italic 400 25px 'Inter', sans-serif";
+        ctx.fillText("Chuyên gia Bát Tự — Tử Bình — Cải Vận Bổ Khuyết", margin + 30, headY + 144);
 
         // Bên Phải: Thông Tin Đương Số
-        const metaX = margin + 1380;
-        const valX = metaX + 220;
+        const metaX = margin + 1360;
+        const valX = metaX + 230;
         let mY = headY + 25;
-        const mStep = 44;
+        const mStep = 45;
 
         const metaRows = [
             { label: "Họ và tên:", val: data.name || "VÔ DANH KHÁCH", color: "#1d4ed8" },
@@ -98,12 +98,12 @@
         ];
 
         metaRows.forEach(row => {
-            ctx.font = "500 28px 'Inter', sans-serif";
+            ctx.font = "500 30px 'Inter', sans-serif";
             ctx.fillStyle = "#475569";
             ctx.textAlign = "left";
             ctx.fillText(row.label, metaX, mY);
 
-            ctx.font = "700 29px 'Inter', sans-serif";
+            ctx.font = "700 31px 'Inter', sans-serif";
             ctx.fillStyle = row.color;
             ctx.fillText(row.val, valX, mY);
 
@@ -114,50 +114,50 @@
         ctx.strokeStyle = "#cbd5e1";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(margin + 20, 275);
-        ctx.lineTo(margin + gridW - 20, 275);
+        ctx.moveTo(margin + 20, 280);
+        ctx.lineTo(margin + gridW - 20, 280);
         ctx.stroke();
 
         // ==========================================
         // 3. BẢNG TỨ TRỤ (NĂM, THÁNG, NGÀY, GIỜ)
         // ==========================================
         const tblX = margin + 20;
-        const tblY = 295;
+        const tblY = 298;
         const tblW = gridW - 40;
-        const colLabelW = 280;
+        const colLabelW = 260;
         const colW = (tblW - colLabelW) / 4;
 
         const pillars = [
-            data.yearPillar || { name: 'Năm', gan: 'Kỷ', zhi: 'Tỵ', solar: '1990', mainGod: 'Thực', hidden: ['Bính', 'Canh', 'Mậu'], hiddenGods: ['Kiếp', 'Tài', 'Thương'], thanSat: ['Kình Dương', 'Không Vong'] },
-            data.monthPillar || { name: 'Tháng', gan: 'Đinh', zhi: 'Sửu', solar: '02', mainGod: 'Tỷ', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái'] },
-            data.dayPillar || { name: 'Ngày', gan: 'Đinh', zhi: 'Dậu', solar: '01', mainGod: 'NHẬT CHỦ', hidden: ['Tân'], hiddenGods: ['T.Tài'], thanSat: ['Văn Xương', 'Thiên Ất', 'Tướng Tinh'] },
-            data.hourPillar || { name: 'Giờ', gan: 'Tân', zhi: 'Sửu', solar: '01:00', mainGod: 'T.Tài', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái', 'Thiên Đức'] }
+            data.yearPillar || { name: 'Năm', gan: 'Kỷ', zhi: 'Tỵ', solar: '1990', mainGod: 'Thực', hidden: ['Bính', 'Canh', 'Mậu'], hiddenGods: ['Kiếp', 'Tài', 'Thương'], thanSat: ['Kình Dương', 'Không Vong'], nayin: 'Đại Lâm Mộc' },
+            data.monthPillar || { name: 'Tháng', gan: 'Đinh', zhi: 'Sửu', solar: '02', mainGod: 'Tỷ', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái'], nayin: 'Giản Hạ Thủy' },
+            data.dayPillar || { name: 'Ngày', gan: 'Đinh', zhi: 'Dậu', solar: '01', mainGod: 'NHẬT CHỦ', hidden: ['Tân'], hiddenGods: ['T.Tài'], thanSat: ['Văn Xương', 'Thiên Ất', 'Tướng Tinh'], nayin: 'Sơn Hạ Hỏa' },
+            data.hourPillar || { name: 'Giờ', gan: 'Tân', zhi: 'Sửu', solar: '01:00', mainGod: 'T.Tài', hidden: ['Kỷ', 'Quý', 'Tân'], hiddenGods: ['Thực', 'Sát', 'T.Tài'], thanSat: ['Hoa Cái', 'Thiên Đức'], nayin: 'Bích Thượng Thổ' }
         ];
 
         // 3.1. Hàng Tiêu Đề Cột
         ctx.fillStyle = "#f6f0e2";
-        ctx.fillRect(tblX, tblY, tblW, 60);
+        ctx.fillRect(tblX, tblY, tblW, 65);
         ctx.strokeStyle = "#94a3b8";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(tblX, tblY, tblW, 60);
+        ctx.strokeRect(tblX, tblY, tblW, 65);
 
-        ctx.font = "700 28px 'Inter', sans-serif";
+        ctx.font = "700 30px 'Inter', sans-serif";
         ctx.fillStyle = "#0f172a";
         ctx.textAlign = "center";
-        ctx.fillText("TRỤ NĂM", tblX + colLabelW + colW * 0.5, tblY + 40);
-        ctx.fillText("TRỤ THÁNG", tblX + colLabelW + colW * 1.5, tblY + 40);
-        ctx.fillText("TRỤ NGÀY (MỆNH)", tblX + colLabelW + colW * 2.5, tblY + 40);
-        ctx.fillText("TRỤ GIỜ", tblX + colLabelW + colW * 3.5, tblY + 40);
+        ctx.fillText("TRỤ NĂM", tblX + colLabelW + colW * 0.5, tblY + 44);
+        ctx.fillText("TRỤ THÁNG", tblX + colLabelW + colW * 1.5, tblY + 44);
+        ctx.fillText("TRỤ NGÀY (MỆNH)", tblX + colLabelW + colW * 2.5, tblY + 44);
+        ctx.fillText("TRỤ GIỜ", tblX + colLabelW + colW * 3.5, tblY + 44);
 
-        let curY = tblY + 60;
+        let curY = tblY + 65;
 
         const rows = [
-            { label: "DƯƠNG LỊCH", h: 65, key: "solar" },
-            { label: "CHỦ TINH", h: 70, key: "mainGod" },
-            { label: "BÁT TỰ", h: 145, key: "batTu" },
-            { label: "TÀNG ẨN", h: 70, key: "hidden" },
-            { label: "PHÓ TINH", h: 70, key: "hiddenGods" },
-            { label: "THẦN SÁT", h: 130, key: "thanSat" }
+            { label: "DƯƠNG LỊCH", h: 72, key: "solar" },
+            { label: "CHỦ TINH", h: 76, key: "mainGod" },
+            { label: "BÁT TỰ", h: 175, key: "batTu" },
+            { label: "TÀNG ẨN", h: 76, key: "hidden" },
+            { label: "PHÓ TINH", h: 76, key: "hiddenGods" },
+            { label: "THẦN SÁT", h: 160, key: "thanSat" }
         ];
 
         rows.forEach(r => {
@@ -169,9 +169,9 @@
             ctx.strokeRect(tblX, curY, colLabelW, r.h);
 
             ctx.fillStyle = "#0f172a";
-            ctx.font = "700 26px 'Inter', sans-serif";
+            ctx.font = "700 28px 'Inter', sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(r.label, tblX + colLabelW / 2, curY + r.h / 2 + 9);
+            ctx.fillText(r.label, tblX + colLabelW / 2, curY + r.h / 2 + 10);
 
             // 4 Cột Trụ
             pillars.forEach((p, cIdx) => {
@@ -185,35 +185,35 @@
 
                 if (r.key === "solar") {
                     ctx.fillStyle = "#0f172a";
-                    ctx.font = "600 30px 'Inter', sans-serif";
+                    ctx.font = "600 32px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(p.solar || "", centerX, curY + 42);
+                    ctx.fillText(p.solar || "", centerX, curY + 46);
                 } else if (r.key === "mainGod") {
                     const isMaster = (cIdx === 2);
                     ctx.fillStyle = isMaster ? "#b91c1c" : "#0f172a";
-                    ctx.font = isMaster ? "700 32px 'Inter', sans-serif" : "600 28px 'Inter', sans-serif";
+                    ctx.font = isMaster ? "700 34px 'Inter', sans-serif" : "600 30px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(p.mainGod || (isMaster ? "NHẬT CHỦ" : ""), centerX, curY + 45);
+                    ctx.fillText(p.mainGod || (isMaster ? "NHẬT CHỦ" : ""), centerX, curY + 48);
                 } else if (r.key === "batTu") {
                     // Thiên Can
                     ctx.fillStyle = getStemColor(p.gan);
-                    ctx.font = "700 58px 'Inter', sans-serif";
+                    ctx.font = "700 68px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(p.gan || "", centerX, curY + 60);
+                    ctx.fillText(p.gan || "", centerX, curY + 70);
 
                     // Địa Chi
                     ctx.fillStyle = getBranchColor(p.zhi);
-                    ctx.font = "700 58px 'Inter', sans-serif";
-                    ctx.fillText(p.zhi || "", centerX, curY + 125);
+                    ctx.font = "700 68px 'Inter', sans-serif";
+                    ctx.fillText(p.zhi || "", centerX, curY + 148);
                 } else if (r.key === "hidden") {
                     const hStems = p.hidden || [];
                     const count = hStems.length || 1;
                     const subW = colW / count;
                     hStems.forEach((st, sIdx) => {
                         ctx.fillStyle = getStemColor(st);
-                        ctx.font = "600 28px 'Inter', sans-serif";
+                        ctx.font = "700 30px 'Inter', sans-serif";
                         ctx.textAlign = "center";
-                        ctx.fillText(st, cX + sIdx * subW + subW / 2, curY + 45);
+                        ctx.fillText(st, cX + sIdx * subW + subW / 2, curY + 48);
                     });
                 } else if (r.key === "hiddenGods") {
                     const hGods = p.hiddenGods || [];
@@ -221,19 +221,19 @@
                     const subW = colW / count;
                     hGods.forEach((hg, sIdx) => {
                         ctx.fillStyle = "#475569";
-                        ctx.font = "500 26px 'Inter', sans-serif";
+                        ctx.font = "600 28px 'Inter', sans-serif";
                         ctx.textAlign = "center";
-                        ctx.fillText(hg, cX + sIdx * subW + subW / 2, curY + 45);
+                        ctx.fillText(hg, cX + sIdx * subW + subW / 2, curY + 48);
                     });
                 } else if (r.key === "thanSat") {
                     const stars = p.thanSat || p.stars || [];
                     ctx.fillStyle = "#1e40af";
-                    ctx.font = "500 26px 'Inter', sans-serif";
+                    ctx.font = "600 28px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    let tsY = curY + 36;
+                    let tsY = curY + 42;
                     stars.slice(0, 4).forEach(st => {
                         ctx.fillText(st, centerX, tsY);
-                        tsY += 34;
+                        tsY += 40;
                     });
                 }
             });
@@ -244,27 +244,27 @@
         // ==========================================
         // 4. KHỐI THÔNG TIN ĐẠI VẬN & LƯU NIÊN
         // ==========================================
-        curY += 20;
+        curY += 24;
 
         // Header info bar
         ctx.fillStyle = "#f6f0e2";
-        ctx.fillRect(tblX, curY, tblW, 55);
+        ctx.fillRect(tblX, curY, tblW, 60);
         ctx.strokeStyle = "#94a3b8";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(tblX, curY, tblW, 55);
+        ctx.strokeRect(tblX, curY, tblW, 60);
 
         ctx.fillStyle = "#0f172a";
-        ctx.font = "700 26px 'Inter', sans-serif";
+        ctx.font = "700 28px 'Inter', sans-serif";
         ctx.textAlign = "left";
-        ctx.fillText("Đại vận lưu niên:", tblX + 20, curY + 36);
+        ctx.fillText("Đại vận lưu niên:", tblX + 24, curY + 40);
 
         ctx.fillStyle = "#475569";
-        ctx.font = "500 24px 'Inter', sans-serif";
+        ctx.font = "500 26px 'Inter', sans-serif";
         const startAgeStr = data.yun?.startAgeFormatted || "8 tuổi 9 tháng";
-        const solarTermStr = data.solarTermInfo || "Tiểu hàn bắt đầu 05-01-1990 và kết thúc 04-02-1990";
-        ctx.fillText(`Số tính đại vận = ${data.yun?.startAgeDecimal || '26.14'}; Nhập đại vận lúc ${startAgeStr}. ${solarTermStr}`, tblX + 240, curY + 36);
+        const solarTermStr = data.solarTermInfo || "Tiết Tiểu hàn bắt đầu 05-01-1990 và kết thúc 04-02-1990";
+        ctx.fillText(`Số tính đại vận = ${data.yun?.startAgeDecimal || '26.14'}; Nhập đại vận lúc ${startAgeStr}. ${solarTermStr}`, tblX + 260, curY + 40);
 
-        curY += 65;
+        curY += 78;
 
         const daYunList = data.daYun || [];
         const birthYear = data.birthYear || 1990;
@@ -273,10 +273,10 @@
 
         if (!is100Years) {
             // ========================================================
-            // CHẾ ĐỘ 1: BẢNG 10 ĐẠI VẬN + 2 HÀNG LƯU NIÊN (20 NĂM)
+            // CHẾ ĐỘ 1: BẢNG 10 ĐẠI VẬN + 2 HÀNG LƯU NIÊN (KÉO DÃN LẤP ĐẦY CHIỀU DỌC)
             // ========================================================
             const col10W = (tblW - colLabelW) / 10;
-            const dyH = 220;
+            const dyH = 340;
 
             // Header Cột Label 10 Đại Vận
             ctx.fillStyle = "#f6f0e2";
@@ -285,7 +285,7 @@
             ctx.strokeRect(tblX, curY, colLabelW, dyH);
 
             ctx.fillStyle = "#0f172a";
-            ctx.font = "700 28px 'Inter', sans-serif";
+            ctx.font = "700 32px 'Inter', sans-serif";
             ctx.textAlign = "center";
             ctx.fillText("ĐẠI VẬN", tblX + colLabelW / 2, curY + dyH / 2 + 10);
 
@@ -299,55 +299,56 @@
                 ctx.fillStyle = isActive ? "#fffbeb" : (idx % 2 === 0 ? "#ffffff" : "#fdfaf4");
                 ctx.fillRect(dyX, curY, col10W, dyH);
                 ctx.strokeStyle = isActive ? "#f59e0b" : "#cbd5e1";
-                ctx.lineWidth = isActive ? 2 : 1;
+                ctx.lineWidth = isActive ? 2.5 : 1;
                 ctx.strokeRect(dyX, curY, col10W, dyH);
 
                 const cX = dyX + col10W / 2;
+                const parts = (dy.ganZhi || `${dy.stem || ''} ${dy.branch || ''}`).split(' ');
 
                 // Can Đại Vận
-                ctx.fillStyle = getStemColor(dy.gan);
-                ctx.font = "700 36px 'Inter', sans-serif";
+                ctx.fillStyle = getStemColor(parts[0]);
+                ctx.font = "700 48px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(dy.gan || "", cX, curY + 48);
+                ctx.fillText(parts[0] || "", cX, curY + 65);
 
                 // Chi Đại Vận
-                ctx.fillStyle = getBranchColor(dy.zhi);
-                ctx.font = "700 36px 'Inter', sans-serif";
-                ctx.fillText(dy.zhi || "", cX, curY + 95);
+                ctx.fillStyle = getBranchColor(parts[1]);
+                ctx.fillText(parts[1] || "", cX, curY + 128);
 
                 // Thập thần
                 ctx.fillStyle = "#475569";
-                ctx.font = "600 24px 'Inter', sans-serif";
-                ctx.fillText(dy.shiShen || "", cX, curY + 135);
+                ctx.font = "600 28px 'Inter', sans-serif";
+                ctx.fillText(dy.shiShen || "", cX, curY + 185);
 
                 // Tuổi
                 ctx.fillStyle = "#1d4ed8";
-                ctx.font = "700 24px 'Inter', sans-serif";
-                ctx.fillText(`${startAge}-${endAge}t`, cX, curY + 172);
+                ctx.font = "700 28px 'Inter', sans-serif";
+                ctx.fillText(`${startAge}-${endAge}t`, cX, curY + 242);
 
                 // Năm bắt đầu
                 ctx.fillStyle = "#0f172a";
-                ctx.font = "600 24px 'Inter', sans-serif";
-                ctx.fillText(String(dy.startYear), cX, curY + 204);
+                ctx.font = "600 28px 'Inter', sans-serif";
+                ctx.fillText(String(dy.startYear), cX, curY + 295);
             });
 
-            curY += dyH + 20;
+            curY += dyH + 24;
 
-            // 2 HÀNG LƯU NIÊN (MỖI HÀNG 10 NĂM)
+            // 2 HÀNG LƯU NIÊN (MỖI HÀNG 10 NĂM) - KÉO DÃN CAO VÀ THOÁNG
             const activeIdx = daYunList.findIndex(d => {
                 const sAge = Math.max(1, parseInt(d.startYear, 10) - birthYear + 1);
                 return currentAge >= sAge && currentAge <= sAge + 9;
             });
 
-            const dy1 = daYunList[activeIdx >= 0 ? activeIdx : 2] || daYunList[0];
-            const dy2 = daYunList[(activeIdx >= 0 ? activeIdx : 2) + 1] || daYunList[1];
+            const baseIdx = activeIdx >= 0 ? activeIdx : 2;
+            const dy1 = daYunList[baseIdx] || daYunList[0];
+            const dy2 = daYunList[baseIdx + 1] || daYunList[1];
 
             const lnGroups = [
                 { dy: dy1, label: `LƯU NIÊN\n(${dy1?.ganZhi || ''})` },
                 { dy: dy2, label: `LƯU NIÊN\n(${dy2?.ganZhi || ''})` }
             ];
 
-            const lnH = 210;
+            const lnH = 340;
 
             lnGroups.forEach(group => {
                 ctx.fillStyle = "#f6f0e2";
@@ -356,84 +357,89 @@
                 ctx.strokeRect(tblX, curY, colLabelW, lnH);
 
                 ctx.fillStyle = "#0f172a";
-                ctx.font = "700 26px 'Inter', sans-serif";
+                ctx.font = "700 28px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText("LƯU NIÊN", tblX + colLabelW / 2, curY + lnH / 2 - 10);
-                ctx.font = "600 22px 'Inter', sans-serif";
+                ctx.fillText("LƯU NIÊN", tblX + colLabelW / 2, curY + lnH / 2 - 15);
+                ctx.font = "700 24px 'Inter', sans-serif";
                 ctx.fillStyle = "#15803d";
-                ctx.fillText(`(${group.dy?.ganZhi || ''})`, tblX + colLabelW / 2, curY + lnH / 2 + 20);
+                ctx.fillText(`(${group.dy?.ganZhi || ''})`, tblX + colLabelW / 2, curY + lnH / 2 + 25);
 
                 const lnList = group.dy?.liuNian || [];
                 for (let i = 0; i < 10; i++) {
                     const lnX = tblX + colLabelW + i * col10W;
                     const ln = lnList[i] || {};
-                    const lnYear = parseInt(ln.year, 10) || (birthYear + i);
+                    const lnYear = parseInt(ln.year, 10) || (parseInt(group.dy?.startYear || birthYear, 10) + i);
                     const isCur = (lnYear === currentYear);
 
                     ctx.fillStyle = isCur ? "#fffbeb" : (i % 2 === 0 ? "#ffffff" : "#fdfaf4");
                     ctx.fillRect(lnX, curY, col10W, lnH);
                     ctx.strokeStyle = isCur ? "#f59e0b" : "#cbd5e1";
-                    ctx.lineWidth = isCur ? 2 : 1;
+                    ctx.lineWidth = isCur ? 2.5 : 1;
                     ctx.strokeRect(lnX, curY, col10W, lnH);
 
                     const cX = lnX + col10W / 2;
-
-                    // Can Chi
                     const parts = (ln.ganZhi || '').split(' ');
-                    ctx.fillStyle = getStemColor(parts[0]);
-                    ctx.font = "700 30px 'Inter', sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillText(parts[0] || "", cX, curY + 44);
 
+                    // Can
+                    ctx.fillStyle = getStemColor(parts[0]);
+                    ctx.font = "700 44px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(parts[0] || "", cX, curY + 62);
+
+                    // Chi
                     ctx.fillStyle = getBranchColor(parts[1]);
-                    ctx.fillText(parts[1] || "", cX, curY + 84);
+                    ctx.fillText(parts[1] || "", cX, curY + 124);
 
                     // Năm DL
                     ctx.fillStyle = isCur ? "#b91c1c" : "#0f172a";
-                    ctx.font = "700 26px 'Inter', sans-serif";
-                    ctx.fillText(String(lnYear), cX, curY + 124);
+                    ctx.font = "700 30px 'Inter', sans-serif";
+                    ctx.fillText(String(lnYear), cX, curY + 184);
 
                     // Tuổi
                     const ageNum = Math.max(1, lnYear - birthYear + 1);
                     ctx.fillStyle = "#1d4ed8";
-                    ctx.font = "600 24px 'Inter', sans-serif";
-                    ctx.fillText(`${ageNum}t`, cX, curY + 158);
+                    ctx.font = "700 28px 'Inter', sans-serif";
+                    ctx.fillText(`${ageNum}t`, cX, curY + 238);
 
                     // Thập thần
                     ctx.fillStyle = "#475569";
-                    ctx.font = "500 22px 'Inter', sans-serif";
-                    ctx.fillText(ln.shiShen || "", cX, curY + 190);
+                    ctx.font = "600 26px 'Inter', sans-serif";
+                    ctx.fillText(ln.shiShen || "", cX, curY + 292);
                 }
 
-                curY += lnH + 16;
+                curY += lnH + 20;
             });
 
-            // Nhận định Cải Vận Bổ Khuyết / Dụng Thần
-            const remH = 3000 - curY;
+            // Khối Phương Pháp Cải Vận Bổ Khuyết & Dụng Thần Lấp Đầy Khoảng Dưới
+            const remH = 3050 - curY;
             if (remH > 100) {
                 ctx.fillStyle = "#f6f0e2";
                 ctx.fillRect(tblX, curY, tblW, remH);
                 ctx.strokeStyle = "#cbd5e1";
+                ctx.lineWidth = 1.5;
                 ctx.strokeRect(tblX, curY, tblW, remH);
 
                 ctx.fillStyle = "#b91c1c";
-                ctx.font = "700 30px 'Inter', sans-serif";
+                ctx.font = "700 36px 'Inter', sans-serif";
                 ctx.textAlign = "left";
-                ctx.fillText("PHƯƠNG PHÁP CẢI VẬN BỔ KHUYẾT & DỤNG THẦN", tblX + 30, curY + 50);
+                ctx.fillText("PHƯƠNG PHÁP CẢI VẬN BỔ KHUYẾT & DỤNG THẦN", tblX + 36, curY + 58);
 
                 ctx.fillStyle = "#0f172a";
-                ctx.font = "500 26px 'Inter', sans-serif";
-                ctx.fillText(`• Dụng Thần: ${data.analysis?.dungThan || 'Hỏa'}   • Hỷ Thần: ${data.analysis?.hyThan || 'Mộc'}   • Kỵ Thần: ${data.analysis?.kyThan || 'Thủy'}`, tblX + 30, curY + 100);
-                ctx.fillText(`• Thân Vượng/Nhược: ${data.analysis?.thanVuongNhuoc || 'Thân Nhược'}   • Cách Cục: ${data.analysis?.cachCuc || 'Chính Quan Cách'}`, tblX + 30, curY + 150);
-                ctx.fillText(`• Lời khuyên: Bổ sung hành Dụng Thần qua phương hướng, màu sắc y phục, nghề nghiệp và lối sống hàng ngày.`, tblX + 30, curY + 200);
+                ctx.font = "600 30px 'Inter', sans-serif";
+                ctx.fillText(`• Dụng Thần: ${data.analysis?.dungThan || 'Hỏa'}   • Hỷ Thần: ${data.analysis?.hyThan || 'Mộc'}   • Kỵ Thần: ${data.analysis?.kyThan || 'Thủy'}`, tblX + 36, curY + 120);
+                ctx.fillText(`• Thân Vượng/Nhược: ${data.analysis?.thanVuongNhuoc || 'Thân Nhược'}   • Cách Cục: ${data.analysis?.cachCuc || 'Chính Quan Cách'}`, tblX + 36, curY + 180);
+                ctx.fillText(`• Lời khuyên: Bổ sung hành Dụng Thần qua phương hướng, màu sắc y phục, nghề nghiệp và lối sống hàng ngày.`, tblX + 36, curY + 240);
+                ctx.fillText(`• Dưỡng thân tịnh tâm, hành thiện tích đức, thuận theo ngũ hành sinh khắc để cải biến vận mệnh hanh thông.`, tblX + 36, curY + 300);
             }
 
         } else {
             // ========================================================
-            // CHẾ ĐỘ 2: 100 NĂM TOÀN CẢNH TRONG CÙNG KHUNG HÌNH (2 HÀNG x 5 CỘT)
+            // CHẾ ĐỘ 2: 100 NĂM TOÀN CẢNH (2 HÀNG x 5 CỘT)
+            // THU NHỎ CỘT BÊN TRÁI (160px), KÉO DÃN 5 CỘT ĐẠI VẬN RỘNG RÃI
             // ========================================================
-            const dyColW = (tblW - colLabelW) / 5;
-            const dyRowH = 820;
+            const smallLabelW = 160;
+            const dyColW = (tblW - smallLabelW) / 5;
+            const dyRowH = 850;
 
             const row1 = daYunList.slice(0, 5);
             const row2 = daYunList.slice(5, 10);
@@ -441,24 +447,24 @@
             [row1, row2].forEach((rowGroup, gIdx) => {
                 if (rowGroup.length === 0) return;
 
-                const gY = curY + gIdx * (dyRowH + 16);
+                const gY = curY + gIdx * (dyRowH + 20);
 
-                // Label Cột Bên Trái
+                // Label Cột Bên Trái (Gọn Gàng)
                 ctx.fillStyle = "#f6f0e2";
-                ctx.fillRect(tblX, gY, colLabelW, dyRowH);
+                ctx.fillRect(tblX, gY, smallLabelW, dyRowH);
                 ctx.strokeStyle = "#cbd5e1";
-                ctx.strokeRect(tblX, gY, colLabelW, dyRowH);
+                ctx.strokeRect(tblX, gY, smallLabelW, dyRowH);
 
                 ctx.fillStyle = "#0f172a";
-                ctx.font = "700 28px 'Inter', sans-serif";
+                ctx.font = "700 26px 'Inter', sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(gIdx === 0 ? "ĐẠI VẬN" : "ĐẠI VẬN", tblX + colLabelW / 2, gY + dyRowH / 2 - 15);
+                ctx.fillText("ĐẠI VẬN", tblX + smallLabelW / 2, gY + dyRowH / 2 - 15);
                 ctx.fillStyle = "#1d4ed8";
-                ctx.font = "700 24px 'Inter', sans-serif";
-                ctx.fillText(gIdx === 0 ? "(VẬN 1 - 5)" : "(VẬN 6 - 10)", tblX + colLabelW / 2, gY + dyRowH / 2 + 20);
+                ctx.font = "700 22px 'Inter', sans-serif";
+                ctx.fillText(gIdx === 0 ? "(1 - 5)" : "(6 - 10)", tblX + smallLabelW / 2, gY + dyRowH / 2 + 20);
 
                 rowGroup.forEach((dy, cIdx) => {
-                    const dyX = tblX + colLabelW + cIdx * dyColW;
+                    const dyX = tblX + smallLabelW + cIdx * dyColW;
                     const startYear = parseInt(dy.startYear, 10);
                     const startAge = Math.max(1, startYear - birthYear + 1);
                     const endAge = startAge + 9;
@@ -470,26 +476,27 @@
 
                     // Header Đại Vận Box
                     ctx.fillStyle = "#fdfaf4";
-                    ctx.fillRect(dyX, gY, dyColW, 90);
+                    ctx.fillRect(dyX, gY, dyColW, 95);
                     ctx.strokeStyle = "#cbd5e1";
-                    ctx.strokeRect(dyX, gY, dyColW, 90);
+                    ctx.strokeRect(dyX, gY, dyColW, 95);
 
                     const cX = dyX + dyColW / 2;
 
                     ctx.fillStyle = "#b91c1c";
-                    ctx.font = "700 25px 'Inter', sans-serif";
+                    ctx.font = "700 28px 'Inter', sans-serif";
                     ctx.textAlign = "center";
                     const startM = data.yun?.startMonthNum || 6;
                     const mStr = startM < 10 ? '0' + startM : startM;
-                    ctx.fillText(`${mStr}/${dy.startYear} — ${startAge}t`, cX, gY + 38);
+                    ctx.fillText(`${mStr}/${dy.startYear} — ${startAge}t`, cX, gY + 40);
 
                     // Can Chi & Thập Thần
-                    ctx.fillStyle = getStemColor(dy.gan);
-                    ctx.font = "700 27px 'Inter', sans-serif";
-                    ctx.fillText(`${dy.ganZhi} - ${dy.shiShen}`, cX, gY + 74);
+                    const parts = (dy.ganZhi || `${dy.stem || ''} ${dy.branch || ''}`).split(' ');
+                    ctx.fillStyle = getStemColor(parts[0]);
+                    ctx.font = "700 30px 'Inter', sans-serif";
+                    ctx.fillText(`${dy.ganZhi} - ${dy.shiShen}`, cX, gY + 78);
 
-                    // 10 Dòng Lưu Niên
-                    let lny = gY + 128;
+                    // 10 Dòng Lưu Niên - KÉO DÃN CÂN ĐỐI
+                    let lny = gY + 140;
                     const lnList = dy.liuNian || [];
 
                     for (let i = 0; i < 10; i++) {
@@ -499,27 +506,27 @@
 
                         if (isCurYear) {
                             ctx.fillStyle = "#fffbeb";
-                            ctx.fillRect(dyX + 4, lny - 26, dyColW - 8, 56);
+                            ctx.fillRect(dyX + 4, lny - 30, dyColW - 8, 62);
                             ctx.strokeStyle = "#f59e0b";
                             ctx.lineWidth = 1.5;
-                            ctx.strokeRect(dyX + 4, lny - 26, dyColW - 8, 56);
+                            ctx.strokeRect(dyX + 4, lny - 30, dyColW - 8, 62);
                         }
 
                         ctx.textAlign = "left";
-                        ctx.font = isCurYear ? "700 27px 'Inter', sans-serif" : "500 25px 'Inter', sans-serif";
+                        ctx.font = isCurYear ? "700 29px 'Inter', sans-serif" : "500 28px 'Inter', sans-serif";
                         ctx.fillStyle = isCurYear ? "#b91c1c" : "#0f172a";
-                        ctx.fillText(`${lnYear}`, dyX + 16, lny + 10);
+                        ctx.fillText(`${lnYear}`, dyX + 18, lny + 8);
 
-                        ctx.font = "600 25px 'Inter', sans-serif";
+                        ctx.font = "600 28px 'Inter', sans-serif";
                         ctx.fillStyle = getStemColor((ln.ganZhi || '').split(' ')[0]);
-                        ctx.fillText(`- ${ln.ganZhi || ''}`, dyX + 90, lny + 10);
+                        ctx.fillText(`- ${ln.ganZhi || ''}`, dyX + 105, lny + 8);
 
-                        ctx.font = "500 24px 'Inter', sans-serif";
+                        ctx.font = "500 26px 'Inter', sans-serif";
                         ctx.fillStyle = "#475569";
                         ctx.textAlign = "right";
-                        ctx.fillText(`- ${ln.shiShen || ''}`, dyX + dyColW - 14, lny + 10);
+                        ctx.fillText(`- ${ln.shiShen || ''}`, dyX + dyColW - 16, lny + 8);
 
-                        lny += 68;
+                        lny += 70;
                     }
                 });
             });
@@ -539,7 +546,7 @@
 
         // Bên trái: Website & Tác giả
         ctx.fillStyle = "#0f172a";
-        ctx.font = "600 27px 'Inter', sans-serif";
+        ctx.font = "600 28px 'Inter', sans-serif";
         ctx.textAlign = "left";
         ctx.fillText("Lá số lập tại: lapque.vercel.app  •  Dịch Sư Nguyễn Huy Hoàng — Zalo: 0933 116 860", margin + 30, footY + 48);
 

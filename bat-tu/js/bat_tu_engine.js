@@ -242,8 +242,49 @@
                 ganZhi: dyStem + ' ' + dyBranch,
                 shiShen: dyShiShen,
                 stemColor: STEM_ELEMENTS[dyStem]?.color || '#8e5a2b',
-                branchColor: BRANCH_ELEMENTS[dyBranch]?.color || '#8e5a2b',
-                liuNian: lnResult
+        const STEM_NAMES = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+        const BRANCH_NAMES = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+        while (daYunResult.length < 10) {
+            const last = daYunResult[daYunResult.length - 1];
+            const nextYear = parseInt(last.startYear, 10) + 10;
+            const nextAge = parseInt(last.startAge, 10) + 10;
+            const lastStemIdx = STEM_NAMES.indexOf(last.stem);
+            const lastBranchIdx = BRANCH_NAMES.indexOf(last.branch);
+            const nextStem = STEM_NAMES[(lastStemIdx + (isForward ? 1 : 9)) % 10];
+            const nextBranch = BRANCH_NAMES[(lastBranchIdx + (isForward ? 1 : 11)) % 12];
+            const nextShiShen = getShiShenName(dayStem, nextStem);
+
+            const nextLiuNian = [];
+            for (let y = 0; y < 10; y++) {
+                const lnY = nextYear + y;
+                const lnA = nextAge + y;
+                const lnCanIdx = (lnY - 4) % 10;
+                const lnChiIdx = (lnY - 4) % 12;
+                const lnStem = STEM_NAMES[lnCanIdx >= 0 ? lnCanIdx : lnCanIdx + 10];
+                const lnBranch = BRANCH_NAMES[lnChiIdx >= 0 ? lnChiIdx : lnChiIdx + 12];
+                nextLiuNian.push({
+                    year: lnY,
+                    age: lnA,
+                    stem: lnStem,
+                    branch: lnBranch,
+                    ganZhi: lnStem + ' ' + lnBranch,
+                    shiShen: getShiShenName(dayStem, lnStem),
+                    stemColor: STEM_ELEMENTS[lnStem]?.color || '#8e5a2b'
+                });
+            }
+
+            daYunResult.push({
+                index: daYunResult.length + 1,
+                startYear: nextYear,
+                startAge: nextAge,
+                stem: nextStem,
+                branch: nextBranch,
+                ganZhi: nextStem + ' ' + nextBranch,
+                shiShen: nextShiShen,
+                stemColor: STEM_ELEMENTS[nextStem]?.color || '#8e5a2b',
+                branchColor: BRANCH_ELEMENTS[nextBranch]?.color || '#8e5a2b',
+                liuNian: nextLiuNian
             });
         }
 
