@@ -16,8 +16,8 @@ export class TuViPngExporter {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
 
-        // Background
-        ctx.fillStyle = '#ffffff';
+        // 1. Warm Traditional Paper Background (Màu kem ngà ấm áp truyền thống)
+        ctx.fillStyle = '#faf6ee';
         ctx.fillRect(0, 0, width, height);
 
         const margin = 24;
@@ -47,7 +47,7 @@ export class TuViPngExporter {
         };
 
         // Draw Outer Border & Grid Lines
-        ctx.strokeStyle = '#0f172a';
+        ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 4;
         ctx.strokeRect(margin, margin, gridW, gridH);
 
@@ -63,11 +63,6 @@ export class TuViPngExporter {
             }
         }
 
-        // Trung Cung outer border
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#94a3b8';
-        ctx.strokeRect(margin + cellW, margin + cellH, cellW * 2, cellH * 2);
-
         // Draw 12 Palaces Content
         horoscopeData.palaces.forEach(palace => {
             const gridPos = palaceGridPositions[palace.chiIndex];
@@ -77,12 +72,12 @@ export class TuViPngExporter {
             this.drawPalace(ctx, palace, x, y, cellW, cellH);
         });
 
-        // Draw Tuần & Triệt Badges at exact palace boundary edges
+        // Draw Trung Cung (Center Box) BEFORE Tuần Triệt so it never covers badges
+        this.drawTrungCung(ctx, horoscopeData.metadata, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
+
+        // Draw Tuần & Triệt Badges on top layer at exact palace boundary edges
         this.drawTuanTriet(ctx, horoscopeData.metadata.tuanCungs, 'Tuần', margin, cellW, cellH, palaceGridPositions);
         this.drawTuanTriet(ctx, horoscopeData.metadata.trietCungs, 'Triệt', margin, cellW, cellH, palaceGridPositions);
-
-        // Draw Trung Cung (Center Box)
-        this.drawTrungCung(ctx, horoscopeData.metadata, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
 
         return canvas;
     }
@@ -108,56 +103,56 @@ export class TuViPngExporter {
     }
 
     static drawPalace(ctx, palace, x, y, w, h) {
-        const padding = 16;
+        const padding = 20;
 
         // 1. Can Cung (Top Left)
-        ctx.font = '500 28px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = ELEMENT_COLORS[palace.canElement] || '#0f172a';
         ctx.textAlign = 'left';
-        ctx.fillText(palace.canName, x + padding, y + 42);
+        ctx.fillText(palace.canName, x + padding, y + 48);
 
         // 2. Cung Name (Top Center)
-        ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '700 40px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = palace.cungName === 'MỆNH' ? '#dc2626' : '#0f172a';
         ctx.textAlign = 'center';
         const cungTitle = palace.isThan ? `${palace.cungName} <THÂN>` : palace.cungName;
-        ctx.fillText(cungTitle, x + w / 2, y + 42);
+        ctx.fillText(cungTitle, x + w / 2, y + 48);
 
         // 3. Đại Hạn (Top Right)
-        ctx.font = '500 28px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'right';
-        ctx.fillText(String(palace.daiHan), x + w - padding, y + 42);
+        ctx.fillText(String(palace.daiHan), x + w - padding, y + 48);
 
         // Divider under header
         ctx.strokeStyle = '#e2e8f0';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(x + 8, y + 56);
-        ctx.lineTo(x + w - 8, y + 56);
+        ctx.moveTo(x + 10, y + 66);
+        ctx.lineTo(x + w - 10, y + 66);
         ctx.stroke();
 
         // 4. Chính Tinh (Center Top of Palace)
-        let mainY = y + 100;
+        let mainY = y + 118;
         palace.mainStars.forEach(star => {
-            ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '700 46px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = ELEMENT_COLORS[star.element] || '#0f172a';
             ctx.textAlign = 'center';
             const starText = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
             ctx.fillText(starText, x + w / 2, mainY);
-            mainY += 46;
+            mainY += 54;
         });
 
-        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column)
-        const colLeftX = x + padding;
-        const colRightX = x + w - padding;
-        let starYLeft = mainY + 14;
-        let starYRight = mainY + 14;
-        const starLineHeight = 36;
+        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - TO GẤP ĐÔI & KHOẢNG CÁCH THOÁNG
+        const colLeftX = x + padding + 4;
+        const colRightX = x + w - padding - 4;
+        let starYLeft = mainY + 22;
+        let starYRight = mainY + 22;
+        const starLineHeight = 52;
 
         palace.goodStars.forEach(star => {
-            if (starYLeft < y + h - 50) {
-                ctx.font = '400 26px "Inter", "Be Vietnam Pro", sans-serif';
+            if (starYLeft < y + h - 65) {
+                ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803d';
                 ctx.textAlign = 'left';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
@@ -167,8 +162,8 @@ export class TuViPngExporter {
         });
 
         palace.badStars.forEach(star => {
-            if (starYRight < y + h - 50) {
-                ctx.font = '400 26px "Inter", "Be Vietnam Pro", sans-serif';
+            if (starYRight < y + h - 65) {
+                ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#dc2626';
                 ctx.textAlign = 'right';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
@@ -181,24 +176,24 @@ export class TuViPngExporter {
         ctx.strokeStyle = '#e2e8f0';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(x + 8, y + h - 44);
-        ctx.lineTo(x + w - 8, y + h - 44);
+        ctx.moveTo(x + 10, y + h - 55);
+        ctx.lineTo(x + w - 10, y + h - 55);
         ctx.stroke();
 
-        ctx.font = '400 24px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '500 32px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#475569';
 
         // Chi Cung (Left)
         ctx.textAlign = 'left';
-        ctx.fillText(palace.chiName, x + padding, y + h - 14);
+        ctx.fillText(palace.chiName, x + padding, y + h - 18);
 
         // Tràng Sinh (Center)
         ctx.textAlign = 'center';
-        ctx.fillText(palace.trangSinh, x + w / 2, y + h - 14);
+        ctx.fillText(palace.trangSinh, x + w / 2, y + h - 18);
 
         // Nguyệt Hạn (Right)
         ctx.textAlign = 'right';
-        ctx.fillText(palace.nguyetHan, x + w - padding, y + h - 14);
+        ctx.fillText(palace.nguyetHan, x + w - padding, y + h - 18);
     }
 
     static drawTuanTriet(ctx, cungs, label, margin, cellW, cellH, palaceGridPositions) {
@@ -242,18 +237,18 @@ export class TuViPngExporter {
         }
 
         // Badge Dimensions
-        const bw = 100;
-        const bh = 36;
+        const bw = 130;
+        const bh = 46;
 
         ctx.fillStyle = '#000000';
         ctx.fillRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
         const isTuan = label === 'Tuần';
         ctx.strokeStyle = isTuan ? '#fbbf24' : '#ffffff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.strokeRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
-        ctx.font = 'bold 22px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = 'bold 28px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = isTuan ? '#fbbf24' : '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -263,31 +258,36 @@ export class TuViPngExporter {
 
     static drawTrungCung(ctx, meta, x, y, w, h) {
         // Background tint for Center Palace
-        ctx.fillStyle = '#faf8f5';
-        ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
+        ctx.fillStyle = '#f6f0e2';
+        ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
 
-        // Header Title
-        ctx.font = '600 46px "Inter", "Be Vietnam Pro", sans-serif';
+        // Border for Center Box
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, h);
+
+        // Header Title (Không tăng, giữ nguyên tỉ lệ đẹp)
+        ctx.font = '700 46px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#b91c1c';
         ctx.textAlign = 'center';
-        ctx.fillText('DỊCH SƯ NGUYỄN HUY HOÀNG', x + w / 2, y + 75);
+        ctx.fillText('DỊCH SƯ NGUYỄN HUY HOÀNG', x + w / 2, y + 80);
 
         // Line under title
         ctx.strokeStyle = '#dc2626';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(x + w / 2 - 200, y + 95);
-        ctx.lineTo(x + w / 2 + 200, y + 95);
+        ctx.moveTo(x + w / 2 - 240, y + 104);
+        ctx.lineTo(x + w / 2 + 240, y + 104);
         ctx.stroke();
 
-        // 2 Columns Layout
-        const col1LabelX = x + 40;
-        const col1ValX = x + 240;
+        // 2 Columns Info Layout with Larger Fonts & Generous Line Spacing
+        const col1LabelX = x + 50;
+        const col1ValX = x + 250;
         const col2LabelX = x + w / 2 + 30;
-        const col2ValX = x + w / 2 + 230;
+        const col2ValX = x + w / 2 + 240;
 
-        let curY = y + 155;
-        const stepY = 50;
+        let curY = y + 175;
+        const stepY = 66;
 
         const rows = [
             [
@@ -322,49 +322,49 @@ export class TuViPngExporter {
 
         rows.forEach(r => {
             // Col 1
-            ctx.font = '400 25px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '500 33px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = '#475569';
             ctx.textAlign = 'left';
             ctx.fillText(r[0].label, col1LabelX, curY);
 
-            ctx.font = '600 25px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '700 33px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = r[0].color;
             ctx.fillText(r[0].value, col1ValX, curY);
 
             // Col 2
-            ctx.font = '400 25px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '500 33px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = '#475569';
             ctx.fillText(r[1].label, col2LabelX, curY);
 
-            ctx.font = '600 25px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.font = '700 33px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = r[1].color;
             ctx.fillText(r[1].value, col2ValX, curY);
 
             // Subtle dashed line
-            ctx.strokeStyle = '#f1f5f9';
+            ctx.strokeStyle = '#e2e8f0';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(col1LabelX, curY + 12);
-            ctx.lineTo(x + w - 40, curY + 12);
+            ctx.moveTo(col1LabelX, curY + 16);
+            ctx.lineTo(x + w - 50, curY + 16);
             ctx.stroke();
 
             curY += stepY;
         });
 
         // Seal & Contact Footer
-        ctx.strokeStyle = '#e2e8f0';
+        ctx.strokeStyle = '#cbd5e1';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(x + 40, y + h - 100);
-        ctx.lineTo(x + w - 40, y + h - 100);
+        ctx.moveTo(x + 50, y + h - 115);
+        ctx.lineTo(x + w - 50, y + h - 115);
         ctx.stroke();
 
-        ctx.font = '600 25px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = '700 33px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#0f172a';
         ctx.textAlign = 'center';
-        ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, y + h - 65);
+        ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, y + h - 70);
 
-        ctx.font = 'italic 400 22px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.font = 'italic 500 26px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#64748b';
         ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, y + h - 30);
     }
