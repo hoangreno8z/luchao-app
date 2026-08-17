@@ -25,13 +25,13 @@ export const CHI_ELEMENTS = {
     "Thân": "Kim", "Dậu": "Kim", "Tuất": "Thổ", "Hợi": "Thủy"
 };
 
-// Bảng màu chuẩn Ngũ Hành
+// Bảng màu chuẩn Ngũ Hành - Độ Đậm Màu Tối Đa (High Contrast)
 export const ELEMENT_COLORS = {
-    "Kim": "#708090",   // Xám bạc / Khí Kim
-    "Mộc": "#16a34a",   // Xanh lá / Khí Mộc
-    "Thủy": "#0284c7",  // Xanh dương / Khí Thủy
-    "Hỏa": "#dc2626",   // Đỏ / Khí Hỏa
-    "Thổ": "#d97706"    // Vàng nâu / Khí Thổ
+    "Kim": "#475569",   // Xám chì đậm / Khí Kim
+    "Mộc": "#15803d",   // Xanh lá đậm / Khí Mộc
+    "Thủy": "#1d4ed8",  // Xanh lam đậm / Khí Thủy
+    "Hỏa": "#dc2626",   // Đỏ tươi đậm / Khí Hỏa
+    "Thổ": "#92400e"    // Nâu hổ phách đậm / Khí Thổ
 };
 
 // 60 Hoa Giáp Nạp Âm

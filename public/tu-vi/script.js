@@ -210,14 +210,14 @@ function renderChart(data) {
             pEl.style.gridColumn = `${c + 1}`;
 
             // Can Cung Color
-            const canColor = ELEMENT_COLORS[palace.canElement] || '#111827';
+            const canColor = ELEMENT_COLORS[palace.canElement] || '#0f172a';
             const cungNameColorClass = palace.cungName === 'MỆNH' ? 'menh' : '';
             const cungTitle = palace.isThan ? `${palace.cungName} &lt;THÂN&gt;` : palace.cungName;
 
             // Main Stars HTML
             let mainStarsHtml = '';
             palace.mainStars.forEach(s => {
-                const sColor = ELEMENT_COLORS[s.element] || '#111827';
+                const sColor = ELEMENT_COLORS[s.element] || '#0f172a';
                 const text = s.mieuHam ? `${s.name}(${s.mieuHam})` : s.name;
                 mainStarsHtml += `<span class="main-star-item" style="color:${sColor};">${text}</span>`;
             });
@@ -225,7 +225,7 @@ function renderChart(data) {
             // Good Stars HTML (Left Column)
             let goodStarsHtml = '';
             palace.goodStars.forEach(s => {
-                const sColor = ELEMENT_COLORS[s.element] || '#16a34a';
+                const sColor = ELEMENT_COLORS[s.element] || '#15803d';
                 const text = s.mieuHam ? `${s.name}(${s.mieuHam})` : s.name;
                 goodStarsHtml += `<span style="color:${sColor};">${text}</span>`;
             });
