@@ -75,9 +75,18 @@ export class TuViPngExporter {
         // Draw Trung Cung (Center Box) BEFORE Tuần Triệt so it never covers badges
         this.drawTrungCung(ctx, horoscopeData.metadata, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
 
-        // Draw Tuần & Triệt Badges on top layer at exact perimeter boundary edges (between the 2 palaces)
-        this.drawTuanTriet(ctx, horoscopeData.metadata.tuanCungs, 'Tuần', margin, cellW, cellH);
-        this.drawTuanTriet(ctx, horoscopeData.metadata.trietCungs, 'Triệt', margin, cellW, cellH);
+        // Draw Tuần & Triệt Badges on top layer at exact perimeter boundary edges
+        const tuanKey = this.getBoundaryKey(horoscopeData.metadata.tuanCungs);
+        const trietKey = this.getBoundaryKey(horoscopeData.metadata.trietCungs);
+
+        if (tuanKey && trietKey && tuanKey === trietKey) {
+            // Khi Tuần và Triệt cùng 1 vị trí -> tách ra theo hàng ngang nằm cạnh nhau [Tuần] [Triệt]
+            this.drawTuanTrietCoLocated(ctx, horoscopeData.metadata.tuanCungs, margin, cellW, cellH);
+        } else {
+            // Khi ở khác vị trí -> vẽ độc lập bình thường
+            this.drawTuanTriet(ctx, horoscopeData.metadata.tuanCungs, 'Tuần', margin, cellW, cellH);
+            this.drawTuanTriet(ctx, horoscopeData.metadata.trietCungs, 'Triệt', margin, cellW, cellH);
+        }
 
         return canvas;
     }
@@ -196,30 +205,33 @@ export class TuViPngExporter {
         ctx.fillText(palace.nguyetHan, x + w - padding, y + h - 18);
     }
 
-    static drawTuanTriet(ctx, cungs, label, margin, cellW, cellH) {
-        if (!cungs || cungs.length < 2) return;
+    static getBoundaryKey(cungs) {
+        if (!cungs || cungs.length < 2) return null;
+        const c1 = cungs[0];
+        const c2 = cungs[1];
+        return (c1 === 11 && c2 === 0) || (c1 === 0 && c2 === 11)
+            ? "11_0"
+            : `${Math.min(c1, c2)}_${Math.max(c1, c2)}`;
+    }
 
-        // Vị trí chuẩn xác 100% tại 6 cặp ranh giới kinh điển của Tử Vi
+    static drawTuanTriet(ctx, cungs, label, margin, cellW, cellH) {
         const boundaryMap = {
-            "2_3":   { colRatio: 0.5, rowRatio: 3.0 }, // Dần - Mão (vách ngăn ngang giữa Dần và Mão)
-            "3_4":   { colRatio: 0.5, rowRatio: 2.0 }, // Mão - Thìn (vách ngăn ngang giữa Mão và Thìn)
-            "4_5":   { colRatio: 0.5, rowRatio: 1.0 }, // Thìn - Tị (vách ngăn ngang giữa Thìn và Tị)
+            "2_3":   { colRatio: 0.5, rowRatio: 3.0 }, // Dần - Mão
+            "3_4":   { colRatio: 0.5, rowRatio: 2.0 }, // Mão - Thìn
+            "4_5":   { colRatio: 0.5, rowRatio: 1.0 }, // Thìn - Tị
             "5_6":   { colRatio: 1.0, rowRatio: 1.0 }, // Tị - Ngọ
-            "6_7":   { colRatio: 2.0, rowRatio: 1.0 }, // Ngọ - Mùi (ở mép dưới Ngọ-Mùi, trên đỉnh Trung Cung)
+            "6_7":   { colRatio: 2.0, rowRatio: 1.0 }, // Ngọ - Mùi (đúng mép trên Trung Cung)
             "7_8":   { colRatio: 3.0, rowRatio: 1.0 }, // Mùi - Thân
             "8_9":   { colRatio: 3.5, rowRatio: 1.0 }, // Thân - Dậu (vách ngăn ngang giữa Thân và Dậu)
-            "9_10":  { colRatio: 3.5, rowRatio: 2.0 }, // Dậu - Tuất (vách ngăn ngang giữa Dậu và Tuất)
-            "10_11": { colRatio: 3.5, rowRatio: 3.0 }, // Tuất - Hợi (vách ngăn ngang giữa Tuất và Hợi)
+            "9_10":  { colRatio: 3.5, rowRatio: 2.0 }, // Dậu - Tuất
+            "10_11": { colRatio: 3.5, rowRatio: 3.0 }, // Tuất - Hợi
             "11_0":  { colRatio: 3.0, rowRatio: 3.0 }, // Hợi - Tý
-            "0_1":   { colRatio: 2.0, rowRatio: 3.0 }, // Tý - Sửu (ở mép trên Sửu-Tý, dưới đáy Trung Cung)
+            "0_1":   { colRatio: 2.0, rowRatio: 3.0 }, // Tý - Sửu (đúng mép dưới Trung Cung)
             "1_2":   { colRatio: 1.0, rowRatio: 3.0 }  // Sửu - Dần
         };
 
-        const c1 = cungs[0];
-        const c2 = cungs[1];
-        const key = (c1 === 11 && c2 === 0) || (c1 === 0 && c2 === 11)
-            ? "11_0"
-            : `${Math.min(c1, c2)}_${Math.max(c1, c2)}`;
+        const key = this.getBoundaryKey(cungs);
+        if (!key) return;
 
         const boundary = boundaryMap[key];
         if (!boundary) return;
@@ -227,7 +239,7 @@ export class TuViPngExporter {
         const midX = margin + boundary.colRatio * cellW;
         const midY = margin + boundary.rowRatio * cellH;
 
-        // Badge Dimensions: Nhỏ gọn, mỏng thanh lịch, không che chữ
+        // Badge Dimensions
         const bw = 80;
         const bh = 28;
 
@@ -244,6 +256,64 @@ export class TuViPngExporter {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(label, midX, midY);
+        ctx.textBaseline = 'alphabetic'; // Reset
+    }
+
+    static drawTuanTrietCoLocated(ctx, cungs, margin, cellW, cellH) {
+        const boundaryMap = {
+            "2_3":   { colRatio: 0.5, rowRatio: 3.0 },
+            "3_4":   { colRatio: 0.5, rowRatio: 2.0 },
+            "4_5":   { colRatio: 0.5, rowRatio: 1.0 },
+            "5_6":   { colRatio: 1.0, rowRatio: 1.0 },
+            "6_7":   { colRatio: 2.0, rowRatio: 1.0 },
+            "7_8":   { colRatio: 3.0, rowRatio: 1.0 },
+            "8_9":   { colRatio: 3.5, rowRatio: 1.0 },
+            "9_10":  { colRatio: 3.5, rowRatio: 2.0 },
+            "10_11": { colRatio: 3.5, rowRatio: 3.0 },
+            "11_0":  { colRatio: 3.0, rowRatio: 3.0 },
+            "0_1":   { colRatio: 2.0, rowRatio: 3.0 },
+            "1_2":   { colRatio: 1.0, rowRatio: 3.0 }
+        };
+
+        const key = this.getBoundaryKey(cungs);
+        if (!key) return;
+
+        const boundary = boundaryMap[key];
+        if (!boundary) return;
+
+        const midX = margin + boundary.colRatio * cellW;
+        const midY = margin + boundary.rowRatio * cellH;
+
+        const bw = 70;
+        const bh = 28;
+        const offset = (bw / 2) + 3;
+
+        // 1. Badge Tuần (Bên trái)
+        const tuanX = midX - offset;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(tuanX - bw / 2, midY - bh / 2, bw, bh);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(tuanX - bw / 2, midY - bh / 2, bw, bh);
+        ctx.font = 'bold 18px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.fillStyle = '#fbbf24';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Tuần', tuanX, midY);
+
+        // 2. Badge Triệt (Bên phải)
+        const trietX = midX + offset;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(trietX - bw / 2, midY - bh / 2, bw, bh);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(trietX - bw / 2, midY - bh / 2, bw, bh);
+        ctx.font = 'bold 18px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Triệt', trietX, midY);
+
         ctx.textBaseline = 'alphabetic'; // Reset
     }
 
@@ -271,9 +341,9 @@ export class TuViPngExporter {
         ctx.lineTo(x + w / 2 + 240, y + 104);
         ctx.stroke();
 
-        // 1 CỘT DỌC DUY NHẤT (SINGLE COLUMN LAYOUT) - TÁCH BIỆT CHỦ MỆNH & CHỦ THÂN RIÊNG DÒNG, TO RÕ KHÔNG ĐÈ NHAU
+        // 1 CỘT DỌC DUY NHẤT (SINGLE COLUMN LAYOUT) - CAN CHI ĐẦY ĐỦ CHO NGÀY, THÁNG, NĂM, GIỜ
         const labelX = x + 80;
-        const valX = x + 310;
+        const valX = x + 300;
 
         let curY = y + 165;
         const stepY = 70;
@@ -283,8 +353,8 @@ export class TuViPngExporter {
             { label: 'Âm Dương:', value: `${meta.amDuongNamNu} (${meta.amDuongLy})`, color: '#0f172a' },
             { label: 'Năm sinh:', value: `${meta.solarDate.split('/')[2]} (${meta.lunarYearCanChi})`, color: '#0f172a' },
             { label: 'Tháng sinh:', value: `${meta.solarDate.split('/')[1]} (${meta.lunarMonthCanChi})`, color: '#0f172a' },
-            { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (${meta.lunarDayCanChi})`, color: '#0f172a' },
-            { label: 'Giờ sinh:', value: `Giờ ${meta.hourName}`, color: '#0f172a' },
+            { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (Ngày ${meta.lunarDay} ${meta.lunarDayCanChi})`, color: '#0f172a' },
+            { label: 'Giờ sinh:', value: `Giờ ${meta.hourName} (${meta.lunarHourCanChi})`, color: '#0f172a' },
             { label: 'Bản Mệnh:', value: meta.banMenh, color: ELEMENT_COLORS[meta.banMenhElement] || '#92400e' },
             { label: 'Cục:', value: `${meta.cucInfo.name} (${meta.cucMenhTuongTac})`, color: ELEMENT_COLORS[meta.cucInfo.element] || '#1d4ed8' },
             { label: 'Chủ Mệnh:', value: meta.chuMenh, color: '#0f172a' },

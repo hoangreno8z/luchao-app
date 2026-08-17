@@ -785,16 +785,27 @@ export class TuViEngine {
             }
         }
 
+        const dayInfo = this.getDayCanChi(solarDay, solarMonth, solarYear);
+        const dayCanChi = dayInfo.canChi;
+        const hourCanIdx = (dayInfo.canIdx * 2 + hourIndex) % 10;
+        const hourCanChi = `${CAN_NAMES[hourCanIdx]} ${CHI_NAMES[hourIndex]}`;
+
         return {
             metadata: {
                 name,
                 gender,
+                solarDay,
+                solarMonth,
+                solarYear,
                 solarDate: `${solarDay}/${solarMonth}/${solarYear}`,
+                lunarDay,
+                lunarMonth,
+                lunarYear,
                 lunarDate: `${lunarDay}/${lunarMonth}/${lunarYear} ${isLeap ? '(Nhuận)' : ''}`,
                 lunarYearCanChi: yearCanChi,
-                lunarMonthCanChi: `${CAN_NAMES[(yearCanIdx * 2 + lunarMonth + 1) % 10]} ${CHI_NAMES[(lunarMonth + 1) % 12]}`,
-                lunarDayCanChi: `Ngày ${lunarDay}`,
-                lunarHourCanChi: `${CAN_NAMES[(yearCanIdx * 2 + hourIndex) % 10]} ${CHI_NAMES[hourIndex]}`,
+                lunarMonthCanChi: `Tháng ${lunarMonth} (${CAN_NAMES[(yearCanIdx * 2 + lunarMonth + 1) % 10]} ${CHI_NAMES[(lunarMonth + 1) % 12]})`,
+                lunarDayCanChi: dayCanChi,
+                lunarHourCanChi: hourCanChi,
                 hourIndex,
                 hourName: CHI_NAMES[hourIndex],
                 viewYear,
@@ -813,6 +824,25 @@ export class TuViEngine {
                 tuanCungs
             },
             palaces
+        };
+    }
+
+    /**
+     * Tính Can Chi Ngày theo Thuật toán Số Ngày Julian
+     */
+    static getDayCanChi(solarDay, solarMonth, solarYear) {
+        const a = Math.floor((14 - solarMonth) / 12);
+        const y = solarYear + 4800 - a;
+        const m = solarMonth + 12 * a - 3;
+        const jdn = solarDay + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+        const canIdx = (jdn + 9) % 10;
+        const chiIdx = (jdn + 1) % 12;
+        return {
+            canIdx,
+            chiIdx,
+            canName: CAN_NAMES[canIdx],
+            chiName: CHI_NAMES[chiIdx],
+            canChi: `${CAN_NAMES[canIdx]} ${CHI_NAMES[chiIdx]}`
         };
     }
 
