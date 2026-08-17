@@ -163,7 +163,8 @@ export class TuViEngine {
         hourIndex, // 0=Tý, 1=Sửu, ..., 11=Hợi
         viewYear = 2026,
         showSaoLuu = true,
-        showDaoHongLuu = true
+        showDaoHongLuu = true,
+        luongThiMode = false
     }) {
         // Can Chi Năm, Tháng, Ngày, Giờ
         const yearCanIdx = (lunarYear - 4) % 10;
@@ -197,18 +198,31 @@ export class TuViEngine {
         const thanPos = (2 + (lunarMonth - 1) + hourIndex) % 12;
 
         // 2. NGŨ HỔ ĐỘN: AN CAN CHO 12 CUNG
-        // Can khởi Dần theo Can Năm:
+        // Khởi từ Dần (cung index 2) theo Can Năm:
         // Giáp/Kỷ -> Bính Dần (2)
         // Ất/Canh -> Mậu Dần (4)
         // Bính/Tân -> Canh Dần (6)
         // Đinh/Nhâm -> Nhâm Dần (8)
         // Mậu/Quý -> Giáp Dần (0)
+        // Quy tắc: Can Tý = Can Dần, Can Sửu = Can Mão
         const danCanStart = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0][yearCanIdx];
+        const cungCanMap = {
+            2: danCanStart,                      // Dần (khởi điểm)
+            3: (danCanStart + 1) % 10,           // Mão
+            4: (danCanStart + 2) % 10,           // Thìn
+            5: (danCanStart + 3) % 10,           // Tị
+            6: (danCanStart + 4) % 10,           // Ngọ
+            7: (danCanStart + 5) % 10,           // Mùi
+            8: (danCanStart + 6) % 10,           // Thân
+            9: (danCanStart + 7) % 10,           // Dậu
+            10: (danCanStart + 8) % 10,          // Tuất
+            11: (danCanStart + 9) % 10,          // Hợi
+            0: danCanStart,                      // Tý (bằng Dần)
+            1: (danCanStart + 1) % 10            // Sửu (bằng Mão)
+        };
         const cungCanList = new Array(12);
         for (let i = 0; i < 12; i++) {
-            // i=2 là Dần -> Can = danCanStart
-            const canIndex = (danCanStart + (i - 2 + 12)) % 10;
-            cungCanList[i] = CAN_NAMES[canIndex];
+            cungCanList[i] = CAN_NAMES[cungCanMap[i]];
         }
 
         // 3. TÍNH CỤC (NGŨ HÀNH CỤC)
@@ -753,14 +767,23 @@ export class TuViEngine {
             (banMenhElement === "Thổ" && cucElement === "Kim") ||
             (banMenhElement === "Kim" && cucElement === "Thủy")
         ) cucMenhTuongTac = "Mệnh sinh Cục";
-        else if (
-            (cucElement === "Thủy" && banMenhElement === "Hỏa") ||
-            (cucElement === "Hỏa" && banMenhElement === "Kim") ||
-            (cucElement === "Kim" && banMenhElement === "Mộc") ||
-            (cucElement === "Mộc" && banMenhElement === "Thổ") ||
-            (cucElement === "Thổ" && banMenhElement === "Thủy")
-        ) cucMenhTuongTac = "Cục khắc Mệnh";
-        else cucMenhTuongTac = "Mệnh khắc Cục";
+        // 25. BẮC PHÁI (LƯƠNG THỊ) - CHỈ HIỂN THỊ 14 CHÍNH TINH + TẢ, HỮU, XƯƠNG, KHÚC, TỨ HÓA
+        if (luongThiMode) {
+            const allowedPhuLuongThi = new Set([
+                "Văn Xương", "Văn Khúc", "Tả Phù", "Hữu Bật",
+                "Hóa Lộc", "Hóa Quyền", "Hóa Khoa", "Hóa Kỵ"
+            ]);
+            for (let p = 0; p < 12; p++) {
+                palaces[p].goodStars = palaces[p].goodStars.filter(s => {
+                    const cleanName = s.name.split('(')[0].trim();
+                    return allowedPhuLuongThi.has(cleanName) || cleanName.startsWith("Hóa ");
+                });
+                palaces[p].badStars = palaces[p].badStars.filter(s => {
+                    const cleanName = s.name.split('(')[0].trim();
+                    return allowedPhuLuongThi.has(cleanName) || cleanName.startsWith("Hóa ");
+                });
+            }
+        }
 
         return {
             metadata: {

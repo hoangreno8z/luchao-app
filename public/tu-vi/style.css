@@ -321,8 +321,8 @@ body {
 /* The 4x4 Matrix Grid */
 .tuvi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: 1.12fr 0.88fr 0.88fr 1.12fr;
+    grid-template-rows: 1.12fr 0.88fr 0.88fr 1.12fr;
     gap: 1px;
     background: #383838;
     border: 1px solid #383838;
@@ -365,14 +365,14 @@ body {
 
 .can-cung {
     font-weight: 500;
-    font-size: 0.56rem;
+    font-size: 0.5rem;
     color: #334155;
     line-height: 1;
 }
 
 .cung-name {
-    font-weight: 600;
-    font-size: 0.65rem;
+    font-weight: 500;
+    font-size: 0.52rem;
     color: #0f172a;
     line-height: 1;
     letter-spacing: 0.1px;
@@ -380,13 +380,13 @@ body {
 
 .cung-name.menh {
     color: #dc2626;
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: 0.54rem;
+    font-weight: 600;
 }
 
 .dai-han {
     font-weight: 500;
-    font-size: 0.56rem;
+    font-size: 0.5rem;
     color: #0f172a;
     line-height: 1;
 }
@@ -398,10 +398,10 @@ body {
 }
 
 .main-star-item {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 600;
     display: block;
-    line-height: 1.12;
+    line-height: 1.1;
     letter-spacing: 0.1px;
 }
 
@@ -410,10 +410,10 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5px 2px;
-    font-size: 0.52rem;
+    font-size: 0.5rem;
     font-weight: 400;
     flex-grow: 1;
-    line-height: 1.12;
+    line-height: 1.1;
     overflow: hidden;
 }
 
@@ -439,7 +439,7 @@ body {
     border-top: 1px solid #e5e5e5;
     padding-top: 0.5px;
     margin-top: 0.5px;
-    font-size: 0.48rem;
+    font-size: 0.46rem;
     font-weight: 400;
     color: #475569;
     line-height: 1;
@@ -451,7 +451,7 @@ body {
     grid-row: 2 / span 2;
     background: #faf6ee;
     color: #0f172a;
-    padding: 3px 5px;
+    padding: 2px 3px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -464,62 +464,62 @@ body {
     text-align: center;
     border-bottom: 1px solid #dc2626;
     padding-bottom: 1px;
-    margin-bottom: 2px;
+    margin-bottom: 1.5px;
 }
 
 .tc-title {
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.5rem;
+    font-weight: 600;
     color: #dc2626;
     letter-spacing: 0.02em;
     text-align: center;
-    line-height: 1.1;
+    line-height: 1.05;
 }
 
 .tc-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1px 5px;
-    font-size: 0.52rem;
-    line-height: 1.15;
+    gap: 0.5px 3px;
+    font-size: 0.44rem;
+    line-height: 1.1;
 }
 
 .tc-row {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
-    padding: 0.5px 0;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+    padding: 0.2px 0;
 }
 
 .tc-label {
     color: #475569;
     font-weight: 400;
-    font-size: 0.52rem;
+    font-size: 0.44rem;
 }
 
 .tc-value {
-    font-weight: 600;
+    font-weight: 500;
     color: #0f172a;
-    font-size: 0.52rem;
+    font-size: 0.44rem;
 }
 
 .tc-author-box {
     border-top: 1px solid #e5e5e5;
-    padding-top: 1.5px;
-    margin-top: 1.5px;
+    padding-top: 1px;
+    margin-top: 1px;
     text-align: center;
 }
 
 .tc-author-contact {
-    font-weight: 600;
+    font-weight: 500;
     color: #0f172a;
-    font-size: 0.52rem;
+    font-size: 0.44rem;
 }
 
 .tc-author-quote {
     font-style: italic;
     color: #64748b;
-    font-size: 0.46rem;
+    font-size: 0.38rem;
     font-weight: 400;
     margin-top: 0.5px;
 }

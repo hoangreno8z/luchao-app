@@ -70,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const cbLuongThi = document.getElementById('checkboxLuongThi');
+    if (cbLuongThi) {
+        cbLuongThi.addEventListener('change', () => {
+            generateHoroscope();
+        });
+    }
+
     // Toggle Mobile View Mode (Fit Screen vs Zoom)
     const btnToggleFit = document.getElementById('btnToggleFitScreen');
     const chartWrapper = document.querySelector('.chart-container-wrapper');
@@ -108,6 +115,7 @@ function generateHoroscope() {
 
     const showSaoLuu = document.getElementById('checkboxSaoLuu') ? document.getElementById('checkboxSaoLuu').checked : true;
     const showDaoHongLuu = document.getElementById('checkboxDaoHongLuu') ? document.getElementById('checkboxDaoHongLuu').checked : true;
+    const luongThiMode = document.getElementById('checkboxLuongThi') ? document.getElementById('checkboxLuongThi').checked : false;
 
     // Convert Solar to Lunar using Lunar-JS
     let lunarDay = solarDay, lunarMonth = solarMonth, lunarYear = solarYear, isLeap = false;
@@ -133,7 +141,8 @@ function generateHoroscope() {
         hourIndex,
         viewYear,
         showSaoLuu,
-        showDaoHongLuu
+        showDaoHongLuu,
+        luongThiMode
     });
 
     // Render to Grid
