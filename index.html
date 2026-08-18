@@ -275,7 +275,7 @@
 
         /* ==========================================
            HERO SECTION: THIÊN CƠ LUÂN & HỆ THỐNG THIÊN VĂN QUỸ ĐẠO
-           Mặt Trời — Trái Đất — Mặt Trăng — Ngân Hà
+           Mặt Trời — Trái Đất — Mặt Trăng (100% Pure Vector & CSS Shaders)
            ========================================== */
         .hero {
             position: relative;
@@ -295,75 +295,71 @@
             transform: translateZ(0);
         }
 
-        /* Nền Dải Ngân Hà Vũ Trụ khổng lồ hòa trộn đồng bộ hoàn hảo với nền */
-        .galaxy-backdrop {
+        /* 1. Vòng Elip Thiên Cơ Nghiêng Tạo Chiều Sâu Không Gian 3D */
+        .orbit-harmony-ellipse {
             position: absolute;
-            width: 580px;
-            height: 580px;
+            width: 340px;
+            height: 160px;
             border-radius: 50%;
-            z-index: 1;
-            overflow: hidden;
+            border: 1px dashed rgba(214, 168, 79, 0.18);
+            transform: translate3d(-50%, -50%, 0) rotate(-28deg);
+            top: 50%;
+            left: 50%;
             pointer-events: none;
-            display: grid;
-            place-items: center;
-            /* Mặt nạ làm mềm rìa để dải ngân hà tan biến 100% tự nhiên vào nền đen sâu thẳm */
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 25%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.3) 68%, transparent 75%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 25%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.3) 68%, transparent 75%);
-            animation: galaxySlowSpin 140s linear infinite;
-            mix-blend-mode: screen;
-            opacity: 0.88;
             will-change: transform;
-            transform: translateZ(0);
-            backface-visibility: hidden;
+            animation: ellipseDrift 90s linear infinite;
         }
 
-        .galaxy-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scale(1.15) translateZ(0);
-            filter: contrast(1.18) saturate(1.12) brightness(1.05);
-            display: block;
-        }
-
-        /* Vòng quỹ đạo thiên văn bên ngoài (trang trí) */
-        .orbit-guide-outer {
+        /* 2. Vòng Quỹ Đạo Thiên Văn Ngoài Cùng Với Các Điểm Sao Vàng */
+        .orbit-astrolabe-ring {
             position: absolute;
-            width: 310px;
-            height: 310px;
+            width: 290px;
+            height: 290px;
             border-radius: 50%;
-            border: 1px dashed rgba(214, 168, 79, 0.28);
+            border: 1px solid rgba(214, 168, 79, 0.15);
             pointer-events: none;
             z-index: 2;
-            animation: orbitSpinRev 50s linear infinite;
             will-change: transform;
             transform: translateZ(0);
+            animation: astrolabeSpin 60s linear infinite;
         }
 
-        /* Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời */
+        .star-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--bright);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(244, 213, 138, 0.9);
+        }
+        .star-node-n { top: -2.5px; left: calc(50% - 2px); }
+        .star-node-s { bottom: -2.5px; left: calc(50% - 2px); }
+        .star-node-e { right: -2.5px; top: calc(50% - 2px); }
+        .star-node-w { left: -2.5px; top: calc(50% - 2px); }
+
+        /* 3. Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời */
         .earth-orbit-track {
             position: absolute;
-            width: 230px;
-            height: 230px;
+            width: 215px;
+            height: 215px;
             border-radius: 50%;
-            border: 1px solid rgba(214, 168, 79, 0.4);
+            border: 1px solid rgba(214, 168, 79, 0.32);
             pointer-events: none;
             z-index: 3;
             animation: earthOrbitSpin 24s linear infinite;
-            box-shadow: 0 0 25px rgba(214, 168, 79, 0.08);
             display: grid;
             place-items: center;
             will-change: transform;
             transform: translateZ(0);
         }
 
-        /* Trái Đất Container */
+        /* 4. Trái Đất Container & Pure 3D Sphere */
         .earth-satellite-node {
             position: absolute;
-            top: -19px;
-            left: calc(50% - 19px);
-            width: 38px;
-            height: 38px;
+            top: -14px;
+            left: calc(50% - 14px);
+            width: 28px;
+            height: 28px;
             display: grid;
             place-items: center;
             animation: earthCounterSpin 24s linear infinite;
@@ -372,22 +368,43 @@
             transform: translateZ(0);
         }
 
-        .earth-planet-img {
-            width: 38px;
-            height: 38px;
+        .earth-sphere {
+            position: relative;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 0 16px rgba(59, 130, 246, 0.7), 0 0 8px rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(147, 197, 253, 0.5);
+            background: radial-gradient(circle at 30% 28%,
+                #93c5fd 0%,
+                #38bdf8 20%,
+                #2563eb 45%,
+                #1d4ed8 70%,
+                #0f172a 88%,
+                #020617 100%);
+            box-shadow: 
+                0 0 14px rgba(56, 189, 248, 0.7),
+                0 0 5px rgba(255, 255, 255, 0.6),
+                inset -3px -3px 6px rgba(0, 0, 0, 0.8),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(147, 197, 253, 0.6);
+            overflow: hidden;
             display: block;
-            transform: translateZ(0);
         }
 
-        /* Quỹ Đạo Mặt Trăng quay quanh Trái Đất */
+        .earth-clouds {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: 
+                radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 65%, rgba(255, 255, 255, 0.3) 0%, transparent 35%);
+            animation: earthCloudDrift 18s linear infinite;
+        }
+
+        /* 5. Quỹ Đạo Mặt Trăng & Pure 3D Sphere */
         .moon-orbit-track {
             position: absolute;
-            width: 68px;
-            height: 68px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             border: 1px dotted rgba(244, 213, 138, 0.4);
             animation: moonOrbitSpin 5s linear infinite;
@@ -398,25 +415,31 @@
             transform: translateZ(0);
         }
 
-        .moon-satellite-img {
+        .moon-sphere {
             position: absolute;
-            top: -7px;
-            left: calc(50% - 7px);
-            width: 14px;
-            height: 14px;
+            top: -5px;
+            left: calc(50% - 5px);
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: radial-gradient(circle at 30% 30%,
+                #ffffff 0%,
+                #f1f5f9 30%,
+                #cbd5e1 60%,
+                #64748b 85%,
+                #1e293b 100%);
+            box-shadow: 
+                0 0 8px rgba(255, 255, 255, 0.85),
+                inset -1.5px -1.5px 3px rgba(15, 23, 42, 0.85);
+            border: 0.8px solid rgba(255, 255, 255, 0.8);
             display: block;
-            transform: translateZ(0);
         }
 
-        /* Mặt Trời rực rỡ tại Trung Tâm */
+        /* 6. Mặt Trời Vector Hoàng Kim Tại Trung Tâm Vũ Trụ */
         .sun-core-center {
             position: relative;
-            width: 84px;
-            height: 84px;
+            width: 78px;
+            height: 78px;
             border-radius: 50%;
             z-index: 4;
             display: grid;
@@ -426,27 +449,48 @@
 
         .sun-ambient-halo {
             position: absolute;
-            width: 145px;
-            height: 145px;
+            width: 155px;
+            height: 155px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(245, 158, 11, 0.55) 0%, rgba(214, 168, 79, 0.25) 45%, transparent 70%);
-            filter: blur(14px);
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, rgba(214, 168, 79, 0.22) 42%, transparent 70%);
+            filter: blur(16px);
             animation: sunBreathPulse 4s ease-in-out infinite;
             pointer-events: none;
             will-change: transform, opacity;
             transform: translateZ(0);
         }
 
-        .sun-star-img {
-            width: 84px;
-            height: 84px;
+        .sun-corona-rays {
+            position: absolute;
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 0 35px rgba(245, 158, 11, 0.85), 0 0 65px rgba(214, 168, 79, 0.45);
-            border: 1.5px solid rgba(254, 240, 138, 0.8);
-            animation: sunRotateSlow 60s linear infinite;
-            display: block;
+            border: 1px dashed rgba(254, 240, 138, 0.45);
+            animation: sunRotateSlow 45s linear infinite;
+            pointer-events: none;
+            box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.35);
+        }
+
+        .sun-sphere {
             position: relative;
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 32%,
+                #ffffff 0%,
+                #fff7bc 14%,
+                #fef08a 28%,
+                #f59e0b 54%,
+                #d97706 74%,
+                #92400e 88%,
+                #451a03 100%);
+            box-shadow: 
+                0 0 25px rgba(254, 240, 138, 0.9),
+                0 0 55px rgba(245, 158, 11, 0.7),
+                0 0 95px rgba(217, 119, 6, 0.4),
+                inset 0 0 16px rgba(255, 255, 255, 0.95);
+            border: 1.5px solid rgba(254, 240, 138, 0.9);
+            display: block;
             z-index: 5;
             will-change: transform;
             transform: translateZ(0);
@@ -939,17 +983,27 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes galaxySlowSpin {
-            to { transform: rotate(360deg); }
-        }
-
         @keyframes sunBreathPulse {
             0%, 100% { transform: scale(1); opacity: 0.82; }
-            50% { transform: scale(1.16); opacity: 1; }
+            50% { transform: scale(1.14); opacity: 1; }
         }
 
         @keyframes sunRotateSlow {
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes astrolabeSpin {
+            to { transform: rotate(-360deg); }
+        }
+
+        @keyframes ellipseDrift {
+            0%, 100% { transform: translate3d(-50%, -50%, 0) rotate(-28deg) scale(1); }
+            50% { transform: translate3d(-50%, -50%, 0) rotate(-24deg) scale(1.03); }
+        }
+
+        @keyframes earthCloudDrift {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes orbitSpin {
@@ -977,49 +1031,53 @@
                 height: 250px;
                 margin-bottom: 20px;
             }
-            .galaxy-backdrop {
-                width: 380px;
-                height: 380px;
+            .orbit-harmony-ellipse {
+                width: 260px;
+                height: 125px;
             }
-            .orbit-guide-outer {
-                width: 240px;
-                height: 240px;
+            .orbit-astrolabe-ring {
+                width: 230px;
+                height: 230px;
             }
             .earth-orbit-track {
-                width: 180px;
-                height: 180px;
+                width: 170px;
+                height: 170px;
             }
             .earth-satellite-node {
-                width: 30px;
-                height: 30px;
-                top: -15px;
-                left: calc(50% - 15px);
+                width: 22px;
+                height: 22px;
+                top: -11px;
+                left: calc(50% - 11px);
             }
-            .earth-planet-img {
-                width: 30px;
-                height: 30px;
+            .earth-sphere {
+                width: 20px;
+                height: 20px;
             }
             .moon-orbit-track {
-                width: 52px;
-                height: 52px;
+                width: 40px;
+                height: 40px;
             }
-            .moon-satellite-img {
-                width: 11px;
-                height: 11px;
-                top: -6px;
-                left: calc(50% - 6px);
+            .moon-sphere {
+                width: 8px;
+                height: 8px;
+                top: -4px;
+                left: calc(50% - 4px);
             }
             .sun-core-center {
-                width: 68px;
-                height: 68px;
+                width: 62px;
+                height: 62px;
             }
-            .sun-star-img {
-                width: 68px;
-                height: 68px;
+            .sun-sphere {
+                width: 60px;
+                height: 60px;
+            }
+            .sun-corona-rays {
+                width: 76px;
+                height: 76px;
             }
             .sun-ambient-halo {
-                width: 115px;
-                height: 115px;
+                width: 120px;
+                height: 120px;
             }
             .hero h1 {
                 font-size: 36px;
@@ -1120,33 +1178,39 @@
 
         <!-- Hero Section: Thiên Cơ Luân & Nguyễn Huy Hoàng -->
         <section class="hero">
-            <!-- Hệ Thống Mô Phỏng Thiên Văn Quỹ Đạo: Mặt Trời — Trái Đất — Mặt Trăng & Nền Ngân Hà -->
-            <div class="celestial-solar-system">
-                <!-- Nền Dải Ngân Hà khổng lồ phóng to xoay trôi chậm -->
-                <div class="galaxy-backdrop">
-                    <img src="nganha.jpg" alt="Dải Ngân Hà" class="galaxy-img" loading="eager" decoding="async">
+            <!-- Hệ Thống Thiên Cơ Quỹ Đạo Thuần Vector 100% (Pure Vector Solar System) -->
+            <div class="celestial-solar-system" aria-hidden="true">
+                <!-- Vòng Elip Thiên Cơ Nghiêng Tạo Chiều Sâu Không Gian 3D -->
+                <div class="orbit-harmony-ellipse"></div>
+
+                <!-- Vòng Quỹ Đạo Thiên Văn Ngoài Cùng Với Các Điểm Tinh Tú Hoàng Kim -->
+                <div class="orbit-astrolabe-ring">
+                    <span class="star-node star-node-n"></span>
+                    <span class="star-node star-node-s"></span>
+                    <span class="star-node star-node-e"></span>
+                    <span class="star-node star-node-w"></span>
                 </div>
 
-                <!-- Vòng quỹ đạo thiên văn bên ngoài -->
-                <div class="orbit-guide-outer"></div>
-
-                <!-- Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời -->
+                <!-- Vòng Quỹ Đạo Trái Đất (Địa Cầu) Quay Quanh Mặt Trời -->
                 <div class="earth-orbit-track">
-                    <!-- Trái Đất Node -->
+                    <!-- Trái Đất Vector 3D Ngọc Lam -->
                     <div class="earth-satellite-node">
-                        <img src="traidat.jpg" alt="Trái Đất" class="earth-planet-img" loading="eager" decoding="async">
+                        <div class="earth-sphere">
+                            <div class="earth-clouds"></div>
+                        </div>
                         
-                        <!-- Quỹ Đạo Mặt Trăng quay quanh Trái Đất -->
+                        <!-- Quỹ Đạo & Mặt Trăng Vector 3D Bạc -->
                         <div class="moon-orbit-track">
-                            <img src="mattrang.jpg" alt="Mặt Trăng" class="moon-satellite-img" loading="eager" decoding="async">
+                            <div class="moon-sphere"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mặt Trời rực rỡ tại Tâm Điểm -->
+                <!-- Mặt Trời Vector Hoàng Kim Tại Tâm Vũ Trụ -->
                 <div class="sun-core-center">
                     <div class="sun-ambient-halo"></div>
-                    <img src="mattroi.jpg" alt="Mặt Trời" class="sun-star-img" loading="eager" decoding="async">
+                    <div class="sun-corona-rays"></div>
+                    <div class="sun-sphere"></div>
                 </div>
             </div>
 
