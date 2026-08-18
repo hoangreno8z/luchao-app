@@ -130,6 +130,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied tu-vi module recursively to public/tu-vi!');
     }
 
+    // Sao chép đệ quy thư mục phân hệ Phong Thủy sang public/phong-thuy
+    const srcPhongThuy = path.join(projectRoot, 'phong-thuy');
+    const destPhongThuy = path.join(publicDir, 'phong-thuy');
+    if (fs.existsSync(srcPhongThuy)) {
+        copyDirRecursiveSync(srcPhongThuy, destPhongThuy);
+        console.log('Successfully copied phong-thuy module recursively to public/phong-thuy!');
+    }
+
     // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
     const vercelStaticDir = path.join(projectRoot, '.vercel', 'output', 'static');
     if (fs.existsSync(vercelStaticDir)) {
