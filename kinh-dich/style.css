@@ -248,9 +248,9 @@ header p {
 }
 
 .method-tablet {
-    background: #15120e;
-    border: 1px solid rgba(212, 175, 55, 0.25);
-    border-radius: 4px;
+    background: linear-gradient(180deg, #181410 0%, #0e0c09 100%);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 6px;
     padding: 10px 8px;
     color: var(--altar-text-muted);
     font-family: var(--font-title);
@@ -259,40 +259,63 @@ header p {
     letter-spacing: 0.08em;
     cursor: pointer;
     text-align: center;
-    transition: all var(--motion-fast) ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     position: relative;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.method-tablet .tab-svg {
+    transition: transform 0.25s ease, stroke 0.25s ease;
+    flex-shrink: 0;
 }
 
 .method-tablet::after {
     content: '';
     position: absolute;
-    bottom: -1px;
-    left: 20%;
-    right: 20%;
-    height: 2px;
+    bottom: 0;
+    left: 15%;
+    right: 15%;
+    height: 2.5px;
     background: transparent;
-    transition: all var(--motion-fast) ease;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.25s ease;
 }
 
 .method-tablet:hover {
     border-color: var(--altar-gold);
     color: var(--altar-gold);
-    background: #1c1812;
+    background: linear-gradient(180deg, #221c15 0%, #15110c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7), 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.method-tablet:hover .tab-svg {
+    transform: scale(1.1);
+}
+
+.method-tablet:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .method-tablet.active,
 .method-tablet.active-tab-btn {
-    background: linear-gradient(180deg, #241a10 0%, #15100a 100%) !important;
+    background: linear-gradient(180deg, #2a1f13 0%, #18120b 100%) !important;
     border-color: var(--altar-gold) !important;
     color: var(--altar-gold) !important;
-    box-shadow: 0 0 14px rgba(212, 175, 55, 0.25), inset 0 1px 1px rgba(212, 175, 55, 0.4) !important;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.35), inset 0 1px 1px rgba(255, 235, 170, 0.3) !important;
 }
 
 .method-tablet.active::after,
 .method-tablet.active-tab-btn::after {
-    background: var(--altar-vermilion);
+    background: linear-gradient(90deg, #87171a, var(--altar-gold), #87171a);
+    box-shadow: 0 0 8px var(--altar-gold);
 }
 
 @media (max-width: 600px) {
@@ -633,46 +656,87 @@ header p {
 #toss-trigger-btn {
     background: linear-gradient(180deg, #9e1c1f 0%, #751417 100%) !important;
     color: #f7e7b4 !important;
-    border: 1px solid var(--altar-gold) !important;
-    border-radius: 4px !important;
+    border: 1.5px solid var(--altar-gold) !important;
+    border-radius: 6px !important;
     font-family: var(--font-title) !important;
-    font-size: 1.05rem !important;
+    font-size: 1.02rem !important;
     font-weight: 800 !important;
     letter-spacing: 0.12em !important;
-    padding: 13px 28px !important;
+    padding: 13px 24px !important;
     width: 100%;
-    max-width: 270px;
+    max-width: 280px;
     cursor: pointer;
     box-shadow: 
-        0 8px 24px rgba(139, 24, 27, 0.5),
+        0 8px 24px rgba(139, 24, 27, 0.55),
+        0 2px 6px rgba(0, 0, 0, 0.6),
         inset 0 1px 1px rgba(255, 235, 170, 0.4) !important;
-    transition: all var(--motion-fast) ease;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
     user-select: none;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-altar-toss::before,
+#toss-trigger-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    transform: skewX(-25deg);
+    transition: none;
+}
+
+.btn-altar-toss:hover:not(:disabled)::before,
+#toss-trigger-btn:hover:not(:disabled)::before {
+    left: 200%;
+    transition: left 0.75s ease-in-out;
+}
+
+.btn-altar-toss .btn-svg,
+#toss-trigger-btn .btn-svg {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
 }
 
 .btn-altar-toss:hover:not(:disabled),
 #toss-trigger-btn:hover:not(:disabled) {
-    background: linear-gradient(180deg, #b22024 0%, #87171a 100%) !important;
+    background: linear-gradient(180deg, #b82226 0%, #8c181b 100%) !important;
     box-shadow: 
-        0 0 28px rgba(212, 175, 55, 0.4),
-        0 8px 28px rgba(139, 24, 27, 0.7) !important;
-    transform: translateY(-2px);
+        0 0 28px rgba(212, 175, 55, 0.45),
+        0 10px 30px rgba(139, 24, 27, 0.75),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-2.5px);
+}
+
+.btn-altar-toss:hover:not(:disabled) .btn-svg,
+#toss-trigger-btn:hover:not(:disabled) .btn-svg {
+    transform: rotate(15deg) scale(1.1);
 }
 
 .btn-altar-toss:active:not(:disabled),
 #toss-trigger-btn:active:not(:disabled) {
-    transform: translateY(1px);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.8) !important;
+    transform: translateY(1.5px) scale(0.98);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.9),
+        inset 0 2px 4px rgba(0, 0, 0, 0.5) !important;
 }
 
 .btn-altar-toss:disabled,
 #toss-trigger-btn:disabled {
-    background: #201a18 !important;
-    border-color: rgba(212, 175, 55, 0.2) !important;
-    color: #786e68 !important;
+    background: #1c1816 !important;
+    border-color: rgba(212, 175, 55, 0.15) !important;
+    color: #6a625d !important;
     cursor: not-allowed;
     box-shadow: none !important;
     transform: none !important;
+    opacity: 0.65;
 }
 
 /* ==========================================================================
@@ -886,8 +950,32 @@ header p {
 }
 
 .action-row .btn {
-    border-radius: 4px;
+    border-radius: 6px;
     font-family: var(--font-title);
+    letter-spacing: 0.05em;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.action-row .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 12px rgba(212, 175, 55, 0.25);
+}
+
+.action-row .btn:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.action-row .btn .btn-svg-sm {
+    transition: transform 0.25s ease;
+}
+
+.action-row .btn:hover .btn-svg-sm {
+    transform: scale(1.15);
 }
 
 .interpretation-panel {
