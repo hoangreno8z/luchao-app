@@ -377,8 +377,12 @@ h1 {
 .btn-glossy,
 .btn-primary,
 .btn-export,
+.btn-glossy,
+.btn-primary,
+.btn-export,
 .btn-direct-download,
 .nav-btn,
+.engine-tab-btn,
 #btn-copy-luan-giai {
     position: relative;
     display: inline-flex;
@@ -395,7 +399,7 @@ h1 {
     text-decoration: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
     overflow: hidden;
     
     /* Frosted Glass Obsidian Gold Background */
@@ -411,23 +415,36 @@ h1 {
         inset 0 1px 1px rgba(255, 240, 180, 0.6) !important;
 }
 
-/* Subtle Top Glass Reflection Overlay */
-.btn-glossy::before,
-.btn-primary::before,
-.btn-export::before,
-.btn-direct-download::before,
-.nav-btn::before,
-#btn-copy-luan-giai::before {
+.btn-glossy svg,
+.btn-primary svg,
+.btn-export svg,
+.btn-direct-download svg,
+.nav-btn svg,
+.engine-tab-btn svg,
+#btn-copy-luan-giai svg {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+/* Subtle Shimmer Sweep Overlay */
+.btn-primary::after,
+.btn-export::after,
+.btn-direct-download::after {
     content: '';
     position: absolute;
     top: 0;
-    left: 8%;
-    right: 8%;
-    height: 45%;
-    border-radius: 50px 50px 0 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.05) 100%);
-    pointer-events: none;
-    z-index: 1;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transform: skewX(-25deg);
+}
+
+.btn-primary:hover::after,
+.btn-export:hover::after,
+.btn-direct-download:hover::after {
+    left: 200%;
+    transition: left 0.75s ease-in-out;
 }
 
 /* Hover & Active Effects */
@@ -436,8 +453,9 @@ h1 {
 .btn-export:hover,
 .btn-direct-download:hover,
 .nav-btn:hover,
+.engine-tab-btn:hover,
 #btn-copy-luan-giai:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2.5px);
     background: rgba(255, 255, 255, 0.18) !important;
     color: #ffffff !important;
     border-color: #ffd700 !important;
@@ -446,28 +464,35 @@ h1 {
         inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
 }
 
+.btn-primary:hover svg,
+.btn-export:hover svg,
+.btn-direct-download:hover svg {
+    transform: scale(1.15);
+}
+
 .btn-glossy:active,
 .btn-primary:active,
 .btn-export:active,
 .btn-direct-download:active,
 .nav-btn:active,
+.engine-tab-btn:active,
 #btn-copy-luan-giai:active {
-    transform: translateY(1px);
+    transform: translateY(1.5px) scale(0.97);
     box-shadow: 
-        0 2px 8px rgba(0, 0, 0, 0.6),
+        0 2px 8px rgba(0, 0, 0, 0.7),
         inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Primary Button: Glorious Imperial Gold Glass */
 .btn-primary, #btn-ai-luan-giai {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.75) 0%, rgba(0, 242, 254, 0.65) 100%) !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.85) 0%, rgba(0, 242, 254, 0.75) 100%) !important;
     color: #ffffff !important;
     border-color: rgba(255, 255, 255, 0.7) !important;
     box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 .btn-export {
-    background: linear-gradient(135deg, rgba(0, 242, 254, 0.65) 0%, rgba(124, 58, 237, 0.7) 100%) !important;
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.75) 0%, rgba(124, 58, 237, 0.8) 100%) !important;
     color: #ffffff !important;
     border-color: rgba(255, 255, 255, 0.7) !important;
     box-shadow: 0 8px 30px rgba(0, 242, 254, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
