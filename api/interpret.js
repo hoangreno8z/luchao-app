@@ -3,10 +3,9 @@
  * Tích hợp 4 khối Engine của luchao_engine.js + Supabase DB lookup + Gemini AI.
  */
 
-import { runFullEngineAnalysis } from './luchao_engine.js';
-import { FALLBACK_HEXAGRAMS_DB } from './fallback_db.js';
-
-import { COMPILED_KNOWLEDGE } from './compiled_knowledge.js';
+import { runFullEngineAnalysis } from '../lib/luchao_engine.js';
+import { FALLBACK_HEXAGRAMS_DB } from '../lib/fallback_db.js';
+import { COMPILED_KNOWLEDGE } from '../lib/compiled_knowledge.js';
 
 if (COMPILED_KNOWLEDGE && COMPILED_KNOWLEDGE.templates) {
     COMPILED_KNOWLEDGE.templates['phong_thuy'] = {
