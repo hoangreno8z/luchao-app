@@ -340,17 +340,15 @@
         /* 3. Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời */
         .earth-orbit-track {
             position: absolute;
-            width: 215px;
-            height: 215px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             border: 1px solid rgba(214, 168, 79, 0.32);
             pointer-events: none;
             z-index: 3;
+            transform-origin: center center;
             animation: earthOrbitSpin 24s linear infinite;
-            display: grid;
-            place-items: center;
-            will-change: transform;
-            transform: translateZ(0);
+            display: block;
         }
 
         /* 4. Trái Đất Container & Pure 3D Sphere */
@@ -362,10 +360,9 @@
             height: 28px;
             display: grid;
             place-items: center;
+            transform-origin: center center;
             animation: earthCounterSpin 24s linear infinite;
             pointer-events: auto;
-            will-change: transform;
-            transform: translateZ(0);
         }
 
         .earth-sphere {
@@ -403,16 +400,16 @@
         /* 5. Quỹ Đạo Mặt Trăng & Pure 3D Sphere */
         .moon-orbit-track {
             position: absolute;
+            top: -12px;
+            left: -12px;
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            border: 1px dotted rgba(244, 213, 138, 0.4);
+            border: 1px dotted rgba(244, 213, 138, 0.45);
+            transform-origin: center center;
             animation: moonOrbitSpin 5s linear infinite;
             pointer-events: none;
-            display: grid;
-            place-items: center;
-            will-change: transform;
-            transform: translateZ(0);
+            display: block;
         }
 
         .moon-sphere {
@@ -972,15 +969,18 @@
         }
 
         @keyframes earthOrbitSpin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes earthCounterSpin {
-            to { transform: rotate(-360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
         }
 
         @keyframes moonOrbitSpin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes sunBreathPulse {
@@ -989,11 +989,13 @@
         }
 
         @keyframes sunRotateSlow {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes astrolabeSpin {
-            to { transform: rotate(-360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
         }
 
         @keyframes ellipseDrift {
@@ -1007,11 +1009,13 @@
         }
 
         @keyframes orbitSpin {
-            to { transform: translate3d(-50%, 0, 0) rotate(360deg); }
+            0% { transform: translate3d(-50%, 0, 0) rotate(0deg); }
+            100% { transform: translate3d(-50%, 0, 0) rotate(360deg); }
         }
 
         @keyframes orbitSpinRev {
-            to { transform: rotate(-360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
         }
 
         @keyframes starsBreathe {
@@ -1054,6 +1058,8 @@
                 height: 20px;
             }
             .moon-orbit-track {
+                top: -9px;
+                left: -9px;
                 width: 40px;
                 height: 40px;
             }
