@@ -1,5 +1,5 @@
-import { THAI_AT_KNOWLEDGE } from './thai_at_knowledge.js';
-import { THAI_AT_KNOWLEDGE_72, getMatchingCucKnowledge } from './thai_at_knowledge_pdf.js';
+import { THAI_AT_KNOWLEDGE } from '../lib/thai_at_knowledge.js';
+import { THAI_AT_KNOWLEDGE_72, getMatchingCucKnowledge } from '../lib/thai_at_knowledge_pdf.js';
 export const maxDuration = 60;
 
 // List of models to try in order — all free-tier eligible
@@ -84,23 +84,28 @@ ${starPositions}
 
 HÃY TRÌNH BÀY BÀI LUẬN GIẢI THEO CẤU TRÚC 7 CHƯƠNG ĐẲNG CẤP DƯỚI ĐÂY:
 
-CHƯƠNG 1: ☯️ ĐẠI CƯƠNG KHỐI CỤC & BINH PHÁP 144 KHỐI
-- Phân tích chi tiết đặc điểm của Khối/Cục hiện tại dựa vào văn bản gốc sách cổ.
+CHƯƠNG 1: ☯️ ĐẠI CƯƠNG KHỐI CỤC & CHU KỲ TRỊ THIÊN - ĐỊA - DÂN
+- Phân tích chi tiết đặc điểm của Khối/Cục hiện tại dựa vào văn bản gốc sách cổ và chu kỳ 3 năm của Thái Ất (Năm Trị Thiên / Trị Địa / Trị Dân).
 - Luận thế trận Chủ - Khách: Bên nào đắc lực thế hơn? Lợi thế phát động trước hay phát động sau?
-- Binh pháp ứng dụng: Hướng xuất quân đắc lợi, hướng đánh tiêu diệt địch, hình thái trận pháp nên bày (tròn/vuông/nhọn/cong/thẳng), màu cờ nên phất (vàng/đỏ/xanh/trắng/đen), khung giờ phục binh cát lợi và tỷ lệ kỳ binh.
+- Binh pháp ứng dụng: Hướng xuất quân đắc lợi, hướng đánh tiêu diệt địch, hình thái trận pháp nên bày (Khúc/Trực/Nhuệ/Viên/Phương), màu cờ nên phất (Đen/Xanh/Đỏ/Vàng/Trắng theo Ngũ Hành), khung giờ phục binh cát lợi và tỷ lệ kỳ binh.
 
-CHƯƠNG 2: ⚔️ TƯƠNG QUAN LỰC LƯỢNG CHỦ - KHÁCH & TAM TÀI ĐẮC THẾ
+CHƯƠNG 2: ⚠️ DỰ BÁO TAI ÁCH VĨ MÔ CHUYÊN BIỆT (TỨ THÁI ẤT)
+- Phân tích vị trí tọa độ của nhóm Tứ Thái Ất:
+  + Thiên Ất (Kim Thần): Nguy cơ đao binh sát phạt, xung đột vũ trang, di biến động quân sự.
+  + Trực Phù (Hỏa Thần): Nguy cơ hạn hán nhiệt đới, hỏa hoạn, dịch bệnh, châu chấu phá hoại mùa màng, kỷ cương pháp luật.
+  + Địa Ất (Thổ Thần): Nguy cơ sạt lở đất đai, địa chấn động đất, mất mùa lương thực và dịch tễ.
+  + Tứ Thần (Thủy Thần): Nguy cơ thủy tai, lũ lụt diện rộng, vỡ đê, triều cường phá hoại.
+  + Hiện tượng đồng cung / hội tụ (nếu có): Đánh giá sự xung đột ngũ hành giữa các thần sát (ví dụ Thủy Hỏa giao tranh tại Khôn cung).
+
+CHƯƠNG 3: ⚔️ TƯƠNG QUAN LỰC LƯỢNG CHỦ - KHÁCH & MA TRẬN BÁT TƯỚNG
 - Phân tích Toán Chủ (${payload.toanChu}) vs Toán Khách (${payload.toanKhach}): Ai là Trường Toán (Dài $\ge 11$), ai là Đoản Toán (Ngắn $\le 10$)?
 - Xét Tam Tài: Có bị Vô Thiên (thiếu hàng chục), Vô Địa (tròn chục), hay Vô Nhân / Cửa Đóng (tận cùng 5) không?
-- Đánh giá mức độ Hòa Khí (Thượng Hòa / Thứ Hòa / Hạ Hòa / Bất Hòa). Kết luận bên Chủ (phòng thủ/nội bộ) hay bên Khách (tiến công/bên ngoài) chiếm ưu thế áp đảo.
+- Đánh giá mức độ Hòa Khí (Thượng Hòa / Thứ Hòa / Hạ Hòa / Bất Hòa).
+- Rà soát các thế tương tác hình học (Bát Hung): Thế Yểm, Thế Kích, Thế Bách, Thế Tù, Thế Quan/Khóa, Thế Cách, Thế Đối.
 
-CHƯƠNG 3: 🚪 CÁT HUNG BÁT MÔN & CỬU TINH TRỰC SỰ
+CHƯƠNG 4: 🚪 CÁT HUNG BÁT MÔN & CỬU TINH TRỰC SỰ
 - Đánh giá Cửa Trực Sự (${payload.batMon}) và Sao Trực Sự (${payload.cuuTinh}).
 - Phân tích vị trí Thái Ất và Văn Xương rơi vào Cửa nào trong 8 Cửa (Khai, Hưu, Sinh, Thương, Đỗ, Cảnh, Tử, Kinh) ➔ Đâu là Sinh Môn đắc lợi, đâu là Tử Lộ cần tránh.
-
-CHƯƠNG 4: 🌪️ CHIÊM KHÍ TƯỢNG, PHONG HƯỚNG & THIÊN VĂN BIẾN TIẾT
-- Phân tích hệ thống Thập Tinh Khí Tượng: Tam Phong, Ngũ Phong, Bát Phong, Phi Điểu, Thiên Hoàng, Đế Phù, Thiên Thời đang đóng tại các cung nào.
-- Dự báo hiện tượng thời tiết: Gió to, mưa lạnh, giông bão, quầng nhật nguyệt, hay mây biến tiết theo giờ.
 
 CHƯƠNG 5: 👑 CHIÊM ĐOÁN XÃ HỘI, DÂN SINH & VẬN HẠN TAM CƠ
 - Luận giải vị thế Tam Cơ:
@@ -119,7 +124,7 @@ CHƯƠNG 7: 🧭 PHƯƠNG ÁN HÀNH SỰ, GIỜ XUẤT HÀNH & HÓA GIẢI CÁT 
 - Chiến lược hành động tối ưu cho người cầu việc / gia chủ / nhà lãnh đạo.
 - Liệt kê các phương vị đại cát nghênh đón vượng khí và phương vị đại hung cần kiêng kỵ.
 - Các khung giờ cát lành (hoàng đạo Thái Ất) để khởi sự, ký kết, đàm phán.
-- Phương pháp hóa giải nếu quẻ gặp các thế xấu (Yểm, Kích, Bách, Tù, Cách, Cáp).
+- Phương pháp hóa giải nếu quẻ gặp các thế xấu (Yểm, Kích, Bách, Tù, Cách, Quan).
 
 === ĐỊNH DẠNG TRẢ LỜI (HTML CAO CẤP) ===
 Sử dụng mã HTML định dạng sang trọng theo mẫu sau:
