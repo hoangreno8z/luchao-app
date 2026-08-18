@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huyền Không Phi Tinh & Thiết Kế Kiến Trúc Phong Thủy — Dịch Sư Nguyễn Huy Hoàng</title>
+    <meta name="description" content="Ứng dụng Lập Tinh Bàn Huyền Không Phi Tinh Vận 9, Phối Mệnh Bát Trạch, Thước Lỗ Ban và Tự Động Thiết Kế Mặt Bằng Kiến Trúc CAD 2D từ 1 đến 7 tầng.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- UNIVERSAL DROPDOWN HEADER -->
+    <header class="app-universal-header">
+        <div class="header-inner">
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <a href="/" class="brand-link">
+                    <div>
+                        <span class="brand-title">NGUYỄN HUY HOÀNG</span>
+                        <span class="brand-sub">Phong Thủy & Kiến Trúc</span>
+                    </div>
+                </a>
+                <div class="header-social-group">
+                    <a href="https://www.facebook.com/hoangngumo" target="_blank" rel="noopener noreferrer" class="header-social-btn fb" title="Theo dõi Facebook Nguyễn Huy Hoàng">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1877F2"/><path d="M16.5 12.5H14V20H11V12.5H9.5V10H11V8.2C11 6.3 12.1 5 14.3 5H16.5V7.5H15.1C14.2 7.5 14 7.9 14 8.6V10H16.8L16.5 12.5Z" fill="#FFFFFF"/></svg>
+                        <span class="social-label">Follow FB</span>
+                    </a>
+                    <a href="https://zalo.me/0933116860" target="_blank" rel="noopener noreferrer" class="header-social-btn zalo" title="Nhắn tin Zalo: 0933 116 860">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0068FF"/><path d="M5 8.5C5 7.12 6.12 6 7.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H12.8L9.5 19.2C9.1 19.47 8.5 19.18 8.5 18.7V17H7.5C6.12 17 5 15.88 5 14.5V8.5Z" fill="#FFFFFF"/><path d="M7.5 9.5H10.5L7.8 13.2V13.5H11V12.5H8.7L11.4 8.8V8.5H7.5V9.5ZM12.2 13.5H13.2V8.5H12.2V13.5ZM14.2 13.5H15.2V11H16.2V10H15.2V9.5H16.8V8.5H14.2V13.5Z" fill="#0068FF"/></svg>
+                        <span class="social-label">Zalo</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-dropdown-wrapper">
+                <button id="menu-btn" class="menu-toggle-btn" aria-label="Mở Menu">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    <span>MENU</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+
+                <nav id="dropdown-menu" class="portal-dropdown-menu">
+                    <a href="/" class="menu-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Trang Chủ</span>
+                    </a>
+                    <a href="/kinh-dich/" class="menu-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20"></path></svg>
+                        <span>Kinh Dịch Lục Hào</span>
+                    </a>
+                    <a href="/tu-vi/" class="menu-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <span>Tử Vi Đẩu Số</span>
+                    </a>
+                    <a href="/bat-tu/" class="menu-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span>Bát Tự Tứ Trụ</span>
+                    </a>
+                    <a href="/thai-at/" class="menu-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        <span>Thái Ất Thần Số</span>
+                    </a>
+                    <a href="/phong-thuy/" class="menu-item active">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 18h16M6 18V6M10 18V6M14 18V6M18 18V6M2 6h20L12 2z"/></svg>
+                        <span>Phong Thủy & Kiến Trúc</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <div class="main-container">
+        <!-- Hero Title -->
+        <div class="hero-title-section">
+            <span class="hero-badge">Huyền Không Phi Tinh • Bát Trạch • CAD 2D</span>
+            <h1 class="hero-title">PHONG THỦY HUYỀN KHÔNG & THIẾT KẾ KIẾN TRÚC</h1>
+            <p class="hero-sub">Lập Tinh Bàn Vận 9 (2024–2043) — Tự Động Vẽ Bản Thiết Kế Mẫu Mặt Bằng Kiến Trúc Từ 1 Đến 7 Tầng</p>
+        </div>
+
+        <!-- Input Parameters Card -->
+        <div class="glass-card">
+            <!-- Mode Switch Tabs -->
+            <div class="mode-tabs-container">
+                <button type="button" class="mode-tab-btn active" id="tabEmptyLand" data-mode="empty_land">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <span>1. Đất Trống (Thiết Kế Mới Tự Động)</span>
+                </button>
+                <button type="button" class="mode-tab-btn" id="tabExistingHouse" data-mode="existing_house">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h7"/><path d="M14 15h7"/></svg>
+                    <span>2. Đã Có Nhà (Khảo Sát Hiện Trạng)</span>
+                </button>
+            </div>
+
+            <!-- Main Form Controls Grid -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Chiều Ngang Nhà (m) <small>Mặt tiền</small></label>
+                    <input type="number" id="inputWidth" class="form-control" value="5.0" min="3.0" max="30.0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chiều Dài Nhà (m) <small>Chiều sâu</small></label>
+                    <input type="number" id="inputLength" class="form-control" value="16.0" min="6.0" max="60.0" step="0.1">
+                </div>
+                <div class="form-group" id="groupFloors">
+                    <label class="form-label">Quy Mô Số Tầng</label>
+                    <select id="inputFloors" class="form-control">
+                        <option value="1">Nhà Cấp 4 / Trệt (1 Tầng)</option>
+                        <option value="2" selected>Nhà 1 Lầu (2 Tầng)</option>
+                        <option value="3">Nhà 2 Lầu (3 Tầng)</option>
+                        <option value="4">Nhà 3 Lầu (4 Tầng)</option>
+                        <option value="5">Nhà 4 Lầu (5 Tầng)</option>
+                        <option value="6">Nhà 5 Lầu (6 Tầng)</option>
+                        <option value="7">Nhà 6 Lầu (7 Tầng)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Năm Xây Dựng / Nhập Trạch</label>
+                    <input type="number" id="inputBuildYear" class="form-control" value="2025" min="1864" max="2103">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Năm Sinh Gia Chủ <small>Âm/Dương</small></label>
+                    <input type="number" id="inputOwnerYear" class="form-control" value="1990" min="1900" max="2050">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Giới Tính Gia Chủ</label>
+                    <select id="inputOwnerGender" class="form-control">
+                        <option value="nam" selected>Nam (Dương Nam)</option>
+                        <option value="nu">Nữ (Âm Nữ)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Compass Facing Degree Slider -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label">
+                    <span>Hướng Nhà (Độ Số La Bàn: 0° - 360°)</span>
+                    <span id="mountainDisplay" style="color: var(--accent-blue); font-weight: 800;">Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ</span>
+                </label>
+                <div class="compass-slider-box">
+                    <input type="range" id="inputFacingDegree" class="compass-slider" min="0" max="360" value="180" step="0.5">
+                    <input type="number" id="inputFacingNumber" class="degree-badge" value="180" min="0" max="360" step="0.5">
+                </div>
+            </div>
+
+            <!-- Existing House Room Checkboxes (Only shown in Tab 2) -->
+            <div id="existingRoomsSection" style="display: none;">
+                <label class="form-label">Chọn Các Phòng & Vị Trí Đã Bố Trí Trong Nhà <small>(Tùy chọn)</small></label>
+                <div class="rooms-picker-grid">
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="main_door" checked> <span>🚪 Cửa Chính</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="living_room" checked> <span>🛋️ Phòng Khách</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="altar" checked> <span>🔥 Bàn Thờ Tổ Tiên</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="kitchen" checked> <span>🍳 Bếp Nấu</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="master_bed" checked> <span>🛏️ Phòng Ngủ Gia Chủ</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="toilet" checked> <span>🚽 Nhà Vệ Sinh (WC)</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="stairs" checked> <span>🪜 Cầu Thang</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="work_room"> <span>📚 Phòng Làm Việc / Học</span></label>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" class="btn-primary-action" id="btnCalculate">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>LẬP TINH BÀN & THIẾT KẾ MẶT BẰNG KIẾN TRÚC</span>
+            </button>
+        </div>
+
+        <!-- Results Section (Visible after calculation) -->
+        <div id="resultsSection" style="display: none;">
+            
+            <!-- Floor Switcher Bar -->
+            <div class="floor-navigator" id="floorNavigator">
+                <!-- Generated dynamically by script.js -->
+            </div>
+
+            <!-- Studio Grid: CAD Canvas Left, Flying Star Matrix Right -->
+            <div class="cad-studio-container">
+                <!-- Canvas Viewport -->
+                <div class="canvas-viewport-wrapper">
+                    <div class="cad-toolbar">
+                        <button type="button" class="cad-tool-btn active" id="btnToggleDimensions">📐 Kích Thước</button>
+                        <button type="button" class="cad-tool-btn active" id="btnToggleFurniture">🛋️ Nội Thất</button>
+                        <button type="button" class="cad-tool-btn" id="btnToggleCompass">🧭 La Kinh 24 Sơn</button>
+                        <button type="button" class="cad-tool-btn" id="btnExportPng" style="color: var(--gold-light); border-color: rgba(245, 158, 11, 0.4);">💾 Tải Ảnh HD</button>
+                    </div>
+                    <canvas id="cadCanvas" class="cad-canvas" width="1600" height="1200"></canvas>
+                </div>
+
+                <!-- Flying Stars Matrix & Summary Panel -->
+                <div class="glass-card" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 0.88rem; font-weight: 800; color: var(--gold-light);">TINH BÀN HUYỀN KHÔNG</span>
+                        <span id="chartTypeBadge" class="audit-badge good">Hạ Quái</span>
+                    </div>
+
+                    <!-- 9-Palace Matrix -->
+                    <div class="flying-stars-matrix" id="flyingStarsMatrix">
+                        <!-- Rendered by script.js -->
+                    </div>
+
+                    <!-- Chart Meta Info -->
+                    <div style="margin-top: 14px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+                        <div><strong>Vận:</strong> <span id="metaVan" style="color:#fff;">Vận 9</span></div>
+                        <div><strong>Tọa - Hướng:</strong> <span id="metaToaHuong" style="color:#fff;">Tọa Tý - Hướng Ngọ</span></div>
+                        <div><strong>Mệnh Quái:</strong> <span id="metaGua" style="color:#fff;">Khảm Thủy (Đông Tứ Mệnh)</span></div>
+                    </div>
+
+                    <!-- Assessment Box -->
+                    <div class="audit-box" id="auditSummaryBox">
+                        <div id="cachCucTitle" style="font-weight: 800; font-size: 0.92rem; color: var(--gold-light); margin-bottom: 4px;">VƯỢNG SƠN VƯỢNG HƯỚNG</div>
+                        <p id="cachCucDesc" style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5;">Đinh tài lưỡng vượng, tiền tài và sức khỏe đều thịnh vượng bền lâu.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Feng Shui Analysis & Remediation Report -->
+            <div class="glass-card">
+                <h3 style="color: var(--gold-light); font-size: 1.15rem; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    BÁO CÁO PHÂN CUNG PHONG THỦY & GIẢI PHÁP HÓA GIẢI
+                </h3>
+                <div id="detailedReportContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px;">
+                    <!-- Detailed cards rendered by script.js -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer style="padding: 24px 15px 30px; text-align: center; border-top: 1px solid rgba(245, 158, 11, 0.2); background: rgba(10, 15, 29, 0.95); margin-top: 25px; border-radius: 12px;">
+            <p style="color: var(--gold-primary); font-weight: 800; margin: 0 0 6px 0; font-size: 0.95rem; letter-spacing: 0.05em;">DỊCH SƯ NGUYỄN HUY HOÀNG</p>
+            <p style="color: #94a3b8; font-size: 0.82rem; margin: 0 0 12px 0;">Phong Thủy Huyền Không Phi Tinh • Bát Trạch • Thiết Kế Kiến Trúc Mặt Bằng 2D</p>
+            <div class="footer-social-group">
+                <a href="https://www.facebook.com/hoangngumo" target="_blank" rel="noopener noreferrer" class="footer-social-btn fb">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#1877F2"/><path d="M16.5 12.5H14V20H11V12.5H9.5V10H11V8.2C11 6.3 12.1 5 14.3 5H16.5V7.5H15.1C14.2 7.5 14 7.9 14 8.6V10H16.8L16.5 12.5Z" fill="#FFFFFF"/></svg>
+                    <span>Theo dõi Facebook</span>
+                </a>
+                <a href="https://zalo.me/0933116860" target="_blank" rel="noopener noreferrer" class="footer-social-btn zalo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#0068FF"/><path d="M5 8.5C5 7.12 6.12 6 7.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H12.8L9.5 19.2C9.1 19.47 8.5 19.18 8.5 18.7V17H7.5C6.12 17 5 15.88 5 14.5V8.5Z" fill="#FFFFFF"/><path d="M7.5 9.5H10.5L7.8 13.2V13.5H11V12.5H8.7L11.4 8.8V8.5H7.5V9.5ZM12.2 13.5H13.2V8.5H12.2V13.5ZM14.2 13.5H15.2V11H16.2V10H15.2V9.5H16.8V8.5H14.2V13.5Z" fill="#0068FF"/></svg>
+                    <span>Zalo: 0933 116 860</span>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
