@@ -144,7 +144,7 @@ function renderChart(data) {
  */
 function setupReferenceTabs() {
     const tabButtons = document.querySelectorAll('.ref-tab-btn');
-    const container = document.getElementById('refContentMount');
+    const container = document.getElementById('refContentGrid') || document.getElementById('refContentMount');
 
     if (!tabButtons.length || !container) return;
 
@@ -163,16 +163,22 @@ function setupReferenceTabs() {
 }
 
 function renderReferenceContent(tabKey, container) {
-    const data = TU_VI_REFERENCE[tabKey];
-    if (!data) {
-        container.innerHTML = '<p style="color:#94a3b8; text-align:center;">Chưa có dữ liệu tra cứu cho mục này.</p>';
+    const group = TU_VI_REFERENCE[tabKey];
+    if (!group) {
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; grid-column: 1 / -1; padding: 20px;">Chưa có dữ liệu tra cứu cho mục này.</p>';
+        return;
+    }
+
+    const items = group.stars || (Array.isArray(group) ? group : []);
+    if (!items.length) {
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; grid-column: 1 / -1; padding: 20px;">Chưa có dữ liệu tra cứu cho mục này.</p>';
         return;
     }
 
     let html = '';
-    data.forEach(item => {
+    items.forEach(item => {
         const nature = item.nature ? `<div class="ref-star-nature">${item.nature}</div>` : '';
-        const elementColor = ELEMENT_COLORS[item.element] || '#fbbf24';
+        const elementColor = (item.element && ELEMENT_COLORS[item.element]) ? ELEMENT_COLORS[item.element] : '#fbbf24';
         const elementBadge = item.element ? `<span style="color:${elementColor}; font-size:0.75rem; font-weight:700;">[Hành ${item.element}]</span>` : '';
 
         html += `
