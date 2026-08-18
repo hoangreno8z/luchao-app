@@ -80,16 +80,19 @@
             position: absolute;
             pointer-events: none;
             z-index: -1;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .stars {
             inset: 0;
-            opacity: 0.65;
+            opacity: 0.68;
             background-image: 
-                radial-gradient(circle, rgba(244, 213, 138, 0.75) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(244, 213, 138, 0.8) 0 1px, transparent 1.5px),
                 radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 1px, transparent 1.5px);
             background-size: 130px 130px, 210px 210px;
-            animation: starsDrift 45s linear infinite;
+            will-change: opacity;
+            animation: starsBreathe 12s ease-in-out infinite;
         }
 
         .nebula {
@@ -98,6 +101,7 @@
             border-radius: 50%;
             filter: blur(85px);
             opacity: 0.09;
+            will-change: transform;
         }
         .nebula-a {
             top: -15vw;
@@ -120,11 +124,13 @@
             width: 980px;
             height: 980px;
             animation: orbitSpin 100s linear infinite;
+            will-change: transform;
         }
         .orbit-2 {
             width: 720px;
             height: 720px;
             animation: orbitSpinRev 75s linear infinite;
+            will-change: transform;
         }
 
         /* Top Sticky Header */
@@ -138,6 +144,7 @@
             border-bottom: 1px solid var(--border-subtle);
             padding: 12px 20px;
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+            transform: translateZ(0);
         }
 
         .header-content {
@@ -284,6 +291,8 @@
             margin: 0 auto 28px;
             display: grid;
             place-items: center;
+            contain: layout paint;
+            transform: translateZ(0);
         }
 
         /* Nền Dải Ngân Hà Vũ Trụ khổng lồ hòa trộn đồng bộ hoàn hảo với nền */
@@ -303,13 +312,16 @@
             animation: galaxySlowSpin 140s linear infinite;
             mix-blend-mode: screen;
             opacity: 0.88;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         .galaxy-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.15);
+            transform: scale(1.15) translateZ(0);
             filter: contrast(1.18) saturate(1.12) brightness(1.05);
             display: block;
         }
@@ -324,6 +336,8 @@
             pointer-events: none;
             z-index: 2;
             animation: orbitSpinRev 50s linear infinite;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         /* Vòng Quỹ Đạo Trái Đất quay quanh Mặt Trời */
@@ -339,6 +353,8 @@
             box-shadow: 0 0 25px rgba(214, 168, 79, 0.08);
             display: grid;
             place-items: center;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         /* Trái Đất Container */
@@ -352,6 +368,8 @@
             place-items: center;
             animation: earthCounterSpin 24s linear infinite;
             pointer-events: auto;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .earth-planet-img {
@@ -362,6 +380,7 @@
             box-shadow: 0 0 16px rgba(59, 130, 246, 0.7), 0 0 8px rgba(255, 255, 255, 0.4);
             border: 1px solid rgba(147, 197, 253, 0.5);
             display: block;
+            transform: translateZ(0);
         }
 
         /* Quỹ Đạo Mặt Trăng quay quanh Trái Đất */
@@ -375,6 +394,8 @@
             pointer-events: none;
             display: grid;
             place-items: center;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .moon-satellite-img {
@@ -388,6 +409,7 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.6);
             display: block;
+            transform: translateZ(0);
         }
 
         /* Mặt Trời rực rỡ tại Trung Tâm */
@@ -399,6 +421,7 @@
             z-index: 4;
             display: grid;
             place-items: center;
+            transform: translateZ(0);
         }
 
         .sun-ambient-halo {
@@ -410,6 +433,8 @@
             filter: blur(14px);
             animation: sunBreathPulse 4s ease-in-out infinite;
             pointer-events: none;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
 
         .sun-star-img {
@@ -423,6 +448,8 @@
             display: block;
             position: relative;
             z-index: 5;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .eyebrow {
@@ -490,6 +517,7 @@
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 18px;
+            contain: layout style;
         }
 
         .node {
@@ -508,6 +536,8 @@
             cursor: pointer;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            contain: layout style paint;
+            transform: translateZ(0);
             transition: border-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
                         transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
                         background 300ms ease,
@@ -541,6 +571,7 @@
             place-items: center;
             width: 135px;
             height: 100%;
+            contain: layout paint;
         }
 
         .artwork-circle {
@@ -550,6 +581,7 @@
             border-radius: 50%;
             overflow: hidden;
             opacity: 0.3;
+            transform: translateZ(0);
             transition: opacity 400ms ease;
         }
 
@@ -558,6 +590,7 @@
             height: 100%;
             object-fit: cover;
             filter: saturate(0.7) contrast(1.1);
+            transform: translateZ(0);
         }
 
         .node:hover .artwork-circle { opacity: 0.5; }
@@ -569,6 +602,7 @@
             width: 116px;
             height: 116px;
             overflow: visible;
+            transform: translateZ(0);
         }
 
         /* SVG Common Geometry */
@@ -581,6 +615,7 @@
             stroke: rgba(241, 216, 137, 0.52);
             stroke-width: 1.5;
             transform-origin: 80px 80px;
+            will-change: transform;
             animation: glyphSpin 45s linear infinite;
         }
         .taiji-ring { fill: rgba(214, 168, 79, 0.04); stroke: rgba(241, 216, 137, 0.65); stroke-width: 1; }
@@ -595,6 +630,7 @@
         .mv-pt {
             fill: #f1d889;
             filter: drop-shadow(0 0 3px rgba(241, 216, 137, 0.7));
+            will-change: transform;
             animation: glyphOrbit 12s linear infinite;
             transform-origin: 80px 80px;
         }
@@ -602,7 +638,7 @@
         /* Bát Tự: Tứ Trụ */
         .pillars { fill: rgba(214, 168, 79, 0.035); stroke: rgba(241, 216, 137, 0.45); stroke-width: 0.8; }
         .pillar-arc { fill: none; stroke: rgba(241, 216, 137, 0.25); stroke-width: 0.7; }
-        .pillar-dot { fill: #f1d889; opacity: 0.6; animation: glyphPulse 6.25s ease-in-out infinite; }
+        .pillar-dot { fill: #f1d889; opacity: 0.6; will-change: opacity; animation: glyphPulse 6.25s ease-in-out infinite; }
 
         /* Tử Vi: 12 Cung + Tinh Tú */
         .houses { stroke: rgba(214, 168, 79, 0.2); stroke-width: 0.65; }
@@ -610,6 +646,7 @@
         .c-star {
             fill: #f1d889;
             filter: drop-shadow(0 0 4px rgba(241, 216, 137, 0.55));
+            will-change: transform, opacity;
             animation: glyphBreath 7s ease-in-out infinite;
         }
 
@@ -916,15 +953,16 @@
         }
 
         @keyframes orbitSpin {
-            to { transform: translateX(-50%) rotate(360deg); }
+            to { transform: translate3d(-50%, 0, 0) rotate(360deg); }
         }
 
         @keyframes orbitSpinRev {
             to { transform: rotate(-360deg); }
         }
 
-        @keyframes starsDrift {
-            to { background-position: 130px 65px, -105px 80px; }
+        @keyframes starsBreathe {
+            0%, 100% { opacity: 0.62; }
+            50% { opacity: 0.85; }
         }
 
 
@@ -1086,7 +1124,7 @@
             <div class="celestial-solar-system">
                 <!-- Nền Dải Ngân Hà khổng lồ phóng to xoay trôi chậm -->
                 <div class="galaxy-backdrop">
-                    <img src="nganha.jpg" alt="Dải Ngân Hà" class="galaxy-img" loading="eager">
+                    <img src="nganha.jpg" alt="Dải Ngân Hà" class="galaxy-img" loading="eager" decoding="async">
                 </div>
 
                 <!-- Vòng quỹ đạo thiên văn bên ngoài -->
@@ -1096,11 +1134,11 @@
                 <div class="earth-orbit-track">
                     <!-- Trái Đất Node -->
                     <div class="earth-satellite-node">
-                        <img src="traidat.jpg" alt="Trái Đất" class="earth-planet-img" loading="eager">
+                        <img src="traidat.jpg" alt="Trái Đất" class="earth-planet-img" loading="eager" decoding="async">
                         
                         <!-- Quỹ Đạo Mặt Trăng quay quanh Trái Đất -->
                         <div class="moon-orbit-track">
-                            <img src="mattrang.jpg" alt="Mặt Trăng" class="moon-satellite-img" loading="eager">
+                            <img src="mattrang.jpg" alt="Mặt Trăng" class="moon-satellite-img" loading="eager" decoding="async">
                         </div>
                     </div>
                 </div>
@@ -1108,7 +1146,7 @@
                 <!-- Mặt Trời rực rỡ tại Tâm Điểm -->
                 <div class="sun-core-center">
                     <div class="sun-ambient-halo"></div>
-                    <img src="mattroi.jpg" alt="Mặt Trời" class="sun-star-img" loading="eager">
+                    <img src="mattroi.jpg" alt="Mặt Trời" class="sun-star-img" loading="eager" decoding="async">
                 </div>
             </div>
 
@@ -1124,7 +1162,7 @@
             <!-- 01 Kinh Dịch: Thái Cực + Bát Quái -->
             <a class="node" href="/kinh-dich/" data-index="0" aria-label="Mở Kinh Dịch — Lục Hào Cổ Bốc">
                 <div class="node-geometry">
-                    <div class="artwork-circle"><img src="kinhdich.png" alt="" loading="lazy"></div>
+                    <div class="artwork-circle"><img src="kinhdich.png" alt="" loading="lazy" decoding="async"></div>
                     <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="56"/>
@@ -1157,7 +1195,7 @@
             <!-- 02 Thái Ất: Cửu Cung + Quỹ Đạo -->
             <a class="node" href="/thai-at/" data-index="1" aria-label="Mở Thái Ất — Thiên Thời Quốc Vận">
                 <div class="node-geometry">
-                    <div class="artwork-circle"><img src="thaiat.png" alt="" loading="lazy"></div>
+                    <div class="artwork-circle"><img src="thaiat.png" alt="" loading="lazy" decoding="async"></div>
                     <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <ellipse class="traj" cx="80" cy="80" rx="61" ry="27"/>
@@ -1190,7 +1228,7 @@
             <!-- 03 Bát Tự: Tứ Trụ -->
             <a class="node" href="/bat-tu/" data-index="2" aria-label="Mở Bát Tự — Tứ Trụ Can Chi">
                 <div class="node-geometry">
-                    <div class="artwork-circle"><img src="battuicon.png" alt="" loading="lazy"></div>
+                    <div class="artwork-circle"><img src="battuicon.png" alt="" loading="lazy" decoding="async"></div>
                     <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="58"/>
@@ -1218,7 +1256,7 @@
             <!-- 04 Tử Vi: 12 Cung + Tinh Tú -->
             <a class="node" href="/tu-vi/" data-index="3" aria-label="Mở Tử Vi — Chiêm Tinh Vận Mệnh">
                 <div class="node-geometry">
-                    <div class="artwork-circle"><img src="tuvi.png" alt="" loading="lazy"></div>
+                    <div class="artwork-circle"><img src="tuvi.png" alt="" loading="lazy" decoding="async"></div>
                     <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="56"/>
