@@ -1333,10 +1333,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 captureArea.style.opacity = '0.01';
 
                 html2canvas(target, {
-                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
+                    scale: 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0f0a05',
+                    backgroundColor: '#fefee5',
+                    width: 1000,
+                    windowWidth: 1000,
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';

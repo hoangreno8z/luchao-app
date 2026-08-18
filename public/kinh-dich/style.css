@@ -681,11 +681,20 @@ header p {
    RESULT STAGE & CARD OUTPUT
    ========================================================================== */
 
+#result-area {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .result-stage {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 10px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .hexagram-card-wrapper {
@@ -695,14 +704,17 @@ header p {
     box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9);
     border-radius: 6px;
     overflow: hidden;
-    background: #fdfaf2;
+    background: #fefee5;
     position: relative;
+    box-sizing: border-box;
 }
 
 .hexagram-image-output {
     width: 100%;
+    max-width: 100%;
     height: auto;
     display: block;
+    object-fit: contain;
 }
 
 .download-tip {
@@ -726,6 +738,9 @@ header p {
     border-radius: 8px;
     padding: 24px;
     margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Disclaimer Dialog / Section */
@@ -790,10 +805,6 @@ header p {
         width: 58px;
         height: 58px;
     }
-    .coin-hole {
-        width: 18px;
-        height: 18px;
-    }
     #coin-wrap-1 { top: 18px; left: 14px; }
     #coin-wrap-2 { top: 18px; right: 14px; }
     #coin-wrap-3 { bottom: 16px; }
@@ -826,12 +837,324 @@ header p {
     }
 }
 
-/* Hidden Capture Area */
+/* ==========================================================================
+   HIDDEN CAPTURE AREA & HIGH FIDELITY PARCHMENT CARD EXPORT
+   ========================================================================== */
 #captureArea {
     position: absolute;
     left: -9999px;
     top: 0;
-    width: 600px;
+    width: 1000px;
+}
+
+#captureTarget {
+    position: relative;
+    width: 1000px;
+    background-color: #fefee5;
+    padding: 20px;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+    font-size: 17px;
+    color: #000000;
+    box-sizing: border-box;
+}
+
+#captureTarget .seal-stamp-capture {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    width: 125px;
+    height: 125px;
+    max-width: 125px;
+    max-height: 125px;
+    object-fit: contain;
+    z-index: 10;
+    mix-blend-mode: multiply;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+#captureTarget .tian-can-abbr {
+    font-size: 12.5px;
+    opacity: 0.65;
+    font-weight: 300;
+    margin-right: 1px;
+    color: #444;
+}
+
+#captureTarget .phuc-than.active-phuc {
+    opacity: 1 !important;
+    font-weight: 700 !important;
+    color: #b30000 !important;
+}
+
+#captureTarget .phuc-than.inactive-phuc {
+    opacity: 0.38 !important;
+    font-weight: 400 !important;
+    color: #777 !important;
+}
+
+#captureTarget .phuc-than.active-phuc .phuc-rel {
+    color: #b30000 !important;
+}
+
+#captureTarget .phuc-than.inactive-phuc .phuc-rel {
+    color: #777 !important;
+}
+
+#captureTarget .info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fefee5;
+    border-bottom: 2px solid #888;
+    padding: 5px 10px 5px 150px !important;
+    margin-bottom: 10px;
+    min-height: 125px;
+    box-sizing: border-box;
+}
+
+#captureTarget .info-content {
+    flex: 1;
+}
+
+#captureTarget .info-line {
+    margin-bottom: 3px;
+    line-height: 1.4;
+    color: #000000;
+    font-size: 15px;
+}
+
+#captureTarget .info-line strong {
+    color: #666 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px;
+}
+
+#captureTarget .info-line span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+#captureTarget .highlight {
+    color: #b30000 !important;
+    font-weight: 700 !important;
+    font-size: 14.5px !important;
+}
+
+#captureTarget .hex-visual-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 100px;
+    padding: 20px 0;
+    border-bottom: 2px solid #888;
+    margin-bottom: 10px;
+}
+
+#captureTarget .hex-box {
+    text-align: center;
+    min-width: 220px;
+}
+
+#captureTarget .hex-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #c41e3a;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+#captureTarget .hex-family {
+    font-size: 17px;
+    color: #333;
+    font-weight: 600;
+    margin-top: 12px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+#captureTarget .hex-ngam-indicator {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #c41e3a;
+    font-weight: bold;
+    min-height: 120px;
+}
+
+#captureTarget .gua-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 165px;
+    margin: 0 auto;
+}
+
+#captureTarget .gua-line {
+    height: 11px;
+    width: 100%;
+}
+
+#captureTarget .yang {
+    background-color: #1a1a1a;
+}
+
+#captureTarget .yin {
+    display: flex;
+    justify-content: space-between;
+}
+
+#captureTarget .yin::before,
+#captureTarget .yin::after {
+    content: '';
+    display: block;
+    width: 42%;
+    background-color: #1a1a1a;
+    height: 100%;
+}
+
+#captureTarget .yang.moving {
+    background-color: #e60000;
+}
+
+#captureTarget .yin.moving::before,
+#captureTarget .yin.moving::after {
+    background-color: #e60000;
+}
+
+#captureTarget table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 19px;
+    background: #fefee5;
+    margin-bottom: 15px;
+}
+
+#captureTarget th,
+#captureTarget td {
+    border: none;
+    border-bottom: 1px solid #d0c8b8;
+    padding: 8px 6px;
+    text-align: center;
+    white-space: nowrap;
+    color: #000000;
+    font-size: 17.5px;
+}
+
+#captureTarget td:first-child {
+    font-weight: 700;
+    font-size: 24px;
+    color: #111;
+}
+
+#captureTarget td:nth-child(3),
+#captureTarget td.sep-col {
+    font-weight: 700;
+    color: #000000;
+}
+
+#captureTarget td:nth-child(4),
+#captureTarget td:nth-child(8) {
+    font-weight: 600;
+    color: #000000;
+}
+
+#captureTarget th {
+    background: #e2e2cc;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 16px;
+    padding: 10px 4px;
+    border-bottom: 1px solid #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+#captureTarget .sep-col {
+    border-left: 1px solid rgba(0, 0, 0, 0.25) !important;
+    color: #000000;
+}
+
+#captureTarget .row-moving td {
+    color: #e60000 !important;
+    font-weight: 700;
+}
+
+#captureTarget .row-moving td .tian-can-abbr {
+    color: #e60000 !important;
+}
+
+#captureTarget .row-moving td.sep-col {
+    color: #e60000 !important;
+}
+
+#captureTarget .marker-the,
+#captureTarget .marker-ung {
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 19px;
+}
+
+#captureTarget .row-moving .marker-the,
+#captureTarget .row-moving .marker-ung {
+    color: #e60000 !important;
+}
+
+#captureTarget .phuc-than {
+    font-size: 17px;
+    color: #1a1a1a;
+    font-weight: normal;
+}
+
+#captureTarget .row-moving .phuc-than {
+    color: #e60000;
+    font-weight: 700;
+}
+
+#captureTarget .shensha-section {
+    margin-top: 10px;
+    border-top: 2px solid #888;
+    padding-top: 10px;
+}
+
+#captureTarget .shensha-title {
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 10px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+}
+
+#captureTarget .shensha-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px 12px;
+}
+
+#captureTarget .ss-item {
+    font-size: 17px;
+    padding: 4px 0;
+    border-bottom: 1px solid #d0c8b8;
+    color: #1a1a1a;
+}
+
+#captureTarget .ss-item strong {
+    color: #1a1a1a;
+}
+
+#captureTarget .watermark {
+    text-align: right;
+    margin-top: 15px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #876121;
+    line-height: 1.5;
+    font-family: var(--font-serif);
 }
 
 #loading-overlay {
