@@ -1,4 +1,4 @@
-import { applySecurityHeaders } from './security_helper.js';
+import { applySecurityHeaders } from '../lib/security_helper.js';
 import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
@@ -51,7 +51,7 @@ function getThaiAtContext() {
     ];
 
     for (const f of scriptFiles) {
-        const p = path.join(__dirname, 'thai_at', f);
+        const p = path.join(__dirname, '..', 'lib', 'thai_at', f);
         if (fs.existsSync(p)) {
             const code = fs.readFileSync(p, 'utf8');
             vm.runInContext(code, context);
