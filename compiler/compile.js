@@ -7,12 +7,16 @@ const __dirname = path.dirname(__filename);
 
 const projectRoot = path.join(__dirname, '..');
 const knowledgeDir = path.join(projectRoot, 'knowledge');
+const libDir = path.join(projectRoot, 'lib');
 const apiDir = path.join(projectRoot, 'api');
 const publicDir = path.join(projectRoot, 'public');
 
-// Ensure api folder exists
+// Ensure lib and api folders exist
+if (!fs.existsSync(libDir)) {
+    fs.mkdirSync(libDir, { recursive: true });
+}
 if (!fs.existsSync(apiDir)) {
-    fs.mkdirSync(apiDir);
+    fs.mkdirSync(apiDir, { recursive: true });
 }
 
 try {
@@ -52,8 +56,8 @@ try {
 export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
 `;
 
-    fs.writeFileSync(path.join(apiDir, 'compiled_knowledge.js'), outputCode, 'utf8');
-    console.log('Successfully compiled knowledge files into api/compiled_knowledge.js!');
+    fs.writeFileSync(path.join(libDir, 'compiled_knowledge.js'), outputCode, 'utf8');
+    console.log('Successfully compiled knowledge files into lib/compiled_knowledge.js!');
 
     // HACK: Tự động tạo thư mục public và sao chép các tệp tĩnh sang để Vercel đóng gói thành công
     if (!fs.existsSync(publicDir)) {
