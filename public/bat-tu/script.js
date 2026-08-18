@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function renderChart() {
+    async function renderChart() {
         const name = nameInput.value.trim() || "VÔ DANH KHÁCH";
         const gender = genderInput.value;
         const dateVal = dateInput.value || "1990-02-01";
@@ -36,14 +36,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const day = parseInt(dStr, 10);
         const hour = parseInt(hStr, 10);
         const minute = parseInt(minStr, 10);
+        const is100Years = toggle100Years ? toggle100Years.checked : false;
+
+        const payload = {
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            gender,
+            name
+        };
 
         try {
-            const is100Years = toggle100Years ? toggle100Years.checked : false;
-            currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
-            
-            if (imgMount && window.BatTuPngExporter) {
-                const dataUrl = window.BatTuPngExporter.generateChartDataUrl(currentBatTuData, is100Years);
-                imgMount.src = dataUrl;
+            const response = await fetch('/api/bat_tu', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                currentBatTuData = await response.json();
+                if (imgMount && window.BatTuPngExporter) {
+                    const dataUrl = window.BatTuPngExporter.generateChartDataUrl(currentBatTuData, is100Years);
+                    imgMount.src = dataUrl;
+                }
+                return;
+            }
+        } catch (apiErr) {
+            console.warn('API /api/bat_tu fallback to local engine:', apiErr);
+        }
+
+        // Local Fallback if serverless is unavailable
+        try {
+            if (window.BatTuEngine) {
+                currentBatTuData = window.BatTuEngine.calculateBatTu(year, month, day, hour, minute, gender, name);
+                if (imgMount && window.BatTuPngExporter) {
+                    const dataUrl = window.BatTuPngExporter.generateChartDataUrl(currentBatTuData, is100Years);
+                    imgMount.src = dataUrl;
+                }
             }
         } catch (err) {
             console.error("Lỗi khi lập lá số Bát Tự:", err);
