@@ -655,55 +655,82 @@ body {
 }
 
 .ref-tab-btn {
-    background: #1f2937;
+    background: rgba(31, 41, 55, 0.85);
     color: #cbd5e1;
     border: 1px solid #374151;
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ref-tab-btn:hover {
+    color: #ffd700;
+    background: rgba(245, 158, 11, 0.18);
+    border-color: #f59e0b;
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
 }
 
 .ref-tab-btn.active {
-    background: var(--gold);
-    color: #111827;
-    border-color: var(--gold);
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    color: #0f172a;
+    border-color: #ffd700;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.ref-tab-btn:active {
+    transform: translateY(1px);
 }
 
 .ref-content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
 }
 
 .ref-star-card {
-    background: #1f2937;
-    border: 1px solid #374151;
-    border-radius: 8px;
-    padding: 10px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transition: all 0.25s ease;
+}
+
+.ref-star-card:hover {
+    border-color: rgba(245, 158, 11, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.15);
 }
 
 .ref-star-title {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 800;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4px;
+    align-items: center;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 4px;
 }
 
 .ref-star-nature {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #fbbf24;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.35;
 }
 
 .ref-star-desc {
-    font-size: 0.78rem;
-    color: #cbd5e1;
-    line-height: 1.4;
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    line-height: 1.55;
+    text-align: justify;
 }
 
 @media (max-width: 768px) {
