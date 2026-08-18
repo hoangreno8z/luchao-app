@@ -3,7 +3,7 @@
    Kinh Dịch Lục Hào Cổ Bốc — Pure CSS & SVG Presentation Layer
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Noto+Serif+TC:wght@600;700;900&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&display=swap');
 
 :root {
     /* Altar Design Tokens */
@@ -380,22 +380,22 @@ header p {
 
 .coin-wrapper {
     position: absolute;
-    width: 72px;
-    height: 72px;
-    perspective: 1000px;
+    width: 78px;
+    height: 78px;
+    perspective: 1200px;
 }
 
 /* Organic Triangle Coin Placement in Dish */
 #coin-wrap-1 {
-    top: 24px;
-    left: 20px;
+    top: 20px;
+    left: 18px;
 }
 #coin-wrap-2 {
-    top: 24px;
-    right: 20px;
+    top: 20px;
+    right: 18px;
 }
 #coin-wrap-3 {
-    bottom: 22px;
+    bottom: 18px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -405,7 +405,6 @@ header p {
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.1s linear;
 }
 
 .coin-inner {
@@ -421,86 +420,51 @@ header p {
     inset: 0;
     border-radius: 50%;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #5a4115;
-    box-shadow: 
-        0 6px 14px rgba(0, 0, 0, 0.8),
-        inset 0 1px 2px rgba(255, 235, 170, 0.6),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.8);
-    background: radial-gradient(circle at 32% 30%, #e2c07b 0%, #a87d2f 50%, #44310e 100%);
-    overflow: hidden;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
 }
 
-/* Square Central Hole */
-.coin-hole {
-    width: 22px;
-    height: 22px;
-    background: #090705;
-    border: 1.5px solid #5a4115;
-    position: absolute;
-    z-index: 5;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.9);
+.coin-face svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
 }
 
-/* Inner Engraving Ring */
-.coin-rim-ring {
-    position: absolute;
-    inset: 4px;
-    border-radius: 50%;
-    border: 0.8px dashed rgba(68, 49, 14, 0.5);
-    pointer-events: none;
-}
-
-/* Mặt Dương: 2 vạch biểu tượng âm dương / nhật nguyệt (KHÔNG DÙNG CHỮ HÁN) */
+/* Mặt Dương: Càn Long Thông Bảo */
 .coin-yang {
     transform: rotateY(0deg);
 }
 
-/* Mặt Âm: 4 vạch tứ tượng / triện cổ (KHÔNG DÙNG CHỮ HÁN) */
+/* Mặt Âm: Chữ Mãn Châu & Ký tự tiền cổ */
 .coin-yin {
     transform: rotateY(180deg);
 }
 
-/* Geometric Archaic Bronze Line Motifs */
-.coin-motif-yang-left,
-.coin-motif-yang-right {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 2px;
-    background: #38270b;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-.coin-motif-yang-left { left: 8px; }
-.coin-motif-yang-right { right: 8px; }
-
-.coin-motif-yin-top,
-.coin-motif-yin-bottom,
-.coin-motif-yin-left,
-.coin-motif-yin-right {
-    position: absolute;
-    width: 6px;
-    height: 2px;
-    background: #38270b;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-.coin-motif-yin-top { top: 7px; left: 50%; transform: translateX(-50%); }
-.coin-motif-yin-bottom { bottom: 7px; left: 50%; transform: translateX(-50%); }
-.coin-motif-yin-left { left: 7px; top: 50%; transform: translateY(-50%); }
-.coin-motif-yin-right { right: 7px; top: 50%; transform: translateY(-50%); }
-
-/* Coin Toss Physical Elevation & Fast Spin */
-@keyframes coinTossPhysical {
-    0% { transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1); }
-    45% { transform: translateY(-38px) rotateX(540deg) rotateY(720deg) scale(1.14); }
-    100% { transform: translateY(0) rotateX(1080deg) rotateY(1440deg) scale(1); }
+/* Coin Toss Physical 3D Elevation & Multi-Axis Spin */
+@keyframes coinFlip3D {
+    0% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+    }
+    30% {
+        transform: translateY(-85px) rotateX(720deg) rotateY(540deg) rotateZ(45deg) scale(1.2);
+    }
+    70% {
+        transform: translateY(-25px) rotateX(1440deg) rotateY(1080deg) rotateZ(-30deg) scale(1.08);
+    }
+    100% {
+        transform: translateY(0) rotateX(2160deg) rotateY(1800deg) rotateZ(0deg) scale(1);
+    }
 }
 
 .coin-inner.spinning-fast {
-    animation: coinTossPhysical 0.48s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    animation: coinFlip3D 0.65s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 
 /* ==========================================================================
