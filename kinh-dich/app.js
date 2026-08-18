@@ -5,6 +5,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     let liveClockTimer = null;
+    let currentStep = 0;
+    let userAnswers = ['', '', '', '', '', ''];
+    let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
 
     // -------------------------------------------------------------------------
     // 1. QUẢN LÝ ĐIỀU KHOẢN VÀ ĐỒNG Ý (DISCLAIMER)
@@ -19,9 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const hexagramImg = document.getElementById('hexagram-img');
     const downloadBtn = document.getElementById('download-btn');
 
-    disclaimerCheckbox.addEventListener('change', () => {
-        proceedBtn.disabled = !disclaimerCheckbox.checked;
-    });
+    if (disclaimerCheckbox && proceedBtn) {
+        disclaimerCheckbox.addEventListener('change', () => {
+            proceedBtn.disabled = !disclaimerCheckbox.checked;
+        });
+    }
 
     // Khởi động đồng hồ live và gán ngày giờ hiện tại ngay lập tức khi tải trang
     const nowInit = new Date();
@@ -199,10 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return TOPIC_QUESTIONS[selectedTopic] || TOPIC_QUESTIONS['công việc'];
     }
 
-    // Thiết lập listener reset trạng thái gieo xu trực tuyến khi đổi chủ đề
-    document.getElementById('topic-select').addEventListener('change', () => {
-        resetTossState();
-    });
+    const topicSelectEl = document.getElementById('topic-select');
+    if (topicSelectEl) {
+        topicSelectEl.addEventListener('change', () => {
+            resetTossState();
+        });
+    }
 
     function resetTossState() {
         currentStep = 0;
@@ -300,22 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.switchMethodTab = switchMethodTab;
 
-    if (tabToss) {
-        tabToss.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('toss'); });
-        tabToss.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('toss'); });
-    }
-    if (tabManual) {
-        tabManual.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('manual'); });
-        tabManual.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('manual'); });
-    }
-    if (tabNumber) {
-        tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
-        tabNumber.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('number'); });
-    }
-    if (tabIntent) {
-        tabIntent.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('intent'); });
-        tabIntent.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('intent'); });
-    }
+    if (tabToss) tabToss.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('toss'); });
+    if (tabManual) tabManual.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('manual'); });
+    if (tabNumber) tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
+    if (tabIntent) tabIntent.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('intent'); });
 
     // -------------------------------------------------------------------------
     // BẢNG TIÊN THIÊN BÁT QUÁI & THUẬT TOÁN LẬP QUẺ BẰNG SỐ
@@ -1143,10 +1138,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         });
     }
-
-    let currentStep = 0;
-    let userAnswers = [];
-    let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
 
     const progressText = document.getElementById('progress-text');
     const finishContainer = document.getElementById('finish-container');
