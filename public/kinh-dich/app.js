@@ -32,12 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateClock();
     liveClockTimer = setInterval(updateClock, 1000);
+    initMainFlow();
 
-    proceedBtn.addEventListener('click', () => {
-        disclaimerScreen.classList.add('hidden');
-        mainScreen.classList.remove('hidden');
-        initMainFlow();
-    });
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', () => {
+            if (disclaimerScreen) disclaimerScreen.classList.add('hidden');
+            if (mainScreen) mainScreen.classList.remove('hidden');
+            initMainFlow();
+        });
+    }
 
     // -------------------------------------------------------------------------
     // 2. KHỞI TẠO LUỒNG CHÍNH VÀ ĐỒNG HỒ
@@ -250,34 +253,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const methodNumberAreaEl = document.getElementById('method-number-area');
         const methodIntentAreaEl = document.getElementById('method-intent-area');
 
-        if (tabTossEl) {
-            tabTossEl.style.background = (activeTab === 'toss') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabTossEl.style.borderColor = (activeTab === 'toss') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabTossEl.style.color = (activeTab === 'toss') ? '#110c03' : 'var(--text-muted)';
-            tabTossEl.style.fontWeight = (activeTab === 'toss') ? '800' : '600';
-            tabTossEl.style.boxShadow = (activeTab === 'toss') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabManualEl) {
-            tabManualEl.style.background = (activeTab === 'manual') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabManualEl.style.borderColor = (activeTab === 'manual') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabManualEl.style.color = (activeTab === 'manual') ? '#110c03' : 'var(--text-muted)';
-            tabManualEl.style.fontWeight = (activeTab === 'manual') ? '800' : '600';
-            tabManualEl.style.boxShadow = (activeTab === 'manual') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabNumberEl) {
-            tabNumberEl.style.background = (activeTab === 'number') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabNumberEl.style.borderColor = (activeTab === 'number') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabNumberEl.style.color = (activeTab === 'number') ? '#110c03' : '#fbbf24';
-            tabNumberEl.style.fontWeight = (activeTab === 'number') ? '800' : '600';
-            tabNumberEl.style.boxShadow = (activeTab === 'number') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabIntentEl) {
-            tabIntentEl.style.background = (activeTab === 'intent') ? 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' : 'rgba(255,255,255,0.06)';
-            tabIntentEl.style.borderColor = (activeTab === 'intent') ? '#ec4899' : 'rgba(168,85,247,0.3)';
-            tabIntentEl.style.color = (activeTab === 'intent') ? '#ffffff' : '#e9d5ff';
-            tabIntentEl.style.fontWeight = (activeTab === 'intent') ? '800' : '600';
-            tabIntentEl.style.boxShadow = (activeTab === 'intent') ? '0 4px 18px rgba(168,85,247,0.55)' : 'none';
-        }
+        const tabs = [
+            { el: tabTossEl, id: 'toss' },
+            { el: tabManualEl, id: 'manual' },
+            { el: tabNumberEl, id: 'number' },
+            { el: tabIntentEl, id: 'intent' }
+        ];
+
+        tabs.forEach(t => {
+            if (t.el) {
+                t.el.classList.toggle('active-tab-btn', t.id === activeTab);
+                t.el.classList.toggle('active', t.id === activeTab);
+                // Clear any inline overrides
+                t.el.style.background = '';
+                t.el.style.borderColor = '';
+                t.el.style.color = '';
+                t.el.style.fontWeight = '';
+                t.el.style.boxShadow = '';
+            }
+        });
 
         if (methodTossAreaEl) {
             methodTossAreaEl.classList.toggle('hidden', activeTab !== 'toss');
