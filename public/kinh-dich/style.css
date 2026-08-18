@@ -459,140 +459,159 @@ header p {
 
 /* ==========================================================================
    DAMPED HARMONIC METAL BOUNCING PHYSICS (H_next = 1/3 H_prev)
+   HIGH-SPEED STROBE FLIP (50 - 100 FLIPS/SEC IN INITIAL TOSS)
    ========================================================================== */
 
 @keyframes tossHarmonic1 {
-    /* Đợt 1: Bốc vút lên cao nhất (H1 = -150px) */
+    /* Đợt 1: Bốc vút lên cao nhất (H1 = -150px) - Xoay siêu tốc chớp nháy Âm/Dương liên tục (50-100Hz) */
     0% {
         transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
+    12% {
+        transform: translateY(-90px) rotateX(2160deg) rotateY(2880deg) rotateZ(18deg) scale(1.16);
+    }
     26% {
-        transform: translateY(-150px) rotateX(720deg) rotateY(1080deg) rotateZ(35deg) scale(1.26);
+        transform: translateY(-150px) rotateX(4320deg) rotateY(5760deg) rotateZ(35deg) scale(1.26);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5); /* Gia tốc rơi */
     }
+    38% {
+        transform: translateY(-80px) rotateX(6480deg) rotateY(8640deg) rotateZ(12deg) scale(1.14);
+    }
     48% {
-        transform: translateY(0) rotateX(1440deg) rotateY(2160deg) rotateZ(-15deg) scale(1);
+        transform: translateY(0) rotateX(8640deg) rotateY(11520deg) rotateZ(-15deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15); /* Nảy phản lực */
     }
-    /* Đợt 2: Nảy tâng quán tính lần 1 (H2 = 1/3 H1 = -50px) */
+    /* Đợt 2: Nảy tâng quán tính lần 1 (H2 = 1/3 H1 = -50px) - Tốc độ xoay giảm còn ~30Hz */
     60% {
-        transform: translateY(-50px) rotateX(1800deg) rotateY(2700deg) rotateZ(18deg) scale(1.08);
+        transform: translateY(-50px) rotateX(10080deg) rotateY(13320deg) rotateZ(18deg) scale(1.08);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     72% {
-        transform: translateY(0) rotateX(2160deg) rotateY(3240deg) rotateZ(-8deg) scale(1);
+        transform: translateY(0) rotateX(11520deg) rotateY(15120deg) rotateZ(-8deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
-    /* Đợt 3: Nảy tâng quán tính lần 2 (H3 = 1/3 H2 = -16.5px) */
+    /* Đợt 3: Nảy tâng quán tính lần 2 (H3 = 1/3 H2 = -16.5px) - Xoay chậm dần ~15Hz */
     80% {
-        transform: translateY(-16.5px) rotateX(2340deg) rotateY(3420deg) rotateZ(6deg) scale(1.03);
+        transform: translateY(-16.5px) rotateX(12240deg) rotateY(15840deg) rotateZ(6deg) scale(1.03);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     88% {
-        transform: translateY(0) rotateX(2520deg) rotateY(3600deg) rotateZ(-3deg) scale(1);
+        transform: translateY(0) rotateX(12960deg) rotateY(16560deg) rotateZ(-3deg) scale(1);
         animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
     }
     /* Đợt 4: Rung lắc vi mô kim loại tiếp đĩa (H4 = 1/3 H3 = -5.5px) */
     93% {
-        transform: translateY(-5.5px) rotateX(2540deg) rotateY(3610deg) rotateZ(2deg) scale(1.01);
+        transform: translateY(-5.5px) rotateX(13140deg) rotateY(16740deg) rotateZ(2deg) scale(1.01);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     97% {
-        transform: translateY(-1.5px) rotateX(2525deg) rotateY(3603deg) rotateZ(-0.5deg) scale(1.002);
+        transform: translateY(-1.5px) rotateX(13240deg) rotateY(16840deg) rotateZ(-0.5deg) scale(1.002);
     }
     100% {
-        transform: translateY(0) rotateX(2520deg) rotateY(3600deg) rotateZ(0deg) scale(1);
+        transform: translateY(0) rotateX(13320deg) rotateY(16920deg) rotateZ(0deg) scale(1);
     }
 }
 
 @keyframes tossHarmonic2 {
-    /* Đợt 1: Bốc vút lên cao nhất (H1 = -165px) */
+    /* Đợt 1: Bốc vút lên cao nhất (H1 = -165px) - Xoay nghịch chiều siêu tốc (50-100Hz) */
     0% {
         transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
+    12% {
+        transform: translateY(-95px) rotateX(-2160deg) rotateY(3240deg) rotateZ(-25deg) scale(1.18);
+    }
     26% {
-        transform: translateY(-165px) rotateX(-720deg) rotateY(1260deg) rotateZ(-55deg) scale(1.28);
+        transform: translateY(-165px) rotateX(-4320deg) rotateY(6480deg) rotateZ(-55deg) scale(1.28);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
+    38% {
+        transform: translateY(-85px) rotateX(-6480deg) rotateY(9720deg) rotateZ(-20deg) scale(1.15);
+    }
     48% {
-        transform: translateY(0) rotateX(-1440deg) rotateY(2520deg) rotateZ(20deg) scale(1);
+        transform: translateY(0) rotateX(-8640deg) rotateY(12960deg) rotateZ(20deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
     /* Đợt 2: Nảy tâng quán tính lần 1 (H2 = 1/3 H1 = -55px) */
     60% {
-        transform: translateY(-55px) rotateX(-1800deg) rotateY(3060deg) rotateZ(-22deg) scale(1.09);
+        transform: translateY(-55px) rotateX(-10080deg) rotateY(14760deg) rotateZ(-22deg) scale(1.09);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     72% {
-        transform: translateY(0) rotateX(-2160deg) rotateY(3600deg) rotateZ(10deg) scale(1);
+        transform: translateY(0) rotateX(-11520deg) rotateY(16560deg) rotateZ(10deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
     /* Đợt 3: Nảy tâng quán tính lần 2 (H3 = 1/3 H2 = -18px) */
     80% {
-        transform: translateY(-18px) rotateX(-2340deg) rotateY(3780deg) rotateZ(-7deg) scale(1.03);
+        transform: translateY(-18px) rotateX(-12240deg) rotateY(17280deg) rotateZ(-7deg) scale(1.03);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     88% {
-        transform: translateY(0) rotateX(-2520deg) rotateY(3960deg) rotateZ(3deg) scale(1);
+        transform: translateY(0) rotateX(-12960deg) rotateY(18000deg) rotateZ(3deg) scale(1);
         animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
     }
     /* Đợt 4: Rung lắc vi mô kim loại tiếp đĩa (H4 = 1/3 H3 = -6px) */
     93% {
-        transform: translateY(-6px) rotateX(-2540deg) rotateY(3970deg) rotateZ(-2deg) scale(1.01);
+        transform: translateY(-6px) rotateX(-13140deg) rotateY(18180deg) rotateZ(-2deg) scale(1.01);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     97% {
-        transform: translateY(-1.8px) rotateX(-2525deg) rotateY(3963deg) rotateZ(0.5deg) scale(1.002);
+        transform: translateY(-1.8px) rotateX(-13240deg) rotateY(18280deg) rotateZ(0.5deg) scale(1.002);
     }
     100% {
-        transform: translateY(0) rotateX(-2520deg) rotateY(3960deg) rotateZ(0deg) scale(1);
+        transform: translateY(0) rotateX(-13320deg) rotateY(18360deg) rotateZ(0deg) scale(1);
     }
 }
 
 @keyframes tossHarmonic3 {
-    /* Đợt 1: Bốc vút lên cao nhất (H1 = -140px) */
+    /* Đợt 1: Bốc vút lên cao nhất (H1 = -140px) - Xoay nghiêng đa trục siêu tốc (50-100Hz) */
     0% {
         transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
+    12% {
+        transform: translateY(-85px) rotateX(2520deg) rotateY(-2880deg) rotateZ(30deg) scale(1.15);
+    }
     26% {
-        transform: translateY(-140px) rotateX(900deg) rotateY(-1080deg) rotateZ(65deg) scale(1.24);
+        transform: translateY(-140px) rotateX(5040deg) rotateY(-5760deg) rotateZ(65deg) scale(1.24);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
+    38% {
+        transform: translateY(-75px) rotateX(7560deg) rotateY(-8640deg) rotateZ(25deg) scale(1.12);
+    }
     48% {
-        transform: translateY(0) rotateX(1800deg) rotateY(-2160deg) rotateZ(-12deg) scale(1);
+        transform: translateY(0) rotateX(10080deg) rotateY(-11520deg) rotateZ(-12deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
     /* Đợt 2: Nảy tâng quán tính lần 1 (H2 = 1/3 H1 = -46.5px) */
     60% {
-        transform: translateY(-46.5px) rotateX(2160deg) rotateY(-2700deg) rotateZ(15deg) scale(1.07);
+        transform: translateY(-46.5px) rotateX(11520deg) rotateY(-13320deg) rotateZ(15deg) scale(1.07);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     72% {
-        transform: translateY(0) rotateX(2520deg) rotateY(-3240deg) rotateZ(-6deg) scale(1);
+        transform: translateY(0) rotateX(12960deg) rotateY(-15120deg) rotateZ(-6deg) scale(1);
         animation-timing-function: cubic-bezier(0.15, 0.85, 0.35, 1.15);
     }
     /* Đợt 3: Nảy tâng quán tính lần 2 (H3 = 1/3 H2 = -15.5px) */
     80% {
-        transform: translateY(-15.5px) rotateX(2700deg) rotateY(-3420deg) rotateZ(5deg) scale(1.03);
+        transform: translateY(-15.5px) rotateX(13680deg) rotateY(-15840deg) rotateZ(5deg) scale(1.03);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     88% {
-        transform: translateY(0) rotateX(2880deg) rotateY(-3600deg) rotateZ(-2deg) scale(1);
+        transform: translateY(0) rotateX(14400deg) rotateY(-16560deg) rotateZ(-2deg) scale(1);
         animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
     }
     /* Đợt 4: Rung lắc vi mô kim loại tiếp đĩa (H4 = 1/3 H3 = -5px) */
     93% {
-        transform: translateY(-5px) rotateX(2900deg) rotateY(-3610deg) rotateZ(1.5deg) scale(1.01);
+        transform: translateY(-5px) rotateX(14580deg) rotateY(-16740deg) rotateZ(1.5deg) scale(1.01);
         animation-timing-function: cubic-bezier(0.55, 0.05, 0.75, 0.5);
     }
     97% {
-        transform: translateY(-1.2px) rotateX(2884deg) rotateY(-3602deg) rotateZ(-0.5deg) scale(1.002);
+        transform: translateY(-1.2px) rotateX(14680deg) rotateY(-16840deg) rotateZ(-0.5deg) scale(1.002);
     }
     100% {
-        transform: translateY(0) rotateX(2880deg) rotateY(-3600deg) rotateZ(0deg) scale(1);
+        transform: translateY(0) rotateX(14760deg) rotateY(-16920deg) rotateZ(0deg) scale(1);
     }
 }
 
