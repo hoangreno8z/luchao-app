@@ -88,31 +88,48 @@ body {
 }
 
 .menu-toggle-btn {
-    background: linear-gradient(135deg, #d97706, #b45309);
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
     color: #ffffff;
     border: 1px solid #f59e0b;
-    padding: 8px 18px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-toggle-btn .menu-btn-icon,
+.menu-toggle-btn .arrow-icon {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
 }
 
 .menu-toggle-btn:hover {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    transform: translateY(-1px);
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(217, 119, 6, 0.5), 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.menu-toggle-btn:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .portal-dropdown-menu {
     position: absolute;
     right: 0;
     top: calc(100% + 8px);
-    background: #0f172a;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid #d97706;
     border-radius: 12px;
     width: 240px;
@@ -138,22 +155,31 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
+    padding: 9px 12px;
     color: #e2e8f0;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     border-radius: 8px;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
+}
+
+.menu-item .menu-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fbbf24;
+    flex-shrink: 0;
 }
 
 .menu-item:hover {
     background: rgba(245, 158, 11, 0.15);
     color: #fbbf24;
+    transform: translateX(3px);
 }
 
 .menu-item.active {
-    background: linear-gradient(90deg, rgba(217, 119, 6, 0.3), rgba(217, 119, 6, 0.1));
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.35), rgba(217, 119, 6, 0.08));
     color: #fbbf24;
     border-left: 3px solid #f59e0b;
 }
@@ -247,26 +273,64 @@ body {
 
 .btn-submit {
     width: 100%;
-    background: linear-gradient(135deg, #d97706, #b45309);
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
     color: #ffffff;
-    border: none;
+    border: 1px solid #f59e0b;
     padding: 14px 24px;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 800;
+    letter-spacing: 0.08em;
     border-radius: 10px;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
-    transition: all 0.2s ease;
+    box-shadow: 
+        0 6px 18px rgba(217, 119, 6, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transform: skewX(-25deg);
+}
+
+.btn-submit:hover::before {
+    left: 200%;
+    transition: left 0.75s ease-in-out;
+}
+
+.btn-submit .btn-svg {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
 }
 
 .btn-submit:hover {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6);
+    box-shadow: 
+        0 10px 25px rgba(217, 119, 6, 0.6),
+        0 0 16px rgba(245, 158, 11, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-submit:hover .btn-svg {
+    transform: rotate(45deg) scale(1.15);
+}
+
+.btn-submit:active {
+    transform: translateY(1.5px) scale(0.98);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* ==========================================================================
@@ -299,23 +363,42 @@ body {
 }
 
 .btn-export-png {
-    background: #047857;
+    background: linear-gradient(180deg, #059669 0%, #047857 100%);
     color: #ffffff;
     border: 1px solid #10b981;
-    padding: 6px 14px;
+    padding: 7px 16px;
     font-weight: 700;
     font-size: 0.85rem;
-    border-radius: 6px;
+    letter-spacing: 0.04em;
+    border-radius: 8px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-export-png .btn-svg-sm {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
 }
 
 .btn-export-png:hover {
-    background: #059669;
-    transform: translateY(-1px);
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(4, 120, 87, 0.5), 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-export-png:hover .btn-svg-sm {
+    transform: translateY(1.5px) scale(1.1);
+}
+
+.btn-export-png:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .tuvi-image-container {
