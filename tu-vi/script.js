@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     generateHoroscope();
 });
 
-function generateHoroscope() {
+async function generateHoroscope() {
     const name = document.getElementById('inputName').value.trim() || 'Đương Số';
     const gender = document.getElementById('inputGender').value;
     const solarDay = parseInt(document.getElementById('inputSolarDay').value, 10);
@@ -95,7 +95,36 @@ function generateHoroscope() {
     const showDaoHongLuu = document.getElementById('checkboxDaoHongLuu') ? document.getElementById('checkboxDaoHongLuu').checked : true;
     const luongThiMode = document.getElementById('checkboxLuongThi') ? document.getElementById('checkboxLuongThi').checked : false;
 
-    // Convert Solar to Lunar using Lunar-JS
+    const payload = {
+        name,
+        gender,
+        solarDay,
+        solarMonth,
+        solarYear,
+        hourIndex,
+        viewYear,
+        showSaoLuu,
+        showDaoHongLuu,
+        luongThiMode
+    };
+
+    try {
+        const response = await fetch('/api/tu_vi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            currentHoroscope = await response.json();
+            renderChart(currentHoroscope);
+            return;
+        }
+    } catch (apiErr) {
+        console.warn('API /api/tu_vi fallback to local engine:', apiErr);
+    }
+
+    // Local Fallback if serverless is unavailable
     let lunarDay = solarDay, lunarMonth = solarMonth, lunarYear = solarYear, isLeap = false;
     try {
         if (window.Solar) {
@@ -110,20 +139,14 @@ function generateHoroscope() {
         console.warn('Lunar conversion fallback:', err);
     }
 
-    // Calculate Horoscope
     currentHoroscope = TuViEngine.calculateHoroscope({
-        name,
-        gender,
-        solarDay, solarMonth, solarYear,
-        lunarDay, lunarMonth, lunarYear, isLeap,
-        hourIndex,
-        viewYear,
-        showSaoLuu,
-        showDaoHongLuu,
-        luongThiMode
+        ...payload,
+        lunarDay,
+        lunarMonth,
+        lunarYear,
+        isLeap
     });
 
-    // Render directly to HD Image Mount
     renderChart(currentHoroscope);
 }
 
