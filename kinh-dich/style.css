@@ -457,45 +457,93 @@ header p {
     pointer-events: none;
 }
 
-/* Physics-based Gravity Toss with Natural Parabola & Wobble Landing */
-@keyframes realisticToss {
+/* Physics-based Fast & Randomized Dynamic Gravity Toss */
+@keyframes tossPhysics1 {
     0% {
         transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
-        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Nảy mạnh lên */
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
     }
     35% {
-        transform: translateY(-110px) rotateX(720deg) rotateY(540deg) rotateZ(35deg) scale(1.22); /* Đạt đỉnh parabol */
-        animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53); /* Rơi gia tốc tự do */
+        transform: translateY(-145px) rotateX(720deg) rotateY(720deg) rotateZ(45deg) scale(1.25);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
     }
-    70% {
-        transform: translateY(0) rotateX(1440deg) rotateY(1080deg) rotateZ(-15deg) scale(1); /* Chạm đĩa */
-        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    72% {
+        transform: translateY(0) rotateX(1440deg) rotateY(1440deg) rotateZ(-20deg) scale(1);
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
     }
-    85% {
-        transform: translateY(-16px) rotateX(1480deg) rotateY(1110deg) rotateZ(8deg) scale(1.04); /* Phản lực nảy nhẹ (wobble) */
-        animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    86% {
+        transform: translateY(-22px) rotateX(1480deg) rotateY(1460deg) rotateZ(12deg) scale(1.06);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
     }
-    95% {
-        transform: translateY(-4px) rotateX(1445deg) rotateY(1085deg) rotateZ(-3deg) scale(1.01); /* Rung lắc chạm đáy */
+    94% {
+        transform: translateY(-5px) rotateX(1445deg) rotateY(1445deg) rotateZ(-4deg) scale(1.01);
     }
     100% {
-        transform: translateY(0) rotateX(1440deg) rotateY(1080deg) rotateZ(0deg) scale(1); /* Nằm yên trong đĩa */
+        transform: translateY(0) rotateX(1440deg) rotateY(1440deg) rotateZ(0deg) scale(1);
     }
 }
 
-.coin-inner.spinning-fast {
-    animation: realisticToss 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+@keyframes tossPhysics2 {
+    0% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+    }
+    35% {
+        transform: translateY(-160px) rotateX(-720deg) rotateY(900deg) rotateZ(-60deg) scale(1.28);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
+    }
+    70% {
+        transform: translateY(0) rotateX(-1440deg) rotateY(1800deg) rotateZ(25deg) scale(1);
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+    }
+    85% {
+        transform: translateY(-26px) rotateX(-1475deg) rotateY(1820deg) rotateZ(-15deg) scale(1.08);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
+    }
+    94% {
+        transform: translateY(-6px) rotateX(-1445deg) rotateY(1805deg) rotateZ(5deg) scale(1.02);
+    }
+    100% {
+        transform: translateY(0) rotateX(-1440deg) rotateY(1800deg) rotateZ(0deg) scale(1);
+    }
 }
 
-/* Organic delay between the 3 coins during toss */
+@keyframes tossPhysics3 {
+    0% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+    }
+    35% {
+        transform: translateY(-135px) rotateX(900deg) rotateY(-720deg) rotateZ(75deg) scale(1.22);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
+    }
+    74% {
+        transform: translateY(0) rotateX(1800deg) rotateY(-1440deg) rotateZ(-10deg) scale(1);
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+    }
+    87% {
+        transform: translateY(-18px) rotateX(1830deg) rotateY(-1460deg) rotateZ(8deg) scale(1.05);
+        animation-timing-function: cubic-bezier(0.6, 0.05, 0.8, 0.5);
+    }
+    95% {
+        transform: translateY(-4px) rotateX(1805deg) rotateY(-1445deg) rotateZ(-2deg) scale(1.01);
+    }
+    100% {
+        transform: translateY(0) rotateX(1800deg) rotateY(-1440deg) rotateZ(0deg) scale(1);
+    }
+}
+
 #coin-wrap-1 .coin-inner.spinning-fast {
+    animation: tossPhysics1 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
     animation-delay: 0s;
 }
 #coin-wrap-2 .coin-inner.spinning-fast {
-    animation-delay: 0.08s;
+    animation: tossPhysics2 0.58s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+    animation-delay: 0.05s;
 }
 #coin-wrap-3 .coin-inner.spinning-fast {
-    animation-delay: 0.15s;
+    animation: tossPhysics3 0.62s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+    animation-delay: 0.1s;
 }
 
 /* ==========================================================================
