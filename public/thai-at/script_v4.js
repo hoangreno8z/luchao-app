@@ -318,23 +318,49 @@ function renderWithDate(dObj) {
     render(dObj.getFullYear(), dObj.getMonth() + 1, dObj.getDate(), h);
 }
 
-function render(year, month, day, hour) {
+async function render(year, month, day, hour) {
     try {
         const sex = document.getElementById("input-gender")?.value || "nam";
-        let data = calculateThaiAtChart(currentMode, year, month, day, hour, currentEngineType, sex);
+        let data = null;
+
+        try {
+            const response = await fetch('/api/thai_at', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mode: currentMode,
+                    year,
+                    month,
+                    day,
+                    hour,
+                    engineType: currentEngineType,
+                    gender: sex
+                })
+            });
+
+            if (response.ok) {
+                data = await response.json();
+            }
+        } catch (apiErr) {
+            console.warn('API /api/thai_at fallback to local engine:', apiErr);
+        }
+
+        if (!data) {
+            data = calculateThaiAtChart(currentMode, year, month, day, hour, currentEngineType, sex);
+        }
 
         // NASA Astronomical Auto-Calibration Overlay
         if (currentEngineType === "astronomical" && data.astroInfo) {
             const astro = data.astroInfo;
             // Update NASA Calibration Banner UI
             const jdEl = document.getElementById("astro-jd-val");
-            if (jdEl) jdEl.textContent = astro.jd.toLocaleString('vi-VN');
+            if (jdEl) jdEl.textContent = astro.jd ? astro.jd.toLocaleString('vi-VN') : '-';
             const offsetEl = document.getElementById("astro-offset-val");
             if (offsetEl) offsetEl.textContent = `-${astro.deltaDYear}`;
             const tichEl = document.getElementById("astro-tich-val");
-            if (tichEl) tichEl.textContent = astro.calibratedTichNien.toLocaleString('vi-VN');
+            if (tichEl) tichEl.textContent = astro.calibratedTichNien ? astro.calibratedTichNien.toLocaleString('vi-VN') : '-';
             const solarEl = document.getElementById("astro-solar-val");
-            if (solarEl) solarEl.textContent = astro.solarLongitude.toFixed(2);
+            if (solarEl) solarEl.textContent = typeof astro.solarLongitude === 'number' ? astro.solarLongitude.toFixed(2) : '-';
         }
 
         window.lastCalculatedThaiAtData = data;
