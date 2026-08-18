@@ -380,9 +380,9 @@ header p {
 
 .coin-wrapper {
     position: absolute;
-    width: 78px;
-    height: 78px;
-    perspective: 1200px;
+    width: 76px;
+    height: 76px;
+    perspective: 900px;
 }
 
 /* Organic Triangle Coin Placement in Dish */
@@ -412,7 +412,7 @@ header p {
     height: 100%;
     position: absolute;
     transform-style: preserve-3d;
-    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .coin-face {
@@ -434,7 +434,7 @@ header p {
     width: 100%;
     height: 100%;
     display: block;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
 }
 
 /* Mặt Dương: Càn Long Thông Bảo */
@@ -447,24 +447,55 @@ header p {
     transform: rotateY(180deg);
 }
 
-/* Coin Toss Physical 3D Elevation & Multi-Axis Spin */
-@keyframes coinFlip3D {
+/* Physical Coin Rim Thickness (3D Edge) */
+.coin-edge {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transform: translateZ(-2px);
+    box-shadow: 0 0 0 2px #7a5516, 0 0 0 3.5px #2e1d05;
+    pointer-events: none;
+}
+
+/* Physics-based Gravity Toss with Natural Parabola & Wobble Landing */
+@keyframes realisticToss {
     0% {
         transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Nảy mạnh lên */
     }
-    30% {
-        transform: translateY(-85px) rotateX(720deg) rotateY(540deg) rotateZ(45deg) scale(1.2);
+    35% {
+        transform: translateY(-110px) rotateX(720deg) rotateY(540deg) rotateZ(35deg) scale(1.22); /* Đạt đỉnh parabol */
+        animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53); /* Rơi gia tốc tự do */
     }
     70% {
-        transform: translateY(-25px) rotateX(1440deg) rotateY(1080deg) rotateZ(-30deg) scale(1.08);
+        transform: translateY(0) rotateX(1440deg) rotateY(1080deg) rotateZ(-15deg) scale(1); /* Chạm đĩa */
+        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    85% {
+        transform: translateY(-16px) rotateX(1480deg) rotateY(1110deg) rotateZ(8deg) scale(1.04); /* Phản lực nảy nhẹ (wobble) */
+        animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+    95% {
+        transform: translateY(-4px) rotateX(1445deg) rotateY(1085deg) rotateZ(-3deg) scale(1.01); /* Rung lắc chạm đáy */
     }
     100% {
-        transform: translateY(0) rotateX(2160deg) rotateY(1800deg) rotateZ(0deg) scale(1);
+        transform: translateY(0) rotateX(1440deg) rotateY(1080deg) rotateZ(0deg) scale(1); /* Nằm yên trong đĩa */
     }
 }
 
 .coin-inner.spinning-fast {
-    animation: coinFlip3D 0.65s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    animation: realisticToss 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* Organic delay between the 3 coins during toss */
+#coin-wrap-1 .coin-inner.spinning-fast {
+    animation-delay: 0s;
+}
+#coin-wrap-2 .coin-inner.spinning-fast {
+    animation-delay: 0.08s;
+}
+#coin-wrap-3 .coin-inner.spinning-fast {
+    animation-delay: 0.15s;
 }
 
 /* ==========================================================================

@@ -1249,13 +1249,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 innerEl.classList.add('spinning-fast');
             }
 
-            const coinSpinDuration = Math.floor(Math.random() * 1500) + 1000;
+            const coinSpinDuration = 900 + idx * 180 + Math.floor(Math.random() * 150);
 
             setTimeout(() => {
-                // Tắt quay siêu tốc
+                // Tắt hiệu ứng tung xu động lực học
                 if (innerEl) {
                     innerEl.classList.remove('spinning-fast');
-                    innerEl.style.transition = 'transform 0.5s ease-in-out'; // Phục hồi transition
+                    innerEl.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
                 }
 
                 // Quyết định mặt ngửa (true/Dương) hay sấp (false/Âm)
