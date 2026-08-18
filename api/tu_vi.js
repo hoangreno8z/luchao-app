@@ -1,5 +1,5 @@
-import { applySecurityHeaders } from './security_helper.js';
-import { TuViEngine } from './tu_vi_engine.js';
+import { applySecurityHeaders } from '../lib/security_helper.js';
+import { TuViEngine } from '../lib/tu_vi_engine.js';
 import { Solar } from 'lunar-javascript';
 
 export default async function handler(req, res) {
