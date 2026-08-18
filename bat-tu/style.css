@@ -224,22 +224,72 @@ h1 {
 
 .btn-primary {
     width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #d4af37, #aa820a);
-    color: #050711;
-    border: none;
+    padding: 13px 24px;
+    background: linear-gradient(180deg, #d4af37 0%, #a67c1e 100%);
+    color: #0c0904;
+    border: 1px solid #f3e5ab;
     border-radius: 8px;
-    font-size: 1.05rem;
-    font-weight: bold;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
     margin-top: 8px;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 
+        0 6px 18px rgba(212, 175, 55, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-25deg);
+}
+
+.btn-primary:hover::before {
+    left: 200%;
+    transition: left 0.75s ease-in-out;
+}
+
+.btn-primary .btn-svg,
+.btn-primary .btn-svg-sm {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    background: linear-gradient(180deg, #ffd700 0%, #c49622 100%);
+    transform: translateY(-2.5px);
+    box-shadow: 
+        0 10px 25px rgba(212, 175, 55, 0.55),
+        0 0 16px rgba(255, 215, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.btn-primary:hover .btn-svg {
+    transform: rotate(45deg) scale(1.15);
+}
+
+.btn-primary:hover .btn-svg-sm {
+    transform: translateY(1.5px) scale(1.1);
+}
+
+.btn-primary:active {
+    transform: translateY(1.5px) scale(0.98);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.8),
+        inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .btn-secondary {
@@ -251,15 +301,22 @@ h1 {
     font-size: 0.88rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .btn-secondary:hover {
     background: rgba(212, 175, 55, 0.3);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
 }
 
 /* Chart Preview Container */
@@ -320,21 +377,36 @@ h1 {
 }
 
 .ref-tab-btn {
-    background: rgba(18, 24, 48, 0.8);
+    background: rgba(18, 24, 48, 0.85);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.88rem;
-    transition: all 0.2s ease;
+    letter-spacing: 0.04em;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-.ref-tab-btn.active, .ref-tab-btn:hover {
+.ref-tab-btn:hover {
     color: #ffd700;
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(212, 175, 55, 0.22);
     border-color: var(--accent-gold);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.ref-tab-btn.active {
+    color: #ffd700;
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.3) 0%, rgba(20, 16, 12, 0.9) 100%);
+    border-color: #ffd700;
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.ref-tab-btn:active {
+    transform: translateY(1px);
 }
 
 .ref-content-box {
