@@ -1,7 +1,7 @@
-import { applySecurityHeaders } from './security_helper.js';
+import { applySecurityHeaders } from '../lib/security_helper.js';
 import * as lunarJs from 'lunar-javascript';
-import './bat_tu_than_sat.js';
-import './bat_tu_engine.js';
+import '../lib/bat_tu_than_sat.js';
+import '../lib/bat_tu_engine.js';
 
 // Bind Lunar to global if needed
 if (!globalThis.Solar && lunarJs.Solar) {
