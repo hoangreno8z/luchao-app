@@ -141,41 +141,52 @@
 
             <div class="menu-dropdown-wrapper">
                 <button id="menu-btn" class="menu-toggle-btn" aria-label="Mở Menu">
-                    <span>☰ MENU</span>
-                    <span class="arrow-icon">▼</span>
+                    <svg class="menu-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    <span>MENU</span>
+                    <svg class="arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
 
                 <nav id="dropdown-menu" class="portal-dropdown-menu">
                     <a href="/" class="menu-item">
-                        <span class="menu-icon">🏠</span>
+                        <span class="menu-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </span>
                         <div>
                             <div>Trang Chủ</div>
                             <span class="menu-desc">Giới thiệu & Triết lý</span>
                         </div>
                     </a>
                     <a href="/kinh-dich/" class="menu-item active">
-                        <span class="menu-icon">☰</span>
+                        <span class="menu-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="5" x2="20" y2="5"></line><line x1="4" y1="9.5" x2="10" y2="9.5"></line><line x1="14" y1="9.5" x2="20" y2="9.5"></line><line x1="4" y1="14" x2="20" y2="14"></line><line x1="4" y1="18.5" x2="10" y2="18.5"></line><line x1="14" y1="18.5" x2="20" y2="18.5"></line></svg>
+                        </span>
                         <div>
                             <div>Kinh Dịch</div>
                             <span class="menu-desc">Gieo quẻ Lục Hào Cổ Bốc</span>
                         </div>
                     </a>
                     <a href="/tu-vi/" class="menu-item">
-                        <span class="menu-icon">⭐</span>
+                        <span class="menu-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </span>
                         <div>
                             <div>Tử Vi</div>
                             <span class="menu-desc">Lá số Tử Vi Đẩu Số 12 Cung</span>
                         </div>
                     </a>
                     <a href="/thai-at/" class="menu-item">
-                        <span class="menu-icon">☯</span>
+                        <span class="menu-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 0 1-8-8 8 8 0 0 1 8-8 4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 0-4 4 4 4 0 0 0 4 4zm0-14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 6zm0 10a1.5 1.5 0 1 1-1.5-1.5A1.5 1.5 0 0 1 12 16z"/></svg>
+                        </span>
                         <div>
                             <div>Thái Ất</div>
                             <span class="menu-desc">Sa bàn 16 cung & 72 cục</span>
                         </div>
                     </a>
                     <a href="/bat-tu/" class="menu-item">
-                        <span class="menu-icon">🏛️</span>
+                        <span class="menu-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M4 18h16M6 18V6M10 18V6M14 18V6M18 18V6M2 6h20L12 2z"/></svg>
+                        </span>
                         <div>
                             <div>Bát Tự</div>
                             <span class="menu-desc">Tứ Trụ, Thập Thần & Đại Vận</span>
@@ -257,10 +268,22 @@
 
                             <!-- 4 Thẻ Bài Phương Thức Khởi Quẻ (Inscribed Tablets) -->
                             <div class="method-tabs">
-                                <button id="tab-toss" type="button" class="method-tablet active-tab-btn" onclick="switchMethodTab('toss')">TUNG XU</button>
-                                <button id="tab-manual" type="button" class="method-tablet" onclick="switchMethodTab('manual')">NHẬP HÀO</button>
-                                <button id="tab-number" type="button" class="method-tablet" onclick="switchMethodTab('number')">NHẬP SỐ</button>
-                                <button id="tab-intent" type="button" class="method-tablet" onclick="switchMethodTab('intent')">Ý NIỆM</button>
+                                <button id="tab-toss" type="button" class="method-tablet active-tab-btn" onclick="switchMethodTab('toss')">
+                                    <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><rect x="9" y="9" width="6" height="6"/></svg>
+                                    <span>TUNG XU</span>
+                                </button>
+                                <button id="tab-manual" type="button" class="method-tablet" onclick="switchMethodTab('manual')">
+                                    <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                                    <span>NHẬP HÀO</span>
+                                </button>
+                                <button id="tab-number" type="button" class="method-tablet" onclick="switchMethodTab('number')">
+                                    <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+                                    <span>NHẬP SỐ</span>
+                                </button>
+                                <button id="tab-intent" type="button" class="method-tablet" onclick="switchMethodTab('intent')">
+                                    <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zM9 21h6"/></svg>
+                                    <span>Ý NIỆM</span>
+                                </button>
                             </div>
 
                             <!-- 1. PHÂN VÙNG TUNG XU TRỰC TUYẾN -->
@@ -590,7 +613,10 @@
                                             </div>
                                         </div>
 
-                                        <button id="toss-trigger-btn" class="btn-altar-toss">TUNG ĐỒNG XU</button>
+                                        <button id="toss-trigger-btn" class="btn-altar-toss">
+                                            <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+                                            <span>TUNG ĐỒNG XU</span>
+                                        </button>
                                     </div>
 
                                     <!-- Cột Phải: Bảng Lục Hào Dựng Từ Dưới Lên Hướng Người Dùng -->
@@ -615,7 +641,10 @@
                                 <!-- Nút Hoàn Tất Sau 6 Lần Gieo -->
                                 <div id="finish-container" class="hidden" style="text-align: center; margin-top: 20px;">
                                     <p style="margin-bottom: 15px; color: var(--altar-gold); font-size: 1.05rem; font-weight: bold; font-family: var(--font-title);">Đã gieo đủ 6 hào của quẻ dịch!</p>
-                                    <button id="finish-btn" class="btn-altar-toss" style="max-width: 280px; margin: 0 auto;">Lập Bản Đồ Quẻ Dịch</button>
+                                    <button id="finish-btn" class="btn-altar-toss" style="max-width: 290px; margin: 0 auto;">
+                                        <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <span>Lập Bản Đồ Quẻ Dịch</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -626,8 +655,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 6 (Trên):</strong>
                                         <select id="manual-hao-6" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-6" style="width: 18px; height: 18px; cursor: pointer;">
@@ -637,8 +666,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 5:</strong>
                                         <select id="manual-hao-5" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-5" style="width: 18px; height: 18px; cursor: pointer;">
@@ -648,8 +677,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 4:</strong>
                                         <select id="manual-hao-4" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-4" style="width: 18px; height: 18px; cursor: pointer;">
@@ -659,8 +688,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 3:</strong>
                                         <select id="manual-hao-3" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-3" style="width: 18px; height: 18px; cursor: pointer;">
@@ -670,8 +699,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 2:</strong>
                                         <select id="manual-hao-2" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-2" style="width: 18px; height: 18px; cursor: pointer;">
@@ -681,8 +710,8 @@
                                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                                         <strong style="color: var(--altar-text); width: 110px;">Hào 1 (Dưới):</strong>
                                         <select id="manual-hao-1" class="form-control" style="flex: 2;">
-                                            <option value="1">Dương (— Nét liền)</option>
-                                            <option value="2">Âm (- - Nét đứt)</option>
+                                             <option value="1">Dương (— Nét liền)</option>
+                                             <option value="2">Âm (- - Nét đứt)</option>
                                         </select>
                                         <label style="display: flex; align-items: center; gap: 6px; color: var(--altar-text); cursor: pointer; flex: 1; user-select: none;">
                                             <input type="checkbox" id="manual-dong-1" style="width: 18px; height: 18px; cursor: pointer;">
@@ -691,7 +720,10 @@
                                     </div>
                                 </div>
                                 <div style="text-align: center;">
-                                    <button id="manual-submit-btn" class="btn-altar-toss" style="max-width: 320px; margin: 0 auto;">Lập Bản Đồ Quẻ Dịch (Nhập Hào)</button>
+                                    <button id="manual-submit-btn" class="btn-altar-toss" style="max-width: 320px; margin: 0 auto;">
+                                        <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <span>Lập Bản Đồ Quẻ Dịch (Nhập Hào)</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -724,7 +756,10 @@
                                     <div id="np-result-name" style="text-align: center; color: var(--altar-gold); font-weight: 700; font-size: 1rem; margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(212,175,55,0.2);"></div>
                                 </div>
                                 <div style="text-align: center;">
-                                    <button id="number-submit-btn" class="btn-altar-toss" style="max-width: 260px; margin: 0 auto;">LẬP QUẺ</button>
+                                    <button id="number-submit-btn" class="btn-altar-toss" style="max-width: 260px; margin: 0 auto;">
+                                        <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        <span>LẬP QUẺ</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -773,7 +808,10 @@
                                     </div>
                                 </div>
                                 <div style="text-align: center;">
-                                    <button id="intent-submit-btn" class="btn-altar-toss" style="max-width: 280px; margin: 0 auto;">LẬP QUẺ Ý NIỆM</button>
+                                    <button id="intent-submit-btn" class="btn-altar-toss" style="max-width: 280px; margin: 0 auto;">
+                                        <svg class="btn-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zM9 21h6"/></svg>
+                                        <span>LẬP QUẺ Ý NIỆM</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -793,10 +831,19 @@
                     <p class="download-tip">Mẹo: Bạn có thể nhấn nút Tải ảnh dưới đây để lưu về máy.</p>
                 </div>
 
-                <div class="action-row" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; width: 100%;">
-                    <button id="download-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Tải Ảnh Quẻ</button>
-                    <button id="back-to-cast-btn" class="btn btn-primary" style="background: #3a2e24; border-color: #524133; color: var(--text-light); padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Sửa Hào</button>
-                    <button onclick="window.location.reload();" class="btn btn-primary" style="background: #2b1f15; border-color: #3d2a19; color: var(--text-light); padding: 6px 12px; font-size: 0.78rem; font-weight: bold; width: auto; min-width: 105px; max-width: 135px; height: auto;">Gieo Mới</button>
+                <div class="action-row" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; width: 100%;">
+                    <button id="download-btn" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; font-size: 0.82rem; font-weight: bold; width: auto; min-width: 120px; height: auto;">
+                        <svg class="btn-svg-sm" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Tải Ảnh Quẻ</span>
+                    </button>
+                    <button id="back-to-cast-btn" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #3a2e24; border-color: #524133; color: var(--text-light); padding: 8px 16px; font-size: 0.82rem; font-weight: bold; width: auto; min-width: 120px; height: auto;">
+                        <svg class="btn-svg-sm" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <span>Sửa Hào</span>
+                    </button>
+                    <button onclick="window.location.reload();" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #2b1f15; border-color: #3d2a19; color: var(--text-light); padding: 8px 16px; font-size: 0.82rem; font-weight: bold; width: auto; min-width: 120px; height: auto;">
+                        <svg class="btn-svg-sm" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        <span>Gieo Mới</span>
+                    </button>
                 </div>
 
                 <!-- Thông Tin Liên Hệ Luận Giải & Lưu Ý -->
@@ -806,30 +853,42 @@
                         
                         <!-- Thông tin phẳng, tối ưu hóa không gian, không khung viền -->
                         <div style="margin-bottom: 15px; text-align: left; padding: 0 5px;">
-                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9;">☯ Dịch Sư:</span>
+                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9; display: flex; align-items: center; gap: 4px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 0 1-8-8 8 8 0 0 1 8-8 4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 0-4 4 4 4 0 0 0 4 4zm0-14a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 6zm0 10a1.5 1.5 0 1 1-1.5-1.5A1.5 1.5 0 0 1 12 16z"/></svg>
+                                    Dịch Sư:
+                                </span>
                                 <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">HUY HOÀNG</span>
                             </div>
-                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9;">💬 Zalo:</span>
+                            <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; opacity: 0.9; display: flex; align-items: center; gap: 4px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    Zalo:
+                                </span>
                                 <a href="https://zalo.me/0933116860" target="_blank" style="color: #66b2ff; text-decoration: underline; font-weight: 600; font-size: 0.95rem;">0933116860</a>
                             </div>
                             <div style="margin-top: 10px; border-top: 1px dashed rgba(223, 177, 91, 0.15); padding-top: 10px;">
-                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 4px; opacity: 0.9;">🏦 Tài khoản ngân hàng (Cúng dường / Tùy hỷ):</span>
+                                <span style="color: var(--gold); font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; opacity: 0.9;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M2 10l10-6 10 6"/></svg>
+                                    Tài khoản ngân hàng (Cúng dường / Tùy hỷ):
+                                </span>
                                 <span style="display: block; font-size: 0.9rem; color: #e5c392;">Ngân hàng: <strong>Sacombank</strong> - STK: <strong style="font-size: 1rem; color: var(--gold); font-family: monospace;">060216644258</strong></span>
                             </div>
                         </div>
 
                         <!-- Khung lưu ý cảnh báo màu đỏ -->
                         <div class="warning-info-box" style="border: 1px solid rgba(255, 77, 77, 0.4); background: rgba(255, 77, 77, 0.03); border-radius: 6px; padding: 12px; text-align: justify;">
-                            <p style="color: #ff6666; font-weight: bold; margin: 0 0 6px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-                                ⚠️ LƯU Ý QUAN TRỌNG:
+                            <p style="color: #ff6666; font-weight: bold; margin: 0 0 6px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                LƯU Ý QUAN TRỌNG:
                             </p>
                             <p style="color: #ffb3b3; margin: 0; font-size: 0.82rem; line-height: 1.5;">
                                 Sau khi tải ảnh, hãy <strong>chụp màn hình ảnh quẻ</strong> trước khi thoát web để đảm bảo an toàn. Vì khi thoát web và gieo lại sẽ không còn quẻ hiện tại nữa, thông tin luận đoán chắc chắn sai lệch.
                             </p>
                         </div>
 
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
