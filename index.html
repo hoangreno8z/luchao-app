@@ -505,9 +505,13 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 18px 50px rgba(0, 0, 0, 0.24);
             text-decoration: none;
             color: inherit;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: border-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
                         transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
-                        background 300ms ease;
+                        background 300ms ease,
+                        box-shadow 300ms ease;
         }
 
         .node::before {
@@ -518,10 +522,16 @@
             background: radial-gradient(circle at 18% 50%, rgba(214, 168, 79, 0.08), transparent 30%);
         }
 
-        .node:hover, .node:focus-within {
-            border-color: rgba(214, 168, 79, 0.35);
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, rgba(30, 27, 20, 0.78), rgba(9, 10, 13, 0.9));
+        .node:hover, .node:focus-visible {
+            border-color: rgba(214, 168, 79, 0.38);
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, rgba(32, 28, 20, 0.82), rgba(10, 12, 15, 0.92));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 22px 55px rgba(0, 0, 0, 0.35), 0 0 25px rgba(214, 168, 79, 0.12);
+        }
+
+        .node:active {
+            transform: scale(0.985);
+            transition-duration: 100ms;
         }
 
         /* Artwork Circle (Ảnh HD cắt tròn, nền mờ phía sau SVG) */
@@ -638,8 +648,9 @@
             letter-spacing: 0.18em;
             transition: color 250ms ease, gap 250ms ease;
         }
-        .enter-btn:hover { color: var(--bright); gap: 18px; }
-        .enter-btn .arrow { color: var(--gold); font-size: 16px; line-height: 1; }
+        .node:hover .enter-btn { color: var(--bright); gap: 18px; }
+        .enter-btn .arrow { color: var(--gold); font-size: 16px; line-height: 1; transition: transform 250ms ease; }
+        .node:hover .enter-btn .arrow { transform: translateX(3px); }
         .node-idx {
             position: absolute;
             top: 17px;
@@ -647,6 +658,44 @@
             color: rgba(214, 168, 79, 0.24);
             font: 9px var(--font-title);
             letter-spacing: 0.15em;
+        }
+
+        /* ==========================================
+           PORTAL RADIAL WIPE TRANSITION EFFECT
+           ========================================== */
+        .portal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            pointer-events: none;
+            opacity: 0;
+            background: radial-gradient(circle at var(--click-x, 50%) var(--click-y, 50%), rgba(214, 168, 79, 0.38) 0%, rgba(18, 15, 11, 0.97) 48%, #07090d 100%);
+            clip-path: circle(0% at var(--click-x, 50%) var(--click-y, 50%));
+            transition: clip-path 0.46s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.42s ease;
+        }
+        .portal-overlay.active {
+            pointer-events: auto;
+            opacity: 1;
+            clip-path: circle(150% at var(--click-x, 50%) var(--click-y, 50%));
+        }
+        .portal-overlay::after {
+            content: '';
+            position: absolute;
+            top: var(--click-y, 50%);
+            left: var(--click-x, 50%);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(244, 213, 138, 0.95);
+            box-shadow: 0 0 35px rgba(214, 168, 79, 0.9), inset 0 0 25px rgba(244, 213, 138, 0.7);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.48s cubic-bezier(0.12, 0.8, 0.2, 1), opacity 0.48s ease;
+            opacity: 1;
+            pointer-events: none;
+        }
+        .portal-overlay.active::after {
+            transform: translate(-50%, -50%) scale(120);
+            opacity: 0;
         }
 
         /* Bottom Line */
@@ -1069,14 +1118,14 @@
             <a href="#systems-section" class="hero-button">KHÁM PHÁ CÁC HỆ THỐNG <span>→</span></a>
         </section>
 
-        <!-- 4 Cánh Cửa Huyền Học — SVG Geometry Gates -->
+        <!-- 4 Cánh Cửa Huyền Học — SVG Geometry Gates (Full Clickable Cards) -->
         <section id="systems-section" class="nodes" aria-label="Các công cụ huyền học">
 
             <!-- 01 Kinh Dịch: Thái Cực + Bát Quái -->
-            <article class="node" data-index="0">
+            <a class="node" href="/kinh-dich/" data-index="0" aria-label="Mở Kinh Dịch — Lục Hào Cổ Bốc">
                 <div class="node-geometry">
                     <div class="artwork-circle"><img src="kinhdich.png" alt="" loading="lazy"></div>
-                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Kinh Dịch">
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="56"/>
                         <g class="trigram-wheel">
@@ -1100,16 +1149,16 @@
                         <h2>Kinh Dịch</h2>
                         <span>Biến</span>
                     </div>
-                    <a class="enter-btn" href="/kinh-dich/" aria-label="Mở Kinh Dịch"><span>Vào</span><span class="arrow">→</span></a>
+                    <div class="enter-btn"><span>Vào</span><span class="arrow">→</span></div>
                 </div>
                 <div class="node-idx">01</div>
-            </article>
+            </a>
 
             <!-- 02 Thái Ất: Cửu Cung + Quỹ Đạo -->
-            <article class="node" data-index="1">
+            <a class="node" href="/thai-at/" data-index="1" aria-label="Mở Thái Ất — Thiên Thời Quốc Vận">
                 <div class="node-geometry">
                     <div class="artwork-circle"><img src="thaiat.png" alt="" loading="lazy"></div>
-                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Thái Ất">
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <ellipse class="traj" cx="80" cy="80" rx="61" ry="27"/>
                         <ellipse class="traj" cx="80" cy="80" rx="27" ry="61" transform="rotate(45 80 80)"/>
@@ -1133,16 +1182,16 @@
                         <h2>Thái Ất</h2>
                         <span>Thời</span>
                     </div>
-                    <a class="enter-btn" href="/thai-at/" aria-label="Mở Thái Ất"><span>Vào</span><span class="arrow">→</span></a>
+                    <div class="enter-btn"><span>Vào</span><span class="arrow">→</span></div>
                 </div>
                 <div class="node-idx">02</div>
-            </article>
+            </a>
 
             <!-- 03 Bát Tự: Tứ Trụ -->
-            <article class="node" data-index="2">
+            <a class="node" href="/bat-tu/" data-index="2" aria-label="Mở Bát Tự — Tứ Trụ Can Chi">
                 <div class="node-geometry">
                     <div class="artwork-circle"><img src="battuicon.png" alt="" loading="lazy"></div>
-                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Bát Tự">
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="58"/>
                         <g class="pillars">
@@ -1161,16 +1210,16 @@
                         <h2>Bát Tự</h2>
                         <span>Mệnh</span>
                     </div>
-                    <a class="enter-btn" href="/bat-tu/" aria-label="Mở Bát Tự"><span>Vào</span><span class="arrow">→</span></a>
+                    <div class="enter-btn"><span>Vào</span><span class="arrow">→</span></div>
                 </div>
                 <div class="node-idx">03</div>
-            </article>
+            </a>
 
             <!-- 04 Tử Vi: 12 Cung + Tinh Tú -->
-            <article class="node" data-index="3">
+            <a class="node" href="/tu-vi/" data-index="3" aria-label="Mở Tử Vi — Chiêm Tinh Vận Mệnh">
                 <div class="node-geometry">
                     <div class="artwork-circle"><img src="tuvi.png" alt="" loading="lazy"></div>
-                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Tử Vi">
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-hidden="true">
                         <circle class="geo-outer" cx="80" cy="80" r="68"/>
                         <circle class="geo-inner" cx="80" cy="80" r="56"/>
                         <circle class="geo-inner" cx="80" cy="80" r="39"/>
@@ -1204,10 +1253,10 @@
                         <h2>Tử Vi</h2>
                         <span>Tinh</span>
                     </div>
-                    <a class="enter-btn" href="/tu-vi/" aria-label="Mở Tử Vi"><span>Vào</span><span class="arrow">→</span></a>
+                    <div class="enter-btn"><span>Vào</span><span class="arrow">→</span></div>
                 </div>
                 <div class="node-idx">04</div>
-            </article>
+            </a>
 
         </section>
 
@@ -1297,9 +1346,13 @@
         </footer>
     </div>
 
-    <!-- Dropdown Menu Interaction Script -->
+    <!-- Portal Radial Wipe Transition Overlay -->
+    <div id="portal-overlay" class="portal-overlay" aria-hidden="true"></div>
+
+    <!-- Portal & Menu Interactions Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Dropdown Menu Logic
             const menuBtn = document.getElementById('menu-btn');
             const dropdownMenu = document.getElementById('dropdown-menu');
 
@@ -1331,6 +1384,47 @@
                         menuBtn.classList.remove('active');
                     }
                 });
+            }
+
+            // Portal Radial Wipe Page Transition on Card Click
+            const overlay = document.getElementById('portal-overlay');
+            const portalCards = document.querySelectorAll('.node');
+
+            portalCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Respect modifier keys for opening in new tabs
+                    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+
+                    const href = this.getAttribute('href');
+                    if (!href) return;
+
+                    e.preventDefault();
+
+                    // Calculate ripple origin from click coordinates or card center
+                    const rect = this.getBoundingClientRect();
+                    const clickX = e.clientX && e.clientX > 0 ? e.clientX : (rect.left + rect.width / 2);
+                    const clickY = e.clientY && e.clientY > 0 ? e.clientY : (rect.top + rect.height / 2);
+
+                    if (overlay) {
+                        overlay.style.setProperty('--click-x', `${clickX}px`);
+                        overlay.style.setProperty('--click-y', `${clickY}px`);
+                        overlay.classList.add('active');
+
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 400);
+                    } else {
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+
+        // Reset Portal Overlay if restored from browser back-forward cache (bfcache)
+        window.addEventListener('pageshow', (event) => {
+            const overlay = document.getElementById('portal-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
             }
         });
     </script>
