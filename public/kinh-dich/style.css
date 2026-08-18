@@ -936,6 +936,20 @@ header p {
     color: var(--altar-text);
 }
 
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-bottom: 25px;
+}
+
+footer p {
+    font-size: 0.85rem;
+    color: var(--altar-text-muted);
+    font-family: var(--font-title);
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+}
+
 /* ==========================================================================
    RESPONSIVE LAYOUT (320px, 375px, 390px, 430px, 640px, desktop)
    ========================================================================== */
