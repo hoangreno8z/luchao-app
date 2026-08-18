@@ -1238,46 +1238,70 @@ document.addEventListener('DOMContentLoaded', () => {
         const coinResults = [false, false, false];
         let coinsFinished = 0;
 
-        // Cho mỗi đồng xu quay độc lập với thời gian ngẫu nhiên từ 1 giây đến 2.5 giây (1000ms - 2500ms)
+        // BẬT CƠ CHẾ DAO ĐỘNG NHỊ PHÂN CAO TẦN (50 - 100 lần/giây) CHO MỖI ĐỒNG XU
+        // Trong 1s - 2s xu bay, tốc độ chuyển đổi âm/dương được lấy mẫu ngẫu nhiên liên tục
+        const coinBitPool = [false, false, false];
+        const highFrequencySamplers = [];
+
         coins.forEach((coin, idx) => {
             if (!coin) return;
 
-            // Kích hoạt class quay siêu tốc trên .coin-inner (chứa 2 mặt xu)
+            // Tần số chuyển đổi âm/dương ngẫu nhiên từ 50Hz đến 100Hz (10ms - 20ms / chu kỳ)
+            const sampleRateMs = Math.floor(Math.random() * 10) + 10;
+            const samplerId = setInterval(() => {
+                let randomBit = false;
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const randBuf = new Uint8Array(1);
+                    window.crypto.getRandomValues(randBuf);
+                    randomBit = (randBuf[0] % 2 === 1);
+                } else {
+                    randomBit = Math.random() < 0.5;
+                }
+                coinBitPool[idx] = randomBit;
+            }, sampleRateMs);
+            highFrequencySamplers.push(samplerId);
+
+            // Kích hoạt nảy quán tính tắt dần (Harmonic Metal Bounce)
             const innerEl = coin.querySelector('.coin-inner');
             if (innerEl) {
-                innerEl.style.transition = 'none'; // Tắt transition để animation mượt
+                innerEl.style.transition = 'none';
+                innerEl.classList.remove('spinning-fast');
+                // Force reflow để animation kích hoạt hoàn toàn mới
+                void innerEl.offsetWidth;
                 innerEl.classList.add('spinning-fast');
             }
 
-            const coinSpinDuration = 600 + idx * 130 + Math.floor(Math.random() * 100);
+            // Thời gian dao động vật lý độc lập (1.2s - 1.8s)
+            // Đồng xu 1 đáp trước (~1.25s), đồng xu 2 đáp sau (~1.5s), đồng xu 3 đáp sau cùng (~1.75s)
+            const coinSpinDuration = 1250 + (idx * 250) + Math.floor(Math.random() * 80);
 
             setTimeout(() => {
-                // Tắt hiệu ứng tung xu động lực học
-                if (innerEl) {
-                    innerEl.classList.remove('spinning-fast');
-                    innerEl.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.25, 1)';
-                }
-
-                // Quyết định mặt ngửa (true/Dương) hay sấp (false/Âm)
-                const isYang = Math.random() < 0.5;
+                // ĐỒNG XU ĐÁP XUỐNG YÊN TĨNH:
+                // 1. Khóa và đóng băng trạng thái nhị phân tại đúng micro-giây tiếp đất
+                clearInterval(highFrequencySamplers[idx]);
+                const isYang = coinBitPool[idx];
                 coinResults[idx] = isYang;
 
-                // Cập nhật góc quay Y tương ứng trên .coin-inner
+                // 2. Dừng hiệu ứng bay, cố định mặt âm/dương đã chốt
                 if (innerEl) {
+                    innerEl.classList.remove('spinning-fast');
+                    innerEl.style.transition = 'transform 0.4s cubic-bezier(0.15, 0.85, 0.35, 1)';
+                    // isYang: Mặt Dương (2 chữ Mãn) -> rotateY(0deg)
+                    // !isYang: Mặt Âm (4 chữ Hán) -> rotateY(180deg)
                     innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
 
                 coinsFinished++;
 
-                // Khi cả 3 đồng xu đã dừng hẳn
+                // Khi cả 3 đồng xu đã đáp xuống yên tĩnh hoàn toàn
                 if (coinsFinished === 3) {
                     const yangCount = coinResults.filter(r => r).length;
 
-                    // Tính hào dịch:
-                    // 0 Dương (3 Âm): Lão Âm (Âm Động, value = 0)
-                    // 1 Dương (2 Âm): Thiếu Dương (Dương Tĩnh, value = 1)
-                    // 2 Dương (1 Âm): Thiếu Âm (Âm Tĩnh, value = 2)
-                    // 3 Dương (0 Âm): Lão Dương (Dương Động, value = 3)
+                    // Tính hào Dịch Lục Hào Cổ Bốc:
+                    // 0 Dương (3 Âm): Lão Âm (Âm Động, value = 0, dấu X)
+                    // 1 Dương (2 Âm): Thiếu Dương (Dương Tĩnh, value = 1, vạch liền)
+                    // 2 Dương (1 Âm): Thiếu Âm (Âm Tĩnh, value = 2, vạch đứt)
+                    // 3 Dương (0 Âm): Lão Dương (Dương Động, value = 3, dấu O)
                     let lineValue;
                     if (yangCount === 0) {
                         lineValue = 0;
@@ -1291,7 +1315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     hexLines.push(lineValue);
 
-                    // Kích hoạt lại nút và chạy callback
+                    // Kích hoạt lại nút và chạy callback cập nhật giao diện hào
                     if (tossTriggerBtn) tossTriggerBtn.disabled = false;
                     if (callback) callback();
                 }
