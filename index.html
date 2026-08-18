@@ -480,136 +480,215 @@
         }
 
         /* ==========================================
-           4 CÁNH CỬA HUYỀN HỌC (SYSTEMS GRID)
+           4 CÁNH CỬA HUYỀN HỌC — SVG GEOMETRY GATES
            ========================================== */
-        .systems {
+        .nodes {
             position: relative;
-            max-width: 1380px;
+            z-index: 4;
+            max-width: 1040px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
 
-        .system-card {
+        .node {
             position: relative;
-            min-width: 0;
+            min-height: 200px;
+            display: grid;
+            grid-template-columns: 135px minmax(0, 1fr);
+            align-items: center;
             overflow: hidden;
-            border: 1px solid var(--border-subtle);
-            border-radius: 22px;
-            background: var(--card-bg);
+            border: 1px solid rgba(214, 168, 79, 0.16);
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(25, 23, 18, 0.7), rgba(8, 9, 11, 0.84));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 18px 50px rgba(0, 0, 0, 0.24);
             text-decoration: none;
             color: inherit;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            transition: border-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                        background 300ms ease;
         }
 
-        .system-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--border-bright);
-            box-shadow: 0 24px 65px rgba(0, 0, 0, 0.55), 0 0 35px rgba(214, 168, 79, 0.12);
+        .node::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 18% 50%, rgba(214, 168, 79, 0.08), transparent 30%);
         }
 
-        .system-art {
+        .node:hover, .node:focus-within {
+            border-color: rgba(214, 168, 79, 0.35);
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(30, 27, 20, 0.78), rgba(9, 10, 13, 0.9));
+        }
+
+        /* Artwork Circle (Ảnh HD cắt tròn, nền mờ phía sau SVG) */
+        .node-geometry {
             position: relative;
-            aspect-ratio: 1/1;
-            overflow: hidden;
-            background: #090b10;
+            display: grid;
+            place-items: center;
+            width: 135px;
+            height: 100%;
         }
 
-        .system-image {
+        .artwork-circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            opacity: 0.3;
+            transition: opacity 400ms ease;
+        }
+
+        .artwork-circle img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.02);
-            transition: transform 1.1s cubic-bezier(0.2, 0.8, 0.2, 1), filter 1.1s ease;
-            filter: saturate(0.88) contrast(1.04);
-            display: block;
+            filter: saturate(0.7) contrast(1.1);
         }
 
-        .system-card:hover .system-image {
-            transform: scale(1.08);
-            filter: saturate(1.05) contrast(1.08);
-        }
+        .node:hover .artwork-circle { opacity: 0.5; }
 
-        .art-glow {
-            position: absolute;
-            z-index: 2;
-            width: 55%;
-            height: 55%;
-            left: 22.5%;
-            top: 22.5%;
-            border-radius: 50%;
-            background: rgba(244, 213, 138, 0.08);
-            filter: blur(28px);
-            animation: breatheAnimation 5.5s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        .system-info {
+        /* SVG Glyph (Hình học phát sáng phía trước) */
+        .glyph {
             position: relative;
-            z-index: 3;
-            padding: 20px 22px 24px;
-            border-top: 1px solid var(--border-subtle);
-            text-align: center;
-            background: rgba(10, 12, 16, 0.6);
+            z-index: 2;
+            width: 116px;
+            height: 116px;
+            overflow: visible;
         }
 
-        .system-info h2 {
+        /* SVG Common Geometry */
+        .geo-outer { fill: none; stroke: rgba(214, 168, 79, 0.35); stroke-width: 0.8; }
+        .geo-inner { fill: none; stroke: rgba(214, 168, 79, 0.12); stroke-width: 0.65; }
+
+        /* Kinh Dịch: Bát Quái xoay + Thái Cực */
+        .trigram-wheel {
+            fill: none;
+            stroke: rgba(241, 216, 137, 0.52);
+            stroke-width: 1.5;
+            transform-origin: 80px 80px;
+            animation: glyphSpin 45s linear infinite;
+        }
+        .taiji-ring { fill: rgba(214, 168, 79, 0.04); stroke: rgba(241, 216, 137, 0.65); stroke-width: 1; }
+        .taiji-fill { fill: rgba(214, 168, 79, 0.55); }
+        .taiji-dot-d { fill: #080807; }
+        .taiji-dot-l { fill: #e9dba9; }
+
+        /* Thái Ất: Cửu Cung + Quỹ Đạo */
+        .traj { fill: none; stroke: rgba(214, 168, 79, 0.32); stroke-width: 0.7; stroke-dasharray: 3 5; }
+        .traj-soft { fill: none; stroke: rgba(214, 168, 79, 0.12); stroke-width: 0.7; }
+        .n-palace { fill: rgba(214, 168, 79, 0.025); stroke: rgba(241, 216, 137, 0.42); stroke-width: 0.7; }
+        .mv-pt {
+            fill: #f1d889;
+            filter: drop-shadow(0 0 3px rgba(241, 216, 137, 0.7));
+            animation: glyphOrbit 12s linear infinite;
+            transform-origin: 80px 80px;
+        }
+
+        /* Bát Tự: Tứ Trụ */
+        .pillars { fill: rgba(214, 168, 79, 0.035); stroke: rgba(241, 216, 137, 0.45); stroke-width: 0.8; }
+        .pillar-arc { fill: none; stroke: rgba(241, 216, 137, 0.25); stroke-width: 0.7; }
+        .pillar-dot { fill: #f1d889; opacity: 0.6; animation: glyphPulse 6.25s ease-in-out infinite; }
+
+        /* Tử Vi: 12 Cung + Tinh Tú */
+        .houses { stroke: rgba(214, 168, 79, 0.2); stroke-width: 0.65; }
+        .stars-f { fill: rgba(241, 216, 137, 0.72); }
+        .c-star {
+            fill: #f1d889;
+            filter: drop-shadow(0 0 4px rgba(241, 216, 137, 0.55));
+            animation: glyphBreath 7s ease-in-out infinite;
+        }
+
+        /* Node Text Content */
+        .node-content {
+            position: relative;
+            z-index: 5;
+            padding: 26px 27px 25px 5px;
+        }
+        .node-heading {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .node-heading h2 {
             margin: 0;
-            color: var(--bright);
-            font: 700 21px var(--font-title);
+            color: #e5dccb;
+            font: 500 clamp(18px, 2vw, 23px) var(--font-title);
             letter-spacing: 0.08em;
         }
-
-        .system-info p {
-            margin: 8px 0 0;
-            color: var(--muted);
-            font-size: 13px;
-            letter-spacing: 0.3px;
+        .node-heading span {
+            color: var(--gold);
+            font-size: 10px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            font-family: var(--font-ui);
         }
-
-        .system-arrow {
+        .enter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 13px;
+            margin-top: 16px;
+            color: #d9cda9;
+            text-decoration: none;
+            font: 11px var(--font-ui);
+            letter-spacing: 0.18em;
+            transition: color 250ms ease, gap 250ms ease;
+        }
+        .enter-btn:hover { color: var(--bright); gap: 18px; }
+        .enter-btn .arrow { color: var(--gold); font-size: 16px; line-height: 1; }
+        .node-idx {
             position: absolute;
-            right: 18px;
-            bottom: 22px;
-            color: var(--bright);
-            font-size: 18px;
-            opacity: 0;
-            transform: translate(-4px, 4px);
-            transition: all 0.4s ease;
+            top: 17px;
+            right: 20px;
+            color: rgba(214, 168, 79, 0.24);
+            font: 9px var(--font-title);
+            letter-spacing: 0.15em;
         }
 
-        .system-card:hover .system-arrow {
-            opacity: 1;
-            transform: translate(0, 0);
-        }
-
-        /* Philosophy Separation Banner */
-        .philosophy {
-            max-width: 900px;
-            margin: 60px auto 45px;
+        /* Bottom Line */
+        .bottom-line {
+            max-width: 1040px;
+            margin: 55px auto 45px;
             display: flex;
             align-items: center;
-            gap: 18px;
-            color: var(--gold);
-            font: 12px var(--font-title);
-            letter-spacing: 0.22em;
-            text-align: center;
-            text-transform: uppercase;
+            gap: 17px;
         }
-
-        .philosophy span {
+        .bottom-line span {
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(214, 168, 79, 0.35));
+            background: linear-gradient(90deg, transparent, rgba(214, 168, 79, 0.18));
+        }
+        .bottom-line span:last-child {
+            background: linear-gradient(90deg, rgba(214, 168, 79, 0.18), transparent);
+        }
+        .bottom-line small {
+            flex: none;
+            color: rgba(214, 168, 79, 0.3);
+            font-size: 7px;
+            letter-spacing: 0.26em;
+            font-family: var(--font-ui);
         }
 
-        .philosophy span:last-child {
-            background: linear-gradient(90deg, rgba(214, 168, 79, 0.35), transparent);
+        /* SVG Glyph Keyframes */
+        @keyframes glyphSpin { to { transform: rotate(360deg); } }
+        @keyframes glyphOrbit { to { transform: rotate(360deg); } }
+        @keyframes glyphPulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.8; } }
+        @keyframes glyphBreath {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); transform-origin: center; }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        /* Reduced Motion & Touch Devices */
+        @media (prefers-reduced-motion: reduce) {
+            .trigram-wheel, .mv-pt, .pillar-dot, .c-star { animation: none !important; }
+        }
+        @media (hover: none) {
+            .node:hover { transform: none; }
+            .enter-btn:hover { gap: 13px; }
         }
 
         /* ==========================================
@@ -799,13 +878,8 @@
             to { background-position: 130px 65px, -105px 80px; }
         }
 
+
         /* Responsive Breakpoints */
-        @media (max-width: 1100px) {
-            .systems {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 18px;
-            }
-        }
 
         @media (max-width: 640px) {
             .celestial-page {
@@ -866,17 +940,25 @@
             .hero-subtitle {
                 font-size: 13px;
             }
-            .systems {
+            .nodes {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 12px;
             }
-            .system-art {
-                aspect-ratio: 1.15/1;
+            .node {
+                min-height: 148px;
+                grid-template-columns: 105px minmax(0, 1fr);
+                border-radius: 15px;
             }
-            .philosophy {
-                font-size: 10px;
-                letter-spacing: 0.12em;
-            }
+            .node-geometry { width: 105px; }
+            .glyph { width: 91px; height: 91px; }
+            .artwork-circle { width: 80px; height: 80px; }
+            .node-content { padding: 21px 36px 20px 2px; }
+            .node-heading { gap: 7px; flex-wrap: wrap; }
+            .node-heading h2 { font-size: 17px; }
+            .node-heading span { font-size: 8px; }
+            .enter-btn { font-size: 9px; }
+            .bottom-line { margin-top: 38px; }
+            .bottom-line small { font-size: 6px; letter-spacing: 0.12em; text-align: center; }
             .footer {
                 flex-direction: column;
                 text-align: center;
@@ -987,63 +1069,154 @@
             <a href="#systems-section" class="hero-button">KHÁM PHÁ CÁC HỆ THỐNG <span>→</span></a>
         </section>
 
-        <!-- 4 Cánh Cửa Huyền Học (Systems Grid) -->
-        <section id="systems-section" class="systems">
-            <a href="/kinh-dich/" class="system-card" title="Kinh Dịch — Lục Hào Cổ Bốc">
-                <div class="system-art">
-                    <div class="art-glow"></div>
-                    <img src="kinhdich.png" alt="Kinh Dịch — Lục Hào Cổ Bốc" class="system-image" loading="lazy">
-                </div>
-                <div class="system-info">
-                    <h2>Kinh Dịch</h2>
-                    <p>Lục Hào Cổ Bốc</p>
-                    <span class="system-arrow">↗</span>
-                </div>
-            </a>
+        <!-- 4 Cánh Cửa Huyền Học — SVG Geometry Gates -->
+        <section id="systems-section" class="nodes" aria-label="Các công cụ huyền học">
 
-            <a href="/tu-vi/" class="system-card" title="Tử Vi — Chiêm Tinh Vận Mệnh">
-                <div class="system-art">
-                    <div class="art-glow"></div>
-                    <img src="tuvi.png" alt="Tử Vi — Chiêm Tinh Vận Mệnh" class="system-image" loading="lazy">
+            <!-- 01 Kinh Dịch: Thái Cực + Bát Quái -->
+            <article class="node" data-index="0">
+                <div class="node-geometry">
+                    <div class="artwork-circle"><img src="kinhdich.png" alt="" loading="lazy"></div>
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Kinh Dịch">
+                        <circle class="geo-outer" cx="80" cy="80" r="68"/>
+                        <circle class="geo-inner" cx="80" cy="80" r="56"/>
+                        <g class="trigram-wheel">
+                            <g transform="rotate(0 80 80) translate(80 9)"><line x1="-7" y1="0" x2="-1.5" y2="0"/><line x1="1.5" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="-1.5" y2="8"/><line x1="1.5" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(45 80 80) translate(80 9)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="-1.5" y2="4"/><line x1="1.5" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(90 80 80) translate(80 9)"><line x1="-7" y1="0" x2="-1.5" y2="0"/><line x1="1.5" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="-1.5" y2="4"/><line x1="1.5" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="-1.5" y2="8"/><line x1="1.5" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(135 80 80) translate(80 9)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(180 80 80) translate(80 9)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="-1.5" y2="8"/><line x1="1.5" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(225 80 80) translate(80 9)"><line x1="-7" y1="0" x2="-1.5" y2="0"/><line x1="1.5" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="-1.5" y2="8"/><line x1="1.5" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(270 80 80) translate(80 9)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="-1.5" y2="4"/><line x1="1.5" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="-1.5" y2="8"/><line x1="1.5" y1="8" x2="7" y2="8"/></g>
+                            <g transform="rotate(315 80 80) translate(80 9)"><line x1="-7" y1="0" x2="-1.5" y2="0"/><line x1="1.5" y1="0" x2="7" y2="0"/><line x1="-7" y1="4" x2="-1.5" y2="4"/><line x1="1.5" y1="4" x2="7" y2="4"/><line x1="-7" y1="8" x2="7" y2="8"/></g>
+                        </g>
+                        <circle class="taiji-ring" cx="80" cy="80" r="29"/>
+                        <path class="taiji-fill" d="M80 51 A29 29 0 0 1 80 109 A14.5 14.5 0 0 1 80 80 A14.5 14.5 0 0 0 80 51"/>
+                        <circle class="taiji-dot-d" cx="80" cy="65.5" r="4"/>
+                        <circle class="taiji-dot-l" cx="80" cy="94.5" r="4"/>
+                    </svg>
                 </div>
-                <div class="system-info">
-                    <h2>Tử Vi</h2>
-                    <p>Chiêm Tinh Vận Mệnh</p>
-                    <span class="system-arrow">↗</span>
+                <div class="node-content">
+                    <div class="node-heading">
+                        <h2>Kinh Dịch</h2>
+                        <span>Biến</span>
+                    </div>
+                    <a class="enter-btn" href="/kinh-dich/" aria-label="Mở Kinh Dịch"><span>Vào</span><span class="arrow">→</span></a>
                 </div>
-            </a>
+                <div class="node-idx">01</div>
+            </article>
 
-            <a href="/bat-tu/" class="system-card" title="Bát Tự — Tứ Trụ Can Chi">
-                <div class="system-art">
-                    <div class="art-glow"></div>
-                    <img src="battuicon.png" alt="Bát Tự — Tứ Trụ Can Chi" class="system-image" loading="lazy">
+            <!-- 02 Thái Ất: Cửu Cung + Quỹ Đạo -->
+            <article class="node" data-index="1">
+                <div class="node-geometry">
+                    <div class="artwork-circle"><img src="thaiat.png" alt="" loading="lazy"></div>
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Thái Ất">
+                        <circle class="geo-outer" cx="80" cy="80" r="68"/>
+                        <ellipse class="traj" cx="80" cy="80" rx="61" ry="27"/>
+                        <ellipse class="traj" cx="80" cy="80" rx="27" ry="61" transform="rotate(45 80 80)"/>
+                        <ellipse class="traj-soft" cx="80" cy="80" rx="54" ry="54"/>
+                        <g class="n-palace">
+                            <rect x="51" y="51" width="19.5" height="19.5"/>
+                            <rect x="70.25" y="51" width="19.5" height="19.5"/>
+                            <rect x="89.5" y="51" width="19.5" height="19.5"/>
+                            <rect x="51" y="70.25" width="19.5" height="19.5"/>
+                            <rect x="70.25" y="70.25" width="19.5" height="19.5"/>
+                            <rect x="89.5" y="70.25" width="19.5" height="19.5"/>
+                            <rect x="51" y="89.5" width="19.5" height="19.5"/>
+                            <rect x="70.25" y="89.5" width="19.5" height="19.5"/>
+                            <rect x="89.5" y="89.5" width="19.5" height="19.5"/>
+                        </g>
+                        <circle class="mv-pt" cx="134" cy="80" r="2"/>
+                    </svg>
                 </div>
-                <div class="system-info">
-                    <h2>Bát Tự</h2>
-                    <p>Tứ Trụ Can Chi</p>
-                    <span class="system-arrow">↗</span>
+                <div class="node-content">
+                    <div class="node-heading">
+                        <h2>Thái Ất</h2>
+                        <span>Thời</span>
+                    </div>
+                    <a class="enter-btn" href="/thai-at/" aria-label="Mở Thái Ất"><span>Vào</span><span class="arrow">→</span></a>
                 </div>
-            </a>
+                <div class="node-idx">02</div>
+            </article>
 
-            <a href="/thai-at/" class="system-card" title="Thái Ất — Thiên Thời Quốc Vận">
-                <div class="system-art">
-                    <div class="art-glow"></div>
-                    <img src="thaiat.png" alt="Thái Ất — Thiên Thời Quốc Vận" class="system-image" loading="lazy">
+            <!-- 03 Bát Tự: Tứ Trụ -->
+            <article class="node" data-index="2">
+                <div class="node-geometry">
+                    <div class="artwork-circle"><img src="battuicon.png" alt="" loading="lazy"></div>
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Bát Tự">
+                        <circle class="geo-outer" cx="80" cy="80" r="68"/>
+                        <circle class="geo-inner" cx="80" cy="80" r="58"/>
+                        <g class="pillars">
+                            <rect x="42" y="45" width="15" height="70" rx="1"/>
+                            <rect x="62" y="45" width="15" height="70" rx="1"/>
+                            <rect x="83" y="45" width="15" height="70" rx="1"/>
+                            <rect x="103" y="45" width="15" height="70" rx="1"/>
+                        </g>
+                        <path class="pillar-arc" d="M48 38 C65 28, 95 28, 112 38"/>
+                        <circle class="pillar-dot" cx="48" cy="38" r="2"/>
+                        <circle class="pillar-dot" cx="112" cy="38" r="2"/>
+                    </svg>
                 </div>
-                <div class="system-info">
-                    <h2>Thái Ất</h2>
-                    <p>Thiên Thời Quốc Vận</p>
-                    <span class="system-arrow">↗</span>
+                <div class="node-content">
+                    <div class="node-heading">
+                        <h2>Bát Tự</h2>
+                        <span>Mệnh</span>
+                    </div>
+                    <a class="enter-btn" href="/bat-tu/" aria-label="Mở Bát Tự"><span>Vào</span><span class="arrow">→</span></a>
                 </div>
-            </a>
+                <div class="node-idx">03</div>
+            </article>
+
+            <!-- 04 Tử Vi: 12 Cung + Tinh Tú -->
+            <article class="node" data-index="3">
+                <div class="node-geometry">
+                    <div class="artwork-circle"><img src="tuvi.png" alt="" loading="lazy"></div>
+                    <svg class="glyph" viewBox="0 0 160 160" role="img" aria-label="Biểu tượng Tử Vi">
+                        <circle class="geo-outer" cx="80" cy="80" r="68"/>
+                        <circle class="geo-inner" cx="80" cy="80" r="56"/>
+                        <circle class="geo-inner" cx="80" cy="80" r="39"/>
+                        <g class="houses">
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(0 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(30 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(60 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(90 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(120 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(150 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(180 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(210 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(240 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(270 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(300 80 80)"/>
+                            <line x1="80" y1="80" x2="80" y2="24" transform="rotate(330 80 80)"/>
+                        </g>
+                        <g class="stars-f">
+                            <circle cx="80" cy="28" r="2"/><circle cx="106" cy="35" r="1.2"/>
+                            <circle cx="125" cy="53" r="1.2"/><circle cx="132" cy="80" r="2"/>
+                            <circle cx="125" cy="107" r="1.2"/><circle cx="106" cy="125" r="1.2"/>
+                            <circle cx="80" cy="132" r="2"/><circle cx="54" cy="125" r="1.2"/>
+                            <circle cx="35" cy="107" r="1.2"/><circle cx="28" cy="80" r="2"/>
+                            <circle cx="35" cy="53" r="1.2"/><circle cx="54" cy="35" r="1.2"/>
+                        </g>
+                        <circle class="c-star" cx="80" cy="80" r="3"/>
+                    </svg>
+                </div>
+                <div class="node-content">
+                    <div class="node-heading">
+                        <h2>Tử Vi</h2>
+                        <span>Tinh</span>
+                    </div>
+                    <a class="enter-btn" href="/tu-vi/" aria-label="Mở Tử Vi"><span>Vào</span><span class="arrow">→</span></a>
+                </div>
+                <div class="node-idx">04</div>
+            </article>
+
         </section>
 
-        <!-- Philosophy Separation Banner -->
-        <section class="philosophy">
+        <!-- Bottom Line -->
+        <div class="bottom-line">
             <span></span>
-            <p>ỨNG DỤNG TRI THỨC CỔ — KIẾN TẠO GIÁ TRỊ HIỆN ĐẠI</p>
+            <small>KINH DỊCH · THÁI ẤT · BÁT TỰ · TỬ VI</small>
             <span></span>
-        </section>
+        </div>
 
         <!-- Rich Article Section: Giới Thiệu Nghiên Cứu -->
         <article class="article-card">
