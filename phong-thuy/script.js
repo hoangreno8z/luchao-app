@@ -43,7 +43,7 @@ const dndPlacements = {
     1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootstrapApp() {
     initMenuDropdown();
     initModeTabs();
     initDrawingTabs();
@@ -55,7 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto-calculate on initial load
     handleCalculate();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+    bootstrapApp();
+}
 
 /* Menu Dropdown */
 function initMenuDropdown() {

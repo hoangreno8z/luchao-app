@@ -138,6 +138,13 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied phong-thuy module recursively to public/phong-thuy!');
     }
 
+    // Sao chép đệ quy thư mục lib sang public/lib để phục vụ browser nếu cần
+    const destLib = path.join(publicDir, 'lib');
+    if (fs.existsSync(libDir)) {
+        copyDirRecursiveSync(libDir, destLib);
+        console.log('Successfully copied lib directory recursively to public/lib!');
+    }
+
     // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
     const vercelStaticDir = path.join(projectRoot, '.vercel', 'output', 'static');
     if (fs.existsSync(vercelStaticDir)) {
