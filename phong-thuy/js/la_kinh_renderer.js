@@ -3,7 +3,7 @@
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
-import { MOUNTAINS } from '../../lib/phong_thuy/huyen_khong_engine.js';
+import { MOUNTAINS } from './phong_thuy_bundle.js';
 
 export class LaKinhRenderer {
     constructor(canvas) {
