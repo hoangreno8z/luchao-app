@@ -263,6 +263,10 @@ function handleCalculate() {
     const lengthM = parseFloat(document.getElementById('inputLength').value) || 16.0;
     const floors = parseInt(document.getElementById('inputFloors').value, 10) || 2;
     const buildYear = parseInt(document.getElementById('inputBuildYear').value, 10) || 2025;
+    const currentYear = document.getElementById('inputCurrentYear') ? parseInt(document.getElementById('inputCurrentYear').value, 10) || 2026 : 2026;
+    const currentMonth = document.getElementById('inputCurrentMonth') ? parseInt(document.getElementById('inputCurrentMonth').value, 10) || 8 : 8;
+    const currentDay = document.getElementById('inputCurrentDay') ? parseInt(document.getElementById('inputCurrentDay').value, 10) || 19 : 19;
+    const currentHour = document.getElementById('inputCurrentHour') ? parseInt(document.getElementById('inputCurrentHour').value, 10) || 7 : 7;
     const ownerYear = parseInt(document.getElementById('inputOwnerYear').value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender').value || 'nam';
     const facingDegree = parseFloat(document.getElementById('inputFacingDegree').value) || 180;
@@ -287,18 +291,28 @@ function handleCalculate() {
         lengthM,
         floors,
         facingDegree,
-        northAngleDeg: facingDegree,
         roomCounts
     });
 
-    // 2. Tính Tinh Bàn Huyền Không & Bát Trạch
-    currentFlyingStars = calculateFlyingStars({ facingDegree, buildYear });
+    // 2. Tính Tinh Bàn Huyền Không (Vận + Niên, Nguyệt, Nhật, Thời) & Bát Trạch
+    currentFlyingStars = calculateFlyingStars({
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour
+    });
     currentBatTrach = calculateGua(ownerYear, ownerGender);
 
     // 3. Tính Cửu Cung Không Gian
     currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
         facingDegree,
         buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
         ownerYear,
         ownerGender
     });
@@ -352,16 +366,15 @@ function renderActiveDrawing() {
     // Render Bản vẽ 1 (Kiến trúc CAD)
     let baseSvg = cadRenderer.renderSvg(floorGeometry, {
         theme: currentThemeMode,
-        facingDegree: currentGeometry.northAngleDeg
+        facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180
     });
 
     if (currentDrawingTab === 'fengshui') {
-        // Phủ lớp Cửu Cung lên trên cùng của baseSvg trước thẻ đóng </svg>
         const spatial = calculateFengShuiSpatial(floorGeometry, {
-            facingDegree: currentGeometry.northAngleDeg
+            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
+            buildYear: currentFlyingStars ? currentFlyingStars.van : 2025
         });
         const overlaySvg = renderNinePalacesOverlaySvg(spatial, currentThemeMode === 'white');
-
         baseSvg = baseSvg.replace('</svg>', `${overlaySvg}</svg>`);
     }
 
@@ -375,8 +388,8 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     const metaToaHuong = document.getElementById('metaToaHuong');
     const metaGua = document.getElementById('metaGua');
 
-    if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (2024 - 2043)`;
-    if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain}`;
+    if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (${flyingStars.currentYear || 2026})`;
+    if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain} (${flyingStars.chartType === 'chinh_huong' ? 'Hạ Quái' : 'Thế Quái'})`;
     if (metaGua) metaGua.textContent = `${batTrach.guaName} (${batTrach.trachGroup})`;
 
     if (!matrixContainer || !flyingStars.palaces) return;
@@ -389,12 +402,18 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
         if (!pal) return '';
         return `
             <div class="palace-cell">
-                <span class="palace-name-badge">${PALACE_NAMES[pId] || pId}</span>
+                <div class="time-stars-row" style="display: flex; justify-content: center; gap: 3px; margin-bottom: 4px;">
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#22c55e; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Niên Tinh">${pal.nienStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#ef4444; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Nguyệt Tinh">${pal.nguyetStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Nhật Tinh">${pal.nhatStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:bold; text-align:center;" title="Thời Tinh">${pal.thoiStar}</span>
+                </div>
                 <div class="palace-stars-trio">
                     <span class="star-badge-son" title="Sơn Tinh">${pal.sonStar}</span>
+                    <span class="star-badge-van" title="Vận Tinh" style="font-size: 1.4rem; font-weight: 900;">${pal.vanStar}</span>
                     <span class="star-badge-huong" title="Hướng Tinh">${pal.huongStar}</span>
                 </div>
-                <span class="star-badge-van" title="Vận Tinh">${pal.vanStar}</span>
+                <span class="palace-name-badge">${PALACE_NAMES[pId] || pId}</span>
             </div>
         `;
     }).join('');
