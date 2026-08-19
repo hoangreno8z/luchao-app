@@ -5,9 +5,7 @@
 
 import { CADFloorplanRenderer } from './js/cad_floorplan_renderer.js';
 import { LaKinhRenderer } from './js/la_kinh_renderer.js';
-import { findMountain, getOppositeMountain, MOUNTAINS, calculateFlyingStars } from '../lib/phong_thuy/huyen_khong_engine.js';
-import { calculateGua } from '../lib/phong_thuy/bat_trach_engine.js';
-import { generateArchitecturalPlan } from '../lib/phong_thuy/floorplan_generator.js';
+import { findMountain, getOppositeMountain, MOUNTAINS, calculateFlyingStars, calculateGua, generateArchitecturalPlan } from './js/phong_thuy_bundle.js';
 
 let currentMode = 'empty_land';
 let currentFloorIndex = 1;
