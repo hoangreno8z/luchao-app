@@ -25,17 +25,22 @@ export default async function handler(req, res) {
             currentHour = 12,
             ownerYear = 1990,
             ownerGender = 'nam',
-            existingRooms = []
+            frontLandscape = 'duong_lo',
+            backLandscape = 'nha_cao',
+            existingRoomsMap = {},
+            roomCounts = {}
         } = body;
 
-        // 1. Tính Tinh Bàn Huyền Không Phi Tinh (Vận 9, 24 Sơn, Niên/Nguyệt Tinh)
+        // 1. Tính Tinh Bàn Huyền Không Phi Tinh (Vận 9, 24 Sơn, Niên/Nguyệt Tinh, Loan Đầu)
         const flyingStars = calculateFlyingStars({
             facingDegree: parseFloat(facingDegree) || 180,
             buildYear: parseInt(buildYear, 10) || 2024,
             currentYear: parseInt(currentYear, 10) || 2026,
             currentMonth: parseInt(currentMonth, 10) || 2,
             currentDay: parseInt(currentDay, 10) || 1,
-            currentHour: parseInt(currentHour, 10) || 12
+            currentHour: parseInt(currentHour, 10) || 12,
+            frontLandscape,
+            backLandscape
         });
 
         // 2. Tính Bát Trạch Phối Mệnh Gia Chủ
@@ -53,7 +58,8 @@ export default async function handler(req, res) {
             facingDegree: parseFloat(facingDegree) || 180,
             flyingStarsData: flyingStars,
             batTrachData: batTrach,
-            existingRooms
+            existingRoomsMap,
+            roomCounts
         });
 
         return res.status(200).json({
