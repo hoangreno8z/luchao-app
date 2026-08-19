@@ -1,5 +1,6 @@
 // ============================================================
 // Phong Thủy & Kiến Trúc Core Bundle (Client-Side Standalone)
+// Hỗ Trợ 9 Cung Toàn Diện & Loan Đầu Phối Hợp Lý Khí
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
@@ -270,16 +271,17 @@ export const PALACE_NAMES = {
     9: 'Ly (Nam)'
 };
 
-export const STAR_PROPERTIES = {
-    1: { name: 'Nhất Bạch Tham Lang', element: 'Thủy', nature: 'Cát Tinh', meaning: 'Văn chương, trí tuệ, tài lộc, đào hoa quý nhân' },
-    2: { name: 'Nhị Hắc Cự Môn',    element: 'Thổ',  nature: 'Hung Tinh (Bệnh Phù)', meaning: 'Bệnh tật, tai ách, u sầu, tổn thất thân thể' },
-    3: { name: 'Tam Bích Lộc Tồn',   element: 'Mộc',  nature: 'Hung Tinh (Si Vưu)', meaning: 'Thị phi, tranh chấp, kiện tụng, khẩu thiệt' },
-    4: { name: 'Tứ Lục Văn Khúc',    element: 'Mộc',  nature: 'Cát Tinh (Văn Xương)', meaning: 'Học vấn, công danh, thi cử, nghệ thuật' },
-    5: { name: 'Ngũ Hoàng Liêm Trinh', element: 'Thổ', nature: 'Đại Hung Tinh (Chính Quan Sát)', meaning: 'Đại sát, tai họa khôn lường, phá tài thương tổn' },
-    6: { name: 'Lục Bạch Vũ Khúc',   element: 'Kim',  nature: 'Cát Tinh (Vũ Khúc)', meaning: 'Quyền uy, chức tước, quý nhân phò trợ' },
-    7: { name: 'Thất Xích Phá Quân',  element: 'Kim',  nature: 'Bình / Hung (Tặc Đạo)', meaning: 'Trộm cắp, phá tán, phẫu thuật, khẩu thiệt thị phi' },
-    8: { name: 'Bát Bạch Tả Phụ',   element: 'Thổ',  nature: 'Đại Cát Tinh', meaning: 'Điền sản, tài lộc dồi dào, phúc lộc thăng tiến' },
-    9: { name: 'Cửu Tử Hữu Bật',    element: 'Hỏa',  nature: 'Đương Vận Cát Tinh (Vận 9)', meaning: 'Hỷ khánh, danh tiếng vang dội, phát đạt tức thì' }
+// Ánh xạ 9 Cung vào lưới Ma trận tọa độ 3x3: [row, col] (0..2)
+export const PALACE_GRID_POS = {
+    4: { r: 0, c: 0, name: 'Đông Nam (Tốn)' },
+    9: { r: 0, c: 1, name: 'Nam (Ly)' },
+    2: { r: 0, c: 2, name: 'Tây Nam (Khôn)' },
+    3: { r: 1, c: 0, name: 'Đông (Chấn)' },
+    5: { r: 1, c: 1, name: 'Trung Cung' },
+    7: { r: 1, c: 2, name: 'Tây (Đoài)' },
+    8: { r: 2, c: 0, name: 'Đông Bắc (Cấn)' },
+    1: { r: 2, c: 1, name: 'Bắc (Khảm)' },
+    6: { r: 2, c: 2, name: 'Tây Bắc (Càn)' }
 };
 
 export const FORWARD_PATH = [5, 6, 7, 8, 9, 1, 2, 3, 4];
@@ -330,7 +332,7 @@ export function getOppositeMountain(degree) {
 export function classifyChart(deviation) {
     if (deviation <= 3.0) return { type: 'HA_QUAI', label: 'Hạ Quái (Chính Hướng)', isKhongVong: false };
     if (deviation <= 6.0) return { type: 'THE_QUAI', label: 'Thế Quái (Kiêm Hướng)', isKhongVong: false };
-    return { type: 'KHONG_VONG', label: 'Phạm Tuyến Không Vong', isKhongVong: true };
+    return { type: 'KHONG_VONG', label: 'Phạm Tuyến Không Vong (Đại Hung)', isKhongVong: true };
 }
 
 export function findMountainInPalace(palace, sanYuan) {
@@ -389,7 +391,9 @@ export function calculateFlyingStars({
     currentYear = 2026,
     currentMonth = 2,
     currentDay = 1,
-    currentHour = 12
+    currentHour = 12,
+    frontLandscape = 'duong_lo',
+    backLandscape = 'nha_cao'
 }) {
     const van = getVan(buildYear);
     const facingMatch = findMountain(facingDegree);
@@ -462,7 +466,7 @@ export function calculateFlyingStars({
         };
     }
 
-    const cachCuc = evaluateCachCuc(palacesData, sittingPalace, facingPalace, van);
+    const cachCuc = evaluateCachCuc(palacesData, sittingPalace, facingPalace, van, frontLandscape, backLandscape);
 
     return {
         van,
@@ -481,51 +485,59 @@ export function calculateFlyingStars({
         isSittingForward,
         isFacingForward,
         palaces: palacesData,
-        cachCuc
+        cachCuc,
+        frontLandscape,
+        backLandscape
     };
 }
 
-function evaluateCachCuc(palaces, sittingPalace, facingPalace, currentVan) {
+function evaluateCachCuc(palaces, sittingPalace, facingPalace, currentVan, frontLandscape, backLandscape) {
     const sitSonStar = palaces[sittingPalace].sonStar;
     const faceHuongStar = palaces[facingPalace].huongStar;
     const sitHuongStar = palaces[sittingPalace].huongStar;
     const faceSonStar = palaces[facingPalace].sonStar;
 
+    let loanDauNote = '';
+    if (frontLandscape === 'song_ho') loanDauNote += ' Phía trước có thủy tụ (sông/hồ) giúp dẫn vượng khí đắc tài.';
+    else if (frontLandscape === 'nga_ba') loanDauNote += ' Phía trước có ngã ba/ngã tư giao lộ đón dòng khí động tài vận nhanh.';
+    if (backLandscape === 'nha_cao') loanDauNote += ' Phía sau có nhà cao tựa sơn vững chắc, bảo vệ nhân đinh và sức khỏe.';
+    else if (backLandscape === 'thoat_thuy') loanDauNote += ' Phía sau có dòng nước thoát/trũng cần chắn tường cao hoặc trồng cây hóa giải thoát khí.';
+
     if (sitSonStar === currentVan && faceHuongStar === currentVan) {
         return {
-            name: 'VƯỢNG SƠN VƯỢNG HƯỚNG',
+            name: 'VƯỢNG SƠN VƯỢNG HƯỚNG (ĐÁO SƠN ĐÁO HƯỚNG)',
             level: 'ĐẠI CÁT',
-            summary: 'Đinh tài lưỡng vượng, người nhà khỏe mạnh, nhân tài xuất chúng, tiền tài thịnh vượng bền vững.',
-            recommendation: 'Phía sau nhà cần có chỗ tựa vững chắc, phía trước nhà cần có không gian thoáng rộng đón tài lộc.'
+            summary: 'Đinh tài lưỡng vượng, người nhà khỏe mạnh, nhân tài xuất chúng, tiền tài thịnh vượng bền vững.' + loanDauNote,
+            recommendation: 'Phía sau nhà cần có chỗ tựa vững chắc (núi/nhà cao), phía trước mở cửa đón minh đường thoáng có nước tụ tài lộc.'
         };
     } else if (faceSonStar === currentVan && faceHuongStar === currentVan) {
         return {
             name: 'SONG TINH ĐÁO HƯỚNG',
             level: 'CÁT VỀ TÀI LỘC',
-            summary: 'Vượng tài nhưng tổn đinh. Kinh doanh buôn bán cực phát đạt nhưng cần chú ý sức khỏe.',
-            recommendation: 'Phía trước cửa cần minh đường thoáng đãng có nước, vừa có vật nâng đỡ để bổ trợ nhân đinh.'
+            summary: 'Vượng tài nhưng tổn đinh. Kinh doanh buôn bán cực phát đạt nhưng cần chú ý sức khỏe.' + loanDauNote,
+            recommendation: 'Phía trước cửa cần vừa có Minh đường thoáng đãng có nước, vừa có vật nâng đỡ (hòn non bộ, cây xanh) để bổ trợ nhân đinh.'
         };
     } else if (sitSonStar === currentVan && sitHuongStar === currentVan) {
         return {
             name: 'SONG TINH ĐÁO TỌA',
             level: 'CÁT VỀ NHÂN ĐINH',
-            summary: 'Vượng đinh nhưng tổn tài. Gia đạo yên ấm hòa thuận nhưng tiền bạc dễ bị chậm sinh lợi.',
-            recommendation: 'Phía sau nhà cần có chỗ tựa cao ráo và nên mở giếng trời phía sau để kích hoạt tài lộc.'
+            summary: 'Vượng đinh nhưng tổn tài. Gia đạo yên ấm hòa thuận nhưng tiền bạc dễ bị chậm sinh lợi.' + loanDauNote,
+            recommendation: 'Phía sau nhà cần có chỗ tựa cao ráo và nên mở giếng trời hoặc đặt phong thủy luân phía sau để kích hoạt tài lộc.'
         };
     } else if (sitHuongStar === currentVan && faceSonStar === currentVan) {
         return {
             name: 'THƯỢNG SƠN HẠ THỦY',
             level: 'ĐẠI HUNG CÁCH',
-            summary: 'Tổn đinh thoái tài, bệnh tật triền miên, tài lộc hao tán nặng nề.',
-            recommendation: 'Bố trí đảo khí: Phía sau nhà làm không gian thoáng, phía trước đặt bình phong chắn sát khí.'
+            summary: 'Tổn đinh thoái tài, bệnh tật triền miên, tài lộc hao tán nặng nề.' + loanDauNote,
+            recommendation: 'Cần bố trí Đảo Khí: Phía sau làm không gian thoáng có nước, phía trước đặt bình phong hoặc non bộ chắn sát khí.'
         };
     }
 
     return {
         name: 'CÁCH CỤC BÌNH HÒA',
         level: 'TRUNG BÌNH',
-        summary: 'Các cung vị vận hành ổn định, cần dựa vào sự phối hợp các phòng chức năng để tối ưu cát khí.',
-        recommendation: 'Bố trí phòng khách, cửa chính, bếp và phòng ngủ vào các cung có Cát Tinh đương vận.'
+        summary: 'Các cung vị vận hành ổn định, cần dựa vào sự phối hợp các phòng chức năng để tối ưu cát khí.' + loanDauNote,
+        recommendation: 'Bố trí phòng khách, cửa chính, bếp và phòng ngủ vào các cung có Cát Tinh đương vận để kích tài nạp phúc.'
     };
 }
 
@@ -569,7 +581,7 @@ function evaluateStarPair(sStar, hStar, vStar, currentVan) {
     };
 }
 
-// --- 4. ARCHITECTURAL FLOORPLAN GENERATOR ---
+// --- 4. ARCHITECTURAL FLOORPLAN GENERATOR (MULTI-FLOOR & 9-PALACES) ---
 export function generateArchitecturalPlan({
     mode = 'empty_land',
     widthM = 5.0,
@@ -578,10 +590,11 @@ export function generateArchitecturalPlan({
     facingDegree = 180,
     flyingStarsData = null,
     batTrachData = null,
-    existingRooms = []
+    existingRoomsMap = {},
+    roomCounts = {}
 }) {
     const W = Math.max(3.0, Math.min(30.0, parseFloat(widthM) || 5.0));
-    const L = Math.max(6.0, Math.min(60.0, parseFloat(lengthM) || 16.0));
+    const L = Math.max(5.0, Math.min(60.0, parseFloat(lengthM) || 16.0));
     const totalFloors = (mode === 'existing_house') ? 1 : Math.max(1, Math.min(7, parseInt(floors) || 2));
 
     const plansByFloor = [];
@@ -595,7 +608,7 @@ export function generateArchitecturalPlan({
         }
 
         if (mode === 'existing_house') {
-            floorName = 'Hiện Trạng Nhà Đang Có';
+            floorName = 'Hiện Trạng Bố Trí Nhà';
         }
 
         const floorPlan = generateSingleFloor({
@@ -608,7 +621,8 @@ export function generateArchitecturalPlan({
             flyingStarsData,
             batTrachData,
             mode,
-            existingRooms
+            existingRoomsMap,
+            roomCounts
         });
 
         plansByFloor.push(floorPlan);
@@ -633,7 +647,8 @@ function generateSingleFloor({
     flyingStarsData,
     batTrachData,
     mode,
-    existingRooms = []
+    existingRoomsMap = {},
+    roomCounts = {}
 }) {
     const walls = [];
     const doors = [];
@@ -645,276 +660,303 @@ function generateSingleFloor({
     const outerT = 0.22;
     const innerT = 0.11;
 
-    const frontYardL = (floorIndex === 1 && L >= 12 && mode !== 'existing_house') ? Math.min(3.0, L * 0.15) : 0;
-    const backYardL = (floorIndex === 1 && L >= 14 && mode !== 'existing_house') ? Math.min(2.0, L * 0.10) : 0;
-    const houseL = L - frontYardL - backYardL;
+    // Chu vi ngoại thất ngôi nhà
+    walls.push({ x1: 0, y1: 0, x2: W, y2: 0, thickness: outerT, type: 'outer' });
+    walls.push({ x1: 0, y1: L, x2: W, y2: L, thickness: outerT, type: 'outer' });
+    walls.push({ x1: 0, y1: 0, x2: 0, y2: L, thickness: outerT, type: 'outer' });
+    walls.push({ x1: W, y1: 0, x2: W, y2: L, thickness: outerT, type: 'outer' });
 
-    const houseYStart = frontYardL;
-    const houseYEnd = frontYardL + houseL;
-
-    // Outer perimeter walls
-    walls.push({ x1: 0, y1: houseYStart, x2: W, y2: houseYStart, thickness: outerT, type: 'outer' });
-    walls.push({ x1: 0, y1: houseYEnd, x2: W, y2: houseYEnd, thickness: outerT, type: 'outer' });
-    walls.push({ x1: 0, y1: houseYStart, x2: 0, y2: houseYEnd, thickness: outerT, type: 'outer' });
-    walls.push({ x1: W, y1: houseYStart, x2: W, y2: houseYEnd, thickness: outerT, type: 'outer' });
+    // Kích thước ô lưới 9 Cung
+    const cellW = W / 3;
+    const cellH = L / 3;
 
     if (mode === 'existing_house') {
-        // --- CHẾ ĐỘ HIỆN TRẠNG NHÀ SẴN CÓ ---
-        const livingL = houseL * 0.35;
-        const middleL = houseL * 0.30;
-        const backL = houseL - livingL - middleL;
+        // --- CHẾ ĐỘ 1: NHÀ SẴN CÓ (DỰA TRÊN VỊ TRÍ 9 CUNG DO GIA CHỦ CHỌN) ---
+        // Vách ngăn lưới 9 Cung
+        walls.push({ x1: cellW, y1: 0, x2: cellW, y2: L, thickness: innerT, type: 'partition' });
+        walls.push({ x1: cellW * 2, y1: 0, x2: cellW * 2, y2: L, thickness: innerT, type: 'partition' });
+        walls.push({ x1: 0, y1: cellH, x2: W, y2: cellH, thickness: innerT, type: 'partition' });
+        walls.push({ x1: 0, y1: cellH * 2, x2: W, y2: cellH * 2, thickness: innerT, type: 'partition' });
 
-        const y1 = houseYStart + livingL;
-        const y2 = y1 + middleL;
+        // Hàm lấy tọa độ x, y của Cung được chọn
+        const getPalaceCoord = (palaceId) => {
+            const pId = parseInt(palaceId, 10);
+            const pos = PALACE_GRID_POS[pId];
+            if (!pos) return null;
+            return {
+                x: pos.c * cellW,
+                y: pos.r * cellH,
+                w: cellW,
+                h: cellH,
+                palaceName: pos.name
+            };
+        };
 
-        walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
-        walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
-
-        // Cửa chính
-        if (existingRooms.includes('main_door')) {
-            const mainDoorW = Math.min(2.8, W * 0.5);
-            doors.push({
-                x: (W - mainDoorW) / 2, y: houseYStart, w: mainDoorW, h: outerT,
-                type: 'main_door', label: `Cửa Chính (${mainDoorW.toFixed(1)}m)`,
-                isGood: true
-            });
+        // 1. Cửa chính
+        if (existingRoomsMap.main_door && existingRoomsMap.main_door !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.main_door);
+            if (coord) {
+                const dw = Math.min(2.4, coord.w * 0.7);
+                const doorY = (coord.y === 0) ? 0 : ((coord.y >= cellH * 2) ? L : coord.y);
+                doors.push({
+                    x: coord.x + (coord.w - dw) / 2,
+                    y: doorY,
+                    w: dw,
+                    h: outerT,
+                    type: 'main_door',
+                    label: `Cửa Chính (${PALACE_NAMES[existingRoomsMap.main_door]})`,
+                    isGood: true
+                });
+            }
         }
 
-        // Phòng Khách
-        if (existingRooms.includes('living_room')) {
-            rooms.push({
-                name: 'Phòng Khách Hiện Trạng',
-                areaM2: Math.round(W * livingL * 10) / 10,
-                x: 0, y: houseYStart, w: W, h: livingL,
-                zone: 'Khu Vực Tiền Trạch',
-                fengShuiNote: 'Khảo sát dòng khí nạp từ cửa chính vào phòng khách.'
-            });
-            furniture.push({ type: 'sofa', x: 0.5, y: houseYStart + 0.8, w: Math.min(2.4, W * 0.5), h: 0.9, label: 'Sofa' });
+        // 2. Phòng khách
+        if (existingRoomsMap.living_room && existingRoomsMap.living_room !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.living_room);
+            if (coord) {
+                rooms.push({
+                    name: 'Phòng Khách',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'sofa', x: coord.x + 0.3, y: coord.y + 0.4, w: coord.w - 0.6, h: Math.min(1.2, coord.h * 0.4), label: 'Sofa Khách' });
+            }
         }
 
-        // Bàn thờ
-        if (existingRooms.includes('altar')) {
-            const altarW = 1.53;
-            furniture.push({
-                type: 'altar_table', x: (W - altarW) / 2, y: houseYStart + 0.3, w: altarW, h: 0.8,
-                label: 'Bàn Thờ Hiện Trạng', isGood: true
-            });
+        // 3. Bàn thờ
+        if (existingRoomsMap.altar && existingRoomsMap.altar !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.altar);
+            if (coord) {
+                rooms.push({
+                    name: 'Bàn Thờ',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'altar_table', x: coord.x + (coord.w - 1.5) / 2, y: coord.y + 0.3, w: 1.5, h: 0.7, label: 'Bàn Thờ', isGood: true });
+            }
         }
 
-        // Cầu thang & Giếng trời
-        if (existingRooms.includes('stairs')) {
-            furniture.push({
-                type: 'stairs', x: 0.3, y: y1 + 0.3, w: Math.min(2.2, W * 0.45), h: middleL - 0.6,
-                steps: 21, label: 'Cầu Thang'
-            });
+        // 4. Bếp nấu
+        if (existingRoomsMap.kitchen && existingRoomsMap.kitchen !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.kitchen);
+            if (coord) {
+                rooms.push({
+                    name: 'Bếp Nấu & Ăn',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'kitchen_counter', x: coord.x + 0.3, y: coord.y + coord.h - 0.7, w: coord.w - 0.6, h: 0.6, label: 'Bếp Nấu' });
+                furniture.push({ type: 'dining_table', x: coord.x + (coord.w - 1.4) / 2, y: coord.y + 0.5, w: 1.4, h: 0.8, label: 'Bàn Ăn' });
+            }
         }
 
-        // Phòng ngủ
-        if (existingRooms.includes('master_bed')) {
-            rooms.push({
-                name: 'Phòng Ngủ Hiện Trạng',
-                areaM2: Math.round(W * 0.55 * middleL * 10) / 10,
-                x: W * 0.45, y: y1, w: W * 0.55, h: middleL,
-                zone: 'Khu Trung Trạch',
-                fengShuiNote: 'Khảo sát vị trí đầu giường và cung vị tọa sao.'
-            });
-            furniture.push({ type: 'bed_master', x: W * 0.45 + 0.4, y: y1 + 0.5, w: 1.8, h: 2.0, label: 'Giường Ngủ' });
+        // 5. Phòng ngủ 1 (Master)
+        if (existingRoomsMap.master_bed && existingRoomsMap.master_bed !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.master_bed);
+            if (coord) {
+                rooms.push({
+                    name: 'Phòng Ngủ Master',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'bed_master', x: coord.x + (coord.w - 1.8) / 2, y: coord.y + 0.5, w: 1.8, h: 2.0, label: 'Giường Master' });
+            }
         }
 
-        // Bếp
-        if (existingRooms.includes('kitchen')) {
-            rooms.push({
-                name: 'Bếp Nấu Hiện Trạng',
-                areaM2: Math.round(W * 0.6 * backL * 10) / 10,
-                x: 0, y: y2, w: W * 0.6, h: backL,
-                zone: 'Khu Hậu Trạch',
-                fengShuiNote: 'Khảo sát bếp tọa hung hướng cát và thế tương xung thủy hỏa.'
-            });
-            furniture.push({ type: 'kitchen_counter', x: 0.4, y: houseYEnd - 0.7, w: Math.min(3.0, W * 0.5), h: 0.6, label: 'Bếp Nấu' });
+        // 6. Phòng ngủ 2
+        if (existingRoomsMap.bed_2 && existingRoomsMap.bed_2 !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.bed_2);
+            if (coord) {
+                rooms.push({
+                    name: 'Phòng Ngủ 2',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'bed_single', x: coord.x + (coord.w - 1.4) / 2, y: coord.y + 0.5, w: 1.4, h: 2.0, label: 'Giường Ngủ 2' });
+            }
         }
 
-        // Toilet
-        if (existingRooms.includes('toilet')) {
-            const wcW = Math.min(1.8, W * 0.38);
-            walls.push({ x1: W - wcW, y1: y2, x2: W - wcW, y2: houseYEnd, thickness: innerT, type: 'partition' });
-            rooms.push({
-                name: 'WC Hiện Trạng',
-                areaM2: Math.round(wcW * backL * 10) / 10,
-                x: W - wcW, y: y2, w: wcW, h: backL,
-                zone: 'Vệ Sinh',
-                fengShuiNote: 'Khảo sát điểm uế khí để đặt phương án áp sát hóa giải.'
-            });
-            furniture.push({ type: 'toilet_bowl', x: W - 0.8, y: y2 + 0.5, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
+        // 7. Phòng ngủ 3
+        if (existingRoomsMap.bed_3 && existingRoomsMap.bed_3 !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.bed_3);
+            if (coord) {
+                rooms.push({
+                    name: 'Phòng Ngủ 3',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'bed_single', x: coord.x + (coord.w - 1.4) / 2, y: coord.y + 0.5, w: 1.4, h: 2.0, label: 'Giường Ngủ 3' });
+            }
         }
 
-    } else if (floorIndex === 1) {
-        // --- TẦNG TRỆT (ĐẤT TRỐNG) ---
-        const livingRoomL = Math.max(4.0, houseL * 0.35);
-        const stairL = Math.max(2.5, Math.min(3.5, houseL * 0.22));
-        const kitchenL = houseL - livingRoomL - stairL;
-
-        const yLivingEnd = houseYStart + livingRoomL;
-        const yStairEnd = yLivingEnd + stairL;
-        const yKitchenEnd = houseYEnd;
-
-        walls.push({ x1: 0, y1: yLivingEnd, x2: W * 0.6, y2: yLivingEnd, thickness: innerT, type: 'partition' });
-        walls.push({ x1: 0, y1: yStairEnd, x2: W, y2: yStairEnd, thickness: innerT, type: 'partition' });
-
-        rooms.push({
-            name: 'Phòng Khách',
-            areaM2: Math.round(W * livingRoomL * 10) / 10,
-            x: 0, y: houseYStart, w: W, h: livingRoomL,
-            zone: 'Tiền Minh Đường',
-            fengShuiNote: 'Khu vực nạp khí sinh tài, đón Cát Tinh đương vận từ hướng chính.'
-        });
-
-        const mainDoorW = W >= 5.0 ? 2.8 : 2.15;
-        const loBanDoor = checkLoBan(mainDoorW * 1000, '522');
-        doors.push({
-            x: (W - mainDoorW) / 2, y: houseYStart, w: mainDoorW, h: outerT,
-            type: 'main_door', label: `Cửa Chính (${mainDoorW}m - Cung ${loBanDoor.cung})`,
-            isGood: loBanDoor.isGood
-        });
-
-        furniture.push({ type: 'sofa', x: 0.5, y: houseYStart + 1.0, w: Math.min(2.6, W * 0.5), h: 0.9, label: 'Sofa' });
-        furniture.push({ type: 'tv_cabinet', x: W - 0.7, y: houseYStart + 1.0, w: 0.5, h: 2.0, label: 'Kệ TV' });
-
-        const stairW = Math.min(2.4, W * 0.45);
-        furniture.push({
-            type: 'stairs', x: 0.3, y: yLivingEnd + 0.3, w: stairW, h: stairL - 0.6,
-            steps: 21, label: 'Cầu Thang (21 Bậc - Cung Sinh)'
-        });
-        furniture.push({
-            type: 'skylight', x: W - 1.8, y: yLivingEnd + 0.4, w: 1.5, h: stairL - 0.8,
-            label: 'Giếng Trời (Hút Gió & Ánh Sáng)'
-        });
-
-        const wcW = Math.min(1.8, W * 0.38);
-        const wcL = Math.min(2.2, kitchenL * 0.4);
-        walls.push({ x1: W - wcW, y1: yStairEnd, x2: W - wcW, y2: yStairEnd + wcL, thickness: innerT, type: 'partition' });
-        walls.push({ x1: W - wcW, y1: yStairEnd + wcL, x2: W, y2: yStairEnd + wcL, thickness: innerT, type: 'partition' });
-
-        rooms.push({
-            name: 'WC Trệt',
-            areaM2: Math.round(wcW * wcL * 10) / 10,
-            x: W - wcW, y: yStairEnd, w: wcW, h: wcL,
-            zone: 'Khu Phụ Trợ',
-            fengShuiNote: 'Tọa Hung áp sát, giữ uế khí không phát tán ra phòng khách.'
-        });
-        furniture.push({ type: 'toilet_bowl', x: W - 0.8, y: yStairEnd + 0.4, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
-        furniture.push({ type: 'lavabo', x: W - 1.5, y: yStairEnd + 0.4, w: 0.5, h: 0.5, label: 'Lavabo' });
-
-        const kitchenActualL = kitchenL;
-        rooms.push({
-            name: 'Bếp & Phòng Ăn',
-            areaM2: Math.round((W * kitchenActualL - wcW * wcL) * 10) / 10,
-            x: 0, y: yStairEnd, w: W - wcW, h: kitchenActualL,
-            zone: 'Hậu Trạch',
-            fengShuiNote: 'Bếp Tọa Hung Hướng Cát, điểm tụ hỏa nuôi dưỡng sinh lực cho gia quyến.'
-        });
-        furniture.push({ type: 'kitchen_counter', x: 0.4, y: yKitchenEnd - 0.7, w: Math.min(3.5, W * 0.6), h: 0.6, label: 'Bếp Nấu & Bồn Rửa' });
-        furniture.push({ type: 'dining_table', x: 1.2, y: yStairEnd + 1.2, w: 1.6, h: 0.9, label: 'Bàn Ăn 6 Ghế' });
-
-        if (backYardL > 0) {
-            doors.push({ x: W * 0.5, y: houseYEnd, w: 0.9, h: outerT, type: 'back_door', label: 'Cửa Sân Sau' });
+        // 8. Nhà Vệ Sinh 1
+        if (existingRoomsMap.toilet_1 && existingRoomsMap.toilet_1 !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.toilet_1);
+            if (coord) {
+                rooms.push({
+                    name: 'WC 1',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'toilet_bowl', x: coord.x + coord.w - 0.7, y: coord.y + 0.4, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
+                furniture.push({ type: 'lavabo', x: coord.x + 0.4, y: coord.y + 0.4, w: 0.5, h: 0.5, label: 'Lavabo' });
+            }
         }
 
-    } else if (floorIndex < totalFloors || totalFloors === 1) {
-        // --- CÁC TẦNG LẦU PHÒNG NGỦ ---
-        const masterBedL = Math.max(4.2, houseL * 0.38);
-        const stairL = Math.max(2.5, Math.min(3.5, houseL * 0.22));
-        const secondBedL = houseL - masterBedL - stairL;
+        // 9. Nhà Vệ Sinh 2
+        if (existingRoomsMap.toilet_2 && existingRoomsMap.toilet_2 !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.toilet_2);
+            if (coord) {
+                rooms.push({
+                    name: 'WC 2',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+                furniture.push({ type: 'toilet_bowl', x: coord.x + coord.w - 0.7, y: coord.y + 0.4, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
+            }
+        }
 
-        const yMasterEnd = houseYStart + masterBedL;
-        const yStairEnd = yMasterEnd + stairL;
+        // 10. Cầu thang
+        if (existingRoomsMap.stairs && existingRoomsMap.stairs !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.stairs);
+            if (coord) {
+                furniture.push({
+                    type: 'stairs', x: coord.x + 0.3, y: coord.y + 0.3, w: coord.w - 0.6, h: coord.h - 0.6,
+                    steps: 21, label: 'Cầu Thang'
+                });
+            }
+        }
 
-        walls.push({ x1: 0, y1: yMasterEnd, x2: W, y2: yMasterEnd, thickness: innerT, type: 'partition' });
-        walls.push({ x1: 0, y1: yStairEnd, x2: W, y2: yStairEnd, thickness: innerT, type: 'partition' });
-
-        const balconyL = 1.2;
-        walls.push({ x1: 0, y1: houseYStart - balconyL, x2: W, y2: houseYStart - balconyL, thickness: innerT, type: 'railing' });
-        walls.push({ x1: 0, y1: houseYStart - balconyL, x2: 0, y2: houseYStart, thickness: innerT, type: 'railing' });
-        walls.push({ x1: W, y1: houseYStart - balconyL, x2: W, y2: houseYStart, thickness: innerT, type: 'railing' });
-
-        rooms.push({
-            name: `Phòng Ngủ Master ${floorIndex - 1}`,
-            areaM2: Math.round(W * masterBedL * 10) / 10,
-            x: 0, y: houseYStart, w: W, h: masterBedL,
-            zone: 'Cung Vượng Đinh',
-            fengShuiNote: 'Tọa cung Sơn Tinh cát lợi, tăng cường sức khỏe, hạnh phúc vợ chồng.'
-        });
-        furniture.push({ type: 'bed_master', x: 0.8, y: houseYStart + 1.2, w: 1.8, h: 2.0, label: 'Giường 1.8x2.0m' });
-        furniture.push({ type: 'wardrobe', x: W - 0.7, y: houseYStart + 0.8, w: 0.6, h: 2.2, label: 'Tủ Quần Áo' });
-
-        doors.push({ x: W * 0.5 - 0.6, y: houseYStart, w: 1.2, h: outerT, type: 'balcony_door', label: 'Cửa Ban Công' });
-
-        furniture.push({ type: 'stairs', x: 0.3, y: yMasterEnd + 0.3, w: Math.min(2.4, W * 0.45), h: stairL - 0.6, label: 'Cầu Thang Lầu' });
-
-        const wcW = Math.min(2.0, W * 0.4);
-        const wcL = stairL;
-        walls.push({ x1: W - wcW, y1: yMasterEnd, x2: W - wcW, y2: yMasterEnd + wcL, thickness: innerT, type: 'partition' });
-
-        rooms.push({
-            name: `WC Tầng ${floorIndex}`,
-            areaM2: Math.round(wcW * wcL * 10) / 10,
-            x: W - wcW, y: yMasterEnd, w: wcW, h: wcL,
-            zone: 'Vệ Sinh Khép Kín',
-            fengShuiNote: 'Hệ thống cấp thoát nước tiêu chuẩn, có quạt thông gió khử mùi.'
-        });
-        furniture.push({ type: 'toilet_bowl', x: W - 0.8, y: yMasterEnd + 1.5, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
-        furniture.push({ type: 'lavabo', x: W - 1.7, y: yMasterEnd + 1.5, w: 0.5, h: 0.5, label: 'Lavabo' });
-
-        rooms.push({
-            name: `Phòng Ngủ 2 (Tầng ${floorIndex})`,
-            areaM2: Math.round(W * secondBedL * 10) / 10,
-            x: 0, y: yStairEnd, w: W, h: secondBedL,
-            zone: 'Cung Văn Xương',
-            fengShuiNote: 'Không gian yên tĩnh, thông thoáng, đón ánh sáng tự nhiên.'
-        });
-        furniture.push({ type: 'bed_single', x: 0.8, y: yStairEnd + 0.8, w: 1.4, h: 2.0, label: 'Giường 1.4x2.0m' });
-        windows.push({ x: W * 0.5 - 0.7, y: houseYEnd, w: 1.4, h: outerT, label: 'Cửa Sổ Lấy Sáng' });
+        // 11. Phòng làm việc
+        if (existingRoomsMap.work_room && existingRoomsMap.work_room !== 'none') {
+            const coord = getPalaceCoord(existingRoomsMap.work_room);
+            if (coord) {
+                rooms.push({
+                    name: 'Phòng Làm Việc',
+                    areaM2: Math.round(coord.w * coord.h * 10) / 10,
+                    x: coord.x, y: coord.y, w: coord.w, h: coord.h,
+                    zone: coord.palaceName
+                });
+            }
+        }
 
     } else {
-        // --- TẦNG THƯỢNG ---
-        const altarRoomL = Math.max(3.5, houseL * 0.35);
-        const stairL = Math.max(2.5, Math.min(3.5, houseL * 0.25));
-        const terraceBackL = houseL - altarRoomL - stairL;
+        // --- CHẾ ĐỘ 2: ĐẤT TRỐNG (MÁY TỰ THIẾT KẾ MẶT BẰNG CHUẨN THEO SỐ TẦNG & SỐ PHÒNG) ---
+        const bedCount = parseInt(roomCounts.bedrooms, 10) || 3;
+        const wcCount = parseInt(roomCounts.toilets, 10) || 2;
+        const hasAltar = roomCounts.hasAltar !== false;
+        const hasSkylight = roomCounts.hasSkylight !== false;
 
-        const yAltarEnd = houseYStart + altarRoomL;
-        const yStairEnd = yAltarEnd + stairL;
+        if (floorIndex === 1) {
+            // TẦNG TRỆT: Phòng Khách + Sảnh Thang/Giếng Trời + Bếp Ăn + 1 WC
+            const livingL = Math.max(4.0, L * 0.36);
+            const stairL = Math.max(2.4, Math.min(3.2, L * 0.22));
+            const kitchenL = L - livingL - stairL;
 
-        walls.push({ x1: 0, y1: yAltarEnd, x2: W, y2: yAltarEnd, thickness: innerT, type: 'partition' });
+            const y1 = livingL;
+            const y2 = y1 + stairL;
 
-        rooms.push({
-            name: 'Phòng Thờ Gia Tiên',
-            areaM2: Math.round(W * altarRoomL * 10) / 10,
-            x: 0, y: houseYStart, w: W, h: altarRoomL,
-            zone: 'Tối Thượng Tôn Nghiêm',
-            fengShuiNote: 'Tọa Cát Hướng Cát, tụ linh khí tổ tiên phù hộ độ trì cho con cháu.'
-        });
+            walls.push({ x1: 0, y1: y1, x2: W * 0.65, y2: y1, thickness: innerT, type: 'partition' });
+            walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
 
-        const altarW = 1.53;
-        const loBanAltar = checkLoBan(altarW * 1000, '388');
-        furniture.push({
-            type: 'altar_table', x: (W - altarW) / 2, y: houseYStart + 0.5, w: altarW, h: 0.8,
-            label: `Bàn Thờ (${altarW}m - Cung ${loBanAltar.cung})`,
-            isGood: loBanAltar.isGood
-        });
+            // Phòng khách
+            rooms.push({
+                name: 'Phòng Khách',
+                areaM2: Math.round(W * livingL * 10) / 10,
+                x: 0, y: 0, w: W, h: livingL,
+                zone: 'Tiền Minh Đường'
+            });
 
-        furniture.push({ type: 'stairs', x: 0.3, y: yAltarEnd + 0.3, w: Math.min(2.4, W * 0.45), h: stairL - 0.6, label: 'Cầu Thang Tầng Thượng' });
+            // Cửa chính
+            const dw = W >= 5.0 ? 2.8 : 2.2;
+            const loban = checkLoBan(dw * 1000, '522');
+            doors.push({ x: (W - dw) / 2, y: 0, w: dw, h: outerT, type: 'main_door', label: `Cửa Chính (${dw}m - Cung ${loban.cung})`, isGood: loban.isGood });
+            furniture.push({ type: 'sofa', x: 0.5, y: 0.8, w: Math.min(2.6, W * 0.5), h: 0.9, label: 'Sofa' });
 
-        rooms.push({
-            name: 'Sân Phơi & Giặt Phía Sau',
-            areaM2: Math.round(W * terraceBackL * 10) / 10,
-            x: 0, y: yStairEnd, w: W, h: terraceBackL,
-            zone: 'Sân Thượng Hậu',
-            fengShuiNote: 'Không gian phơi phóng, giặt giũ và bồn nước kỹ thuật.'
-        });
-        furniture.push({ type: 'washing_machine', x: W - 1.0, y: yStairEnd + 0.5, w: 0.7, h: 0.7, label: 'Máy Giặt' });
+            // Sảnh thang & Giếng trời
+            furniture.push({ type: 'stairs', x: 0.3, y: y1 + 0.3, w: Math.min(2.4, W * 0.45), h: stairL - 0.6, steps: 21, label: 'Cầu Thang' });
+            if (hasSkylight) {
+                furniture.push({ type: 'skylight', x: W - 1.8, y: y1 + 0.4, w: 1.5, h: stairL - 0.8, label: 'Giếng Trời' });
+            }
+
+            // WC Trệt
+            const wcW = Math.min(1.8, W * 0.38);
+            const wcL = Math.min(2.0, kitchenL * 0.45);
+            walls.push({ x1: W - wcW, y1: y2, x2: W - wcW, y2: y2 + wcL, thickness: innerT, type: 'partition' });
+            walls.push({ x1: W - wcW, y1: y2 + wcL, x2: W, y2: y2 + wcL, thickness: innerT, type: 'partition' });
+            rooms.push({ name: 'WC Trệt', areaM2: Math.round(wcW * wcL * 10) / 10, x: W - wcW, y: y2, w: wcW, h: wcL, zone: 'Khu Phụ' });
+            furniture.push({ type: 'toilet_bowl', x: W - 0.7, y: y2 + 0.4, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
+            furniture.push({ type: 'lavabo', x: W - 1.5, y: y2 + 0.4, w: 0.5, h: 0.5, label: 'Lavabo' });
+
+            // Bếp & Ăn
+            rooms.push({ name: 'Bếp & Phòng Ăn', areaM2: Math.round((W * kitchenL - wcW * wcL) * 10) / 10, x: 0, y: y2, w: W - wcW, h: kitchenL, zone: 'Hậu Trạch' });
+            furniture.push({ type: 'kitchen_counter', x: 0.4, y: L - 0.7, w: Math.min(3.2, W * 0.55), h: 0.6, label: 'Bếp Nấu' });
+            furniture.push({ type: 'dining_table', x: 1.0, y: y2 + 1.0, w: 1.5, h: 0.8, label: 'Bàn Ăn 6 Ghế' });
+
+        } else if (floorIndex < totalFloors || totalFloors === 1) {
+            // CÁC LẦU PHÒNG NGỦ (Lầu 1, Lầu 2...)
+            const masterL = Math.max(4.0, L * 0.38);
+            const stairL = Math.max(2.4, Math.min(3.2, L * 0.22));
+            const secondL = L - masterL - stairL;
+
+            const y1 = masterL;
+            const y2 = y1 + stairL;
+
+            walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
+            walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
+
+            // Phòng ngủ Master phía trước
+            rooms.push({ name: `Phòng Ngủ Master (T${floorIndex})`, areaM2: Math.round(W * masterL * 10) / 10, x: 0, y: 0, w: W, h: masterL, zone: 'Cung Vượng Đinh' });
+            furniture.push({ type: 'bed_master', x: 0.8, y: 1.0, w: 1.8, h: 2.0, label: 'Giường Master' });
+            doors.push({ x: W / 2 - 0.6, y: 0, w: 1.2, h: outerT, type: 'balcony_door', label: 'Cửa Ban Công' });
+
+            // Cầu thang & WC Lầu
+            furniture.push({ type: 'stairs', x: 0.3, y: y1 + 0.3, w: Math.min(2.4, W * 0.45), h: stairL - 0.6, label: 'Cầu Thang' });
+            const wcW = Math.min(2.0, W * 0.4);
+            walls.push({ x1: W - wcW, y1: y1, x2: W - wcW, y2: y2, thickness: innerT, type: 'partition' });
+            rooms.push({ name: `WC Tầng ${floorIndex}`, areaM2: Math.round(wcW * stairL * 10) / 10, x: W - wcW, y: y1, w: wcW, h: stairL, zone: 'Khép Kín' });
+            furniture.push({ type: 'toilet_bowl', x: W - 0.7, y: y1 + 1.4, w: 0.5, h: 0.7, label: 'Bồn Cầu' });
+            furniture.push({ type: 'lavabo', x: W - 1.6, y: y1 + 1.4, w: 0.5, h: 0.5, label: 'Lavabo' });
+
+            // Phòng ngủ phía sau
+            rooms.push({ name: `Phòng Ngủ 2 (T${floorIndex})`, areaM2: Math.round(W * secondL * 10) / 10, x: 0, y: y2, w: W, h: secondL, zone: 'Cung Văn Xương' });
+            furniture.push({ type: 'bed_single', x: 0.8, y: y2 + 0.8, w: 1.4, h: 2.0, label: 'Giường Đơn' });
+            windows.push({ x: W / 2 - 0.7, y: L, w: 1.4, h: outerT, label: 'Cửa Sổ Lấy Sáng' });
+
+        } else {
+            // TẦNG THƯỢNG: Phòng Thờ + Cầu Thang + Sân Phơi/Giặt
+            const altarL = Math.max(3.5, L * 0.35);
+            const stairL = Math.max(2.4, Math.min(3.2, L * 0.25));
+            const terraceL = L - altarL - stairL;
+
+            const y1 = altarL;
+            const y2 = y1 + stairL;
+
+            walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
+
+            if (hasAltar) {
+                rooms.push({ name: 'Phòng Thờ Gia Tiên', areaM2: Math.round(W * altarL * 10) / 10, x: 0, y: 0, w: W, h: altarL, zone: 'Tôn Nghiêm Tối Thượng' });
+                const lobanAltar = checkLoBan(1530, '388');
+                furniture.push({ type: 'altar_table', x: (W - 1.53) / 2, y: 0.4, w: 1.53, h: 0.8, label: `Bàn Thờ (${lobanAltar.cung})`, isGood: true });
+            }
+
+            furniture.push({ type: 'stairs', x: 0.3, y: y1 + 0.3, w: Math.min(2.4, W * 0.45), h: stairL - 0.6, label: 'Cầu Thang' });
+
+            rooms.push({ name: 'Sân Phơi & Giặt Phía Sau', areaM2: Math.round(W * terraceL * 10) / 10, x: 0, y: y2, w: W, h: terraceL, zone: 'Sân Hậu' });
+            furniture.push({ type: 'washing_machine', x: W - 1.0, y: y2 + 0.5, w: 0.7, h: 0.7, label: 'Máy Giặt' });
+        }
     }
 
-    dimensions.push({ x1: 0, y1: houseYStart, x2: W, y2: houseYStart, text: `Ngang ${W}m`, loban: checkLoBan(W * 1000, '429') });
-    dimensions.push({ x1: W, y1: houseYStart, x2: W, y2: houseYEnd, text: `Dài ${houseL}m`, loban: checkLoBan(houseL * 1000, '429') });
+    dimensions.push({ x1: 0, y1: 0, x2: W, y2: 0, text: `Ngang ${W}m`, loban: checkLoBan(W * 1000, '429') });
+    dimensions.push({ x1: W, y1: 0, x2: W, y2: L, text: `Dài ${L}m`, loban: checkLoBan(L * 1000, '429') });
 
     return {
         floorIndex,
