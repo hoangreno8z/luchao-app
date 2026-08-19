@@ -591,7 +591,11 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (${flyingStars.currentYear || 2026})`;
     if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain} (${flyingStars.chartType === 'chinh_huong' ? 'Hạ Quái' : 'Thế Quái'})`;
-    if (metaGua) metaGua.textContent = `${batTrach.guaName} (${batTrach.trachGroup})`;
+    if (metaGua) {
+        const gName = batTrach.guaName || batTrach.name || 'Khảm (Thủy)';
+        const gGroup = batTrach.groupName || batTrach.trachGroup || 'Đông Tứ Mệnh';
+        metaGua.textContent = `${gName} (${gGroup})`;
+    }
 
     if (!matrixContainer || !flyingStars.palaces) return;
 
