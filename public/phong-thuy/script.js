@@ -1,5 +1,5 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v3.4
+// Phong Thủy & Kiến Trúc Controller Script v3.5
 // Tự động xoay Cửu Cung theo Hướng Nhà, Chú thích trực quan & CAD Siêu Cấp
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
@@ -57,8 +57,8 @@ function bootstrapApp() {
     initToolbar();
     initActionButtons();
 
-    // Auto-calculate on initial load
-    handleCalculate();
+    // Auto-calculate and render immediately on load
+    handleCalculate(false);
 }
 
 if (document.readyState === 'loading') {
@@ -89,8 +89,8 @@ function initMenuDropdown() {
 function initModeTabs() {
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
-    const emptyLandPanel = document.getElementById('emptyLandPanel');
-    const existingHousePanel = document.getElementById('existingHousePanel');
+    const emptyLandPanel = document.getElementById('emptyLandRoomsConfig');
+    const existingHousePanel = document.getElementById('existingRoomsSection');
 
     if (tabEmptyLand && tabExistingHouse) {
         tabEmptyLand.addEventListener('click', () => {
@@ -113,8 +113,8 @@ function initModeTabs() {
 
 /* Drawing Tab Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung) */
 function initDrawingTabs() {
-    const btnTabArch = document.getElementById('btnTabArch');
-    const btnTabFengShui = document.getElementById('btnTabFengShui');
+    const btnTabArch = document.getElementById('tabDrawingArch');
+    const btnTabFengShui = document.getElementById('tabDrawingFengShui');
 
     if (btnTabArch && btnTabFengShui) {
         btnTabArch.addEventListener('click', () => {
@@ -176,7 +176,7 @@ function initCompassControls() {
         }
 
         if (triggerCalculate) {
-            handleCalculate();
+            handleCalculate(false);
         }
     }
 
@@ -238,8 +238,8 @@ function initCompassControls() {
 
 /* Drag and Drop 9-Palaces */
 function initDragAndDropPalaces() {
-    const rack = document.getElementById('roomPaletteRack');
-    const grid = document.getElementById('palaceDropGrid');
+    const rack = document.getElementById('availableRoomsRack');
+    const grid = document.getElementById('dndPalacesGrid');
     if (!rack || !grid) return;
 
     let draggedRoomData = null;
@@ -297,7 +297,7 @@ function initDragAndDropPalaces() {
         });
         dndPlacements[palaceId].push(room);
         renderDroppedRooms();
-        handleCalculate();
+        handleCalculate(false);
     }
 
     function renderDroppedRooms() {
@@ -321,7 +321,7 @@ function initDragAndDropPalaces() {
                     const pal = btn.getAttribute('data-palace-id');
                     dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
                     renderDroppedRooms();
-                    handleCalculate();
+                    handleCalculate(false);
                 });
             });
         });
@@ -419,7 +419,7 @@ function initToolbar() {
                 txtOrientationMode.textContent = isLandscapeMode ? 'Khổ Nằm (Ngang)' : 'Khổ Đứng (Dọc)';
             }
             cadRenderer.isLandscape = isLandscapeMode;
-            handleCalculate();
+            handleCalculate(false);
         });
     }
 
@@ -473,23 +473,25 @@ function initToolbar() {
 function initActionButtons() {
     const btnCalculate = document.getElementById('btnCalculate');
     if (btnCalculate) {
-        btnCalculate.addEventListener('click', handleCalculate);
+        btnCalculate.addEventListener('click', () => handleCalculate(true));
     }
 
     const liveInputs = [
-        'inputLandWidth', 'inputLandLength', 'inputFloors',
-        'inputBuildYear', 'inputOwnerYear', 'inputOwnerGender',
-        'inputBedrooms', 'inputToilets', 'inputAltar'
+        'inputWidth', 'inputLength', 'inputFloors',
+        'inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour',
+        'inputOwnerYear', 'inputOwnerGender',
+        'inputBedCount', 'inputWcCount', 'inputHasAltar',
+        'inputLivingRoom', 'inputKitchen', 'inputGarage', 'inputStairsType'
     ];
 
     liveInputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('change', handleCalculate);
+            el.addEventListener('change', () => handleCalculate(false));
             if (el.tagName === 'INPUT') {
                 el.addEventListener('input', () => {
                     clearTimeout(window._calcDebounce);
-                    window._calcDebounce = setTimeout(handleCalculate, 300);
+                    window._calcDebounce = setTimeout(() => handleCalculate(false), 300);
                 });
             }
         }
@@ -497,9 +499,14 @@ function initActionButtons() {
 }
 
 /* Core Master Calculation Pipeline */
-function handleCalculate() {
-    let widthM = parseFloat(document.getElementById('inputLandWidth')?.value) || 5.0;
-    let lengthM = parseFloat(document.getElementById('inputLandLength')?.value) || 16.0;
+function handleCalculate(shouldScroll = false) {
+    const resultsSection = document.getElementById('resultsSection');
+    if (resultsSection) {
+        resultsSection.style.display = 'block';
+    }
+
+    let widthM = parseFloat(document.getElementById('inputWidth')?.value) || 5.0;
+    let lengthM = parseFloat(document.getElementById('inputLength')?.value) || 16.0;
 
     // Swap if landscape mode
     if (isLandscapeMode && widthM < lengthM) {
@@ -511,12 +518,17 @@ function handleCalculate() {
     const floors = parseInt(document.getElementById('inputFloors')?.value, 10) || 2;
     const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
     const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
+    const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
+    const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
+    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 19;
+    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 7;
+
     const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
 
-    const bedrooms = parseInt(document.getElementById('inputBedrooms')?.value, 10) || 3;
-    const toilets = parseInt(document.getElementById('inputToilets')?.value, 10) || 2;
-    const hasAltar = document.getElementById('inputAltar')?.value || '1';
+    const bedrooms = parseInt(document.getElementById('inputBedCount')?.value, 10) || 3;
+    const toilets = parseInt(document.getElementById('inputWcCount')?.value, 10) || 2;
+    const hasAltar = document.getElementById('inputHasAltar')?.value || '1';
 
     // 1. Generate Parametric Floorplan Geometry
     currentGeometry = generateParametricFloorplan({
@@ -531,24 +543,27 @@ function handleCalculate() {
     currentFlyingStars = calculateFlyingStars({
         facingDegree,
         buildYear,
-        currentYear: 2026,
-        currentMonth: 8,
-        currentDay: 19,
-        currentHour: 7
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour
     });
 
     // 3. Compute Owner Gua (Bát Trạch Phối Mệnh)
     currentBatTrach = calculateGua(ownerYear, ownerGender);
 
     // 4. Compute 9-Palace Spatial Assignment
-    const floorGeo = currentGeometry.plansByFloor[currentFloorIndex - 1] || currentGeometry;
+    const floorGeo = (currentGeometry.plansByFloor && currentGeometry.plansByFloor[currentFloorIndex - 1]) 
+        ? currentGeometry.plansByFloor[currentFloorIndex - 1] 
+        : currentGeometry;
+
     currentSpatialResult = calculateFengShuiSpatial(floorGeo, {
         facingDegree,
         buildYear,
-        currentYear: 2026,
-        currentMonth: 8,
-        currentDay: 19,
-        currentHour: 7,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
         ownerYear,
         ownerGender
     });
@@ -564,11 +579,16 @@ function handleCalculate() {
 
     // 8. Render Audit Report
     renderDetailedReport(currentSpatialResult);
+
+    // 9. Smooth scroll to drawing if clicked
+    if (shouldScroll && resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 /* Render Floor Navigator */
 function renderFloorNavigator(totalFloors) {
-    const nav = document.getElementById('floorPlanNavigator');
+    const nav = document.getElementById('floorNavigator');
     if (!nav) return;
 
     let buttons = '';
@@ -632,7 +652,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (${flyingStars.currentYear || 2026})`;
     if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain} (${flyingStars.chartType === 'chinh_huong' ? 'Hạ Quái' : 'Thế Quái'})`;
-    if (metaGua) {
+    if (metaGua && batTrach) {
         const gName = batTrach.guaName || batTrach.name || 'Khảm (Thủy)';
         const gGroup = batTrach.groupName || batTrach.trachGroup || 'Đông Tứ Mệnh';
         metaGua.textContent = `${gName} (${gGroup})`;
