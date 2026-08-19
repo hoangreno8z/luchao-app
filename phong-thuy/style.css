@@ -402,15 +402,20 @@ body {
 
 .canvas-viewport-wrapper {
     position: relative;
-    background: #080c16;
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1px solid rgba(245, 158, 11, 0.4);
     border-radius: 12px;
     overflow: hidden;
-    min-height: 520px;
+    min-height: 540px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: background 0.3s ease;
+}
+.canvas-viewport-wrapper.dark-mode {
+    background: #080c16;
+    border-color: var(--border-color);
 }
 .cad-canvas {
     display: block;
@@ -424,30 +429,43 @@ body {
     top: 12px;
     left: 12px;
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
-    background: rgba(15, 23, 42, 0.88);
-    padding: 6px;
+    background: rgba(15, 23, 42, 0.92);
+    padding: 6px 8px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
     backdrop-filter: blur(8px);
     z-index: 20;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 .cad-tool-btn {
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     transition: all 0.2s ease;
+}
+.cad-tool-btn svg {
+    flex-shrink: 0;
 }
 .cad-tool-btn:hover {
     color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+.cad-tool-btn.active {
+    background: rgba(217, 119, 6, 0.25);
+    color: #fef08a;
+    border-color: rgba(245, 158, 11, 0.6);
+}
     background: rgba(255, 255, 255, 0.08);
 }
 .cad-tool-btn.active {

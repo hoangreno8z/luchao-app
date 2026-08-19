@@ -84,11 +84,11 @@
             <div class="mode-tabs-container">
                 <button type="button" class="mode-tab-btn active" id="tabEmptyLand" data-mode="empty_land">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                    <span>Đất Trống</span>
+                    <span>Đất Trống (Thiết Kế Mới)</span>
                 </button>
                 <button type="button" class="mode-tab-btn" id="tabExistingHouse" data-mode="existing_house">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h7"/><path d="M14 15h7"/></svg>
-                    <span>Nhà Sẵn Có</span>
+                    <span>Nhà Sẵn Có (Khảo Sát 9 Cung)</span>
                 </button>
             </div>
 
@@ -162,10 +162,42 @@
                 </div>
             </div>
 
-            <!-- Room Counts Selector (Chỉ hiện ở Tab 1: Đất Trống) -->
+            <!-- Room Counts & Functional Requirements Selector (Chỉ hiện ở Tab 1: Đất Trống) -->
             <div id="emptyLandRoomsConfig" style="margin-bottom: 20px;">
-                <label class="form-label" style="margin-bottom: 10px;">Nhu Cầu Bố Trí Phòng (Tự Động Phân Bổ Theo Tầng)</label>
-                <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div style="font-size: 0.95rem; font-weight: 800; color: var(--gold-light); margin-bottom: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 6px;">
+                    CÔNG NĂNG PHÒNG KIẾN TRÚC & PHONG THỦY
+                </div>
+                <div class="form-grid" style="grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Phòng Khách</label>
+                        <select id="inputLivingRoom" class="form-control">
+                            <option value="1" selected>Có - Tiền sảnh đón tam cấp</option>
+                            <option value="2">Phòng khách lớn kết hợp thờ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bếp & Phòng Ăn</label>
+                        <select id="inputKitchen" class="form-control">
+                            <option value="integrated" selected>Bếp & Bàn ăn liền kề</option>
+                            <option value="separate">Khu bếp nấu riêng biệt</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gara Ô Tô / Sân Xe</label>
+                        <select id="inputGarage" class="form-control">
+                            <option value="0" selected>Không - Sân trước nhỏ</option>
+                            <option value="1">Có Gara Ô Tô trong nhà</option>
+                            <option value="2">Sân trước rộng để xe máy & ô tô</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vị Trí Cầu Thang</label>
+                        <select id="inputStairsType" class="form-control">
+                            <option value="middle" selected>Giữa nhà kết hợp Giếng trời</option>
+                            <option value="side">Dọc tường bên hông</option>
+                            <option value="back">Cuối nhà</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label class="form-label">Số Phòng Ngủ</label>
                         <select id="inputBedCount" class="form-control">
@@ -189,14 +221,30 @@
                     <div class="form-group">
                         <label class="form-label">Phòng Thờ Gia Tiên</label>
                         <select id="inputHasAltar" class="form-control">
-                            <option value="1" selected>Có Bố Trí (Tầng Thượng)</option>
-                            <option value="0">Không Bố Trí</option>
+                            <option value="1" selected>Có - Tầng Thượng riêng biệt</option>
+                            <option value="2">Có - Tầng Trệt trang nghiêm</option>
+                            <option value="0">Không bố trí phòng thờ riêng</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Giếng Trời Trung Cung</label>
+                        <label class="form-label">Phòng Làm Việc / SHC</label>
+                        <select id="inputHasCommonRoom" class="form-control">
+                            <option value="1" selected>Có - Không gian sinh hoạt chung</option>
+                            <option value="0">Không</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sân Phơi & Khu Giặt</label>
+                        <select id="inputHasLaundry" class="form-control">
+                            <option value="1" selected>Có - Tầng Thượng thoáng đãng</option>
+                            <option value="2">Có - Sân sau tầng trệt</option>
+                            <option value="0">Không</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giếng Trời Thông Tầng</label>
                         <select id="inputHasSkylight" class="form-control">
-                            <option value="1" selected>Có (Hút Gió & Đón Sáng)</option>
+                            <option value="1" selected>Có - Hút gió & Đón ánh sáng</option>
                             <option value="0">Không</option>
                         </select>
                     </div>
@@ -205,12 +253,12 @@
 
             <!-- Existing House 9-Palace Room Selectors (Chỉ hiện ở Tab 2: Nhà Sẵn Có) -->
             <div id="existingRoomsSection" style="display: none; margin-bottom: 20px;">
-                <label class="form-label" style="margin-bottom: 8px;">
-                    <span>Vị Trí Hiện Tại Của Từng Phòng (Chọn 1 trong 9 Cung Phương Vị)</span>
-                </label>
+                <div style="font-size: 0.95rem; font-weight: 800; color: var(--gold-light); margin-bottom: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 6px;">
+                    VỊ TRÍ HIỆN TẠI CỦA TỪNG PHÒNG (CHỌN 1 TRONG 9 CUNG PHƯƠNG VỊ)
+                </div>
                 <div class="form-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
                     <div class="form-group">
-                        <label class="form-label">🚪 Cửa Chính</label>
+                        <label class="form-label">Cửa Chính</label>
                         <select id="sel_main_door" class="form-control palace-select">
                             <option value="9" selected>Ly (Nam - Tiền Minh Đường)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -225,7 +273,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🛋️ Phòng Khách</label>
+                        <label class="form-label">Phòng Khách</label>
                         <select id="sel_living_room" class="form-control palace-select">
                             <option value="9" selected>Ly (Nam)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -240,7 +288,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🔥 Bàn Thờ Gia Tiên</label>
+                        <label class="form-label">Bàn Thờ Gia Tiên</label>
                         <select id="sel_altar" class="form-control palace-select">
                             <option value="6" selected>Càn (Tây Bắc)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -255,7 +303,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🍳 Bếp Nấu & Ăn</label>
+                        <label class="form-label">Bếp Nấu & Ăn</label>
                         <select id="sel_kitchen" class="form-control palace-select">
                             <option value="4" selected>Tốn (Đông Nam)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -270,7 +318,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🛏️ Phòng Ngủ 1 (Master)</label>
+                        <label class="form-label">Phòng Ngủ 1 (Master)</label>
                         <select id="sel_master_bed" class="form-control palace-select">
                             <option value="3" selected>Chấn (Đông)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -285,7 +333,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🛏️ Phòng Ngủ 2</label>
+                        <label class="form-label">Phòng Ngủ 2</label>
                         <select id="sel_bed_2" class="form-control palace-select">
                             <option value="7" selected>Đoài (Tây)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -300,7 +348,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🛏️ Phòng Ngủ 3</label>
+                        <label class="form-label">Phòng Ngủ 3</label>
                         <select id="sel_bed_3" class="form-control palace-select">
                             <option value="8">Cấn (Đông Bắc)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -315,7 +363,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🚽 Nhà Vệ Sinh 1</label>
+                        <label class="form-label">Nhà Vệ Sinh 1</label>
                         <select id="sel_toilet_1" class="form-control palace-select">
                             <option value="2" selected>Khôn (Tây Nam)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -330,7 +378,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🚽 Nhà Vệ Sinh 2</label>
+                        <label class="form-label">Nhà Vệ Sinh 2</label>
                         <select id="sel_toilet_2" class="form-control palace-select">
                             <option value="1">Khảm (Bắc)</option>
                             <option value="9">Ly (Nam)</option>
@@ -345,7 +393,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">🪜 Cầu Thang</label>
+                        <label class="form-label">Cầu Thang</label>
                         <select id="sel_stairs" class="form-control palace-select">
                             <option value="5" selected>Trung Cung (Chính Giữa)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -360,7 +408,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">📚 Phòng Làm Việc / Học</label>
+                        <label class="form-label">Phòng Làm Việc / Học</label>
                         <select id="sel_work_room" class="form-control palace-select">
                             <option value="8">Cấn (Đông Bắc)</option>
                             <option value="1">Khảm (Bắc)</option>
@@ -396,11 +444,32 @@
             <div class="cad-studio-container">
                 <!-- Canvas Viewport -->
                 <div class="canvas-viewport-wrapper">
+                    <!-- Technical Architectural Toolbar (Zero Emojis, Pure SVG Icons) -->
                     <div class="cad-toolbar">
-                        <button type="button" class="cad-tool-btn active" id="btnToggleDimensions">📐 Kích Thước</button>
-                        <button type="button" class="cad-tool-btn active" id="btnToggleFurniture">🛋️ Nội Thất</button>
-                        <button type="button" class="cad-tool-btn" id="btnToggleCompass">🧭 La Kinh 24 Sơn</button>
-                        <button type="button" class="cad-tool-btn" id="btnExportPng" style="color: var(--gold-light); border-color: rgba(245, 158, 11, 0.4);">💾 Tải Ảnh HD</button>
+                        <button type="button" class="cad-tool-btn" id="btnToggleTheme" title="Chuyển đổi màu nền bản vẽ">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                            <span id="txtThemeMode">Bản Vẽ Trắng (CAD)</span>
+                        </button>
+                        <button type="button" class="cad-tool-btn active" id="btnToggleDimensions" title="Bật/Tắt đường gióng kích thước">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="5" x2="2" y2="19"/><line x1="22" y1="5" x2="22" y2="19"/><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/></svg>
+                            <span>Kích Thước (Dim)</span>
+                        </button>
+                        <button type="button" class="cad-tool-btn active" id="btnToggleFurniture" title="Bật/Tắt nội thất kiến trúc">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="9" rx="2"/><path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"/><line x1="3" y1="16" x2="21" y2="16"/></svg>
+                            <span>Nội Thất Vector</span>
+                        </button>
+                        <button type="button" class="cad-tool-btn active" id="btnToggleNinePalaces" title="Bật/Tắt lưới Cửu Cung Huyền Không">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                            <span>Lưới Cửu Cung</span>
+                        </button>
+                        <button type="button" class="cad-tool-btn active" id="btnToggleCompass" title="Bật/Tắt đĩa La Kinh Hoa Tiêu">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 4 15 12 12 20 9 12 12 4"/></svg>
+                            <span>La Kinh 24 Sơn</span>
+                        </button>
+                        <button type="button" class="cad-tool-btn" id="btnExportPng" style="color: var(--gold-light); border-color: rgba(245, 158, 11, 0.4);" title="Tải file ảnh bản vẽ chất lượng cao">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Xuất Bản Vẽ HD</span>
+                        </button>
                     </div>
                     <canvas id="cadCanvas" class="cad-canvas" width="1600" height="1200"></canvas>
                 </div>

@@ -8,7 +8,6 @@ import { LaKinhRenderer } from './js/la_kinh_renderer.js';
 import { 
     findMountain, 
     getOppositeMountain, 
-    MOUNTAINS, 
     calculateFlyingStars, 
     calculateGua, 
     generateArchitecturalPlan,
@@ -133,7 +132,18 @@ function initCanvas() {
 /* Action Buttons & Toolbar */
 function initActionButtons() {
     const btnCalculate = document.getElementById('btnCalculate');
-    btnCalculate.addEventListener('click', handleCalculate);
+    if (btnCalculate) {
+        btnCalculate.addEventListener('click', handleCalculate);
+    }
+
+    const btnToggleTheme = document.getElementById('btnToggleTheme');
+    if (btnToggleTheme) {
+        btnToggleTheme.addEventListener('click', () => {
+            cadRenderer.theme = (cadRenderer.theme === 'white') ? 'dark' : 'white';
+            btnToggleTheme.classList.toggle('active', cadRenderer.theme === 'white');
+            renderCurrentFloor();
+        });
+    }
 
     const btnToggleDimensions = document.getElementById('btnToggleDimensions');
     if (btnToggleDimensions) {
@@ -153,12 +163,20 @@ function initActionButtons() {
         });
     }
 
+    const btnToggleNinePalaces = document.getElementById('btnToggleNinePalaces');
+    if (btnToggleNinePalaces) {
+        btnToggleNinePalaces.addEventListener('click', () => {
+            cadRenderer.showPalaceOverlay = !cadRenderer.showPalaceOverlay;
+            btnToggleNinePalaces.classList.toggle('active', cadRenderer.showPalaceOverlay);
+            renderCurrentFloor();
+        });
+    }
+
     const btnToggleCompass = document.getElementById('btnToggleCompass');
     if (btnToggleCompass) {
         btnToggleCompass.addEventListener('click', () => {
-            cadRenderer.showPalaceOverlay = !cadRenderer.showPalaceOverlay;
             cadRenderer.showCompass = !cadRenderer.showCompass;
-            btnToggleCompass.classList.toggle('active', cadRenderer.showPalaceOverlay);
+            btnToggleCompass.classList.toggle('active', cadRenderer.showCompass);
             renderCurrentFloor();
         });
     }
@@ -196,12 +214,18 @@ async function handleCalculate() {
         });
     }
 
-    // 2. Thu thập dữ liệu Tab 1 (Đất Trống) - Số lượng phòng
+    // 2. Thu thập dữ liệu Tab 1 (Đất Trống) - Đầy đủ phòng chức năng
     const roomCounts = {
+        livingRoom: document.getElementById('inputLivingRoom')?.value || '1',
+        kitchen: document.getElementById('inputKitchen')?.value || '1',
+        hasGarage: document.getElementById('inputGarage')?.value || '0',
+        stairsType: document.getElementById('inputStairsType')?.value || 'middle',
         bedrooms: document.getElementById('inputBedCount')?.value || 3,
         toilets: document.getElementById('inputWcCount')?.value || 2,
-        hasAltar: document.getElementById('inputHasAltar')?.value === '1',
-        hasSkylight: document.getElementById('inputHasSkylight')?.value === '1',
+        hasAltar: document.getElementById('inputHasAltar')?.value || '1',
+        hasCommonRoom: document.getElementById('inputHasCommonRoom')?.value === '1',
+        hasLaundry: document.getElementById('inputHasLaundry')?.value || 'roof',
+        hasSkylight: document.getElementById('inputHasSkylight')?.value || '1',
         frontLandscape,
         backLandscape
     };
@@ -377,19 +401,19 @@ function renderDetailedReport(data, existingRoomsMap = {}) {
     const bt = data.batTrach || {};
     const btMap = bt.batTrachMap || {};
 
-    // Mapping room labels
+    // Mapping room labels (Pure technical, no emojis)
     const roomLabels = {
-        main_door: '🚪 Cửa Chính',
-        living_room: '🛋️ Phòng Khách',
-        altar: '🔥 Bàn Thờ',
-        kitchen: '🍳 Bếp Nấu',
-        master_bed: '🛏️ Phòng Ngủ Master',
-        bed_2: '🛏️ Phòng Ngủ 2',
-        bed_3: '🛏️ Phòng Ngủ 3',
-        toilet_1: '🚽 Nhà Vệ Sinh 1',
-        toilet_2: '🚽 Nhà Vệ Sinh 2',
-        stairs: '🪜 Cầu Thang',
-        work_room: '📚 Phòng Làm Việc'
+        main_door: 'Cửa Chính',
+        living_room: 'Phòng Khách',
+        altar: 'Bàn Thờ Gia Tiên',
+        kitchen: 'Bếp Nấu',
+        master_bed: 'Phòng Ngủ Master',
+        bed_2: 'Phòng Ngủ 2',
+        bed_3: 'Phòng Ngủ 3',
+        toilet_1: 'WC 1',
+        toilet_2: 'WC 2',
+        stairs: 'Cầu Thang',
+        work_room: 'Phòng Làm Việc'
     };
 
     // Tìm các phòng được bố trí trong từng cung
@@ -461,3 +485,4 @@ function handleExportPng() {
     link.href = canvas.toDataURL('image/png');
     link.click();
 }
+
