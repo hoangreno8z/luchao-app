@@ -1,237 +1,59 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Core Bundle (Client-Side Standalone)
-// Hỗ Trợ 9 Cung Toàn Diện & Loan Đầu Phối Hợp Lý Khí
+// Phong Thủy & Kiến Trúc Core Bundle (Parametric CAD & Xuan Kong)
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
+// Self-contained Standalone ES Module
 // ============================================================
 
-// --- 1. THƯỚC LỖ BAN HELPER ---
-export const LO_BAN_522 = [
-    { name: 'Quý Nhân', isGood: true,  desc: 'Gia cảnh khả quan, làm ăn phát đạt, bạn bè trung thành' },
-    { name: 'Hiểm Họa', isGood: false, desc: 'Gia đạo bất an, phiêu bạt, tán tài, trôi dạt' },
-    { name: 'Thiên Tai', isGood: false, desc: 'Bệnh tật, ốm đau, mất tiền của, vợ chồng bất hòa' },
-    { name: 'Thiên Tài', isGood: true,  desc: 'Tài năng trời cho, may mắn đắc lợi, con cái hiếu thuận' },
-    { name: 'Phúc Lộc',  isGood: true,  desc: 'Phúc ấm gia đình, sống lâu thịnh vượng, quan lộc cao' },
-    { name: 'Cô Độc',   isGood: false, desc: 'Chia ly, cô quạnh, tổn hại nhân đinh' },
-    { name: 'Thiên Tặc', isGood: false, desc: 'Bị trộm cắp, khẩu thiệt, kiện cáo, tù ngục' },
-    { name: 'Tể Tướng',  isGood: true,  desc: 'Gia đạo hanh thông, sinh quý tử, công danh hiển đạt' }
-];
-
-export const LO_BAN_429 = [
-    { name: 'Tài',   isGood: true,  desc: 'Tài đức, bảo khố, lục hợp, nghênh phúc' },
-    { name: 'Bệnh',  isGood: false, desc: 'Thoát tài, công sự, lao ngục, cô quả' },
-    { name: 'Ly',    isGood: false, desc: 'Trưởng khố, kiếp tài, quan quỷ, thất thoát' },
-    { name: 'Nghĩa', isGood: true,  desc: 'Thiêm đinh, ích lợi, quý tử, đại cát' },
-    { name: 'Quan',  isGood: true,  desc: 'Thuận khoa, hoành tài, tiến ích, phú quý' },
-    { name: 'Kiếp',  isGood: false, desc: 'Tử biệt, thoái khẩu, ly hương, tài thất' },
-    { name: 'Hại',   isGood: false, desc: 'Tai bệnh, tử tuyệt, khẩu thiệt, họa hoạn' },
-    { name: 'Bản',   isGood: true,  desc: 'Tài chí, đăng khoa, tiến bảo, hưng vượng' }
-];
-
-export const LO_BAN_388 = [
-    { name: 'Đinh',  isGood: true,  desc: 'Phúc tinh, đỗ đạt, tài vượng, đăng khoa' },
-    { name: 'Hại',   isGood: false, desc: 'Khẩu thiệt, bệnh tật, tử tuyệt, tai ách' },
-    { name: 'Vượng', isGood: true,  desc: 'Thiên đức, hỷ sự, tiến bảo, nạp phúc' },
-    { name: 'Khổ',   isGood: false, desc: 'Mất của, quan phi, chia ly, tranh chấp' },
-    { name: 'Nghĩa', isGood: true,  desc: 'Đại cát, tài lộc, quý tử, ích lợi' },
-    { name: 'Quan',  isGood: true,  desc: 'Thuận khoa, phú quý, tài tiến, quan vận' },
-    { name: 'Tử',    isGood: false, desc: 'Ly hương, tử biệt, tuyệt tự, thất thoát' },
-    { name: 'Hưng',  isGood: true,  desc: 'Đăng khoa, quý tử, thêm đinh, hưng thịnh' },
-    { name: 'Thất',  isGood: false, desc: 'Cô quả, thoái tài, công sự, ngục tù' },
-    { name: 'Tài',   isGood: true,  desc: 'Nghênh phúc, thoái tài, lục hợp, đại phú' }
-];
-
-export function checkLoBan(mm, type = '522') {
-    const cm = mm / 10;
-    if (type === '522') {
-        const cycle = 52.2;
-        const pos = cm % cycle;
-        const index = Math.floor(pos / (cycle / 8)) % 8;
-        const item = LO_BAN_522[index];
-        return {
-            cm,
-            cycle,
-            cung: item.name,
-            isGood: item.isGood,
-            color: item.isGood ? '#10b981' : '#ef4444',
-            desc: item.desc,
-            typeLabel: 'Thước Lỗ Ban 52.2cm (Cửa & Thông Thủy)'
-        };
-    } else if (type === '429') {
-        const cycle = 42.9;
-        const pos = cm % cycle;
-        const index = Math.floor(pos / (cycle / 8)) % 8;
-        const item = LO_BAN_429[index];
-        return {
-            cm,
-            cycle,
-            cung: item.name,
-            isGood: item.isGood,
-            color: item.isGood ? '#10b981' : '#ef4444',
-            desc: item.desc,
-            typeLabel: 'Thước Lỗ Ban 42.9cm (Khối Xây & Bếp/Nội Thất)'
-        };
-    } else {
-        const cycle = 38.8;
-        const pos = cm % cycle;
-        const index = Math.floor(pos / (cycle / 10)) % 10;
-        const item = LO_BAN_388[index];
-        return {
-            cm,
-            cycle,
-            cung: item.name,
-            isGood: item.isGood,
-            color: item.isGood ? '#10b981' : '#ef4444',
-            desc: item.desc,
-            typeLabel: 'Thước Lỗ Ban 38.8cm (Bàn Thờ & Âm Phần)'
-        };
-    }
+// ============================================================
+// 1. COMPUTATIONAL GEOMETRY ENGINE (MILLIMETER-BASED)
+// ============================================================
+export function areaM2(r) {
+    return Math.round((r.width * r.height / 1000000) * 100) / 100;
 }
 
-// --- 2. BÁT TRẠCH PHỐI MỆNH ---
-export const GUA_NAMES = {
-    1: 'Khảm (Thủy - Đông Tứ Mệnh)',
-    2: 'Khôn (Thổ - Tây Tứ Mệnh)',
-    3: 'Chấn (Mộc - Đông Tứ Mệnh)',
-    4: 'Tốn (Mộc - Đông Tứ Mệnh)',
-    6: 'Càn (Kim - Tây Tứ Mệnh)',
-    7: 'Đoài (Kim - Tây Tứ Mệnh)',
-    8: 'Cấn (Thổ - Tây Tứ Mệnh)',
-    9: 'Ly (Hỏa - Đông Tứ Mệnh)'
-};
+export function centerOfRect(r) {
+    return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+}
 
-export const BAT_TRACH_MAP = {
-    1: {
-        'Bắc': { name: 'Phục Vị', type: 'CÁT', desc: 'Bình yên, củng cố sức mạnh tinh thần, may mắn thi cử' },
-        'Nam': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Củng cố quan hệ gia đình, tình yêu bền vững, trường thọ' },
-        'Đông': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Sức khỏe dồi dào, khỏi bệnh tật, gia tăng tài lộc' },
-        'Đông Nam': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Thu hút tài lộc, danh tiếng, thăng quan phát tài' },
-        'Tây Bắc': { name: 'Lục Sát', type: 'HUNG', desc: 'Xáo trộn quan hệ tình cảm, thù hận, kiện tụng, tai nạn' },
-        'Tây Nam': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Phá sản, bệnh tật chết người, tổn đinh' },
-        'Đông Bắc': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Mất nguồn thu nhập, thất nghiệp, cãi lộn, hỏa hoạn' },
-        'Tây': { name: 'Họa Hại', type: 'HUNG', desc: 'Không may mắn, thị phi, thất bại trong công việc' }
-    },
-    2: {
-        'Tây Nam': { name: 'Phục Vị', type: 'CÁT', desc: 'Bình yên, hòa thuận' },
-        'Tây Bắc': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Gia đạo êm ấm, tài lộc ổn định' },
-        'Tây': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Sức khỏe dồi dào, thọ trường' },
-        'Đông Bắc': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Đại phú đại quý, con cháu vinh hiển' },
-        'Bắc': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Đại hung sát, tổn hại sinh khí' },
-        'Nam': { name: 'Lục Sát', type: 'HUNG', desc: 'Gia đạo bất an, tai tiếng' },
-        'Đông': { name: 'Họa Hại', type: 'HUNG', desc: 'Hao tài tốn của, thị phi' },
-        'Đông Nam': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Bệnh tật, tiểu nhân quấy phá' }
-    },
-    3: {
-        'Đông': { name: 'Phục Vị', type: 'CÁT', desc: 'Gia đạo yên vui, nội lực vững mạnh' },
-        'Đông Nam': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Hạnh phúc trọn vẹn, tài lộc dài lâu' },
-        'Bắc': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Quý nhân phò trợ, thân thể tráng kiện' },
-        'Nam': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Tài lộc hưng vượng, công danh rực rỡ' },
-        'Tây': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Bại liệt phá sản, nguy nan' },
-        'Tây Bắc': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Hao hụt tiền bạc, tai bay vạ gió' },
-        'Tây Nam': { name: 'Họa Hại', type: 'HUNG', desc: 'Trắc trở thị phi, gia sự muộn phiền' },
-        'Đông Bắc': { name: 'Lục Sát', type: 'HUNG', desc: 'Bất hòa tranh chấp, tình duyên lận đận' }
-    },
-    4: {
-        'Đông Nam': { name: 'Phục Vị', type: 'CÁT', desc: 'Vững vàng, thi cử phát đạt' },
-        'Đông': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Hòa hợp nhân duyên, phúc đức đầy nhà' },
-        'Nam': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Thân tâm an lạc, tiêu trừ bệnh tật' },
-        'Bắc': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Sinh sôi nảy nở, tài vận hanh thông' },
-        'Đông Bắc': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Tổn hại nhân đinh, hiểm nguy' },
-        'Tây Nam': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Mất mát tài sản, thị phi khẩu thiệt' },
-        'Tây Bắc': { name: 'Họa Hại', type: 'HUNG', desc: 'Hao tài, kiện tụng' },
-        'Tây': { name: 'Lục Sát', type: 'HUNG', desc: 'Tai tiếng, tổn thương tình cảm' }
-    },
-    6: {
-        'Tây Bắc': { name: 'Phục Vị', type: 'CÁT', desc: 'Quyền uy, củng cố vị thế lãnh đạo' },
-        'Tây Nam': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Gia đạo bền vững, phú quý trường tồn' },
-        'Đông Bắc': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Thần khí minh mẫn, sống lâu khỏe mạnh' },
-        'Tây': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Quan lộc hanh thông, công danh tột bậc' },
-        'Nam': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Đại hung hiểm, hỏa khắc kim' },
-        'Đông': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Bất an trắc trở, tai ương bất ngờ' },
-        'Đông Nam': { name: 'Họa Hại', type: 'HUNG', desc: 'Hao tổn tinh lực, mưu sự bất thành' },
-        'Bắc': { name: 'Lục Sát', type: 'HUNG', desc: 'Tranh chấp, phiền toái' }
-    },
-    7: {
-        'Tây': { name: 'Phục Vị', type: 'CÁT', desc: 'An lạc, khéo léo ăn nói, tài lộc đến' },
-        'Đông Bắc': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Phúc thọ song toàn, vợ chồng hòa hợp' },
-        'Tây Nam': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Sức khỏe hưng thịnh, gặp quý nhân' },
-        'Tây Bắc': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Đại phát tài lộc, thăng tiến vượt bậc' },
-        'Đông': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Tuyệt tự, phá sản' },
-        'Nam': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Bệnh tật, tranh cãi' },
-        'Bắc': { name: 'Họa Hại', type: 'HUNG', desc: 'Thị phi phiền muộn, tai tiếng' },
-        'Đông Nam': { name: 'Lục Sát', type: 'HUNG', desc: 'Tai nạn, tổn thất tình cảm' }
-    },
-    8: {
-        'Đông Bắc': { name: 'Phục Vị', type: 'CÁT', desc: 'Điềm tĩnh, học vấn đỗ đạt' },
-        'Tây': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Hòa hợp, điền sản dồi dào' },
-        'Tây Bắc': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Trường thọ, tiêu trừ tai ách' },
-        'Tây Nam': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Phú quý vinh hoa, tiền tài như nước' },
-        'Đông Nam': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Tổn hại sức khỏe, tai biến' },
-        'Bắc': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Hao hụt tài chính, quấy nhiễu' },
-        'Nam': { name: 'Họa Hại', type: 'HUNG', desc: 'Thị phi, trở ngại' },
-        'Đông': { name: 'Lục Sát', type: 'HUNG', desc: 'Gia đạo bất hòa, tổn thương' }
-    },
-    9: {
-        'Nam': { name: 'Phục Vị', type: 'CÁT', desc: 'Tỏa sáng, danh tiếng vẻ vang' },
-        'Bắc': { name: 'Diên Niên', type: 'ĐẠI CÁT', desc: 'Thủy Hỏa ký tế, tình cảm thắm thiết' },
-        'Đông Nam': { name: 'Thiên Y', type: 'ĐẠI CÁT', desc: 'Sức khỏe sung mãn, gặp may mắn' },
-        'Đông': { name: 'Sinh Khí', type: 'ĐẠI CÁT', desc: 'Mộc sinh Hỏa vượng, đại phát tài danh' },
-        'Tây Bắc': { name: 'Tuyệt Mệnh', type: 'ĐẠI HUNG', desc: 'Đại họa, nguy khốn' },
-        'Tây': { name: 'Ngũ Quỷ', type: 'HUNG', desc: 'Hỏa khắc Kim, hỏa hoạn sát' },
-        'Đông Bắc': { name: 'Họa Hại', type: 'HUNG', desc: 'Trắc trở công danh, tổn thất' },
-        'Tây Nam': { name: 'Lục Sát', type: 'HUNG', desc: 'Bất an, tranh cãi' }
-    }
-};
+export function overlaps(a, b, gap = 0) {
+    return !(
+        a.x + a.width + gap <= b.x ||
+        b.x + b.width + gap <= a.x ||
+        a.y + a.height + gap <= b.y ||
+        b.y + b.height + gap <= a.y
+    );
+}
 
-export function calculateGua(birthYear, gender = 'nam') {
-    const isMale = (gender === 'nam' || gender === 1 || gender === '1');
-    const sumDigits = (n) => {
-        let s = 0;
-        while (n > 0 || s > 9) {
-            if (n === 0) { n = s; s = 0; }
-            s += n % 10;
-            n = Math.floor(n / 10);
-        }
-        return s;
-    };
+export function inside(a, boundary, margin = 0) {
+    return (
+        a.x >= boundary.x + margin &&
+        a.y >= boundary.y + margin &&
+        a.x + a.width <= boundary.x + boundary.width - margin &&
+        a.y + a.height <= boundary.y + boundary.height - margin
+    );
+}
 
-    const lastTwo = birthYear % 100;
-    let guaNum = 1;
-
-    if (birthYear < 2000) {
-        if (isMale) {
-            guaNum = (10 - sumDigits(lastTwo)) % 9;
-            if (guaNum === 0) guaNum = 9;
-            if (guaNum === 5) guaNum = 2;
-        } else {
-            guaNum = (sumDigits(lastTwo) + 5) % 9;
-            if (guaNum === 0) guaNum = 9;
-            if (guaNum === 5) guaNum = 8;
-        }
-    } else {
-        if (isMale) {
-            guaNum = (9 - sumDigits(lastTwo)) % 9;
-            if (guaNum === 0) guaNum = 9;
-            if (guaNum === 5) guaNum = 2;
-        } else {
-            guaNum = (sumDigits(lastTwo) + 6) % 9;
-            if (guaNum === 0) guaNum = 9;
-            if (guaNum === 5) guaNum = 8;
-        }
-    }
-
-    const isEastGroup = [1, 3, 4, 9].includes(guaNum);
-    const groupName = isEastGroup ? 'Đông Tứ Mệnh' : 'Tây Tứ Mệnh';
-
+export function rotatePoint(p, center, deg) {
+    const rad = (deg * Math.PI) / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const dx = p.x - center.x;
+    const dy = p.y - center.y;
     return {
-        guaNum,
-        guaName: GUA_NAMES[guaNum],
-        isEastGroup,
-        groupName,
-        batTrachMap: BAT_TRACH_MAP[guaNum] || {}
+        x: center.x + dx * cos - dy * sin,
+        y: center.y + dx * sin + dy * cos
     };
 }
 
-// --- 3. HUYỀN KHÔNG PHI TINH ENGINE ---
+export function distance(p1, p2) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+// ============================================================
+// 2. HUYỀN KHÔNG PHI TINH ENGINE
+// ============================================================
 export const MOUNTAINS = [
     { name: 'Nhâm', center: 345, yinYang: 1,  sanYuan: 'Địa',  palace: 1, element: 'Thủy', direction: 'Bắc' },
     { name: 'Tý',   center: 0,   yinYang: -1, sanYuan: 'Thiên', palace: 1, element: 'Thủy', direction: 'Bắc' },
@@ -271,17 +93,16 @@ export const PALACE_NAMES = {
     9: 'Ly (Nam)'
 };
 
-// Ánh xạ 9 Cung vào lưới Ma trận tọa độ 3x3: [row, col] (0..2)
-export const PALACE_GRID_POS = {
-    4: { r: 0, c: 0, name: 'Đông Nam (Tốn)' },
-    9: { r: 0, c: 1, name: 'Nam (Ly)' },
-    2: { r: 0, c: 2, name: 'Tây Nam (Khôn)' },
-    3: { r: 1, c: 0, name: 'Đông (Chấn)' },
-    5: { r: 1, c: 1, name: 'Trung Cung' },
-    7: { r: 1, c: 2, name: 'Tây (Đoài)' },
-    8: { r: 2, c: 0, name: 'Đông Bắc (Cấn)' },
-    1: { r: 2, c: 1, name: 'Bắc (Khảm)' },
-    6: { r: 2, c: 2, name: 'Tây Bắc (Càn)' }
+export const STAR_PROPERTIES = {
+    1: { name: 'Nhất Bạch Tham Lang', element: 'Thủy', nature: 'Cát Tinh', meaning: 'Văn chương, trí tuệ, tài lộc, đào hoa quý nhân' },
+    2: { name: 'Nhị Hắc Cự Môn',    element: 'Thổ',  nature: 'Hung Tinh (Bệnh Phù)', meaning: 'Bệnh tật, tai ách, u sầu, tổn thất thân thể' },
+    3: { name: 'Tam Bích Lộc Tồn',   element: 'Mộc',  nature: 'Hung Tinh (Si Vưu)', meaning: 'Thị phi, tranh chấp, kiện tụng, khẩu thiệt' },
+    4: { name: 'Tứ Lục Văn Khúc',    element: 'Mộc',  nature: 'Cát Tinh (Văn Xương)', meaning: 'Học vấn, công danh, thi cử, nghệ thuật' },
+    5: { name: 'Ngũ Hoàng Liêm Trinh', element: 'Thổ', nature: 'Đại Hung Tinh (Chính Quan Sát)', meaning: 'Đại sát, tai họa khôn lường, phá tài thương tổn' },
+    6: { name: 'Lục Bạch Vũ Khúc',   element: 'Kim',  nature: 'Cát Tinh (Vũ Khúc)', meaning: 'Quyền uy, chức tước, quý nhân phò trợ' },
+    7: { name: 'Thất Xích Phá Quân',  element: 'Kim',  nature: 'Bình / Hung (Tặc Đạo)', meaning: 'Trộm cắp, phá tán, phẫu thuật, khẩu thiệt thị phi' },
+    8: { name: 'Bát Bạch Tả Phụ',   element: 'Thổ',  nature: 'Đại Cát Tinh', meaning: 'Điền sản, tài lộc dồi dào, phúc lộc thăng tiến' },
+    9: { name: 'Cửu Tử Hữu Bật',    element: 'Hỏa',  nature: 'Đương Vận Cát Tinh (Vận 9)', meaning: 'Hỷ khánh, danh tiếng vang dội, phát đạt tức thì' }
 };
 
 export const FORWARD_PATH = [5, 6, 7, 8, 9, 1, 2, 3, 4];
@@ -299,357 +120,373 @@ export function wrapStar(n) {
     return ((n - 1) % 9 + 9) % 9 + 1;
 }
 
-export function degreeDiff(a, b) {
-    let diff = Math.abs(a - b);
-    if (diff > 180) diff = 360 - diff;
-    return diff;
-}
-
-export function getVan(year) {
-    const cycleYear = ((year - 1864) % 180 + 180) % 180;
-    return Math.floor(cycleYear / 20) + 1;
+export function getPeriod(year) {
+    if (year >= 1864 && year <= 1883) return 1;
+    if (year >= 1884 && year <= 1903) return 2;
+    if (year >= 1904 && year <= 1923) return 3;
+    if (year >= 1924 && year <= 1943) return 4;
+    if (year >= 1944 && year <= 1963) return 5;
+    if (year >= 1964 && year <= 1983) return 6;
+    if (year >= 1984 && year <= 2003) return 7;
+    if (year >= 2004 && year <= 2023) return 8;
+    if (year >= 2024 && year <= 2043) return 9;
+    return 9;
 }
 
 export function findMountain(degree) {
-    degree = ((degree % 360) + 360) % 360;
-    let best = null;
-    let bestDiff = 999;
-    for (const m of MOUNTAINS) {
-        const diff = degreeDiff(degree, m.center);
-        if (diff < bestDiff) {
-            bestDiff = diff;
-            best = m;
+    let deg = ((degree % 360) + 360) % 360;
+    for (let m of MOUNTAINS) {
+        let diff = Math.abs(deg - m.center);
+        if (diff > 180) diff = 360 - diff;
+        if (diff <= 7.5) {
+            const isChinhHuong = diff <= 4.5;
+            return { mountain: m, diff: diff, type: isChinhHuong ? 'chinh_huong' : 'kiem_huong' };
         }
     }
-    return { mountain: best, deviation: bestDiff };
+    return { mountain: MOUNTAINS[1], diff: 0, type: 'chinh_huong' };
 }
 
 export function getOppositeMountain(degree) {
-    let opp = (degree + 180) % 360;
-    return findMountain(opp);
+    const oppDeg = (degree + 180) % 360;
+    return findMountain(oppDeg);
 }
 
-export function classifyChart(deviation) {
-    if (deviation <= 3.0) return { type: 'HA_QUAI', label: 'Hạ Quái (Chính Hướng)', isKhongVong: false };
-    if (deviation <= 6.0) return { type: 'THE_QUAI', label: 'Thế Quái (Kiêm Hướng)', isKhongVong: false };
-    return { type: 'KHONG_VONG', label: 'Phạm Tuyến Không Vong (Đại Hung)', isKhongVong: true };
-}
-
-export function findMountainInPalace(palace, sanYuan) {
-    return MOUNTAINS.find(m => m.palace === palace && m.sanYuan === sanYuan);
-}
-
-export function buildVanBan(vanNumber) {
-    const chart = {};
+export function flyStars(centerStar, isForward = true) {
+    const palaceOrder = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+    const result = {};
     for (let i = 0; i < 9; i++) {
-        const palace = FORWARD_PATH[i];
-        chart[palace] = wrapStar(vanNumber + i);
+        const p = palaceOrder[i];
+        const val = isForward ? wrapStar(centerStar + i) : wrapStar(centerStar - i);
+        result[p] = val;
     }
-    return chart;
+    return result;
 }
 
-export function buildStarBan(startStar, isForward) {
-    const path = isForward ? FORWARD_PATH : REVERSE_PATH;
-    const chart = {};
-    for (let i = 0; i < 9; i++) {
-        const palace = path[i];
-        chart[palace] = wrapStar(startStar + i);
-    }
-    return chart;
+export function determineYinYang(star, sanYuan) {
+    if (star === 5) return 1;
+    const palaceBaseMountains = {
+        1: [ { name: 'Nhâm', sanYuan: 'Địa', yinYang: 1 }, { name: 'Tý', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Quý', sanYuan: 'Nhân', yinYang: -1 } ],
+        2: [ { name: 'Mùi', sanYuan: 'Địa', yinYang: -1 }, { name: 'Khôn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Thân', sanYuan: 'Nhân', yinYang: 1 } ],
+        3: [ { name: 'Giáp', sanYuan: 'Địa', yinYang: 1 }, { name: 'Mão', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Ất', sanYuan: 'Nhân', yinYang: -1 } ],
+        4: [ { name: 'Thìn', sanYuan: 'Địa', yinYang: -1 }, { name: 'Tốn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Tỵ', sanYuan: 'Nhân', yinYang: 1 } ],
+        6: [ { name: 'Tuất', sanYuan: 'Địa', yinYang: -1 }, { name: 'Càn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Hợi', sanYuan: 'Nhân', yinYang: 1 } ],
+        7: [ { name: 'Canh', sanYuan: 'Địa', yinYang: 1 }, { name: 'Dậu', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Tân', sanYuan: 'Nhân', yinYang: -1 } ],
+        8: [ { name: 'Sửu', sanYuan: 'Địa', yinYang: -1 }, { name: 'Cấn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Dần', sanYuan: 'Nhân', yinYang: 1 } ],
+        9: [ { name: 'Bính', sanYuan: 'Địa', yinYang: 1 }, { name: 'Ngọ', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Đinh', sanYuan: 'Nhân', yinYang: -1 } ]
+    };
+    const group = palaceBaseMountains[star];
+    if (!group) return 1;
+    const match = group.find(m => m.sanYuan === sanYuan);
+    return match ? match.yinYang : 1;
 }
 
-export function getDirection(star, sanYuan, originalMountain) {
-    if (star === 5) {
-        return originalMountain.yinYang === 1;
-    }
-    const refMountain = findMountainInPalace(star, sanYuan);
-    if (!refMountain) return true;
-    return refMountain.yinYang === 1;
-}
+export function calculateFlyingStars({ facingDegree = 180, buildYear = 2025 }) {
+    const van = getPeriod(buildYear);
+    const facingInfo = findMountain(facingDegree);
+    const sittingInfo = getOppositeMountain(facingDegree);
 
-export function getAnnualStar(year) {
-    const remainder = (year - 4) % 9;
-    const star = wrapStar(11 - remainder);
-    return star;
-}
+    const facingM = facingInfo.mountain;
+    const sittingM = sittingInfo.mountain;
+    const isKiemHuong = facingInfo.type === 'kiem_huong';
 
-export function getMonthlyStar(solarYear, solarMonth) {
-    const yearZhi = (solarYear - 4) % 12;
-    let startStar = 8;
-    if ([0, 3, 6, 9].includes(yearZhi)) startStar = 8;
-    else if ([1, 4, 7, 10].includes(yearZhi)) startStar = 5;
-    else startStar = 2;
+    const vanChart = flyStars(van, true);
+    const sonStarAtSitting = vanChart[sittingM.palace];
+    const huongStarAtFacing = vanChart[facingM.palace];
 
-    const monthOffset = (solarMonth - 1);
-    const star = wrapStar(startStar - monthOffset);
-    return star;
-}
+    let sonCenterStar = sonStarAtSitting;
+    let huongCenterStar = huongStarAtFacing;
 
-export function calculateFlyingStars({
-    facingDegree = 180,
-    buildYear = 2025,
-    currentYear = 2026,
-    currentMonth = 2,
-    currentDay = 1,
-    currentHour = 12,
-    frontLandscape = 'duong_lo',
-    backLandscape = 'nha_cao'
-}) {
-    const van = getVan(buildYear);
-    const facingMatch = findMountain(facingDegree);
-    const facingMountain = facingMatch.mountain;
-    const deviation = facingMatch.deviation;
-    const chartClassification = classifyChart(deviation);
-
-    const sittingDegree = (facingDegree + 180) % 360;
-    const sittingMountain = getOppositeMountain(facingDegree).mountain;
-
-    const vanBan = buildVanBan(van);
-
-    const sittingPalace = sittingMountain.palace;
-    const facingPalace = facingMountain.palace;
-
-    const rawSittingStar = vanBan[sittingPalace];
-    const rawFacingStar = vanBan[facingPalace];
-
-    let sittingStar = rawSittingStar;
-    let facingStar = rawFacingStar;
-    let isSittingForward = true;
-    let isFacingForward = true;
-
-    if (chartClassification.type === 'HA_QUAI' || chartClassification.type === 'KHONG_VONG') {
-        isSittingForward = getDirection(rawSittingStar, sittingMountain.sanYuan, sittingMountain);
-        isFacingForward = getDirection(rawFacingStar, facingMountain.sanYuan, facingMountain);
-    } else {
-        const repSitting = REPLACEMENT_STAR[sittingMountain.name] || rawSittingStar;
-        const repFacing = REPLACEMENT_STAR[facingMountain.name] || rawFacingStar;
-        sittingStar = repSitting;
-        facingStar = repFacing;
-        isSittingForward = getDirection(rawSittingStar, sittingMountain.sanYuan, sittingMountain);
-        isFacingForward = getDirection(rawFacingStar, facingMountain.sanYuan, facingMountain);
+    if (isKiemHuong) {
+        sonCenterStar = REPLACEMENT_STAR[sittingM.name] || sonStarAtSitting;
+        huongCenterStar = REPLACEMENT_STAR[facingM.name] || huongStarAtFacing;
     }
 
-    const sonBan = buildStarBan(sittingStar, isSittingForward);
-    const huongBan = buildStarBan(facingStar, isFacingForward);
+    const sonYinYang = determineYinYang(sonCenterStar, sittingM.sanYuan);
+    const huongYinYang = determineYinYang(huongCenterStar, facingM.sanYuan);
 
-    const annualCenter = getAnnualStar(currentYear);
-    const monthlyCenter = getMonthlyStar(currentYear, currentMonth);
+    const sonChart = flyStars(sonCenterStar, sonYinYang >= 0);
+    const huongChart = flyStars(huongCenterStar, huongYinYang >= 0);
 
-    const nienBan = buildStarBan(annualCenter, true);
-    const nguyetBan = buildStarBan(monthlyCenter, true);
+    const currentYear = new Date().getFullYear();
+    const annualDiff = (currentYear - 2024) % 9;
+    const nienCenter = wrapStar(9 - annualDiff);
+    const nienChart = flyStars(nienCenter, false);
 
-    const palacesData = {};
+    const palaces = {};
     for (let p = 1; p <= 9; p++) {
-        const vStar = vanBan[p];
-        const sStar = sonBan[p];
-        const hStar = huongBan[p];
-        const nStar = nienBan[p];
-        const mStar = nguyetBan[p];
-
-        const isSittingPalace = (p === sittingPalace);
-        const isFacingPalace = (p === facingPalace);
-
-        const analysis = evaluateStarPair(sStar, hStar, vStar, van);
-
-        palacesData[p] = {
+        palaces[p] = {
             palaceId: p,
             palaceName: PALACE_NAMES[p],
-            direction: MOUNTAINS.find(m => m.palace === p)?.direction || 'Trung Cung',
-            vanStar: vStar,
-            sonStar: sStar,
-            huongStar: hStar,
-            nienStar: nStar,
-            nguyetStar: mStar,
-            isSitting: isSittingPalace,
-            isFacing: isFacingPalace,
-            analysis: analysis
+            vanStar: vanChart[p],
+            sonStar: sonChart[p],
+            huongStar: huongChart[p],
+            nienStar: nienChart[p],
+            isFacing: p === facingM.palace,
+            isSitting: p === sittingM.palace
         };
     }
-
-    const cachCuc = evaluateCachCuc(palacesData, sittingPalace, facingPalace, van, frontLandscape, backLandscape);
 
     return {
         van,
-        buildYear,
-        currentYear,
-        currentMonth,
         facingDegree,
-        sittingDegree,
-        facingMountain: facingMountain.name,
-        sittingMountain: sittingMountain.name,
-        sanYuan: facingMountain.sanYuan,
-        deviation: Math.round(deviation * 10) / 10,
-        chartType: chartClassification.type,
-        chartTypeLabel: chartClassification.label,
-        isKhongVong: chartClassification.isKhongVong,
-        isSittingForward,
-        isFacingForward,
-        palaces: palacesData,
-        cachCuc,
-        frontLandscape,
-        backLandscape
+        facingMountain: facingM.name,
+        sittingMountain: sittingM.name,
+        isKiemHuong,
+        palaces
     };
 }
 
-function evaluateCachCuc(palaces, sittingPalace, facingPalace, currentVan, frontLandscape, backLandscape) {
-    const sitSonStar = palaces[sittingPalace].sonStar;
-    const faceHuongStar = palaces[facingPalace].huongStar;
-    const sitHuongStar = palaces[sittingPalace].huongStar;
-    const faceSonStar = palaces[facingPalace].sonStar;
+// ============================================================
+// 3. BÁT TRẠCH PHỐI MỆNH ENGINE
+// ============================================================
+export const GUA_NAMES = {
+    1: 'Khảm (Thủy - Đông Tứ Mệnh)',
+    2: 'Khôn (Thổ - Tây Tứ Mệnh)',
+    3: 'Chấn (Mộc - Đông Tứ Mệnh)',
+    4: 'Tốn (Mộc - Đông Tứ Mệnh)',
+    6: 'Càn (Kim - Tây Tứ Mệnh)',
+    7: 'Đoài (Kim - Tây Tứ Mệnh)',
+    8: 'Cấn (Thổ - Tây Tứ Mệnh)',
+    9: 'Ly (Hỏa - Đông Tứ Mệnh)'
+};
 
-    let loanDauNote = '';
-    if (frontLandscape === 'song_ho') loanDauNote += ' Phía trước có thủy tụ (sông/hồ) giúp dẫn vượng khí đắc tài.';
-    else if (frontLandscape === 'nga_ba') loanDauNote += ' Phía trước có ngã ba/ngã tư giao lộ đón dòng khí động tài vận nhanh.';
-    if (backLandscape === 'nha_cao') loanDauNote += ' Phía sau có nhà cao tựa sơn vững chắc, bảo vệ nhân đinh và sức khỏe.';
-    else if (backLandscape === 'thoat_thuy') loanDauNote += ' Phía sau có dòng nước thoát/trũng cần chắn tường cao hoặc trồng cây hóa giải thoát khí.';
+export function calculateGua(lunarYear, gender = 'nam') {
+    const y = parseInt(lunarYear, 10) || 1990;
+    const sumDigits = (n) => String(n).split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
+    let s = sumDigits(y);
+    while (s > 9) s = sumDigits(s);
 
-    if (sitSonStar === currentVan && faceHuongStar === currentVan) {
-        return {
-            name: 'VƯỢNG SƠN VƯỢNG HƯỚNG (ĐÁO SƠN ĐÁO HƯỚNG)',
-            level: 'ĐẠI CÁT',
-            summary: 'Đinh tài lưỡng vượng, người nhà khỏe mạnh, nhân tài xuất chúng, tiền tài thịnh vượng bền vững.' + loanDauNote,
-            recommendation: 'Phía sau nhà cần có chỗ tựa vững chắc (núi/nhà cao), phía trước mở cửa đón minh đường thoáng có nước tụ tài lộc.'
-        };
-    } else if (faceSonStar === currentVan && faceHuongStar === currentVan) {
-        return {
-            name: 'SONG TINH ĐÁO HƯỚNG',
-            level: 'CÁT VỀ TÀI LỘC',
-            summary: 'Vượng tài nhưng tổn đinh. Kinh doanh buôn bán cực phát đạt nhưng cần chú ý sức khỏe.' + loanDauNote,
-            recommendation: 'Phía trước cửa cần vừa có Minh đường thoáng đãng có nước, vừa có vật nâng đỡ (hòn non bộ, cây xanh) để bổ trợ nhân đinh.'
-        };
-    } else if (sitSonStar === currentVan && sitHuongStar === currentVan) {
-        return {
-            name: 'SONG TINH ĐÁO TỌA',
-            level: 'CÁT VỀ NHÂN ĐINH',
-            summary: 'Vượng đinh nhưng tổn tài. Gia đạo yên ấm hòa thuận nhưng tiền bạc dễ bị chậm sinh lợi.' + loanDauNote,
-            recommendation: 'Phía sau nhà cần có chỗ tựa cao ráo và nên mở giếng trời hoặc đặt phong thủy luân phía sau để kích hoạt tài lộc.'
-        };
-    } else if (sitHuongStar === currentVan && faceSonStar === currentVan) {
-        return {
-            name: 'THƯỢNG SƠN HẠ THỦY',
-            level: 'ĐẠI HUNG CÁCH',
-            summary: 'Tổn đinh thoái tài, bệnh tật triền miên, tài lộc hao tán nặng nề.' + loanDauNote,
-            recommendation: 'Cần bố trí Đảo Khí: Phía sau làm không gian thoáng có nước, phía trước đặt bình phong hoặc non bộ chắn sát khí.'
-        };
+    let gua = 1;
+    if (y < 2000) {
+        gua = (gender === 'nam') ? (10 - s) : (s + 5);
+    } else {
+        gua = (gender === 'nam') ? (9 - s) : (s + 6);
     }
+    while (gua > 9) gua = sumDigits(gua);
+    if (gua <= 0) gua += 9;
+    if (gua === 5) gua = (gender === 'nam') ? 2 : 8;
 
-    return {
-        name: 'CÁCH CỤC BÌNH HÒA',
-        level: 'TRUNG BÌNH',
-        summary: 'Các cung vị vận hành ổn định, cần dựa vào sự phối hợp các phòng chức năng để tối ưu cát khí.' + loanDauNote,
-        recommendation: 'Bố trí phòng khách, cửa chính, bếp và phòng ngủ vào các cung có Cát Tinh đương vận để kích tài nạp phúc.'
-    };
+    const dongTu = [1, 3, 4, 9];
+    const trachGroup = dongTu.includes(gua) ? 'Đông Tứ Mệnh' : 'Tây Tứ Mệnh';
+
+    return { guaNumber: gua, guaName: GUA_NAMES[gua] || 'Khảm', trachGroup };
 }
 
-function evaluateStarPair(sStar, hStar, vStar, currentVan) {
-    const pairKey = `${Math.min(sStar, hStar)}-${Math.max(sStar, hStar)}`;
-
-    const specialCombos = {
-        '1-4': { title: 'Tứ Lục Khảm Thủy — Văn Xương', grade: 'CÁT', desc: 'Chủ về học hành đỗ đạt, thi cử công danh, trí tuệ mẫn tiệp, phát về nghệ thuật & danh tiếng.' },
-        '1-6': { title: 'Thiên Địa Giao Thái — Quan Lộc', grade: 'CÁT', desc: 'Chủ về quyền thế, chức tước cao, quý nhân phù trợ, mưu sự đại thành.' },
-        '6-8': { title: 'Vũ Khúc Tả Phụ — Phú Quý', grade: 'ĐẠI CÁT', desc: 'Kim Thổ tương sinh, điền sản hưng vượng, tài vận dồi dào, gia nghiệp bền vững.' },
-        '8-9': { title: 'Cửu Tử Bát Bạch — Hỷ Khánh', grade: 'ĐẠI CÁT', desc: 'Hỏa Thổ tương sinh, gia đạo hỷ sự trùng phùng, tiền tài phát đạt mau chóng.' },
-        '2-5': { title: 'Nhị Hắc Ngũ Hoàng — Nhị Ngũ Giao Gia', grade: 'ĐẠI HUNG', desc: 'Đại sát tinh hội tụ. Chủ về bệnh tật tai ách. Không nên mở cửa chính, bếp hay phòng ngủ tại đây.' },
-        '3-7': { title: 'Tam Bích Thất Xích — Xuyên Tâm Sát', grade: 'HUNG', desc: 'Mộc Kim giao chiến, dễ bị trộm cắp, tranh chấp pháp lý kiện tụng.' },
-        '7-9': { title: 'Cửu Thất Hợp Sát — Hồi Lộc Chi Tai', grade: 'HUNG', desc: 'Hỏa khắc Kim, cẩn phòng hỏa hoạn sát khí, bệnh tim mạch hoặc phụ nữ trong nhà bất hòa.' },
-        '2-3': { title: 'Đấu Ngưu Sát — Thị Phi Khẩu Thiệt', grade: 'HUNG', desc: 'Mộc khắc Thổ, tranh cãi bất hòa, gia đạo không yên.' }
-    };
-
-    const found = specialCombos[pairKey];
-    if (found) return found;
-
-    if (hStar === 9 || hStar === 8 || hStar === 1) {
-        return {
-            title: `Cát Tinh Tụ Khí (${sStar}-${hStar})`,
-            grade: 'CÁT',
-            desc: `Hướng Tinh ${hStar} là cát tinh mang lại sinh khí và tài lộc tốt cho cung vị này.`
-        };
+// ============================================================
+// 4. THƯỚC LỖ BAN HELPER
+// ============================================================
+export function checkLoBan(lengthMm, type = '522') {
+    const mm = parseFloat(lengthMm) || 0;
+    if (type === '522') {
+        const cycle = 522;
+        const pos = (mm % cycle);
+        const cungIdx = Math.floor(pos / (cycle / 8));
+        const cungs = [
+            { name: 'Quý Nhân', isGood: true },
+            { name: 'Hiểm Họa', isGood: false },
+            { name: 'Thiên Tai', isGood: false },
+            { name: 'Thiên Tài', isGood: true },
+            { name: 'Nhân Lộc', isGood: true },
+            { name: 'Cô Độc', isGood: false },
+            { name: 'Thiên Tặc', isGood: false },
+            { name: 'Tể Tướng', isGood: true }
+        ];
+        const match = cungs[cungIdx] || cungs[0];
+        return { cung: match.name, isGood: match.isGood };
     }
-
-    if (hStar === 5 || hStar === 2) {
-        return {
-            title: `Sát Tinh Cần Hóa Giải (${sStar}-${hStar})`,
-            grade: 'HUNG',
-            desc: `Cung vị gặp Hướng Tinh ${hStar}. Nên dùng vật phẩm hành Kim (hồ lô đồng, chuông gió) để tiết khí Thổ hung.`
-        };
-    }
-
-    return {
-        title: `Phối Hợp Tinh Tú (${sStar}-${hStar})`,
-        grade: 'BÌNH',
-        desc: `Cung vị có năng lượng cân bằng, giữ gìn sạch sẽ thoáng mát để duy trì sinh khí tự nhiên.`
-    };
+    return { cung: 'Thông Thủy Đại Cát', isGood: true };
 }
 
-// --- 4. ARCHITECTURAL FLOORPLAN GENERATOR (MULTI-FLOOR & 9-PALACES) ---
-export function generateArchitecturalPlan({
-    mode = 'empty_land',
-    widthM = 5.0,
-    lengthM = 16.0,
-    floors = 2,
-    facingDegree = 180,
-    flyingStarsData = null,
-    batTrachData = null,
-    existingRoomsMap = {},
-    roomCounts = {}
-}) {
-    const W = Math.max(3.0, Math.min(30.0, parseFloat(widthM) || 5.0));
-    const L = Math.max(5.0, Math.min(60.0, parseFloat(lengthM) || 16.0));
-    const totalFloors = (mode === 'existing_house') ? 1 : Math.max(1, Math.min(7, parseInt(floors) || 2));
+// ============================================================
+// 5. VECTOR FURNITURE SYMBOLS (PURE SVG)
+// ============================================================
+export function renderFurnitureSvg(item, isWhite = true) {
+    const { x, y, width: w, height: h, type } = item;
+    const stroke = isWhite ? '#334155' : '#cbd5e1';
+    const fill = isWhite ? '#f8fafc' : '#1e293b';
+    const accent = isWhite ? '#0284c7' : '#38bdf8';
+    const gold = isWhite ? '#b45309' : '#fbbf24';
+
+    switch (type) {
+        case 'sofa_living': {
+            const armW = Math.min(250, w * 0.12);
+            const backD = Math.min(300, h * 0.22);
+            const tableW = Math.min(1200, w * 0.45);
+            const tableH = Math.min(700, h * 0.35);
+            const tx = x + (w - tableW) / 2;
+            const ty = y + h - tableH - 100;
+            return `
+                <g id="${item.id}" class="cad-furniture sofa">
+                    <rect x="${x - 100}" y="${y - 100}" width="${w + 200}" height="${h + 200}" fill="${isWhite ? '#f1f5f9' : '#0f172a'}" stroke="${isWhite ? '#e2e8f0' : '#334155'}" stroke-dasharray="80,40" stroke-width="20" rx="60"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="35" rx="80"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="${backD}" fill="${isWhite ? '#e2e8f0' : '#334155'}" stroke="${stroke}" stroke-width="25"/>
+                    <rect x="${x}" y="${y}" width="${armW}" height="${h}" fill="${isWhite ? '#e2e8f0' : '#334155'}" stroke="${stroke}" stroke-width="25"/>
+                    <rect x="${x + w - armW}" y="${y}" width="${armW}" height="${h}" fill="${isWhite ? '#e2e8f0' : '#334155'}" stroke="${stroke}" stroke-width="25"/>
+                    <rect x="${tx}" y="${ty}" width="${tableW}" height="${tableH}" fill="${isWhite ? '#e0f2fe' : '#1e3a8a'}" stroke="${accent}" stroke-width="30" rx="40"/>
+                </g>
+            `;
+        }
+        case 'dining_set': {
+            const chairW = Math.min(450, w / 3.5);
+            const chairD = 350;
+            const chairSpacing = (w - chairW * 3) / 4;
+            let chairsSvg = '';
+            for (let i = 0; i < 3; i++) {
+                const cx = x + chairSpacing * (i + 1) + chairW * i;
+                chairsSvg += `<rect x="${cx}" y="${y - chairD + 50}" width="${chairW}" height="${chairD}" fill="${isWhite ? '#e2e8f0' : '#334155'}" stroke="${stroke}" stroke-width="25" rx="40"/>`;
+                chairsSvg += `<rect x="${cx}" y="${y + h - 50}" width="${chairW}" height="${chairD}" fill="${isWhite ? '#e2e8f0' : '#334155'}" stroke="${stroke}" stroke-width="25" rx="40"/>`;
+            }
+            return `
+                <g id="${item.id}" class="cad-furniture dining">
+                    ${chairsSvg}
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="35" rx="60"/>
+                    <circle cx="${x + w * 0.25}" cy="${y + h / 2}" r="120" fill="none" stroke="${stroke}" stroke-width="20"/>
+                    <circle cx="${x + w * 0.5}" cy="${y + h / 2}" r="120" fill="none" stroke="${stroke}" stroke-width="20"/>
+                    <circle cx="${x + w * 0.75}" cy="${y + h / 2}" r="120" fill="none" stroke="${stroke}" stroke-width="20"/>
+                </g>
+            `;
+        }
+        case 'kitchen_set': {
+            const hobX = x + w * 0.25;
+            const sinkX = x + w * 0.7;
+            return `
+                <g id="${item.id}" class="cad-furniture kitchen">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="35"/>
+                    <rect x="${hobX - 350}" y="${y + 80}" width="700" height="${h - 160}" fill="${isWhite ? '#fee2e2' : '#450a0a'}" stroke="#ef4444" stroke-width="25" rx="30"/>
+                    <circle cx="${hobX - 160}" cy="${y + h / 2}" r="110" fill="none" stroke="#ef4444" stroke-width="25"/>
+                    <circle cx="${hobX + 160}" cy="${y + h / 2}" r="110" fill="none" stroke="#ef4444" stroke-width="25"/>
+                    <rect x="${sinkX - 450}" y="${y + 80}" width="900" height="${h - 160}" fill="${isWhite ? '#e0f2fe' : '#0c4a6e'}" stroke="${accent}" stroke-width="25" rx="20"/>
+                </g>
+            `;
+        }
+        case 'bed_master': {
+            const pillowW = (w - 300) / 2;
+            const pillowH = Math.min(450, h * 0.22);
+            const nightstandSize = 400;
+            return `
+                <g id="${item.id}" class="cad-furniture bed-master">
+                    <rect x="${x - nightstandSize - 50}" y="${y}" width="${nightstandSize}" height="${nightstandSize}" fill="${fill}" stroke="${stroke}" stroke-width="25" rx="20"/>
+                    <rect x="${x + w + 50}" y="${y}" width="${nightstandSize}" height="${nightstandSize}" fill="${fill}" stroke="${stroke}" stroke-width="25" rx="20"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="35" rx="50"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="150" fill="${isWhite ? '#cbd5e1' : '#475569'}" stroke="${stroke}" stroke-width="25"/>
+                    <rect x="${x + 80}" y="${y + 180}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="20" rx="30"/>
+                    <rect x="${x + w - pillowW - 80}" y="${y + 180}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="20" rx="30"/>
+                    <path d="M ${x} ${y + h * 0.45} Q ${x + w / 2} ${y + h * 0.52} ${x + w} ${y + h * 0.45} L ${x + w} ${y + h} L ${x} ${y + h} Z" fill="${isWhite ? '#fef3c7' : '#451a03'}" stroke="${gold}" stroke-width="25"/>
+                </g>
+            `;
+        }
+        case 'bed_single': {
+            const pillowW = w - 300;
+            const pillowH = Math.min(420, h * 0.22);
+            return `
+                <g id="${item.id}" class="cad-furniture bed-single">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="30" rx="40"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="120" fill="${isWhite ? '#cbd5e1' : '#475569'}" stroke="${stroke}" stroke-width="20"/>
+                    <rect x="${x + 150}" y="${y + 150}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="20" rx="25"/>
+                    <path d="M ${x} ${y + h * 0.48} Q ${x + w / 2} ${y + h * 0.54} ${x + w} ${y + h * 0.48} L ${x + w} ${y + h} L ${x} ${y + h} Z" fill="${isWhite ? '#e0f2fe' : '#082f49'}" stroke="${accent}" stroke-width="25"/>
+                </g>
+            `;
+        }
+        case 'toilet_set': {
+            const showerW = Math.min(1000, w * 0.45);
+            const toiletW = Math.min(500, w * 0.3);
+            const toiletD = Math.min(700, h * 0.45);
+            return `
+                <g id="${item.id}" class="cad-furniture toilet">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="25" stroke-dasharray="100,50"/>
+                    <rect x="${x + 50}" y="${y + 50}" width="${showerW}" height="${h - 100}" fill="${isWhite ? '#f0f9ff' : '#0369a1'}" stroke="${accent}" stroke-width="25" opacity="0.6"/>
+                    <g transform="translate(${x + w - toiletW - 80}, ${y + 80})">
+                        <rect x="0" y="0" width="${toiletW}" height="220" fill="${isWhite ? '#ffffff' : '#475569'}" stroke="${stroke}" stroke-width="25" rx="20"/>
+                        <ellipse cx="${toiletW / 2}" cy="${toiletD / 2 + 100}" rx="${toiletW / 2 - 20}" ry="${toiletD / 2 - 40}" fill="${isWhite ? '#ffffff' : '#475569'}" stroke="${stroke}" stroke-width="25"/>
+                    </g>
+                    <rect x="${x + showerW + 100}" y="${y + h - 500}" width="600" height="420" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="25" rx="20"/>
+                </g>
+            `;
+        }
+        case 'altar_set': {
+            const burnerR = Math.min(80, h * 0.12);
+            return `
+                <g id="${item.id}" class="cad-furniture altar">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? '#fef3c7' : '#451a03'}" stroke="${gold}" stroke-width="40" rx="30"/>
+                    <circle cx="${x + w / 2}" cy="${y + h / 2}" r="${burnerR}" fill="${gold}" stroke="${isWhite ? '#78350f' : '#fef08a'}" stroke-width="20"/>
+                    <circle cx="${x + w * 0.22}" cy="${y + h / 2}" r="50" fill="${gold}"/>
+                    <circle cx="${x + w * 0.78}" cy="${y + h / 2}" r="50" fill="${gold}"/>
+                    <text x="${x + w / 2}" y="${y + h - 80}" text-anchor="middle" font-family="Inter, sans-serif" font-size="120" font-weight="bold" fill="${gold}">BÀN THỜ GIA TIÊN</text>
+                </g>
+            `;
+        }
+        case 'stairs_flight': {
+            const stepCount = 14;
+            const stepH = h / stepCount;
+            let stepsSvg = '';
+            for (let i = 1; i < stepCount; i++) {
+                stepsSvg += `<line x1="${x}" y1="${y + i * stepH}" x2="${x + w}" y2="${y + i * stepH}" stroke="${stroke}" stroke-width="20"/>`;
+            }
+            const arrowX = x + w / 2;
+            return `
+                <g id="${item.id}" class="cad-furniture stairs">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="35"/>
+                    ${stepsSvg}
+                    <line x1="${arrowX}" y1="${y}" x2="${arrowX}" y2="${y + h}" stroke="${accent}" stroke-width="25" stroke-dasharray="100,50"/>
+                    <circle cx="${arrowX}" cy="${y + h - 200}" r="60" fill="${accent}"/>
+                    <polygon points="${arrowX},${y + 170} ${arrowX - 80},${y + 330} ${arrowX + 80},${y + 330}" fill="${accent}"/>
+                    <text x="${x + w - 100}" y="${y + h - 80}" text-anchor="end" font-family="Inter, sans-serif" font-size="100" font-weight="bold" fill="${accent}">21 BẬC</text>
+                </g>
+            `;
+        }
+        default:
+            return `<rect id="${item.id}" x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="25"/>`;
+    }
+}
+
+// ============================================================
+// 6. PARAMETRIC FLOORPLAN LAYOUT SOLVER
+// ============================================================
+export function generateParametricFloorplan(config) {
+    const W = Math.max(3000, Math.min(30000, Math.round((parseFloat(config.widthM || config.widthMm / 1000) || 5.0) * 1000)));
+    const D = Math.max(5000, Math.min(60000, Math.round((parseFloat(config.lengthM || config.depthMm / 1000) || 16.0) * 1000)));
+    const totalFloors = config.mode === 'existing_house' ? 1 : Math.max(1, Math.min(7, parseInt(config.floors, 10) || 2));
+    const northAngleDeg = parseFloat(config.northAngleDeg !== undefined ? config.northAngleDeg : (config.facingDegree || 0));
 
     const plansByFloor = [];
 
     for (let f = 1; f <= totalFloors; f++) {
         let floorName = 'Mặt Bằng Tầng Trệt';
-        if (f > 1 && f < totalFloors) {
-            floorName = `Mặt Bằng Lầu ${f - 1} (Tầng ${f})`;
-        } else if (f === totalFloors && totalFloors > 1) {
-            floorName = `Mặt Bằng Tầng Thượng (Lầu ${f - 1})`;
-        }
+        if (f > 1 && f < totalFloors) floorName = `Mặt Bằng Lầu ${f - 1} (Tầng ${f})`;
+        else if (f === totalFloors && totalFloors > 1) floorName = `Mặt Bằng Tầng Thượng (Lầu ${f - 1})`;
+        if (config.mode === 'existing_house') floorName = 'Mặt Bằng Hiện Trạng Nhà';
 
-        if (mode === 'existing_house') {
-            floorName = 'Mặt Bằng Hiện Trạng Nhà';
-        }
-
-        const floorPlan = generateSingleFloor({
+        const floorPlan = solveSingleFloorGeometry({
             floorIndex: f,
             totalFloors,
             floorName,
-            W,
-            L,
-            facingDegree,
-            flyingStarsData,
-            batTrachData,
-            mode,
-            existingRoomsMap,
-            roomCounts
+            widthMm: W,
+            depthMm: D,
+            northAngleDeg,
+            config
         });
-
         plansByFloor.push(floorPlan);
     }
 
+    const groundGeometry = plansByFloor[0];
+
     return {
-        widthM: W,
-        lengthM: L,
+        widthMm: W,
+        depthMm: D,
         totalFloors,
-        totalAreaM2: Math.round(W * L * totalFloors * 10) / 10,
-        plansByFloor
+        totalAreaM2: Math.round((W * D * totalFloors / 1000000) * 10) / 10,
+        northAngleDeg,
+        center: groundGeometry.center,
+        plansByFloor,
+        ...groundGeometry
     };
 }
 
-function generateSingleFloor({
-    floorIndex,
-    totalFloors,
-    floorName,
-    W,
-    L,
-    facingDegree,
-    flyingStarsData,
-    batTrachData,
-    mode,
-    existingRoomsMap = {},
-    roomCounts = {}
-}) {
+function solveSingleFloorGeometry({ floorIndex, totalFloors, floorName, widthMm, depthMm, northAngleDeg, config }) {
+    const W = widthMm;
+    const D = depthMm;
+    const isWideHouse = W > D * 1.1;
+
     const walls = [];
     const doors = [];
     const windows = [];
@@ -658,291 +495,259 @@ function generateSingleFloor({
     const columns = [];
     const axesX = [];
     const axesY = [];
-    const dimensions = [];
+    const dimensionChains = { horizontal: [], vertical: [] };
     let entrancePorch = null;
 
-    const outerT = 0.22; // Tường bao 220mm
-    const innerT = 0.11; // Tường ngăn 110mm
-    const colSize = 0.22; // Cột bê tông 220x220mm
+    const outerT = 220;
+    const innerT = 110;
+    const colSize = 220;
 
-    // --- TƯỜNG BAO NGOẠI THẤT ---
-    walls.push({ x1: 0, y1: 0, x2: W, y2: 0, thickness: outerT, type: 'outer' });
-    walls.push({ x1: 0, y1: L, x2: W, y2: L, thickness: outerT, type: 'outer' });
-    walls.push({ x1: 0, y1: 0, x2: 0, y2: L, thickness: outerT, type: 'outer' });
-    walls.push({ x1: W, y1: 0, x2: W, y2: L, thickness: outerT, type: 'outer' });
+    walls.push(
+        { id: 'w-out-top', x1: 0, y1: 0, x2: W, y2: 0, thickness: outerT, type: 'outer' },
+        { id: 'w-out-bottom', x1: 0, y1: D, x2: W, y2: D, thickness: outerT, type: 'outer' },
+        { id: 'w-out-left', x1: 0, y1: 0, x2: 0, y2: D, thickness: outerT, type: 'outer' },
+        { id: 'w-out-right', x1: W, y1: 0, x2: W, y2: D, thickness: outerT, type: 'outer' }
+    );
 
-    const cellW = W / 3;
-    const cellH = L / 3;
+    const roomCounts = config.roomCounts || {};
+    const hasAltar = roomCounts.hasAltar === '1' || roomCounts.hasAltar === '2' || roomCounts.hasAltar === true || roomCounts.hasAltar === 1;
+    const altarOnGround = roomCounts.hasAltar === '2' || isWideHouse;
+    const hasSkylight = roomCounts.hasSkylight !== '0' && roomCounts.hasSkylight !== false;
+    const hasGarage = roomCounts.hasGarage === '1' || roomCounts.hasGarage === '2';
+    const hasCommonRoom = roomCounts.hasCommonRoom === '1' || roomCounts.hasCommonRoom === true;
+    const hasLaundry = roomCounts.hasLaundry !== '0' && roomCounts.hasLaundry !== false;
 
-    if (mode === 'existing_house') {
-        // --- CHẾ ĐỘ NHÀ SẴN CÓ: LƯỚI 9 CUNG KIẾN TRÚC ---
-        walls.push({ x1: cellW, y1: 0, x2: cellW, y2: L, thickness: innerT, type: 'partition' });
-        walls.push({ x1: cellW * 2, y1: 0, x2: cellW * 2, y2: L, thickness: innerT, type: 'partition' });
-        walls.push({ x1: 0, y1: cellH, x2: W, y2: cellH, thickness: innerT, type: 'partition' });
-        walls.push({ x1: 0, y1: cellH * 2, x2: W, y2: cellH * 2, thickness: innerT, type: 'partition' });
+    if (isWideHouse) {
+        const x1 = Math.round(W * 0.28);
+        const x2 = Math.round(W * 0.35);
+        const x3 = Math.round(W * 0.65);
+        const x4 = Math.round(W * 0.72);
 
-        // Cột kết cấu tại 16 nút giao
-        for (let r = 0; r <= 3; r++) {
-            const py = r === 0 ? 0 : (r === 1 ? cellH : (r === 2 ? cellH * 2 : L));
-            for (let c = 0; c <= 3; c++) {
-                const px = c === 0 ? 0 : (c === 1 ? cellW : (c === 2 ? cellW * 2 : W));
-                columns.push({ x: px, y: py, size: colSize });
-            }
-        }
+        const y1 = Math.round(D * 0.45);
+        const y2 = Math.round(D * 0.62);
 
-        // Trục định vị
-        axesX.push({ label: '1', x: 0 }, { label: '2', x: cellW }, { label: '3', x: cellW * 2 }, { label: '4', x: W });
-        axesY.push({ label: 'A', y: 0 }, { label: 'B', y: cellH }, { label: 'C', y: cellH * 2 }, { label: 'D', y: L });
+        axesX.push({ label: '1', x: 0 }, { label: "1'", x: x1 }, { label: '2', x: x2 }, { label: '3', x: x3 }, { label: "3'", x: x4 }, { label: '4', x: W });
+        axesY.push({ label: 'A', y: 0 }, { label: 'B', y: y1 }, { label: "B'", y: y2 }, { label: 'C', y: D });
 
-        // Bậc tam cấp sảnh chính
-        entrancePorch = { x: cellW * 0.5, y: -1.2, w: cellW * 2, h: 1.2, steps: 3 };
+        [0, x1, x3, W].forEach(px => { [0, y1, D].forEach(py => { columns.push({ x: px, y: py, size: colSize }); }); });
 
-        const getPalaceCoord = (palaceId) => {
-            const pId = parseInt(palaceId, 10);
-            const pos = PALACE_GRID_POS[pId];
-            if (!pos) return null;
-            return { x: pos.c * cellW, y: pos.r * cellH, w: cellW, h: cellH, palaceName: pos.name, palaceId: pId };
+        const porchW = Math.min(5200, W * 0.36);
+        entrancePorch = {
+            x: (W - porchW) / 2, y: -1400, width: porchW, height: 1400, steps: 4,
+            pillars: [{ x: (W - porchW) / 2 + 300, y: -1100, size: 350 }, { x: (W + porchW) / 2 - 650, y: -1100, size: 350 }]
         };
 
-        if (existingRoomsMap.main_door && existingRoomsMap.main_door !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.main_door);
-            if (coord) {
-                const dw = Math.min(2.8, coord.w * 0.75);
-                const doorY = (coord.y === 0) ? 0 : ((coord.y >= cellH * 2) ? L : coord.y);
-                doors.push({ x: coord.x + (coord.w - dw) / 2, y: doorY, w: dw, h: outerT, type: 'main_door', swing: 'double', label: `Cửa Chính (${PALACE_NAMES[existingRoomsMap.main_door]})`, isGood: true });
-            }
-        }
+        walls.push(
+            { id: 'w-h-1', x1: 0, y1: y1, x2: x1, y2: y1, thickness: innerT, type: 'partition' },
+            { id: 'w-h-2', x1: x3, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' },
+            { id: 'w-h-3', x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' },
+            { id: 'w-v-1', x1: x1, y1: 0, x2: x1, y2: D, thickness: innerT, type: 'partition' },
+            { id: 'w-v-2', x1: x3, y1: 0, x2: x3, y2: D, thickness: innerT, type: 'partition' }
+        );
 
-        if (existingRoomsMap.living_room && existingRoomsMap.living_room !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.living_room);
-            if (coord) {
-                rooms.push({ name: 'P. KHÁCH', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'sofa_living', x: coord.x + 0.3, y: coord.y + 0.4, w: coord.w - 0.6, h: Math.min(1.6, coord.h * 0.45), label: 'Sofa Khách' });
-            }
-        }
+        const mainDw = 3200;
+        doors.push({ id: 'd-main', x: (W - mainDw) / 2, y: 0, width: mainDw, type: 'double', swing: 'double', label: 'Cửa Chính 4 Cánh' });
 
-        if (existingRoomsMap.altar && existingRoomsMap.altar !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.altar);
-            if (coord) {
-                rooms.push({ name: 'P. THỜ', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'altar_set', x: coord.x + (coord.w - 1.6) / 2, y: coord.y + 0.3, w: 1.6, h: 0.8, label: 'Bàn Thờ', isGood: true });
-            }
-        }
+        const livingRect = { x: x1, y: 0, width: x3 - x1, height: y2 };
+        rooms.push({ id: 'room-living', type: 'living', name: 'P. KHÁCH', areaM2: areaM2(livingRect), ...livingRect, floor: floorIndex });
+        furniture.push({ id: 'fur-sofa', type: 'sofa_living', x: livingRect.x + 600, y: livingRect.y + 1200, width: Math.min(3600, livingRect.width - 1200), height: 2000 });
 
-        if (existingRoomsMap.kitchen && existingRoomsMap.kitchen !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.kitchen);
-            if (coord) {
-                rooms.push({ name: 'BẾP & ĂN', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'kitchen_set', x: coord.x + 0.3, y: coord.y + coord.h - 0.7, w: coord.w - 0.6, h: 0.6, label: 'Tủ Bếp' });
-                furniture.push({ type: 'dining_set', x: coord.x + (coord.w - 1.5) / 2, y: coord.y + 0.5, w: 1.5, h: 0.9, label: 'Bàn Ăn 6 Ghế' });
-            }
-        }
+        const altarRect = { x: x1, y: y2, width: x3 - x1, height: D - y2 };
+        rooms.push({ id: 'room-altar', type: 'altar', name: 'P. THỜ', areaM2: areaM2(altarRect), ...altarRect, floor: floorIndex });
+        furniture.push({ id: 'fur-altar', type: 'altar_set', x: altarRect.x + (altarRect.width - 1800) / 2, y: D - 1100, width: 1800, height: 900 });
 
-        if (existingRoomsMap.master_bed && existingRoomsMap.master_bed !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.master_bed);
-            if (coord) {
-                rooms.push({ name: 'P. NGỦ 1 (MASTER)', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'bed_master', x: coord.x + (coord.w - 2.0) / 2, y: coord.y + 0.5, w: 2.0, h: 2.1, label: 'Giường Master' });
-            }
-        }
+        const kitchenRect = { x: x3, y: 0, width: W - x3, height: y2 };
+        rooms.push({ id: 'room-kitchen', type: 'kitchen', name: 'BẾP & P. ĂN', areaM2: areaM2(kitchenRect), ...kitchenRect, floor: floorIndex });
+        furniture.push(
+            { id: 'fur-dining', type: 'dining_set', x: kitchenRect.x + 600, y: kitchenRect.y + 1000, width: 1800, height: 1000 },
+            { id: 'fur-kitchen', type: 'kitchen_set', x: W - 900, y: kitchenRect.y + 500, width: 700, height: Math.min(3200, kitchenRect.height - 1000) }
+        );
 
-        if (existingRoomsMap.bed_2 && existingRoomsMap.bed_2 !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.bed_2);
-            if (coord) {
-                rooms.push({ name: 'P. NGỦ 2', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'bed_single', x: coord.x + (coord.w - 1.6) / 2, y: coord.y + 0.5, w: 1.6, h: 2.0, label: 'Giường Ngủ 2' });
-            }
-        }
+        const bed1Rect = { x: 0, y: 0, width: x1, height: y1 };
+        rooms.push({ id: 'room-bed-1', type: 'bedroom', name: 'P. NGỦ 1', areaM2: areaM2(bed1Rect), ...bed1Rect, floor: floorIndex });
+        furniture.push({ id: 'fur-bed-1', type: 'bed_master', x: 500, y: 700, width: 2000, height: 2100 });
 
-        if (existingRoomsMap.bed_3 && existingRoomsMap.bed_3 !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.bed_3);
-            if (coord) {
-                rooms.push({ name: 'P. NGỦ 3', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'bed_single', x: coord.x + (coord.w - 1.6) / 2, y: coord.y + 0.5, w: 1.6, h: 2.0, label: 'Giường Ngủ 3' });
-            }
-        }
+        const bed2Rect = { x: 0, y: y2, width: x1, height: D - y2 };
+        rooms.push({ id: 'room-bed-2', type: 'bedroom', name: 'P. NGỦ 2', areaM2: areaM2(bed2Rect), ...bed2Rect, floor: floorIndex });
+        furniture.push({ id: 'fur-bed-2', type: 'bed_single', x: 500, y: y2 + 600, width: 1800, height: 2000 });
 
-        if (existingRoomsMap.toilet_1 && existingRoomsMap.toilet_1 !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.toilet_1);
-            if (coord) {
-                rooms.push({ name: 'WC 1', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'toilet_set', x: coord.x + 0.3, y: coord.y + 0.3, w: coord.w - 0.6, h: coord.h - 0.6, label: 'Thiết Bị WC' });
-            }
-        }
+        const wc1Rect = { x: 0, y: y1, width: x1, height: y2 - y1 };
+        rooms.push({ id: 'room-wc-1', type: 'wc', name: 'WC 1', areaM2: areaM2(wc1Rect), ...wc1Rect, floor: floorIndex });
+        furniture.push({ id: 'fur-wc-1', type: 'toilet_set', x: 300, y: y1 + 200, width: wc1Rect.width - 600, height: wc1Rect.height - 400 });
 
-        if (existingRoomsMap.toilet_2 && existingRoomsMap.toilet_2 !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.toilet_2);
-            if (coord) {
-                rooms.push({ name: 'WC 2', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'toilet_set', x: coord.x + 0.3, y: coord.y + 0.3, w: coord.w - 0.6, h: coord.h - 0.6, label: 'Thiết Bị WC 2' });
-            }
-        }
+        const bed3Rect = { x: x3, y: y2, width: W - x3 - 1800, height: D - y2 };
+        rooms.push({ id: 'room-bed-3', type: 'bedroom', name: 'P. NGỦ 3', areaM2: areaM2(bed3Rect), ...bed3Rect, floor: floorIndex });
+        furniture.push({ id: 'fur-bed-3', type: 'bed_single', x: bed3Rect.x + 400, y: y2 + 600, width: 1800, height: 2000 });
 
-        if (existingRoomsMap.stairs && existingRoomsMap.stairs !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.stairs);
-            if (coord) {
-                furniture.push({ type: 'stairs_flight', x: coord.x + 0.3, y: coord.y + 0.3, w: coord.w - 0.6, h: coord.h - 0.6, steps: 21, label: 'Cầu Thang 21 Bậc' });
-            }
-        }
+        const wc2Rect = { x: W - 1800, y: y2, width: 1800, height: D - y2 };
+        walls.push({ id: 'w-wc2', x1: W - 1800, y1: y2, x2: W - 1800, y2: D, thickness: innerT, type: 'partition' });
+        rooms.push({ id: 'room-wc-2', type: 'wc', name: 'WC 2', areaM2: areaM2(wc2Rect), ...wc2Rect, floor: floorIndex });
+        furniture.push({ id: 'fur-wc-2', type: 'toilet_set', x: wc2Rect.x + 200, y: y2 + 200, width: wc2Rect.width - 400, height: wc2Rect.height - 400 });
 
-        if (existingRoomsMap.work_room && existingRoomsMap.work_room !== 'none') {
-            const coord = getPalaceCoord(existingRoomsMap.work_room);
-            if (coord) {
-                rooms.push({ name: 'P. LÀM VIỆC', areaM2: Math.round(coord.w * coord.h * 10) / 10, x: coord.x, y: coord.y, w: coord.w, h: coord.h, zone: coord.palaceName });
-                furniture.push({ type: 'desk_study', x: coord.x + 0.4, y: coord.y + 0.4, w: coord.w - 0.8, h: 0.7, label: 'Bàn Làm Việc' });
-            }
-        }
+        doors.push(
+            { id: 'd-b1', x: x1, y: y1 - 900, width: 900, type: 'single', swing: 'left' },
+            { id: 'd-b2', x: x1, y: y2 + 400, width: 900, type: 'single', swing: 'left' },
+            { id: 'd-b3', x: x3, y: y2 + 400, width: 900, type: 'single', swing: 'right' },
+            { id: 'd-wc1', x: x1, y: y1 + 300, width: 800, type: 'single', swing: 'left' },
+            { id: 'd-wc2', x: W - 1800, y: y2 + 300, width: 800, type: 'single', swing: 'left' }
+        );
+
+        windows.push(
+            { id: 'win-1', x: 800, y: 0, width: 1600, type: 'sliding' },
+            { id: 'win-2', x: W - 2400, y: 0, width: 1600, type: 'sliding' },
+            { id: 'win-3', x: 800, y: D, width: 1600, type: 'sliding' },
+            { id: 'win-4', x: W - 1400, y: D, width: 1000, type: 'sliding' }
+        );
 
     } else {
-        // --- CHẾ ĐỘ ĐẤT TRỐNG: THIẾT KẾ MẶT BẰNG ĐA NĂNG CHUẨN KIẾN TRÚC ---
-        const hasAltar = roomCounts.hasAltar === '1' || roomCounts.hasAltar === '2' || roomCounts.hasAltar === true || roomCounts.hasAltar === 1;
-        const altarOnRoof = roomCounts.hasAltar !== '2';
-        const hasSkylight = roomCounts.hasSkylight !== '0' && roomCounts.hasSkylight !== false;
-        const hasGarage = roomCounts.hasGarage === '1' || roomCounts.hasGarage === '2';
-        const hasCommonRoom = roomCounts.hasCommonRoom === '1' || roomCounts.hasCommonRoom === true;
-        const hasLaundry = roomCounts.hasLaundry !== '0' && roomCounts.hasLaundry !== false;
-        const stairsType = roomCounts.stairsType || 'middle';
+        // NHÀ ỐNG / NHÀ PHỐ HIỆN ĐẠI (5x16m, 5x18m...)
+        let frontD = Math.max(4200, Math.min(6200, Math.round(D * 0.34)));
+        let midD = Math.max(2600, Math.min(3600, Math.round(D * 0.20)));
+        let rearD = D - frontD - midD;
 
-        // Phân đoạn trục dọc theo chiều dài L
-        let porchL = 1.2;
-        let frontL = Math.max(4.2, Math.min(5.8, L * 0.32));
-        let midL = Math.max(2.6, Math.min(3.4, L * 0.20));
-        let backL = L - frontL - midL;
+        const y1 = frontD;
+        const y2 = frontD + midD;
 
-        const y1 = frontL;
-        const y2 = frontL + midL;
+        axesX.push({ label: '1', x: 0 }, { label: '2', x: Math.round(W * 0.5) }, { label: '3', x: W });
+        axesY.push({ label: 'A', y: 0 }, { label: 'B', y: y1 }, { label: 'C', y: y2 }, { label: 'D', y: D });
 
-        // Trục định vị kiến trúc
-        axesX.push({ label: '1', x: 0 }, { label: '2', x: W * 0.5 }, { label: '3', x: W });
-        axesY.push({ label: 'A', y: 0 }, { label: 'B', y: y1 }, { label: 'C', y: y2 }, { label: 'D', y: L });
-
-        // Cột kết cấu tại các nút giao trục
-        [0, y1, y2, L].forEach(py => {
-            [0, W * 0.5, W].forEach(px => {
-                columns.push({ x: px, y: py, size: colSize });
-            });
-        });
-
-        // Bậc tam cấp sảnh chính (Tầng 1)
-        if (floorIndex === 1) {
-            entrancePorch = { x: (W - 2.8) / 2, y: -porchL, w: 2.8, h: porchL, steps: 3 };
-        }
+        [0, Math.round(W * 0.5), W].forEach(px => { [0, y1, y2, D].forEach(py => { columns.push({ x: px, y: py, size: colSize }); }); });
 
         if (floorIndex === 1) {
-            // === TẦNG TRỆT: PHÒNG KHÁCH, BẾP & ĂN, CẦU THANG, WC, GARA ===
-            walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
-            walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
+            const porchW = Math.min(3200, W * 0.65);
+            entrancePorch = { x: (W - porchW) / 2, y: -1200, width: porchW, height: 1200, steps: 3 };
 
-            // Cửa chính 4 cánh chuẩn Lỗ Ban
-            const dw = Math.min(3.2, W * 0.65);
-            const loban = checkLoBan(dw * 1000, '522');
-            doors.push({ x: (W - dw) / 2, y: 0, w: dw, h: outerT, type: 'main_door', swing: 'double', label: `Cửa Chính (${dw.toFixed(1)}m - Cung ${loban.cung})`, isGood: loban.isGood });
+            walls.push(
+                { id: 'w-p-1', x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' },
+                { id: 'w-p-2', x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' }
+            );
 
-            // 1. Phía trước: Gara hoặc Phòng Khách
+            const mainDw = Math.min(3200, Math.round(W * 0.65));
+            doors.push({ id: 'd-main', x: (W - mainDw) / 2, y: 0, width: mainDw, type: 'double', swing: 'double', label: 'Cửa Chính 4 Cánh' });
+
             if (hasGarage && roomCounts.hasGarage === '1') {
-                const garageW = W * 0.48;
-                walls.push({ x1: garageW, y1: 0, x2: garageW, y2: y1, thickness: innerT, type: 'partition' });
-                rooms.push({ name: 'GARA Ô TÔ', areaM2: Math.round(garageW * y1 * 10) / 10, x: 0, y: 0, w: garageW, h: y1, zone: 'Tiền Sảnh' });
-                furniture.push({ type: 'garage_car', x: 0.4, y: 0.6, w: garageW - 0.8, h: y1 - 1.2, label: 'Đỗ Xe Ô Tô' });
+                const garageW = Math.round(W * 0.48);
+                walls.push({ id: 'w-garage', x1: garageW, y1: 0, x2: garageW, y2: y1, thickness: innerT, type: 'partition' });
 
-                rooms.push({ name: 'P. KHÁCH', areaM2: Math.round((W - garageW) * y1 * 10) / 10, x: garageW, y: 0, w: W - garageW, h: y1, zone: 'Minh Đường' });
-                furniture.push({ type: 'sofa_living', x: garageW + 0.4, y: 0.6, w: W - garageW - 0.8, h: Math.min(1.8, y1 * 0.5), label: 'Sofa Góc L' });
+                const garageRect = { x: 0, y: 0, width: garageW, height: y1 };
+                rooms.push({ id: 'room-garage', type: 'garage', name: 'GARA Ô TÔ', areaM2: areaM2(garageRect), ...garageRect, floor: 1 });
+                furniture.push({ id: 'fur-car', type: 'garage_car', x: 400, y: 600, width: garageW - 800, height: y1 - 1200 });
+
+                const livingRect = { x: garageW, y: 0, width: W - garageW, height: y1 };
+                rooms.push({ id: 'room-living', type: 'living', name: 'P. KHÁCH', areaM2: areaM2(livingRect), ...livingRect, floor: 1 });
+                furniture.push({ id: 'fur-sofa', type: 'sofa_living', x: garageW + 400, y: 600, width: W - garageW - 800, height: Math.min(1800, y1 * 0.5) });
             } else {
-                rooms.push({ name: 'P. KHÁCH', areaM2: Math.round(W * y1 * 10) / 10, x: 0, y: 0, w: W, h: y1, zone: 'Tiền Minh Đường' });
-                furniture.push({ type: 'sofa_living', x: 0.6, y: 0.8, w: Math.min(3.4, W * 0.6), h: 1.8, label: 'Bộ Sofa Khách' });
-                windows.push({ x: 0.3, y: 0, w: 1.4, h: outerT, type: 'sliding' });
-                windows.push({ x: W - 1.7, y: 0, w: 1.4, h: outerT, type: 'sliding' });
+                const livingRect = { x: 0, y: 0, width: W, height: y1 };
+                rooms.push({ id: 'room-living', type: 'living', name: 'P. KHÁCH', areaM2: areaM2(livingRect), ...livingRect, floor: 1 });
+                furniture.push({ id: 'fur-sofa', type: 'sofa_living', x: 600, y: 800, width: Math.min(3600, W * 0.65), height: 1800 });
+                windows.push({ id: 'win-1', x: 300, y: 0, width: 1400, type: 'sliding' }, { id: 'win-2', x: W - 1700, y: 0, width: 1400, type: 'sliding' });
             }
 
-            // 2. Khu giữa: Cầu Thang + Giếng Trời + WC Trệt
-            const stairW = Math.min(2.6, W * 0.48);
-            furniture.push({ type: 'stairs_flight', x: 0.3, y: y1 + 0.3, w: stairW - 0.4, h: midL - 0.6, steps: 21, label: 'Cầu Thang 21 Bậc' });
+            const stairW = Math.min(2600, Math.round(W * 0.48));
+            furniture.push({ id: 'fur-stairs', type: 'stairs_flight', x: 300, y: y1 + 300, width: stairW - 400, height: midD - 600, steps: 21 });
 
             if (hasSkylight) {
-                furniture.push({ type: 'skylight_vent', x: W - 1.8, y: y1 + 0.3, w: 1.5, h: midL - 0.6, label: 'Giếng Trời Hút Gió' });
+                furniture.push({ id: 'fur-skylight', type: 'skylight_vent', x: W - 1800, y: y1 + 300, width: 1500, height: midD - 600 });
             }
 
-            // 3. Phía sau: Bếp & Phòng Ăn + WC Trệt
-            const wcW = Math.min(2.0, W * 0.38);
-            const wcL = Math.min(2.2, backL * 0.45);
-            walls.push({ x1: W - wcW, y1: y2, x2: W - wcW, y2: y2 + wcL, thickness: innerT, type: 'partition' });
-            walls.push({ x1: W - wcW, y1: y2 + wcL, x2: W, y2: y2 + wcL, thickness: innerT, type: 'partition' });
-            doors.push({ x: W - wcW, y: y2 + 0.3, w: 0.8, h: innerT, type: 'toilet_door', swing: 'left', label: 'Cửa WC' });
+            const wcW = Math.min(2000, Math.round(W * 0.38));
+            const wcD = Math.min(2200, Math.round(rearD * 0.48));
+            walls.push(
+                { id: 'w-wc-v', x1: W - wcW, y1: y2, x2: W - wcW, y2: y2 + wcD, thickness: innerT, type: 'partition' },
+                { id: 'w-wc-h', x1: W - wcW, y1: y2 + wcD, x2: W, y2: y2 + wcD, thickness: innerT, type: 'partition' }
+            );
+            doors.push({ id: 'd-wc', x: W - wcW, y: y2 + 300, width: 800, type: 'single', swing: 'left' });
 
-            rooms.push({ name: 'WC TRỆT', areaM2: Math.round(wcW * wcL * 10) / 10, x: W - wcW, y: y2, w: wcW, h: wcL, zone: 'Cung Trấn Sát' });
-            furniture.push({ type: 'toilet_set', x: W - wcW + 0.2, y: y2 + 0.2, w: wcW - 0.4, h: wcL - 0.4, label: 'Bồn Cầu & Lavabo' });
+            const wcRect = { x: W - wcW, y: y2, width: wcW, height: wcD };
+            rooms.push({ id: 'room-wc', type: 'wc', name: 'WC TRỆT', areaM2: areaM2(wcRect), ...wcRect, floor: 1 });
+            furniture.push({ id: 'fur-wc', type: 'toilet_set', x: W - wcW + 200, y: y2 + 200, width: wcW - 400, height: wcD - 400 });
 
-            const kitchenArea = Math.round((W * backL - wcW * wcL) * 10) / 10;
-            rooms.push({ name: 'BẾP & PHÒNG ĂN', areaM2: kitchenArea, x: 0, y: y2, w: W - wcW, h: backL, zone: 'Hậu Trạch Tọa Hung Hướng Cát' });
-            furniture.push({ type: 'kitchen_set', x: 0.4, y: L - 0.7, w: Math.min(3.6, W * 0.6), h: 0.6, label: 'Tủ Bếp Chữ L' });
-            furniture.push({ type: 'dining_set', x: 0.8, y: y2 + 0.8, w: 1.6, h: 0.9, label: 'Bàn Ăn 6 Ghế' });
-            doors.push({ x: W - 1.2, y: L, w: 0.9, h: outerT, type: 'room_door', swing: 'right', label: 'Cửa Sân Sau' });
+            const kitchenRect = { x: 0, y: y2, width: W - wcW, height: rearD };
+            rooms.push({ id: 'room-kitchen', type: 'kitchen', name: 'BẾP & P. ĂN', areaM2: Math.round((W * rearD - wcW * wcD) / 1000000 * 10) / 10, ...kitchenRect, floor: 1 });
+            furniture.push(
+                { id: 'fur-kitchen', type: 'kitchen_set', x: 400, y: D - 700, width: Math.min(3600, W * 0.6), height: 600 },
+                { id: 'fur-dining', type: 'dining_set', x: 800, y: y2 + 800, width: 1600, height: 900 }
+            );
+            doors.push({ id: 'd-back', x: W - 1200, y: D, width: 900, type: 'single', swing: 'right' });
 
         } else if (floorIndex < totalFloors || totalFloors === 1) {
-            // === CÁC TẦNG LẦU: PHÒNG NGỦ MASTER, PHÒNG NGỦ PHỤ, WC, BAN CÔNG ===
-            walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
-            walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
+            walls.push(
+                { id: 'w-p-1', x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' },
+                { id: 'w-p-2', x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' }
+            );
 
-            // Phòng Ngủ Master Phía Trước
-            const wcMasterW = Math.min(1.8, W * 0.35);
-            const wcMasterL = 2.0;
-            walls.push({ x1: W - wcMasterW, y1: 0, x2: W - wcMasterW, y2: wcMasterL, thickness: innerT, type: 'partition' });
-            walls.push({ x1: W - wcMasterW, y1: wcMasterL, x2: W, y2: wcMasterL, thickness: innerT, type: 'partition' });
-            doors.push({ x: W - wcMasterW, y: 0.4, w: 0.8, h: innerT, type: 'toilet_door', swing: 'left', label: 'Cửa WC Master' });
-            rooms.push({ name: 'WC MASTER', areaM2: Math.round(wcMasterW * wcMasterL * 10) / 10, x: W - wcMasterW, y: 0, w: wcMasterW, h: wcMasterL, zone: 'Khu Phụ' });
-            furniture.push({ type: 'toilet_set', x: W - wcMasterW + 0.2, y: 0.2, w: wcMasterW - 0.4, h: wcMasterL - 0.4, label: 'WC Khép Kín' });
+            const wcMasterW = Math.min(1800, Math.round(W * 0.35));
+            const wcMasterD = 2000;
+            walls.push(
+                { id: 'w-wcm-v', x1: W - wcMasterW, y1: 0, x2: W - wcMasterW, y2: wcMasterD, thickness: innerT, type: 'partition' },
+                { id: 'w-wcm-h', x1: W - wcMasterW, y1: wcMasterD, x2: W, y2: wcMasterD, thickness: innerT, type: 'partition' }
+            );
+            doors.push({ id: 'd-wcm', x: W - wcMasterW, y: 400, width: 800, type: 'single', swing: 'left' });
 
-            rooms.push({ name: `P. NGỦ MASTER (T${floorIndex})`, areaM2: Math.round((W * y1 - wcMasterW * wcMasterL) * 10) / 10, x: 0, y: 0, w: W - wcMasterW, h: y1, zone: 'Cung Vượng Đinh' });
-            furniture.push({ type: 'bed_master', x: 0.8, y: 0.8, w: 2.0, h: 2.1, label: 'Giường King Size' });
-            doors.push({ x: 0.6, y: 0, w: 1.4, h: outerT, type: 'balcony_door', swing: 'double', label: 'Cửa Ra Ban Công' });
+            const wcMasterRect = { x: W - wcMasterW, y: 0, width: wcMasterW, height: wcMasterD };
+            rooms.push({ id: `room-wcm-${floorIndex}`, type: 'wc_master', name: 'WC MASTER', areaM2: areaM2(wcMasterRect), ...wcMasterRect, floor: floorIndex });
+            furniture.push({ id: `fur-wcm-${floorIndex}`, type: 'toilet_set', x: W - wcMasterW + 200, y: 200, width: wcMasterW - 400, height: wcMasterD - 400 });
 
-            // Khu Cầu Thang Giữa + Sinh Hoạt Chung
-            furniture.push({ type: 'stairs_flight', x: 0.3, y: y1 + 0.3, w: Math.min(2.4, W * 0.45), h: midL - 0.6, steps: 21, label: 'Cầu Thang' });
-            if (hasCommonRoom) {
-                furniture.push({ type: 'desk_study', x: W - 2.0, y: y1 + 0.4, w: 1.6, h: midL - 0.8, label: 'Góc Làm Việc / SHC' });
-            }
+            const masterBedRect = { x: 0, y: 0, width: W - wcMasterW, height: y1 };
+            rooms.push({ id: `room-master-${floorIndex}`, type: 'bedroom_master', name: `P. NGỦ MASTER (T${floorIndex})`, areaM2: Math.round((W * y1 - wcMasterW * wcMasterD) / 1000000 * 10) / 10, ...masterBedRect, floor: floorIndex });
+            furniture.push({ id: `fur-bedm-${floorIndex}`, type: 'bed_master', x: 800, y: 800, width: 2000, height: 2100 });
+            doors.push({ id: `d-balcony-${floorIndex}`, x: 600, y: 0, width: 1400, type: 'double', swing: 'double' });
 
-            // Phòng Ngủ 2 Phía Sau
-            const wcFloorW = Math.min(1.8, W * 0.35);
-            const wcFloorL = 2.0;
-            walls.push({ x1: W - wcFloorW, y1: y2, x2: W - wcFloorW, y2: y2 + wcFloorL, thickness: innerT, type: 'partition' });
-            walls.push({ x1: W - wcFloorW, y1: y2 + wcFloorL, x2: W, y2: y2 + wcFloorL, thickness: innerT, type: 'partition' });
-            doors.push({ x: W - wcFloorW, y: y2 + 0.4, w: 0.8, h: innerT, type: 'toilet_door', swing: 'left', label: 'Cửa WC Tầng' });
-            rooms.push({ name: `WC TẦNG ${floorIndex}`, areaM2: Math.round(wcFloorW * wcFloorL * 10) / 10, x: W - wcFloorW, y: y2, w: wcFloorW, h: wcFloorL, zone: 'Khu Phụ' });
-            furniture.push({ type: 'toilet_set', x: W - wcFloorW + 0.2, y: y2 + 0.2, w: wcFloorW - 0.4, h: wcFloorL - 0.4, label: 'WC Lầu' });
+            furniture.push({ id: `fur-stairs-${floorIndex}`, type: 'stairs_flight', x: 300, y: y1 + 300, width: Math.min(2400, W * 0.45), height: midD - 600, steps: 21 });
 
-            rooms.push({ name: `P. NGỦ ${floorIndex * 2} (T${floorIndex})`, areaM2: Math.round((W * backL - wcFloorW * wcFloorL) * 10) / 10, x: 0, y: y2, w: W - wcFloorW, h: backL, zone: 'Cung Văn Xương' });
-            furniture.push({ type: 'bed_single', x: 0.8, y: y2 + 0.8, w: 1.6, h: 2.0, label: 'Giường Ngủ' });
-            windows.push({ x: 0.8, y: L, w: 1.5, h: outerT, type: 'sliding' });
+            const wcFloorW = Math.min(1800, Math.round(W * 0.35));
+            const wcFloorD = 2000;
+            walls.push(
+                { id: 'w-wcf-v', x1: W - wcFloorW, y1: y2, x2: W - wcFloorW, y2: y2 + wcFloorD, thickness: innerT, type: 'partition' },
+                { id: 'w-wcf-h', x1: W - wcFloorW, y1: y2 + wcFloorD, x2: W, y2: y2 + wcFloorD, thickness: innerT, type: 'partition' }
+            );
+            doors.push({ id: `d-wcf-${floorIndex}`, x: W - wcFloorW, y: y2 + 400, width: 800, type: 'single', swing: 'left' });
+
+            const wcFloorRect = { x: W - wcFloorW, y: y2, width: wcFloorW, height: wcFloorD };
+            rooms.push({ id: `room-wcf-${floorIndex}`, type: 'wc', name: `WC TẦNG ${floorIndex}`, areaM2: areaM2(wcFloorRect), ...wcFloorRect, floor: floorIndex });
+            furniture.push({ id: `fur-wcf-${floorIndex}`, type: 'toilet_set', x: W - wcFloorW + 200, y: y2 + 200, width: wcFloorW - 400, height: wcFloorD - 400 });
+
+            const bed2Rect = { x: 0, y: y2, width: W - wcFloorW, height: rearD };
+            rooms.push({ id: `room-bed2-${floorIndex}`, type: 'bedroom', name: `P. NGỦ ${floorIndex * 2} (T${floorIndex})`, areaM2: Math.round((W * rearD - wcFloorW * wcFloorD) / 1000000 * 10) / 10, ...bed2Rect, floor: floorIndex });
+            furniture.push({ id: `fur-bed2-${floorIndex}`, type: 'bed_single', x: 800, y: y2 + 800, width: 1600, height: 2000 });
+            windows.push({ id: `win-bed2-${floorIndex}`, x: 800, y: D, width: 1500, type: 'sliding' });
 
         } else {
-            // === TẦNG THƯỢNG: PHÒNG THỜ GIA TIÊN, SÂN THƯỢNG MINH ĐƯỜNG, SÂN PHƠI & GIẶT ===
-            walls.push({ x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' });
-            walls.push({ x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' });
+            walls.push(
+                { id: 'w-p-1', x1: 0, y1: y1, x2: W, y2: y1, thickness: innerT, type: 'partition' },
+                { id: 'w-p-2', x1: 0, y1: y2, x2: W, y2: y2, thickness: innerT, type: 'partition' }
+            );
 
-            if (hasAltar && altarOnRoof) {
-                rooms.push({ name: 'P. THỜ GIA TIÊN', areaM2: Math.round(W * y1 * 10) / 10, x: 0, y: 0, w: W, h: y1, zone: 'Tôn Nghiêm Tối Thượng' });
-                furniture.push({ type: 'altar_set', x: (W - 1.8) / 2, y: 0.5, w: 1.8, h: 0.9, label: 'Bàn Thờ Gia Tiên Chuẩn Lỗ Ban', isGood: true });
-                doors.push({ x: (W - 1.4) / 2, y: y1, w: 1.4, h: innerT, type: 'room_door', swing: 'double', label: 'Cửa Phòng Thờ' });
+            if (hasAltar && !altarOnGround) {
+                const altarRect = { x: 0, y: 0, width: W, height: y1 };
+                rooms.push({ id: 'room-altar', type: 'altar', name: 'P. THỜ GIA TIÊN', areaM2: areaM2(altarRect), ...altarRect, floor: floorIndex });
+                furniture.push({ id: 'fur-altar', type: 'altar_set', x: (W - 1800) / 2, y: 500, width: 1800, height: 900 });
+                doors.push({ id: 'd-altar', x: (W - 1400) / 2, y: y1, width: 1400, type: 'double', swing: 'double' });
             } else {
-                rooms.push({ name: 'SÂN THƯỢNG PHÍA TRƯỚC', areaM2: Math.round(W * y1 * 10) / 10, x: 0, y: 0, w: W, h: y1, zone: 'Minh Đường Thượng' });
+                const terraceRect = { x: 0, y: 0, width: W, height: y1 };
+                rooms.push({ id: 'room-terrace', type: 'yard', name: 'SÂN THƯỢNG', areaM2: areaM2(terraceRect), ...terraceRect, floor: floorIndex });
             }
 
-            furniture.push({ type: 'stairs_flight', x: 0.3, y: y1 + 0.3, w: Math.min(2.4, W * 0.45), h: midL - 0.6, steps: 21, label: 'Cầu Thang Tầng Thượng' });
+            furniture.push({ id: 'fur-stairs-roof', type: 'stairs_flight', x: 300, y: y1 + 300, width: Math.min(2400, W * 0.45), height: midD - 600, steps: 21 });
 
             if (hasLaundry) {
-                rooms.push({ name: 'SÂN PHƠI & GIẶT', areaM2: Math.round(W * backL * 10) / 10, x: 0, y: y2, w: W, h: backL, zone: 'Hậu Cảnh Thoát Khí' });
-                furniture.push({ type: 'laundry_set', x: 0.4, y: y2 + 0.5, w: 1.2, h: 0.8, label: 'Máy Giặt & Bồn Giặt' });
+                const laundryRect = { x: 0, y: y2, width: W, height: rearD };
+                rooms.push({ id: 'room-laundry', type: 'laundry', name: 'SÂN PHƠI & GIẶT', areaM2: areaM2(laundryRect), ...laundryRect, floor: floorIndex });
+                furniture.push({ id: 'fur-laundry', type: 'laundry_set', x: 400, y: y2 + 500, width: 1200, height: 800 });
             }
         }
     }
+
+    const center = centerOfRect({ x: 0, y: 0, width: W, height: D });
 
     return {
         floorIndex,
         totalFloors,
         floorName,
-        widthM: W,
-        lengthM: L,
+        widthMm: W,
+        depthMm: D,
+        center,
+        northAngleDeg,
         walls,
         doors,
         windows,
@@ -951,8 +756,566 @@ function generateSingleFloor({
         columns,
         axesX,
         axesY,
-        dimensions,
+        dimensionChains,
         entrancePorch
     };
 }
 
+// ============================================================
+// 7. ARCHITECTURAL CAD SVG RENDERER (DRAWING 1)
+// ============================================================
+export class ArchitecturalCADRenderer {
+    constructor(options = {}) {
+        this.theme = options.theme || 'white';
+        this.showDimensions = options.showDimensions !== undefined ? options.showDimensions : true;
+        this.showFurniture = options.showFurniture !== undefined ? options.showFurniture : true;
+        this.showAxes = options.showAxes !== undefined ? options.showAxes : true;
+        this.showCompass = options.showCompass !== undefined ? options.showCompass : true;
+    }
+
+    renderSvg(geometry, options = {}) {
+        if (!geometry) return '<svg></svg>';
+
+        const isWhite = (options.theme || this.theme) === 'white';
+        const W = geometry.widthMm || 5000;
+        const D = geometry.depthMm || 16000;
+        const facingDegree = options.facingDegree !== undefined ? options.facingDegree : (geometry.northAngleDeg || 0);
+
+        const padLeft = 1400;
+        const padRight = 1400;
+        const padTop = 1400;
+        const padBottom = 1600;
+
+        const viewX = -padLeft;
+        const viewY = -padTop;
+        const viewW = W + padLeft + padRight;
+        const viewH = D + padTop + padBottom;
+
+        const bgColor = isWhite ? '#ffffff' : '#080c16';
+        const borderColor = isWhite ? '#94a3b8' : '#1e293b';
+
+        let axesSvg = this.showAxes ? this.renderGridAxes(geometry, W, D, isWhite) : '';
+        let porchSvg = geometry.entrancePorch ? this.renderEntrancePorch(geometry.entrancePorch, isWhite) : '';
+        let roomsSvg = geometry.rooms ? this.renderRooms(geometry.rooms, isWhite) : '';
+        let furnitureSvg = (this.showFurniture && geometry.furniture) ? geometry.furniture.map(f => renderFurnitureSvg(f, isWhite)).join('\n') : '';
+        let wallsSvg = geometry.walls ? this.renderWalls(geometry.walls, isWhite) : '';
+        let columnsSvg = geometry.columns ? this.renderColumns(geometry.columns, isWhite) : '';
+        let doorsSvg = geometry.doors ? this.renderDoors(geometry.doors, isWhite) : '';
+        let windowsSvg = geometry.windows ? this.renderWindows(geometry.windows, isWhite) : '';
+        let dimsSvg = this.showDimensions ? this.renderDimensionChains(geometry, W, D, isWhite) : '';
+        let compassSvg = this.showCompass ? this.renderCompassRose(W - 600, -600, 350, facingDegree, isWhite) : '';
+        const titleBlockSvg = this.renderTitleBlock(viewX + 200, viewY + viewH - 550, 4200, 380, geometry, options, isWhite);
+
+        return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" class="cad-svg-drawing" style="background:${bgColor};">
+    <defs>
+        <pattern id="floorTile" width="600" height="600" patternUnits="userSpaceOnUse">
+            <rect width="600" height="600" fill="none" stroke="${isWhite ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.03)'}" stroke-width="8"/>
+        </pattern>
+    </defs>
+    <rect x="${viewX + 80}" y="${viewY + 80}" width="${viewW - 160}" height="${viewH - 160}" fill="none" stroke="${borderColor}" stroke-width="30"/>
+    <rect x="0" y="0" width="${W}" height="${D}" fill="url(#floorTile)"/>
+    <g id="layer-grid-axes">${axesSvg}</g>
+    <g id="layer-porch">${porchSvg}</g>
+    <g id="layer-rooms">${roomsSvg}</g>
+    <g id="layer-furniture">${furnitureSvg}</g>
+    <g id="layer-walls">${wallsSvg}</g>
+    <g id="layer-columns">${columnsSvg}</g>
+    <g id="layer-openings">${doorsSvg}${windowsSvg}</g>
+    <g id="layer-dimensions">${dimsSvg}</g>
+    <g id="layer-compass">${compassSvg}</g>
+    <g id="layer-title-block">${titleBlockSvg}</g>
+</svg>
+        `.trim();
+    }
+
+    renderGridAxes(geometry, W, D, isWhite) {
+        const axesX = geometry.axesX || [{ label: '1', x: 0 }, { label: '2', x: W }];
+        const axesY = geometry.axesY || [{ label: 'A', y: 0 }, { label: 'B', y: D }];
+        const strokeColor = isWhite ? '#64748b' : '#475569';
+        const bubbleBg = isWhite ? '#ffffff' : '#0f172a';
+        const bubbleText = isWhite ? '#0f172a' : '#f8fafc';
+        const bubbleR = 160;
+        let svg = '';
+
+        axesX.forEach(ax => {
+            const x = ax.x;
+            svg += `
+                <line x1="${x}" y1="${-650}" x2="${x}" y2="${D + 650}" stroke="${strokeColor}" stroke-width="15" stroke-dasharray="140,70,30,70"/>
+                <circle cx="${x}" cy="${-850}" r="${bubbleR}" fill="${bubbleBg}" stroke="${strokeColor}" stroke-width="25"/>
+                <text x="${x}" y="${-810}" text-anchor="middle" font-family="Inter, sans-serif" font-size="160" font-weight="900" fill="${bubbleText}">${ax.label}</text>
+                <circle cx="${x}" cy="${D + 850}" r="${bubbleR}" fill="${bubbleBg}" stroke="${strokeColor}" stroke-width="25"/>
+                <text x="${x}" y="${D + 890}" text-anchor="middle" font-family="Inter, sans-serif" font-size="160" font-weight="900" fill="${bubbleText}">${ax.label}</text>
+            `;
+        });
+
+        axesY.forEach(ay => {
+            const y = ay.y;
+            svg += `
+                <line x1="${-650}" y1="${y}" x2="${W + 650}" y2="${y}" stroke="${strokeColor}" stroke-width="15" stroke-dasharray="140,70,30,70"/>
+                <circle cx="${-850}" cy="${y}" r="${bubbleR}" fill="${bubbleBg}" stroke="${strokeColor}" stroke-width="25"/>
+                <text x="${-850}" y="${y + 55}" text-anchor="middle" font-family="Inter, sans-serif" font-size="160" font-weight="900" fill="${bubbleText}">${ay.label}</text>
+                <circle cx="${W + 850}" cy="${y}" r="${bubbleR}" fill="${bubbleBg}" stroke="${strokeColor}" stroke-width="25"/>
+                <text x="${W + 850}" y="${y + 55}" text-anchor="middle" font-family="Inter, sans-serif" font-size="160" font-weight="900" fill="${bubbleText}">${ay.label}</text>
+            `;
+        });
+        return svg;
+    }
+
+    renderEntrancePorch(porch, isWhite) {
+        const { x, y, width: w, height: h, steps = 3, pillars } = porch;
+        const stepH = h / steps;
+        let svg = '';
+        for (let i = 0; i < steps; i++) {
+            const sx = x + (i * 150);
+            const sw = w - (i * 300);
+            const sy = y + (i * stepH);
+            const fill = isWhite ? (i % 2 === 0 ? '#e2e8f0' : '#cbd5e1') : (i % 2 === 0 ? '#1e293b' : '#334155');
+            svg += `<rect x="${sx}" y="${sy}" width="${sw}" height="${stepH}" fill="${fill}" stroke="${isWhite ? '#475569' : '#94a3b8'}" stroke-width="25"/>`;
+        }
+        if (pillars && pillars.length > 0) {
+            pillars.forEach(p => {
+                svg += `
+                    <rect x="${p.x}" y="${p.y}" width="${p.size}" height="${p.size}" fill="${isWhite ? '#0f172a' : '#f8fafc'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="25"/>
+                    <circle cx="${p.x + p.size / 2}" cy="${p.y + p.size / 2}" r="60" fill="#ef4444"/>
+                `;
+            });
+        }
+        return svg;
+    }
+
+    renderRooms(rooms, isWhite) {
+        return rooms.map(r => {
+            const cx = r.x + r.width / 2;
+            const cy = r.y + r.height / 2;
+            return `
+                <g id="${r.id}" class="cad-room-label">
+                    <rect x="${cx - 900}" y="${cy - 220}" width="1800" height="360" fill="${isWhite ? 'rgba(255,255,255,0.85)' : 'rgba(15,23,42,0.85)'}" stroke="${isWhite ? '#cbd5e1' : '#334155'}" stroke-width="15" rx="30"/>
+                    <text x="${cx}" y="${cy - 30}" text-anchor="middle" font-family="Inter, sans-serif" font-size="140" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${r.name}</text>
+                    <text x="${cx}" y="${cy + 90}" text-anchor="middle" font-family="Inter, sans-serif" font-size="110" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${r.areaM2.toFixed(2)} m²</text>
+                </g>
+            `;
+        }).join('\n');
+    }
+
+    renderWalls(walls, isWhite) {
+        return walls.map(w => {
+            const strokeColor = w.type === 'outer' ? (isWhite ? '#0f172a' : '#f1f5f9') : (isWhite ? '#334155' : '#94a3b8');
+            const thickness = w.thickness || 220;
+            return `
+                <line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${strokeColor}" stroke-width="${thickness}" stroke-linecap="square"/>
+                <line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${isWhite ? '#64748b' : '#475569'}" stroke-width="15" stroke-dasharray="80,40"/>
+            `;
+        }).join('\n');
+    }
+
+    renderColumns(columns, isWhite) {
+        return columns.map((col, idx) => {
+            const size = col.size || 220;
+            const cx = col.x - size / 2;
+            const cy = col.y - size / 2;
+            return `
+                <g id="col-${idx}">
+                    <rect x="${cx}" y="${cy}" width="${size}" height="${size}" fill="${isWhite ? '#1e293b' : '#f8fafc'}" stroke="${isWhite ? '#ffffff' : '#0f172a'}" stroke-width="20"/>
+                    <line x1="${cx}" y1="${cy}" x2="${cx + size}" y2="${cy + size}" stroke="${isWhite ? '#ffffff' : '#0f172a'}" stroke-width="15"/>
+                    <line x1="${cx + size}" y1="${cy}" x2="${cx}" y2="${cy + size}" stroke="${isWhite ? '#ffffff' : '#0f172a'}" stroke-width="15"/>
+                </g>
+            `;
+        }).join('\n');
+    }
+
+    renderDoors(doors, isWhite) {
+        const doorColor = isWhite ? '#0284c7' : '#38bdf8';
+        return doors.map(d => {
+            const { x, y, width: dw, swing = 'left' } = d;
+            if (swing === 'double' || d.type === 'double') {
+                const halfW = dw / 2;
+                return `
+                    <g id="${d.id}" class="cad-door-double">
+                        <line x1="${x}" y1="${y}" x2="${x}" y2="${y + halfW}" stroke="${doorColor}" stroke-width="30"/>
+                        <line x1="${x + dw}" y1="${y}" x2="${x + dw}" y2="${y + halfW}" stroke="${doorColor}" stroke-width="30"/>
+                        <path d="M ${x} ${y + halfW} A ${halfW} ${halfW} 0 0 1 ${x + halfW} ${y}" fill="none" stroke="${doorColor}" stroke-width="25" stroke-dasharray="50,30"/>
+                        <path d="M ${x + dw} ${y + halfW} A ${halfW} ${halfW} 0 0 0 ${x + halfW} ${y}" fill="none" stroke="${doorColor}" stroke-width="25" stroke-dasharray="50,30"/>
+                    </g>
+                `;
+            } else {
+                return `
+                    <g id="${d.id}" class="cad-door-single">
+                        <line x1="${x}" y1="${y}" x2="${x}" y2="${y + dw}" stroke="${doorColor}" stroke-width="30"/>
+                        <path d="M ${x} ${y + dw} A ${dw} ${dw} 0 0 1 ${x + dw} ${y}" fill="none" stroke="${doorColor}" stroke-width="25" stroke-dasharray="50,30"/>
+                    </g>
+                `;
+            }
+        }).join('\n');
+    }
+
+    renderWindows(windows, isWhite) {
+        const stroke = isWhite ? '#0284c7' : '#38bdf8';
+        return windows.map(w => `
+            <g id="${w.id}" class="cad-window">
+                <rect x="${w.x}" y="${w.y - 110}" width="${w.width}" height="220" fill="${isWhite ? '#e0f2fe' : '#0369a1'}" stroke="${stroke}" stroke-width="25"/>
+                <line x1="${w.x}" y1="${w.y}" x2="${w.x + w.width}" y2="${w.y}" stroke="${stroke}" stroke-width="20"/>
+            </g>
+        `).join('\n');
+    }
+
+    renderDimensionChains(geometry, W, D, isWhite) {
+        const strokeColor = isWhite ? '#475569' : '#94a3b8';
+        const textColor = isWhite ? '#0f172a' : '#f8fafc';
+        const topY = -400;
+        const leftX = -400;
+        let svg = `
+            <line x1="0" y1="${topY}" x2="${W}" y2="${topY}" stroke="${strokeColor}" stroke-width="25"/>
+            <line x1="0" y1="${topY - 100}" x2="0" y2="${0}" stroke="${strokeColor}" stroke-width="15"/>
+            <line x1="${W}" y1="${topY - 100}" x2="${W}" y2="${0}" stroke="${strokeColor}" stroke-width="15"/>
+            <line x1="${-60}" y1="${topY + 60}" x2="${60}" y2="${topY - 60}" stroke="${strokeColor}" stroke-width="35"/>
+            <line x1="${W - 60}" y1="${topY + 60}" x2="${W + 60}" y2="${topY - 60}" stroke="${strokeColor}" stroke-width="35"/>
+            <text x="${W / 2}" y="${topY - 60}" text-anchor="middle" font-family="Inter, sans-serif" font-size="170" font-weight="bold" fill="${textColor}">${W}</text>
+
+            <line x1="${leftX}" y1="0" x2="${leftX}" y2="${D}" stroke="${strokeColor}" stroke-width="25"/>
+            <line x1="${leftX - 100}" y1="0" x2="0" y2="0" stroke="${strokeColor}" stroke-width="15"/>
+            <line x1="${leftX - 100}" y1="${D}" x2="0" y2="${D}" stroke="${strokeColor}" stroke-width="15"/>
+            <line x1="${leftX - 60}" y1="${60}" x2="${leftX + 60}" y2="${-60}" stroke="${strokeColor}" stroke-width="35"/>
+            <line x1="${leftX - 60}" y1="${D + 60}" x2="${leftX + 60}" y2="${D - 60}" stroke="${strokeColor}" stroke-width="35"/>
+            <text x="${leftX - 80}" y="${D / 2}" text-anchor="middle" font-family="Inter, sans-serif" font-size="170" font-weight="bold" fill="${textColor}" transform="rotate(-90 ${leftX - 80} ${D / 2})">${D}</text>
+        `;
+        return svg;
+    }
+
+    renderCompassRose(cx, cy, r, facingDeg, isWhite) {
+        const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        let blades = '';
+        for (let i = 0; i < 8; i++) {
+            const angle = (i * 45 - 90) * (Math.PI / 180);
+            const rTip = r - 40;
+            const rBase = r * 0.25;
+            const fillBlade = i === 0 ? '#ef4444' : (isWhite ? '#64748b' : '#94a3b8');
+            blades += `
+                <polygon points="0,0 ${Math.cos(angle - 0.25) * rBase},${Math.sin(angle - 0.25) * rBase} ${Math.cos(angle) * rTip},${Math.sin(angle) * rTip}" fill="${fillBlade}"/>
+                <text x="${Math.cos(angle) * (r + 90)}" y="${Math.sin(angle) * (r + 90) + 30}" text-anchor="middle" font-family="Inter, sans-serif" font-size="100" font-weight="bold" fill="${i === 0 ? '#ef4444' : (isWhite ? '#0f172a' : '#f8fafc')}">${directions[i]}</text>
+            `;
+        }
+        return `
+            <g id="compass-rose" transform="translate(${cx}, ${cy}) rotate(${facingDeg})">
+                <circle cx="0" cy="0" r="${r}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#cbd5e1' : '#334155'}" stroke-width="25"/>
+                ${blades}
+            </g>
+        `;
+    }
+
+    renderTitleBlock(x, y, w, h, geometry, options, isWhite) {
+        return `
+            <g id="architectural-title-block">
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? 'rgba(255,255,255,0.95)' : 'rgba(15,23,42,0.95)'}" stroke="${isWhite ? '#0284c7' : '#d97706'}" stroke-width="30" rx="30"/>
+                <text x="${x + 120}" y="${y + 120}" font-family="Inter, sans-serif" font-size="150" font-weight="900" fill="${isWhite ? '#0f172a' : '#fef08a'}">${(geometry.floorName || 'MẶT BẰNG TƯ VẤN THIẾT KẾ').toUpperCase()}</text>
+                <text x="${x + 120}" y="${y + 220}" font-family="Inter, sans-serif" font-size="110" font-weight="600" fill="${isWhite ? '#475569' : '#cbd5e1'}">Kích thước: ${(geometry.widthMm / 1000).toFixed(2)}m × ${(geometry.depthMm / 1000).toFixed(2)}m · Diện tích: ${(geometry.widthMm * geometry.depthMm / 1000000).toFixed(1)} m²</text>
+                <text x="${x + 120}" y="${y + 320}" font-family="Inter, sans-serif" font-size="110" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">Tư vấn: DỊCH SƯ NGUYỄN HUY HOÀNG — 0933 116 860 · Huyền Không Phi Tinh Vận 9</text>
+            </g>
+        `;
+    }
+}
+
+// ============================================================
+// 8. FENG SHUI SPATIAL ENGINE & 9-PALACE OVERLAY (DRAWING 2)
+// ============================================================
+export const PALACE_POSITIONS = {
+    4: { r: 0, c: 0, name: 'ĐÔNG NAM', short: 'ĐN', trigram: 'TỐN' },
+    9: { r: 0, c: 1, name: 'NAM',      short: 'N',  trigram: 'LY' },
+    2: { r: 0, c: 2, name: 'TÂY NAM',  short: 'TN', trigram: 'KHÔN' },
+    3: { r: 1, c: 0, name: 'ĐÔNG',     short: 'Đ',  trigram: 'CHẤN' },
+    5: { r: 1, c: 1, name: 'TRUNG CUNG', short: 'TRUNG', trigram: 'TRUNG' },
+    7: { r: 1, c: 2, name: 'TÂY',      short: 'T',  trigram: 'ĐOÀI' },
+    8: { r: 2, c: 0, name: 'ĐÔNG BẮC', short: 'ĐB', trigram: 'CẤN' },
+    1: { r: 2, c: 1, name: 'BẮC',      short: 'B',  trigram: 'KHẢM' },
+    6: { r: 2, c: 2, name: 'TÂY BẮC',  short: 'TB', trigram: 'CÀN' }
+};
+
+export function calculateFengShuiSpatial(geometry, options = {}) {
+    const W = geometry.widthMm || 5000;
+    const D = geometry.depthMm || 16000;
+    const facingDegree = options.facingDegree !== undefined ? options.facingDegree : (geometry.northAngleDeg || 180);
+    const buildYear = options.buildYear || 2025;
+    const ownerYear = options.ownerYear || 1990;
+    const ownerGender = options.ownerGender || 'nam';
+
+    const flyingStars = calculateFlyingStars({ facingDegree, buildYear });
+    const batTrach = calculateGua(ownerYear, ownerGender);
+
+    const cellW = W / 3;
+    const cellH = D / 3;
+    const spatialPalaces = {};
+
+    Object.entries(PALACE_POSITIONS).forEach(([palaceIdStr, pos]) => {
+        const palaceId = parseInt(palaceIdStr, 10);
+        const rect = { x: pos.c * cellW, y: pos.r * cellH, width: cellW, height: cellH };
+        const starInfo = flyingStars.palaces ? flyingStars.palaces[palaceId] : null;
+
+        spatialPalaces[palaceId] = {
+            id: palaceId,
+            name: pos.name,
+            short: pos.short,
+            trigram: pos.trigram,
+            row: pos.r,
+            col: pos.c,
+            rect,
+            center: { x: rect.x + cellW / 2, y: rect.y + cellH / 2 },
+            sonStar: starInfo ? (starInfo.sonStar || starInfo.mountainStar) : 9,
+            huongStar: starInfo ? (starInfo.huongStar || starInfo.facingStar) : 9,
+            vanStar: starInfo ? (starInfo.vanStar || starInfo.periodStar) : 9,
+            nienStar: starInfo ? starInfo.nienStar : 9,
+            grade: (starInfo && (starInfo.huongStar === 9 || starInfo.huongStar === 1)) ? 'ĐẠI CÁT' : ((starInfo && (starInfo.huongStar === 2 || starInfo.huongStar === 5)) ? 'HUNG' : 'BÌNH')
+        };
+    });
+
+    return {
+        geometry,
+        center: geometry.center,
+        northAngleDeg: facingDegree,
+        flyingStars,
+        batTrach,
+        spatialPalaces
+    };
+}
+
+export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
+    if (!spatialResult || !spatialResult.spatialPalaces) return '';
+
+    const { spatialPalaces, geometry } = spatialResult;
+    const W = geometry.widthMm;
+    const D = geometry.depthMm;
+    const cellW = W / 3;
+    const cellH = D / 3;
+
+    const gridColor = isWhite ? '#b45309' : '#f59e0b';
+    const numColor = isWhite ? '#0f172a' : '#f8fafc';
+    const starSonColor = isWhite ? '#0369a1' : '#38bdf8';
+    const starHuongColor = isWhite ? '#b45309' : '#fbbf24';
+
+    let gridLinesSvg = `
+        <line x1="${cellW}" y1="0" x2="${cellW}" y2="${D}" stroke="${gridColor}" stroke-width="35" stroke-dasharray="120,60"/>
+        <line x1="${cellW * 2}" y1="0" x2="${cellW * 2}" y2="${D}" stroke="${gridColor}" stroke-width="35" stroke-dasharray="120,60"/>
+        <line x1="0" y1="${cellH}" x2="${W}" y2="${cellH}" stroke="${gridColor}" stroke-width="35" stroke-dasharray="120,60"/>
+        <line x1="0" y1="${cellH * 2}" x2="${W}" y2="${cellH * 2}" stroke="${gridColor}" stroke-width="35" stroke-dasharray="120,60"/>
+    `;
+
+    let palacesSvg = '';
+
+    Object.values(spatialPalaces).forEach(pal => {
+        const { x, y, width: w, height: h } = pal.rect;
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+
+        let cellBg = 'rgba(255, 255, 255, 0.05)';
+        if (pal.grade === 'ĐẠI CÁT' || pal.grade === 'CÁT') {
+            cellBg = isWhite ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.12)';
+        } else if (pal.grade === 'ĐẠI HUNG' || pal.grade === 'HUNG') {
+            cellBg = isWhite ? 'rgba(239, 68, 68, 0.08)' : 'rgba(239, 68, 68, 0.12)';
+        }
+
+        palacesSvg += `
+            <g id="palace-${pal.id}" class="nine-palace-cell">
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellBg}"/>
+                <rect x="${x + 60}" y="${y + 60}" width="420" height="180" fill="${isWhite ? 'rgba(255,255,255,0.9)' : 'rgba(15,23,42,0.9)'}" stroke="${gridColor}" stroke-width="15" rx="20"/>
+                <text x="${x + 270}" y="${y + 190}" text-anchor="middle" font-family="Inter, sans-serif" font-size="120" font-weight="900" fill="${gridColor}">${pal.short}</text>
+                
+                <circle cx="${cx - 450}" cy="${cy - 250}" r="180" fill="${isWhite ? '#e0f2fe' : '#0c4a6e'}" stroke="${starSonColor}" stroke-width="25"/>
+                <text x="${cx - 450}" y="${cy - 190}" text-anchor="middle" font-family="Inter, sans-serif" font-size="180" font-weight="900" fill="${starSonColor}">${pal.sonStar}</text>
+
+                <circle cx="${cx + 450}" cy="${cy - 250}" r="180" fill="${isWhite ? '#fef3c7' : '#451a03'}" stroke="${starHuongColor}" stroke-width="25"/>
+                <text x="${cx + 450}" y="${cy - 190}" text-anchor="middle" font-family="Inter, sans-serif" font-size="180" font-weight="900" fill="${starHuongColor}">${pal.huongStar}</text>
+
+                <text x="${cx}" y="${cy + 220}" text-anchor="middle" font-family="Inter, sans-serif" font-size="420" font-weight="900" fill="${numColor}" opacity="0.85">${pal.vanStar}</text>
+            </g>
+        `;
+    });
+
+    const labelPad = 320;
+    const borderLabelsSvg = `
+        <text x="${cellW * 0.5}" y="${-labelPad}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">ĐN</text>
+        <text x="${cellW * 1.5}" y="${-labelPad}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">N</text>
+        <text x="${cellW * 2.5}" y="${-labelPad}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">TN</text>
+
+        <text x="${cellW * 0.5}" y="${D + labelPad + 160}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">ĐB</text>
+        <text x="${cellW * 1.5}" y="${D + labelPad + 160}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">B</text>
+        <text x="${cellW * 2.5}" y="${D + labelPad + 160}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">TB</text>
+
+        <text x="${-labelPad - 50}" y="${cellH * 1.5 + 60}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">Đ</text>
+        <text x="${W + labelPad + 50}" y="${cellH * 1.5 + 60}" text-anchor="middle" font-family="Inter, sans-serif" font-size="200" font-weight="900" fill="${gridColor}">T</text>
+    `;
+
+    return `
+        <g id="layer-fengshui-overlay" class="fengshui-nine-palaces">
+            ${gridLinesSvg}
+            ${palacesSvg}
+            ${borderLabelsSvg}
+        </g>
+    `;
+}
+
+// ============================================================
+// 9. INTERACTIVE SVG VIEWPORT CONTROLLER
+// ============================================================
+export class SvgViewportController {
+    constructor(containerElement) {
+        this.container = containerElement;
+        this.scale = 1.0;
+        this.panX = 0;
+        this.panY = 0;
+        this.isDragging = false;
+        this.startX = 0;
+        this.startY = 0;
+        this.svgElement = null;
+
+        this.initEvents();
+    }
+
+    setSvgContent(svgString) {
+        if (!this.container) return;
+        this.container.innerHTML = svgString;
+        this.svgElement = this.container.querySelector('svg');
+        if (this.svgElement) {
+            this.svgElement.style.transformOrigin = 'center center';
+            this.svgElement.style.transition = 'transform 0.05s ease-out';
+            this.updateTransform();
+        }
+    }
+
+    initEvents() {
+        if (!this.container) return;
+
+        this.container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            this.isDragging = true;
+            this.startX = e.clientX - this.panX;
+            this.startY = e.clientY - this.panY;
+            this.container.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            this.panX = e.clientX - this.startX;
+            this.panY = e.clientY - this.startY;
+            this.updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            this.isDragging = false;
+            if (this.container) this.container.style.cursor = 'grab';
+        });
+
+        this.container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 1.15 : 0.85;
+            this.zoomAt(delta, e.clientX, e.clientY);
+        }, { passive: false });
+
+        let initialDistance = 0;
+        let initialScale = 1.0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        this.container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                this.isDragging = true;
+                touchStartX = e.touches[0].clientX - this.panX;
+                touchStartY = e.touches[0].clientY - this.panY;
+            } else if (e.touches.length === 2) {
+                this.isDragging = false;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialDistance = Math.sqrt(dx * dx + dy * dy);
+                initialScale = this.scale;
+            }
+        }, { passive: true });
+
+        this.container.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && this.isDragging) {
+                this.panX = e.touches[0].clientX - touchStartX;
+                this.panY = e.touches[0].clientY - touchStartY;
+                this.updateTransform();
+            } else if (e.touches.length === 2 && initialDistance > 0) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const factor = dist / initialDistance;
+                this.scale = Math.max(0.3, Math.min(6.0, initialScale * factor));
+                this.updateTransform();
+            }
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', () => {
+            this.isDragging = false;
+            initialDistance = 0;
+        });
+    }
+
+    zoomAt(factor) {
+        this.scale = Math.max(0.3, Math.min(6.0, this.scale * factor));
+        this.updateTransform();
+    }
+
+    zoomIn() {
+        this.scale = Math.min(6.0, this.scale * 1.25);
+        this.updateTransform();
+    }
+
+    zoomOut() {
+        this.scale = Math.max(0.3, this.scale * 0.8);
+        this.updateTransform();
+    }
+
+    fitToScreen() {
+        this.scale = 1.0;
+        this.panX = 0;
+        this.panY = 0;
+        this.updateTransform();
+    }
+
+    updateTransform() {
+        if (!this.svgElement) return;
+        this.svgElement.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
+    }
+
+    exportSvg(fileName = 'Mat_Bang_Kien_Truc.svg') {
+        if (!this.svgElement) return;
+        const svgData = new XMLSerializer().serializeToString(this.svgElement);
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    exportPng(fileName = 'Mat_Bang_Kien_Truc.png', scaleFactor = 2) {
+        if (!this.svgElement) return;
+        const svgData = new XMLSerializer().serializeToString(this.svgElement);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const rect = this.svgElement.viewBox.baseVal || { width: 1200, height: 800 };
+            const width = (rect.width || 1200) * (scaleFactor / 4);
+            const height = (rect.height || 800) * (scaleFactor / 4);
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const pngUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = pngUrl;
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+    }
+}

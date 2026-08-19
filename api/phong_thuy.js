@@ -1,7 +1,8 @@
 import { applySecurityHeaders } from '../lib/security_helper.js';
 import { calculateFlyingStars } from '../lib/phong_thuy/huyen_khong_engine.js';
 import { calculateGua } from '../lib/phong_thuy/bat_trach_engine.js';
-import { generateArchitecturalPlan } from '../lib/phong_thuy/floorplan_generator.js';
+import { generateParametricFloorplan } from '../lib/phong_thuy/layout_engine.js';
+import { calculateFengShuiSpatial } from '../lib/phong_thuy/fengshui_spatial_engine.js';
 
 export default async function handler(req, res) {
     if (!applySecurityHeaders(req, res)) return;
@@ -13,32 +14,23 @@ export default async function handler(req, res) {
     try {
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
         const {
-            mode = 'empty_land', // 'empty_land' | 'existing_house'
+            mode = 'empty_land',
             width = 5.0,
             length = 16.0,
             floors = 2,
             facingDegree = 180,
-            buildYear = 2024,
-            currentYear = 2026,
-            currentMonth = 2,
-            currentDay = 1,
-            currentHour = 12,
+            buildYear = 2025,
             ownerYear = 1990,
             ownerGender = 'nam',
             frontLandscape = 'duong_lo',
             backLandscape = 'nha_cao',
-            existingRoomsMap = {},
             roomCounts = {}
         } = body;
 
-        // 1. Tính Tinh Bàn Huyền Không Phi Tinh (Vận 9, 24 Sơn, Niên/Nguyệt Tinh, Loan Đầu)
+        // 1. Tính Tinh Bàn Huyền Không Phi Tinh
         const flyingStars = calculateFlyingStars({
             facingDegree: parseFloat(facingDegree) || 180,
-            buildYear: parseInt(buildYear, 10) || 2024,
-            currentYear: parseInt(currentYear, 10) || 2026,
-            currentMonth: parseInt(currentMonth, 10) || 2,
-            currentDay: parseInt(currentDay, 10) || 1,
-            currentHour: parseInt(currentHour, 10) || 12,
+            buildYear: parseInt(buildYear, 10) || 2025,
             frontLandscape,
             backLandscape
         });
@@ -49,27 +41,33 @@ export default async function handler(req, res) {
             batTrach = calculateGua(parseInt(ownerYear, 10) || 1990, ownerGender);
         }
 
-        // 3. Tự Động Thiết Kế Mặt Bằng Kiến Trúc CAD 2D Theo Phong Thủy
-        const architecturalPlan = generateArchitecturalPlan({
+        // 3. Tự Động Thiết Kế Mặt Bằng Kiến Trúc Parametric CAD (Millimeter)
+        const parametricGeometry = generateParametricFloorplan({
             mode,
             widthM: parseFloat(width) || 5.0,
             lengthM: parseFloat(length) || 16.0,
             floors: parseInt(floors, 10) || 2,
             facingDegree: parseFloat(facingDegree) || 180,
-            flyingStarsData: flyingStars,
-            batTrachData: batTrach,
-            existingRoomsMap,
             roomCounts
+        });
+
+        // 4. Tính Toán Lớp Phủ Cửu Cung Không Gian
+        const spatialFengShui = calculateFengShuiSpatial(parametricGeometry, {
+            facingDegree: parseFloat(facingDegree) || 180,
+            buildYear: parseInt(buildYear, 10) || 2025,
+            ownerYear: parseInt(ownerYear, 10) || 1990,
+            ownerGender
         });
 
         return res.status(200).json({
             status: 'success',
             flyingStars,
             batTrach,
-            architecturalPlan
+            parametricGeometry,
+            spatialFengShui
         });
     } catch (err) {
         console.error('Phong Thuy Engine Error:', err);
-        return res.status(500).json({ error: 'Lỗi máy chủ khi tính toán phong thủy kiến trúc: ' + err.message });
+        return res.status(500).json({ error: 'Lỗi tính toán phong thủy kiến trúc: ' + err.message });
     }
 }
