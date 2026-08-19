@@ -169,15 +169,32 @@
                 </div>
             </div>
 
-            <!-- Compass Degree Slider & Mountain Label -->
-            <div class="form-group" style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <label class="form-label" style="margin-bottom: 0;">Hướng Nhà (Góc Phương Vị Độ La Kinh):</label>
-                    <span id="mountainDisplay" style="color: var(--gold-light); font-weight: 700; font-size: 0.95rem;">Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ</span>
+            <!-- Interactive 360° Compass Dial (La Bàn 24 Sơn GPU 60FPS) -->
+            <div class="compass-interactive-wrapper">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <label class="form-label" style="margin-bottom: 0;">La Bàn Số 24 Sơn Hướng 360°:</label>
+                    <span id="mountainStatusBadge" class="audit-badge good">Chính Hướng (Hạ Quái)</span>
                 </div>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <input type="range" id="inputFacingDegree" class="form-range" min="0" max="360" step="0.5" value="180" style="flex: 1;">
-                    <input type="number" id="inputFacingNumber" class="form-control" min="0" max="360" step="0.5" value="180" style="width: 90px; text-align: center; font-weight: 700;">
+                
+                <div class="compass-dial-container" id="compassDialContainer">
+                    <div class="compass-needle-north"></div>
+                    <div class="compass-needle-south"></div>
+                    <div class="compass-dial-svg" id="compassSvgStage">
+                        <!-- Rendered by CompassSvgRenderer -->
+                    </div>
+                    <div class="compass-center-badge">
+                        <span id="txtCompassDegree" style="font-size: 1.25rem; font-weight: 900; color: var(--gold-light);">180.0°</span>
+                        <span id="txtCompassMountain" style="font-size: 0.72rem; font-weight: 700; color: #38bdf8;">Hướng Ngọ</span>
+                    </div>
+                </div>
+
+                <div style="width: 100%; display: flex; gap: 15px; align-items: center;">
+                    <input type="range" id="inputFacingDegree" class="form-range" min="0" max="359.5" step="0.5" value="180" style="flex: 1;">
+                    <input type="number" id="inputFacingNumber" class="form-control" min="0" max="359.5" step="0.5" value="180" style="width: 90px; text-align: center; font-weight: 700;">
+                </div>
+
+                <div id="mountainDisplay" style="color: var(--gold-light); font-weight: 700; font-size: 0.88rem; text-align: center;">
+                    Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ · Quái Ly (Hỏa)
                 </div>
             </div>
 
@@ -270,176 +287,28 @@
                 </div>
             </div>
 
-            <!-- Existing House 9-Palace Room Selectors (Tab 2: Nhà Sẵn Có) -->
+            <!-- Existing House 9-Palace Drag & Drop Area (Tab 2: Nhà Sẵn Có) -->
             <div id="existingRoomsSection" style="display: none; margin-bottom: 20px;">
                 <div style="font-size: 0.95rem; font-weight: 800; color: var(--gold-light); margin-bottom: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 6px;">
-                    VỊ TRÍ HIỆN TẠI CỦA TỪNG PHÒNG (CHỌN 1 TRONG 9 CUNG PHƯƠNG VỊ)
+                    KÉO - THẢ PHÒNG ỐC VÀO 9 CUNG PHONG THỦY (HỖ TRỢ CẢ CẢM ỨNG MOBILE)
                 </div>
-                <div class="form-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
-                    <div class="form-group">
-                        <label class="form-label">Cửa Chính</label>
-                        <select id="sel_main_door" class="form-control palace-select">
-                            <option value="9" selected>Ly (Nam - Tiền Minh Đường)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
+
+                <div class="dnd-container">
+                    <div class="dnd-room-rack">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">DANH SÁCH CÔNG NĂNG (Kéo thả hoặc chạm vào ô bên dưới):</span>
+                        <div class="room-chips-list" id="availableRoomsRack">
+                            <div class="room-drag-chip" draggable="true" data-room-id="living" data-room-name="Phòng Khách"><span>🛋️</span> Phòng Khách</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="kitchen" data-room-name="Bếp Nấu"><span>🍳</span> Bếp Nấu</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="master_bed" data-room-name="Ngủ Master"><span>🛏️</span> Ngủ Master</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="altar" data-room-name="Phòng Thờ"><span>🕯️</span> Phòng Thờ</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="wc" data-room-name="Khu WC"><span>🚽</span> Khu WC</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="stairs" data-room-name="Cầu Thang"><span>🪜</span> Cầu Thang</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="garage" data-room-name="Gara Xe"><span>🚗</span> Gara Xe</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Phòng Khách</label>
-                        <select id="sel_living_room" class="form-control palace-select">
-                            <option value="9" selected>Ly (Nam)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Bàn Thờ Gia Tiên</label>
-                        <select id="sel_altar" class="form-control palace-select">
-                            <option value="6" selected>Càn (Tây Bắc)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Bếp Nấu & Ăn</label>
-                        <select id="sel_kitchen" class="form-control palace-select">
-                            <option value="4" selected>Tốn (Đông Nam)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phòng Ngủ 1 (Master)</label>
-                        <select id="sel_master_bed" class="form-control palace-select">
-                            <option value="3" selected>Chấn (Đông)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phòng Ngủ 2</label>
-                        <select id="sel_bed_2" class="form-control palace-select">
-                            <option value="7" selected>Đoài (Tây)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phòng Ngủ 3</label>
-                        <select id="sel_bed_3" class="form-control palace-select">
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none" selected>-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nhà Vệ Sinh 1</label>
-                        <select id="sel_toilet_1" class="form-control palace-select">
-                            <option value="2" selected>Khôn (Tây Nam)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nhà Vệ Sinh 2</label>
-                        <select id="sel_toilet_2" class="form-control palace-select">
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none" selected>-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Cầu Thang</label>
-                        <select id="sel_stairs" class="form-control palace-select">
-                            <option value="5" selected>Trung Cung (Chính Giữa)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="none">-- Không Có / Chưa Bố Trí --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phòng Làm Việc / Học</label>
-                        <select id="sel_work_room" class="form-control palace-select">
-                            <option value="8">Cấn (Đông Bắc)</option>
-                            <option value="1">Khảm (Bắc)</option>
-                            <option value="9">Ly (Nam)</option>
-                            <option value="3">Chấn (Đông)</option>
-                            <option value="7">Đoài (Tây)</option>
-                            <option value="4">Tốn (Đông Nam)</option>
-                            <option value="2">Khôn (Tây Nam)</option>
-                            <option value="6">Càn (Tây Bắc)</option>
-                            <option value="5">Trung Cung</option>
-                            <option value="none" selected>-- Không Có / Chưa Bố Trí --</option>
-                        </select>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="dndPalacesGrid">
+                        <!-- Populated dynamically by script.js with 9 drop zones -->
                     </div>
                 </div>
             </div>

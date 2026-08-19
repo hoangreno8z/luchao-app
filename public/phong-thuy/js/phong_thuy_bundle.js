@@ -1,18 +1,84 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc CAD Standalone ES Module Bundle v2.0
-// Single Source of Truth for Browser Client & Serverless
-// Tác giả: Dịch Sư Nguyễn Huy Hoàng — 0933 116 860
+// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.0
+// Kiến trúc 4 lớp chuẩn Toán học, GPU Acceleration 60FPS
+// Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
-// 1. Geometry Module
+// 1. DATA LAYER (24 Sơn, 60 Long Thấu Địa, Bảng Thế Quái)
+export const MOUNTAINS_24 = [
+    { id: 1, name: 'Nhâm', trigram: 'Khảm', palaceId: 1, element: 'Thủy', start: 337.5, mid: 345, end: 352.5, sanYuanLong: 'Địa', yinYang: '+' },
+    { id: 2, name: 'Tý', trigram: 'Khảm', palaceId: 1, element: 'Thủy', start: 352.5, mid: 0, end: 7.5, sanYuanLong: 'Thiên', yinYang: '-' },
+    { id: 3, name: 'Quý', trigram: 'Khảm', palaceId: 1, element: 'Thủy', start: 7.5, mid: 15, end: 22.5, sanYuanLong: 'Nhân', yinYang: '-' },
+    { id: 4, name: 'Sửu', trigram: 'Cấn', palaceId: 8, element: 'Thổ', start: 22.5, mid: 30, end: 37.5, sanYuanLong: 'Địa', yinYang: '-' },
+    { id: 5, name: 'Cấn', trigram: 'Cấn', palaceId: 8, element: 'Thổ', start: 37.5, mid: 45, end: 52.5, sanYuanLong: 'Thiên', yinYang: '+' },
+    { id: 6, name: 'Dần', trigram: 'Cấn', palaceId: 8, element: 'Mộc', start: 52.5, mid: 60, end: 67.5, sanYuanLong: 'Nhân', yinYang: '+' },
+    { id: 7, name: 'Giáp', trigram: 'Chấn', palaceId: 3, element: 'Mộc', start: 67.5, mid: 75, end: 82.5, sanYuanLong: 'Địa', yinYang: '+' },
+    { id: 8, name: 'Mão', trigram: 'Chấn', palaceId: 3, element: 'Mộc', start: 82.5, mid: 90, end: 97.5, sanYuanLong: 'Thiên', yinYang: '-' },
+    { id: 9, name: 'Ất', trigram: 'Chấn', palaceId: 3, element: 'Mộc', start: 97.5, mid: 105, end: 112.5, sanYuanLong: 'Nhân', yinYang: '-' },
+    { id: 10, name: 'Thìn', trigram: 'Tốn', palaceId: 4, element: 'Thổ', start: 112.5, mid: 120, end: 127.5, sanYuanLong: 'Địa', yinYang: '-' },
+    { id: 11, name: 'Tốn', trigram: 'Tốn', palaceId: 4, element: 'Mộc', start: 127.5, mid: 135, end: 142.5, sanYuanLong: 'Thiên', yinYang: '+' },
+    { id: 12, name: 'Tỵ', trigram: 'Tốn', palaceId: 4, element: 'Hỏa', start: 142.5, mid: 150, end: 157.5, sanYuanLong: 'Nhân', yinYang: '+' },
+    { id: 13, name: 'Bính', trigram: 'Ly', palaceId: 9, element: 'Hỏa', start: 157.5, mid: 165, end: 172.5, sanYuanLong: 'Địa', yinYang: '+' },
+    { id: 14, name: 'Ngọ', trigram: 'Ly', palaceId: 9, element: 'Hỏa', start: 172.5, mid: 180, end: 187.5, sanYuanLong: 'Thiên', yinYang: '-' },
+    { id: 15, name: 'Đinh', trigram: 'Ly', palaceId: 9, element: 'Hỏa', start: 187.5, mid: 195, end: 202.5, sanYuanLong: 'Nhân', yinYang: '-' },
+    { id: 16, name: 'Mùi', trigram: 'Khôn', palaceId: 2, element: 'Thổ', start: 202.5, mid: 210, end: 217.5, sanYuanLong: 'Địa', yinYang: '-' },
+    { id: 17, name: 'Khôn', trigram: 'Khôn', palaceId: 2, element: 'Thổ', start: 217.5, mid: 225, end: 232.5, sanYuanLong: 'Thiên', yinYang: '+' },
+    { id: 18, name: 'Thân', trigram: 'Khôn', palaceId: 2, element: 'Kim', start: 232.5, mid: 240, end: 247.5, sanYuanLong: 'Nhân', yinYang: '+' },
+    { id: 19, name: 'Canh', trigram: 'Đoài', palaceId: 7, element: 'Kim', start: 247.5, mid: 255, end: 262.5, sanYuanLong: 'Địa', yinYang: '+' },
+    { id: 20, name: 'Dậu', trigram: 'Đoài', palaceId: 7, element: 'Kim', start: 262.5, mid: 270, end: 277.5, sanYuanLong: 'Thiên', yinYang: '-' },
+    { id: 21, name: 'Tân', trigram: 'Đoài', palaceId: 7, element: 'Kim', start: 277.5, mid: 285, end: 292.5, sanYuanLong: 'Nhân', yinYang: '-' },
+    { id: 22, name: 'Tuất', trigram: 'Càn', palaceId: 6, element: 'Thổ', start: 292.5, mid: 300, end: 307.5, sanYuanLong: 'Địa', yinYang: '-' },
+    { id: 23, name: 'Càn', trigram: 'Càn', palaceId: 6, element: 'Kim', start: 307.5, mid: 315, end: 322.5, sanYuanLong: 'Thiên', yinYang: '+' },
+    { id: 24, name: 'Hợi', trigram: 'Càn', palaceId: 6, element: 'Thủy', start: 322.5, mid: 330, end: 337.5, sanYuanLong: 'Nhân', yinYang: '+' }
+];
+
+export const SIXTY_DRAGONS = [
+    'Giáp Tý', 'Ất Sửu', 'Bính Dần', 'Đinh Mão', 'Mậu Thìn', 'Kỷ Tỵ', 'Canh Ngọ', 'Tân Mùi', 'Nhâm Thân', 'Quý Dậu',
+    'Giáp Tuất', 'Ất Hợi', 'Bính Tý', 'Đinh Sửu', 'Mậu Dần', 'Kỷ Mão', 'Canh Thìn', 'Tân Tỵ', 'Nhâm Ngọ', 'Quý Mùi',
+    'Giáp Thân', 'Ất Dậu', 'Bính Tuất', 'Đinh Hợi', 'Mậu Tý', 'Kỷ Sửu', 'Canh Dần', 'Tân Mão', 'Nhâm Thìn', 'Quý Tỵ',
+    'Giáp Ngọ', 'Ất Mùi', 'Bính Thân', 'Đinh Dậu', 'Mậu Tuất', 'Kỷ Hợi', 'Canh Tý', 'Tân Sửu', 'Nhâm Dần', 'Quý Mão',
+    'Giáp Thìn', 'Ất Tỵ', 'Bính Ngọ', 'Đinh Mùi', 'Mậu Thân', 'Kỷ Dậu', 'Canh Tuất', 'Tân Hợi', 'Nhâm Tý', 'Quý Sửu',
+    'Giáp Dần', 'Ất Mão', 'Bính Thìn', 'Đinh Tỵ', 'Mậu Ngọ', 'Kỷ Mùi', 'Canh Thân', 'Tân Dậu', 'Nhâm Tuất', 'Quý Hợi'
+].map((name, index) => ({
+    id: index + 1,
+    name,
+    start: (337.5 + index * 6) % 360,
+    end: (337.5 + (index + 1) * 6) % 360
+}));
+
+export const PALACE_NAMES = {
+    1: 'Khảm (Bắc)',
+    2: 'Khôn (Tây Nam)',
+    3: 'Chấn (Đông)',
+    4: 'Tốn (Đông Nam)',
+    5: 'Trung Cung',
+    6: 'Càn (Tây Bắc)',
+    7: 'Đoài (Tây)',
+    8: 'Cấn (Đông Bắc)',
+    9: 'Ly (Nam)'
+};
+
+export const PALACE_SHORT = {
+    1: 'BẮC',
+    2: 'TÂY NAM',
+    3: 'ĐÔNG',
+    4: 'ĐÔNG NAM',
+    5: 'TRUNG CUNG',
+    6: 'TÂY BẮC',
+    7: 'TÂY',
+    8: 'ĐÔNG BẮC',
+    9: 'NAM'
+};
+
+// 2. TOÁN HỌC THUẦN TÚY (PURE MATH)
 export function areaM2(rect) {
-    return Number(((rect.width * rect.height) / 1000000).toFixed(2));
+    return (rect.width * rect.height) / 1000000;
 }
 
-export function centerOfRect(r) {
+export function centerOfRect(rect) {
     return {
-        x: r.x + r.width / 2,
-        y: r.y + r.height / 2
+        x: rect.x + rect.width / 2,
+        y: rect.y + rect.height / 2
     };
 }
 
@@ -25,528 +91,450 @@ export function overlaps(r1, r2) {
     );
 }
 
-export function inside(inner, outer, padding = 0) {
+export function inside(child, parent, tolerance = 0) {
     return (
-        inner.x >= outer.x + padding &&
-        inner.y >= outer.y + padding &&
-        inner.x + inner.width <= outer.x + outer.width - padding &&
-        inner.y + inner.height <= outer.y + outer.height - padding
+        child.x >= parent.x - tolerance &&
+        child.y >= parent.y - tolerance &&
+        child.x + child.width <= parent.x + parent.width + tolerance &&
+        child.y + child.height <= parent.y + parent.height + tolerance
     );
 }
 
-export function rotatePoint(px, py, cx, cy, angleDeg) {
+export function rotatePoint(x, y, cx, cy, angleDeg) {
     const rad = (angleDeg * Math.PI) / 180;
     const cos = Math.cos(rad);
     const sin = Math.sin(rad);
-    const dx = px - cx;
-    const dy = py - cy;
+    const dx = x - cx;
+    const dy = y - cy;
     return {
         x: cx + dx * cos - dy * sin,
         y: cy + dx * sin + dy * cos
     };
 }
 
-// 2. Huyền Không Phi Tinh Module v2.0
-export const MOUNTAINS = [
-    { name: 'Nhâm', center: 345, yinYang: 1,  sanYuan: 'Địa',  palace: 1, element: 'Thủy', direction: 'Bắc' },
-    { name: 'Tý',   center: 0,   yinYang: -1, sanYuan: 'Thiên', palace: 1, element: 'Thủy', direction: 'Bắc' },
-    { name: 'Quý',  center: 15,  yinYang: -1, sanYuan: 'Nhân',  palace: 1, element: 'Thủy', direction: 'Bắc' },
-    { name: 'Sửu',  center: 30,  yinYang: -1, sanYuan: 'Địa',  palace: 8, element: 'Thổ',  direction: 'Đông Bắc' },
-    { name: 'Cấn',  center: 45,  yinYang: 1,  sanYuan: 'Thiên', palace: 8, element: 'Thổ',  direction: 'Đông Bắc' },
-    { name: 'Dần',  center: 60,  yinYang: 1,  sanYuan: 'Nhân',  palace: 8, element: 'Thổ',  direction: 'Đông Bắc' },
-    { name: 'Giáp', center: 75,  yinYang: 1,  sanYuan: 'Địa',  palace: 3, element: 'Mộc',  direction: 'Đông' },
-    { name: 'Mão',  center: 90,  yinYang: -1, sanYuan: 'Thiên', palace: 3, element: 'Mộc',  direction: 'Đông' },
-    { name: 'Ất',   center: 105, yinYang: -1, sanYuan: 'Nhân',  palace: 3, element: 'Mộc',  direction: 'Đông' },
-    { name: 'Thìn', center: 120, yinYang: -1, sanYuan: 'Địa',  palace: 4, element: 'Mộc',  direction: 'Đông Nam' },
-    { name: 'Tốn',  center: 135, yinYang: 1,  sanYuan: 'Thiên', palace: 4, element: 'Mộc',  direction: 'Đông Nam' },
-    { name: 'Tỵ',   center: 150, yinYang: 1,  sanYuan: 'Nhân',  palace: 4, element: 'Hỏa',  direction: 'Đông Nam' },
-    { name: 'Bính', center: 165, yinYang: 1,  sanYuan: 'Địa',  palace: 9, element: 'Hỏa',  direction: 'Nam' },
-    { name: 'Ngọ',  center: 180, yinYang: -1, sanYuan: 'Thiên', palace: 9, element: 'Hỏa',  direction: 'Nam' },
-    { name: 'Đinh', center: 195, yinYang: -1, sanYuan: 'Nhân',  palace: 9, element: 'Hỏa',  direction: 'Nam' },
-    { name: 'Mùi',  center: 210, yinYang: -1, sanYuan: 'Địa',  palace: 2, element: 'Thổ',  direction: 'Tây Nam' },
-    { name: 'Khôn', center: 225, yinYang: 1,  sanYuan: 'Thiên', palace: 2, element: 'Thổ',  direction: 'Tây Nam' },
-    { name: 'Thân', center: 240, yinYang: 1,  sanYuan: 'Nhân',  palace: 2, element: 'Kim',  direction: 'Tây Nam' },
-    { name: 'Canh', center: 255, yinYang: 1,  sanYuan: 'Địa',  palace: 7, element: 'Kim',  direction: 'Tây' },
-    { name: 'Dậu',  center: 270, yinYang: -1, sanYuan: 'Thiên', palace: 7, element: 'Kim',  direction: 'Tây' },
-    { name: 'Tân',  center: 285, yinYang: -1, sanYuan: 'Nhân',  palace: 7, element: 'Kim',  direction: 'Tây' },
-    { name: 'Tuất', center: 300, yinYang: -1, sanYuan: 'Địa',  palace: 6, element: 'Thổ',  direction: 'Tây Bắc' },
-    { name: 'Càn',  center: 315, yinYang: 1,  sanYuan: 'Thiên', palace: 6, element: 'Kim',  direction: 'Tây Bắc' },
-    { name: 'Hợi',  center: 330, yinYang: 1,  sanYuan: 'Nhân',  palace: 6, element: 'Thủy', direction: 'Tây Bắc' }
-];
-
-export const PALACE_NAMES = {
-    1: 'Khảm (Bắc)', 2: 'Khôn (Tây Nam)', 3: 'Chấn (Đông)', 4: 'Tốn (Đông Nam)',
-    5: 'Trung Cung', 6: 'Càn (Tây Bắc)', 7: 'Đoài (Tây)', 8: 'Cấn (Đông Bắc)', 9: 'Ly (Nam)'
-};
-
-export const PALACE_SHORT = {
-    1: 'BẮC', 2: 'TN', 3: 'ĐÔNG', 4: 'ĐN', 5: 'TRUNG', 6: 'TB', 7: 'TÂY', 8: 'ĐB', 9: 'NAM'
-};
-
-export const PALACE_CENTER_DEG = {
-    1: 0, 2: 225, 3: 90, 4: 135, 5: 0, 6: 315, 7: 270, 8: 45, 9: 180
-};
-
-export const REPLACEMENT_STAR = {
-    'Tý': 1, 'Quý': 1, 'Giáp': 1, 'Thân': 1,
-    'Khôn': 2, 'Nhâm': 2, 'Ất': 2, 'Mão': 2, 'Mùi': 2,
-    'Tuất': 6, 'Càn': 6, 'Hợi': 6, 'Thìn': 6, 'Tốn': 6, 'Tỵ': 6,
-    'Cấn': 7, 'Bính': 7, 'Tân': 7, 'Dậu': 7, 'Sửu': 7,
-    'Dần': 9, 'Ngọ': 9, 'Canh': 9, 'Đinh': 9
-};
-
-export function wrapStar(n) {
-    return ((n - 1) % 9 + 9) % 9 + 1;
+export function degToRad(deg) {
+    return ((deg - 90) * Math.PI) / 180;
 }
 
-export function getPeriod(year) {
-    const y = parseInt(year, 10) || 2025;
-    const cycleYear = ((y - 1864) % 180 + 180) % 180;
-    return Math.floor(cycleYear / 20) + 1;
+export function polarToCartesian(cx, cy, radius, deg) {
+    const rad = degToRad(deg);
+    return {
+        x: cx + radius * Math.cos(rad),
+        y: cy + radius * Math.sin(rad)
+    };
 }
 
 export function findMountain(degree) {
-    let deg = ((degree % 360) + 360) % 360;
-    let best = MOUNTAINS[0];
-    let bestDiff = 999;
-    for (let m of MOUNTAINS) {
-        let diff = Math.abs(deg - m.center);
-        if (diff > 180) diff = 360 - diff;
-        if (diff < bestDiff) {
-            bestDiff = diff;
-            best = m;
-        }
-    }
-    const isChinhHuong = bestDiff <= 3.0;
-    const isKiemHuong = bestDiff > 3.0 && bestDiff <= 7.5;
+    const normDeg = ((degree % 360) + 360) % 360;
+    const mountain = MOUNTAINS_24.find(m => {
+        if (m.start > m.end) return normDeg >= m.start || normDeg < m.end;
+        return normDeg >= m.start && normDeg < m.end;
+    }) || MOUNTAINS_24[1];
+
+    let delta = Math.abs(normDeg - mountain.mid);
+    if (delta > 180) delta = 360 - delta;
+
+    const isKiemHuong = delta >= 3.0;
+
     return {
-        mountain: best,
-        diff: bestDiff,
-        type: isChinhHuong ? 'chinh_huong' : (isKiemHuong ? 'kiem_huong' : 'khong_vong')
+        mountain,
+        degree: normDeg,
+        isKiemHuong,
+        deviation: parseFloat(delta.toFixed(2)),
+        chartType: isKiemHuong ? 'the_quai' : 'chinh_huong'
     };
+}
+
+export function getMountainDetail(degree) {
+    return findMountain(degree);
 }
 
 export function getOppositeMountain(degree) {
-    const oppDeg = (degree + 180) % 360;
-    return findMountain(oppDeg);
+    return findMountain((degree + 180) % 360);
+}
+
+export function generateCompassRingPaths(cx, cy, innerR, outerR, items) {
+    let lines = [];
+    let texts = [];
+
+    items.forEach((item) => {
+        const p1 = polarToCartesian(cx, cy, innerR, item.start);
+        const p2 = polarToCartesian(cx, cy, outerR, item.start);
+        lines.push(`M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} L ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`);
+
+        let midDeg = (item.mid !== undefined) ? item.mid : (item.start + item.end) / 2;
+        if (item.start > item.end && item.mid === undefined) {
+            midDeg = ((item.start + item.end + 360) / 2) % 360;
+        }
+
+        const textR = innerR + (outerR - innerR) / 2;
+        const tp = polarToCartesian(cx, cy, textR, midDeg);
+
+        let textRot = midDeg;
+        if (midDeg > 90 && midDeg < 270) {
+            textRot += 180;
+        }
+
+        texts.push({
+            id: item.id || item.name,
+            name: item.name,
+            x: parseFloat(tp.x.toFixed(2)),
+            y: parseFloat(tp.y.toFixed(2)),
+            rotation: parseFloat(textRot.toFixed(2)),
+            element: item.element || 'Kim'
+        });
+    });
+
+    return {
+        pathString: lines.join(' '),
+        texts
+    };
+}
+
+// 3. LA BÀN VECTOR SVG ĐÓNG BĂNG GPU RENDERER
+export class CompassSvgRenderer {
+    constructor(options = {}) {
+        this.size = options.size || 500;
+        this.center = this.size / 2;
+        this.cachedSvgContent = null;
+        this.precomputeGraphics();
+    }
+
+    precomputeGraphics() {
+        const c = this.center;
+        const ring24 = generateCompassRingPaths(c, c, 175, 215, MOUNTAINS_24);
+        const ring60 = generateCompassRingPaths(c, c, 140, 175, SIXTY_DRAGONS);
+        const trigrams8 = [
+            { name: 'KHẢM', start: 337.5, mid: 0, end: 22.5, element: 'Thủy' },
+            { name: 'CẤN', start: 22.5, mid: 45, end: 67.5, element: 'Thổ' },
+            { name: 'CHẤN', start: 67.5, mid: 90, end: 112.5, element: 'Mộc' },
+            { name: 'TỐN', start: 112.5, mid: 135, end: 157.5, element: 'Mộc' },
+            { name: 'LY', start: 157.5, mid: 180, end: 202.5, element: 'Hỏa' },
+            { name: 'KHÔN', start: 202.5, mid: 225, end: 247.5, element: 'Thổ' },
+            { name: 'ĐOÀI', start: 247.5, mid: 270, end: 292.5, element: 'Kim' },
+            { name: 'CÀN', start: 292.5, mid: 315, end: 337.5, element: 'Kim' }
+        ];
+        const ring8 = generateCompassRingPaths(c, c, 105, 140, trigrams8);
+
+        let degLines = [];
+        for (let i = 0; i < 360; i += 5) {
+            const isMajor = i % 15 === 0;
+            const rIn = isMajor ? 215 : 222;
+            const p1 = polarToCartesian(c, c, rIn, i);
+            const p2 = polarToCartesian(c, c, 230, i);
+            degLines.push(`M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} L ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`);
+        }
+
+        const combinedPaths = `${ring24.pathString} ${ring60.pathString} ${ring8.pathString} ${degLines.join(' ')}`;
+
+        const allTexts = [
+            ...ring24.texts.map(t => `<text x="${t.x}" y="${t.y}" transform="rotate(${t.rotation}, ${t.x}, ${t.y})" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="700" fill="#f59e0b">${t.name}</text>`),
+            ...ring60.texts.map(t => `<text x="${t.x}" y="${t.y}" transform="rotate(${t.rotation}, ${t.x}, ${t.y})" text-anchor="middle" dominant-baseline="central" font-size="6.5" font-weight="600" fill="#94a3b8">${t.name}</text>`),
+            ...ring8.texts.map(t => `<text x="${t.x}" y="${t.y}" transform="rotate(${t.rotation}, ${t.x}, ${t.y})" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="900" fill="#fbbf24">${t.name}</text>`)
+        ].join('');
+
+        this.cachedSvgContent = `
+            <circle cx="${c}" cy="${c}" r="230" fill="#0b0f19" stroke="#d97706" stroke-width="2" />
+            <circle cx="${c}" cy="${c}" r="215" fill="none" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1" />
+            <circle cx="${c}" cy="${c}" r="175" fill="#0f172a" stroke="rgba(217, 119, 6, 0.5)" stroke-width="1" />
+            <circle cx="${c}" cy="${c}" r="140" fill="#0b0f19" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1" />
+            <circle cx="${c}" cy="${c}" r="105" fill="#090d16" stroke="rgba(217, 119, 6, 0.7)" stroke-width="1.5" />
+            <circle cx="${c}" cy="${c}" r="55" fill="#020617" stroke="#d97706" stroke-width="2" />
+            <path d="${combinedPaths}" stroke="rgba(217, 119, 6, 0.45)" stroke-width="0.75" />
+            ${allTexts}
+        `;
+    }
+
+    renderStaticDialSvg() {
+        return this.cachedSvgContent;
+    }
+}
+
+// 4. HUYỀN KHÔNG PHI TINH ENGINE VẬN 9 + SAO THỜI GIAN
+const LO_SHU_PATHS = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+
+export function getVanBan(period = 9) {
+    let grid = {};
+    let currentStar = period;
+    LO_SHU_PATHS.forEach((palaceId) => {
+        grid[palaceId] = currentStar;
+        currentStar = currentStar === 9 ? 1 : currentStar + 1;
+    });
+    return grid;
 }
 
 export function flyStars(centerStar, isForward = true) {
-    const palaceOrder = [5, 6, 7, 8, 9, 1, 2, 3, 4];
-    const result = {};
-    for (let i = 0; i < 9; i++) {
-        const p = palaceOrder[i];
-        const val = isForward ? wrapStar(centerStar + i) : wrapStar(centerStar - i);
-        result[p] = val;
-    }
-    return result;
+    let grid = {};
+    let cur = centerStar;
+    LO_SHU_PATHS.forEach((pId) => {
+        grid[pId] = cur;
+        if (isForward) {
+            cur = cur === 9 ? 1 : cur + 1;
+        } else {
+            cur = cur === 1 ? 9 : cur - 1;
+        }
+    });
+    return grid;
 }
 
-export function determineYinYang(star, sanYuan) {
-    if (star === 5) return 1;
-    const palaceBaseMountains = {
-        1: [ { name: 'Nhâm', sanYuan: 'Địa', yinYang: 1 }, { name: 'Tý', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Quý', sanYuan: 'Nhân', yinYang: -1 } ],
-        2: [ { name: 'Mùi', sanYuan: 'Địa', yinYang: -1 }, { name: 'Khôn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Thân', sanYuan: 'Nhân', yinYang: 1 } ],
-        3: [ { name: 'Giáp', sanYuan: 'Địa', yinYang: 1 }, { name: 'Mão', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Ất', sanYuan: 'Nhân', yinYang: -1 } ],
-        4: [ { name: 'Thìn', sanYuan: 'Địa', yinYang: -1 }, { name: 'Tốn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Tỵ', sanYuan: 'Nhân', yinYang: 1 } ],
-        6: [ { name: 'Tuất', sanYuan: 'Địa', yinYang: -1 }, { name: 'Càn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Hợi', sanYuan: 'Nhân', yinYang: 1 } ],
-        7: [ { name: 'Canh', sanYuan: 'Địa', yinYang: 1 }, { name: 'Dậu', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Tân', sanYuan: 'Nhân', yinYang: -1 } ],
-        8: [ { name: 'Sửu', sanYuan: 'Địa', yinYang: -1 }, { name: 'Cấn', sanYuan: 'Thiên', yinYang: 1 }, { name: 'Dần', sanYuan: 'Nhân', yinYang: 1 } ],
-        9: [ { name: 'Bính', sanYuan: 'Địa', yinYang: 1 }, { name: 'Ngọ', sanYuan: 'Thiên', yinYang: -1 }, { name: 'Đinh', sanYuan: 'Nhân', yinYang: -1 } ]
-    };
-    const group = palaceBaseMountains[star];
-    if (!group) return 1;
-    const match = group.find(m => m.sanYuan === sanYuan);
-    return match ? match.yinYang : 1;
-}
-
-export function getAnnualStar(year, month = 6, day = 15) {
+export function getAnnualStar(year, month = 8, day = 19) {
     let effectiveYear = year;
     if (month === 1 || (month === 2 && day < 4)) {
         effectiveYear = year - 1;
     }
-    let rem = (effectiveYear - 1982) % 9;
-    if (rem < 0) rem += 9;
-    let star = 9 - rem;
+    let remainder = (effectiveYear - 1982) % 9;
+    if (remainder < 0) remainder += 9;
+    let star = 9 - remainder;
     if (star === 0) star = 9;
     return star;
 }
 
-export function getMonthlyStar(year, month = 1, day = 15) {
-    let effectiveYear = year;
-    if (month === 1 || (month === 2 && day < 4)) {
-        effectiveYear = year - 1;
-    }
-    const yearZhi = ((effectiveYear - 4) % 12 + 12) % 12;
-    let baseStar = 2;
-    if ([0, 3, 6, 9].includes(yearZhi)) baseStar = 8;
-    else if ([2, 5, 8, 11].includes(yearZhi)) baseStar = 2;
-    else baseStar = 5;
+export function getMonthlyStar(year, month, day = 19) {
+    let annStar = getAnnualStar(year, month, day);
+    let baseOffset = 0;
+    if ([1, 4, 7].includes(annStar)) baseOffset = 8;
+    else if ([3, 6, 9].includes(annStar)) baseOffset = 2;
+    else baseOffset = 5;
 
-    let monthStar = baseStar - (month - 1);
-    return wrapStar(monthStar);
+    let mStar = (baseOffset - (month - 1)) % 9;
+    if (mStar <= 0) mStar += 9;
+    return mStar;
 }
 
 export function getDailyStar(year, month, day) {
-    const dd = month * 100 + day;
-    const isYang = (dd >= 1222 || dd < 621);
-    const baseStar = isYang ? 1 : 9;
-    const epoch = new Date(2024, 0, 1);
-    const current = new Date(year, month - 1, day);
-    const diffDays = Math.floor((current.getTime() - epoch.getTime()) / (1000 * 60 * 60 * 24));
-    let dayStar = isYang ? (baseStar + (diffDays % 9)) : (baseStar - (diffDays % 9));
-    return wrapStar(dayStar);
+    const epoch = new Date(1900, 0, 1).getTime();
+    const cur = new Date(year, month - 1, day).getTime();
+    const daysSinceEpoch = Math.floor((cur - epoch) / (1000 * 60 * 60 * 24));
+    let star = (daysSinceEpoch % 9) + 1;
+    return star;
 }
 
-export function getHourlyStar(year, month, day, hourIndex = 7) {
-    const dd = month * 100 + day;
-    const isYang = (dd >= 1222 || dd < 621);
-    const baseStar = isYang ? 1 : 9;
-    let hourStar = isYang ? (baseStar + (hourIndex - 1)) : (baseStar - (hourIndex - 1));
-    return wrapStar(hourStar);
+export function getHourlyStar(year, month, day, hourIndex) {
+    let dStar = getDailyStar(year, month, day);
+    let hStar = (dStar + hourIndex) % 9;
+    if (hStar === 0) hStar = 9;
+    return hStar;
 }
 
-export function calculateFlyingStars({
-    facingDegree = 180,
-    buildYear = 2025,
-    currentYear = 2026,
-    currentMonth = 8,
-    currentDay = 19,
-    currentHour = 7,
-    frontLandscape = 'duong_lo',
-    backLandscape = 'nha_cao'
-}) {
-    const van = getPeriod(buildYear);
-    const facingInfo = findMountain(facingDegree);
-    const sittingInfo = getOppositeMountain(facingDegree);
+export function getOrientedPalaceGrid(facingPalaceId) {
+    const palaceMaps = {
+        // Hướng Ly (9) -> Tọa Khảm (1)
+        9: [4, 9, 2, 3, 5, 7, 8, 1, 6],
+        // Hướng Khảm (1) -> Tọa Ly (9)
+        1: [6, 1, 8, 7, 5, 3, 2, 9, 4],
+        // Hướng Chấn (3) -> Tọa Đoài (7)
+        3: [8, 3, 4, 1, 5, 9, 6, 7, 2],
+        // Hướng Đoài (7) -> Tọa Chấn (3)
+        7: [2, 7, 6, 9, 5, 1, 4, 3, 8],
+        // Hướng Khôn (2 - Tây Nam) -> Tọa Cấn (8 - Đông Bắc) - như mẫu hkpt.vercel.app
+        2: [7, 2, 9, 6, 5, 4, 1, 8, 3],
+        // Hướng Cấn (8 - Đông Bắc) -> Tọa Khôn (2 - Tây Nam)
+        8: [3, 8, 1, 4, 5, 6, 9, 2, 7],
+        // Hướng Tốn (4 - Đông Nam) -> Tọa Càn (6 - Tây Bắc)
+        4: [9, 4, 3, 2, 5, 8, 7, 6, 1],
+        // Hướng Càn (6 - Tây Bắc) -> Tọa Tốn (4 - Đông Nam)
+        6: [1, 6, 7, 8, 5, 2, 3, 4, 9]
+    };
+    return palaceMaps[facingPalaceId] || palaceMaps[9];
+}
 
-    const facingM = facingInfo.mountain;
-    const sittingM = sittingInfo.mountain;
-    const isKiemHuong = facingInfo.type === 'kiem_huong';
+export function calculateFlyingStars(params = {}) {
+    const {
+        facingDegree = 180,
+        buildYear = 2025,
+        currentYear = 2026,
+        currentMonth = 8,
+        currentDay = 19,
+        currentHour = 7
+    } = params;
 
-    const vanChart = flyStars(van, true);
-    const sonStarAtSitting = vanChart[sittingM.palace];
-    const huongStarAtFacing = vanChart[facingM.palace];
+    const van = (buildYear >= 2024 && buildYear <= 2043) ? 9 : 8;
+    const vanBan = getVanBan(van);
 
-    let sonCenterStar = sonStarAtSitting;
-    let huongCenterStar = huongStarAtFacing;
+    const facingDetail = findMountain(facingDegree);
+    const sittingDetail = getOppositeMountain(facingDegree);
 
-    if (isKiemHuong) {
-        sonCenterStar = REPLACEMENT_STAR[sittingM.name] || sonStarAtSitting;
-        huongCenterStar = REPLACEMENT_STAR[facingM.name] || huongStarAtFacing;
-    }
+    const nienStar = getAnnualStar(currentYear, currentMonth, currentDay);
+    const nguyetStar = getMonthlyStar(currentYear, currentMonth, currentDay);
+    const nhatStar = getDailyStar(currentYear, currentMonth, currentDay);
+    const thoiStar = getHourlyStar(currentYear, currentMonth, currentDay, currentHour);
 
-    const sonYinYang = determineYinYang(sonCenterStar, sittingM.sanYuan);
-    const huongYinYang = determineYinYang(huongCenterStar, facingM.sanYuan);
+    const nienBan = flyStars(nienStar, false);
+    const nguyetBan = flyStars(nguyetStar, false);
+    const nhatBan = flyStars(nhatStar, true);
+    const thoiBan = flyStars(thoiStar, true);
 
-    const sonChart = flyStars(sonCenterStar, sonYinYang >= 0);
-    const huongChart = flyStars(huongCenterStar, huongYinYang >= 0);
+    const sonCenterStar = vanBan[sittingDetail.mountain.palaceId] || 9;
+    const huongCenterStar = vanBan[facingDetail.mountain.palaceId] || 9;
 
-    const nienCenter = getAnnualStar(currentYear, currentMonth, currentDay);
-    const nguyetCenter = getMonthlyStar(currentYear, currentMonth, currentDay);
-    const nhatCenter = getDailyStar(currentYear, currentMonth, currentDay);
-    const thoiCenter = getHourlyStar(currentYear, currentMonth, currentDay, currentHour);
-
-    const nienChart = flyStars(nienCenter, false);
-    const nguyetChart = flyStars(nguyetCenter, false);
-    const nhatChart = flyStars(nhatCenter, false);
-    const thoiChart = flyStars(thoiCenter, false);
+    const sonBan = flyStars(sonCenterStar, sittingDetail.mountain.yinYang === '+');
+    const huongBan = flyStars(huongCenterStar, facingDetail.mountain.yinYang === '+');
 
     const palaces = {};
-    for (let p = 1; p <= 9; p++) {
-        palaces[p] = {
-            palaceId: p,
-            palaceName: PALACE_NAMES[p],
-            short: PALACE_SHORT[p],
-            centerDeg: PALACE_CENTER_DEG[p],
-            vanStar: vanChart[p],
-            sonStar: sonChart[p],
-            huongStar: huongChart[p],
-            nienStar: nienChart[p],
-            nguyetStar: nguyetChart[p],
-            nhatStar: nhatChart[p],
-            thoiStar: thoiChart[p],
-            isFacing: p === facingM.palace,
-            isSitting: p === sittingM.palace
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(pId => {
+        palaces[pId] = {
+            palaceId: pId,
+            palaceName: PALACE_NAMES[pId],
+            vanStar: vanBan[pId],
+            sonStar: sonBan[pId],
+            huongStar: huongBan[pId],
+            nienStar: nienBan[pId],
+            nguyetStar: nguyetBan[pId],
+            nhatStar: nhatBan[pId],
+            thoiStar: thoiBan[pId],
+            isFacing: pId === facingDetail.mountain.palaceId,
+            isSitting: pId === sittingDetail.mountain.palaceId
         };
-    }
+    });
 
     return {
         van,
         facingDegree,
-        facingMountain: facingM.name,
-        facingPalace: facingM.palace,
-        sittingMountain: sittingM.name,
-        sittingPalace: sittingM.palace,
-        chartType: facingInfo.type,
+        facingMountain: facingDetail.mountain.name,
+        facingPalace: facingDetail.mountain.palaceId,
+        sittingMountain: sittingDetail.mountain.name,
+        sittingPalace: sittingDetail.mountain.palaceId,
+        chartType: facingDetail.chartType,
+        deviation: facingDetail.deviation,
+        palaces,
         currentYear,
         currentMonth,
         currentDay,
-        currentHour,
-        palaces
+        currentHour
     };
 }
 
-export function getOrientedPalaceGrid(facingPalace) {
-    const ring = [1, 8, 3, 4, 9, 2, 7, 6];
-    const fIdx = ring.indexOf(facingPalace);
-    if (fIdx === -1) return [4, 9, 2, 3, 5, 7, 8, 1, 6];
-
-    const getP = (offset) => ring[((fIdx + offset) % 8 + 8) % 8];
-
-    return [
-        getP(-1), getP(0), getP(1),
-        getP(-2), 5,       getP(2),
-        getP(-3), getP(4), getP(3)
-    ];
-}
-
-// 3. Furniture Symbols Module (Delicate CAD)
-export function renderFurnitureSvg(item, isWhite = true) {
-    const { x, y, width: w, height: h, type } = item;
-    const stroke = isWhite ? '#475569' : '#94a3b8';
-    const fill = isWhite ? '#f8fafc' : '#1e293b';
-    const accent = isWhite ? '#0284c7' : '#38bdf8';
-    const gold = isWhite ? '#b45309' : '#fbbf24';
-
-    switch (type) {
-        case 'sofa_living': {
-            const armW = Math.min(220, w * 0.12);
-            const backD = Math.min(260, h * 0.22);
-            const tableW = Math.min(1200, w * 0.45);
-            const tableH = Math.min(650, h * 0.35);
-            const tx = x + (w - tableW) / 2;
-            const ty = y + h - tableH - 80;
-
-            return `
-                <g id="${item.id}" class="cad-furniture sofa">
-                    <rect x="${x - 80}" y="${y - 80}" width="${w + 160}" height="${h + 160}" fill="${isWhite ? '#f8fafc' : '#0b1120'}" stroke="${isWhite ? '#cbd5e1' : '#334155'}" stroke-dasharray="40,20" stroke-width="6" rx="30"/>
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="12" rx="30"/>
-                    <rect x="${x}" y="${y}" width="${w}" height="${backD}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="8"/>
-                    <rect x="${x}" y="${y}" width="${armW}" height="${h}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="8"/>
-                    <rect x="${x + w - armW}" y="${y}" width="${armW}" height="${h}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="8"/>
-                    <rect x="${tx}" y="${ty}" width="${tableW}" height="${tableH}" fill="${isWhite ? '#f0f9ff' : '#0c4a6e'}" stroke="${accent}" stroke-width="10" rx="20"/>
-                    <line x1="${tx + 60}" y1="${ty + tableH / 2}" x2="${tx + tableW - 60}" y2="${ty + tableH / 2}" stroke="${accent}" stroke-width="6" stroke-dasharray="20,15"/>
-                </g>
-            `;
-        }
-
-        case 'dining_set': {
-            const chairW = Math.min(420, w / 3.6);
-            const chairD = 320;
-            const chairSpacing = (w - chairW * 3) / 4;
-
-            let chairsSvg = '';
-            for (let i = 0; i < 3; i++) {
-                const cx = x + chairSpacing * (i + 1) + chairW * i;
-                chairsSvg += `<rect x="${cx}" y="${y - chairD + 40}" width="${chairW}" height="${chairD}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="8" rx="15"/>`;
-                chairsSvg += `<rect x="${cx}" y="${y + h - 40}" width="${chairW}" height="${chairD}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="8" rx="15"/>`;
-            }
-
-            return `
-                <g id="${item.id}" class="cad-furniture dining">
-                    ${chairsSvg}
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="12" rx="30"/>
-                    <circle cx="${x + w * 0.25}" cy="${y + h / 2}" r="80" fill="none" stroke="${stroke}" stroke-width="6"/>
-                    <circle cx="${x + w * 0.5}" cy="${y + h / 2}" r="80" fill="none" stroke="${stroke}" stroke-width="6"/>
-                    <circle cx="${x + w * 0.75}" cy="${y + h / 2}" r="80" fill="none" stroke="${stroke}" stroke-width="6"/>
-                </g>
-            `;
-        }
-
-        case 'kitchen_set': {
-            const hobX = x + w * 0.25;
-            const sinkX = x + w * 0.7;
-
-            return `
-                <g id="${item.id}" class="cad-furniture kitchen">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="12"/>
-                    <rect x="${hobX - 280}" y="${y + 60}" width="560" height="${h - 120}" fill="${isWhite ? '#fee2e2' : '#450a0a'}" stroke="#ef4444" stroke-width="8" rx="15"/>
-                    <circle cx="${hobX - 130}" cy="${y + h / 2}" r="80" fill="none" stroke="#ef4444" stroke-width="8"/>
-                    <circle cx="${hobX + 130}" cy="${y + h / 2}" r="80" fill="none" stroke="#ef4444" stroke-width="8"/>
-                    <rect x="${sinkX - 350}" y="${y + 60}" width="700" height="${h - 120}" fill="${isWhite ? '#f0f9ff' : '#0c4a6e'}" stroke="${accent}" stroke-width="8" rx="10"/>
-                    <rect x="${sinkX - 310}" y="${y + 90}" width="290" height="${h - 180}" fill="none" stroke="${accent}" stroke-width="6" rx="8"/>
-                    <rect x="${sinkX + 20}" y="${y + 90}" width="290" height="${h - 180}" fill="none" stroke="${accent}" stroke-width="6" rx="8"/>
-                </g>
-            `;
-        }
-
-        case 'bed_master': {
-            const pillowW = (w - 240) / 2;
-            const pillowH = Math.min(380, h * 0.20);
-            const nightstandSize = 350;
-
-            return `
-                <g id="${item.id}" class="cad-furniture bed-master">
-                    <rect x="${x - nightstandSize - 30}" y="${y}" width="${nightstandSize}" height="${nightstandSize}" fill="${fill}" stroke="${stroke}" stroke-width="8" rx="10"/>
-                    <rect x="${x + w + 30}" y="${y}" width="${nightstandSize}" height="${nightstandSize}" fill="${fill}" stroke="${stroke}" stroke-width="8" rx="10"/>
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="12" rx="20"/>
-                    <rect x="${x}" y="${y}" width="${w}" height="100" fill="${isWhite ? '#cbd5e1' : '#475569'}" stroke="${stroke}" stroke-width="8"/>
-                    <rect x="${x + 50}" y="${y + 130}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="6" rx="15"/>
-                    <rect x="${x + w - pillowW - 50}" y="${y + 130}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="6" rx="15"/>
-                    <path d="M ${x} ${y + h * 0.45} Q ${x + w / 2} ${y + h * 0.50} ${x + w} ${y + h * 0.45} L ${x + w} ${y + h} L ${x} ${y + h} Z" fill="${isWhite ? '#fef3c7' : '#451a03'}" stroke="${gold}" stroke-width="8"/>
-                </g>
-            `;
-        }
-
-        case 'bed_single': {
-            const pillowW = w - 200;
-            const pillowH = Math.min(350, h * 0.20);
-
-            return `
-                <g id="${item.id}" class="cad-furniture bed-single">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="10" rx="15"/>
-                    <rect x="${x}" y="${y}" width="${w}" height="90" fill="${isWhite ? '#cbd5e1' : '#475569'}" stroke="${stroke}" stroke-width="6"/>
-                    <rect x="${x + 100}" y="${y + 110}" width="${pillowW}" height="${pillowH}" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="6" rx="12"/>
-                    <path d="M ${x} ${y + h * 0.48} Q ${x + w / 2} ${y + h * 0.52} ${x + w} ${y + h * 0.48} L ${x + w} ${y + h} L ${x} ${y + h} Z" fill="${isWhite ? '#f0f9ff' : '#082f49'}" stroke="${accent}" stroke-width="8"/>
-                </g>
-            `;
-        }
-
-        case 'toilet_set': {
-            const showerW = Math.min(900, w * 0.45);
-            const toiletW = Math.min(420, w * 0.3);
-            const toiletD = Math.min(600, h * 0.45);
-
-            return `
-                <g id="${item.id}" class="cad-furniture toilet">
-                    <rect x="${x + 30}" y="${y + 30}" width="${showerW}" height="${h - 60}" fill="${isWhite ? '#f0f9ff' : '#0369a1'}" stroke="${accent}" stroke-width="8" opacity="0.6"/>
-                    <g transform="translate(${x + w - toiletW - 50}, ${y + 50})">
-                        <rect x="0" y="0" width="${toiletW}" height="160" fill="${isWhite ? '#ffffff' : '#475569'}" stroke="${stroke}" stroke-width="8" rx="10"/>
-                        <ellipse cx="${toiletW / 2}" cy="${toiletD / 2 + 70}" rx="${toiletW / 2 - 15}" ry="${toiletD / 2 - 25}" fill="${isWhite ? '#ffffff' : '#475569'}" stroke="${stroke}" stroke-width="8"/>
-                    </g>
-                    <rect x="${x + showerW + 60}" y="${y + h - 380}" width="480" height="320" fill="${isWhite ? '#ffffff' : '#334155'}" stroke="${stroke}" stroke-width="8" rx="12"/>
-                </g>
-            `;
-        }
-
-        case 'altar_set': {
-            const burnerR = Math.min(60, h * 0.12);
-            return `
-                <g id="${item.id}" class="cad-furniture altar">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? '#fef3c7' : '#451a03'}" stroke="${gold}" stroke-width="14" rx="15"/>
-                    <circle cx="${x + w / 2}" cy="${y + h / 2}" r="${burnerR}" fill="${gold}" stroke="${isWhite ? '#78350f' : '#fef08a'}" stroke-width="6"/>
-                    <circle cx="${x + w * 0.22}" cy="${y + h / 2}" r="30" fill="${gold}"/>
-                    <circle cx="${x + w * 0.78}" cy="${y + h / 2}" r="30" fill="${gold}"/>
-                    <text x="${x + w / 2}" y="${y + h - 50}" text-anchor="middle" font-size="80" font-weight="bold" fill="${gold}">BÀN THỜ GIA TIÊN</text>
-                </g>
-            `;
-        }
-
-        case 'stairs_flight': {
-            const stepCount = 14;
-            const stepH = h / stepCount;
-            let stepsSvg = '';
-            for (let i = 1; i < stepCount; i++) {
-                stepsSvg += `<line x1="${x}" y1="${y + i * stepH}" x2="${x + w}" y2="${y + i * stepH}" stroke="${stroke}" stroke-width="6"/>`;
-            }
-            const arrowX = x + w / 2;
-            return `
-                <g id="${item.id}" class="cad-furniture stairs">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="12"/>
-                    ${stepsSvg}
-                    <line x1="${arrowX}" y1="${y}" x2="${arrowX}" y2="${y + h}" stroke="${accent}" stroke-width="8" stroke-dasharray="40,20"/>
-                    <circle cx="${arrowX}" cy="${y + h - 140}" r="35" fill="${accent}"/>
-                    <polygon points="${arrowX},${y + 100} ${arrowX - 45},${y + 190} ${arrowX + 45},${y + 190}" fill="${accent}"/>
-                    <text x="${x + w - 60}" y="${y + h - 50}" text-anchor="end" font-size="70" font-weight="bold" fill="${accent}">21 BẬC</text>
-                </g>
-            `;
-        }
-
-        case 'garage_car': {
-            return `
-                <g id="${item.id}" class="cad-furniture car">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${accent}" stroke-width="8" stroke-dasharray="50,25" rx="20"/>
-                    <rect x="${x + w * 0.12}" y="${y + h * 0.1}" width="${w * 0.76}" height="${h * 0.8}" fill="${isWhite ? '#f1f5f9' : '#334155'}" stroke="${stroke}" stroke-width="10" rx="${w * 0.2}"/>
-                </g>
-            `;
-        }
-
-        case 'skylight_vent': {
-            return `
-                <g id="${item.id}" class="cad-furniture skylight">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${accent}" stroke-width="8" stroke-dasharray="30,20"/>
-                    <line x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}" stroke="${accent}" stroke-width="6" stroke-dasharray="25,15"/>
-                    <line x1="${x + w}" y1="${y}" x2="${x}" y2="${y + h}" stroke="${accent}" stroke-width="6" stroke-dasharray="25,15"/>
-                    <text x="${x + w / 2}" y="${y + h / 2 + 20}" text-anchor="middle" font-size="75" font-weight="bold" fill="${accent}">GIẾNG TRỜI</text>
-                </g>
-            `;
-        }
-
-        default:
-            return `<rect id="${item.id}" x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="8"/>`;
+// 5. BÁT TRẠCH & LỖ BAN
+export function calculateGua(birthYear, gender = 'nam') {
+    const y = parseInt(birthYear, 10);
+    const isNam = gender.toLowerCase() === 'nam';
+    let sum = 0;
+    let temp = y;
+    while (temp > 0) {
+        sum += temp % 10;
+        temp = Math.floor(temp / 10);
     }
+    let remainder = sum % 9;
+    if (remainder === 0) remainder = 9;
+
+    let base = remainder + 4;
+    if (base > 9) base -= 9;
+
+    let guaNum = 1;
+    let guaName = 'Khảm (Thủy)';
+    let trach = 'Đông Tứ Mệnh';
+
+    if (base === 1) {
+        guaNum = isNam ? 8 : 1;
+        guaName = isNam ? 'Cấn (Thổ)' : 'Khảm (Thủy)';
+    } else if (base === 2) {
+        guaNum = isNam ? 4 : 2;
+        guaName = isNam ? 'Tốn (Mộc)' : 'Khôn (Thổ)';
+    } else if (base === 3) {
+        guaNum = 3;
+        guaName = 'Chấn (Mộc)';
+    } else if (base === 4) {
+        guaNum = isNam ? 2 : 4;
+        guaName = isNam ? 'Khôn (Thổ)' : 'Tốn (Mộc)';
+    } else if (base === 5) {
+        guaNum = isNam ? 8 : 2;
+        guaName = isNam ? 'Cấn (Thổ)' : 'Khôn (Thổ)';
+    } else if (base === 6) {
+        guaNum = isNam ? 9 : 6;
+        guaName = isNam ? 'Ly (Hỏa)' : 'Càn (Kim)';
+    } else if (base === 7) {
+        guaNum = isNam ? 8 : 7;
+        guaName = isNam ? 'Cấn (Thổ)' : 'Đoài (Kim)';
+    } else if (base === 8) {
+        guaNum = isNam ? 7 : 8;
+        guaName = isNam ? 'Đoài (Kim)' : 'Cấn (Thổ)';
+    } else if (base === 9) {
+        guaNum = isNam ? 6 : 9;
+        guaName = isNam ? 'Càn (Kim)' : 'Ly (Hỏa)';
+    }
+
+    const dongTu = [1, 3, 4, 9];
+    trach = dongTu.includes(guaNum) ? 'Đông Tứ Mệnh' : 'Tây Tứ Mệnh';
+
+    return {
+        birthYear: y,
+        gender: isNam ? 'Nam' : 'Nữ',
+        guaNumber: guaNum,
+        guaName,
+        trachGroup: trach
+    };
 }
 
-// 4. Layout Engine Module v2.0
-export function generateParametricFloorplan({
-    mode = 'empty_land',
-    widthM = 5.0,
-    lengthM = 16.0,
-    floors = 2,
-    facingDegree = 180,
-    roomCounts = {}
-}) {
-    const W = Math.round(Math.max(3.5, Math.min(30.0, parseFloat(widthM) || 5.0)) * 1000);
-    const D = Math.round(Math.max(6.0, Math.min(50.0, parseFloat(lengthM) || 16.0)) * 1000);
-    const totalFloors = Math.max(1, Math.min(6, parseInt(floors, 10) || 2));
+export function checkLoBan(lengthMm, type = '522') {
+    const cycle = type === '522' ? 522 : 429;
+    const cungNames522 = ['Quý Nhân', 'Hiểm Họa', 'Thiên Tai', 'Thiên Tài', 'Nhân Lộc', 'Cô Độc', 'Thiên Tặc', 'Tể Tướng'];
+    const rem = lengthMm % cycle;
+    const cungIdx = Math.floor((rem / cycle) * 8);
+    const cung = cungNames522[cungIdx] || cungNames522[0];
+    const isCat = ['Quý Nhân', 'Thiên Tài', 'Nhân Lộc', 'Tể Tướng'].includes(cung);
+    return { lengthMm, type, cung, isCat };
+}
 
-    const bedrooms = Math.max(1, Math.min(8, parseInt(roomCounts.bedrooms, 10) || (totalFloors * 2 - 1)));
-    const toilets = Math.max(1, Math.min(6, parseInt(roomCounts.toilets, 10) || totalFloors));
-    const hasAltar = roomCounts.hasAltar !== undefined ? String(roomCounts.hasAltar) : '1';
-    const hasGarage = String(roomCounts.hasGarage || '0') === '1';
-    const hasSkylight = String(roomCounts.hasSkylight || '1') === '1';
-    const hasCommonRoom = String(roomCounts.hasCommonRoom || '0') === '1';
+// 6. PARAMETRIC FLOORPLAN GENERATOR (Single Source of Truth)
+export function generateParametricFloorplan(params = {}) {
+    const {
+        widthM = 5.0,
+        lengthM = 16.0,
+        floors = 2,
+        facingDegree = 180,
+        roomCounts = {}
+    } = params;
 
-    const isWideHouse = W >= 9000 && W >= D * 0.9;
+    const W = Math.round(widthM * 1000);
+    const D = Math.round(lengthM * 1000);
+    const totalFloors = Math.max(1, Math.min(5, parseInt(floors, 10) || 1));
+    const isWideHouse = widthM >= lengthM;
 
+    const numBeds = parseInt(roomCounts.bedrooms, 10) || 3;
+    const numWcs = parseInt(roomCounts.toilets, 10) || 2;
+    const hasAltar = roomCounts.hasAltar || '1';
+    const hasGarage = roomCounts.hasGarage === '1';
+    const hasSkylight = roomCounts.hasSkylight === '1';
+
+    const colSize = 220;
+    const partThick = 110;
     const plansByFloor = [];
 
-    for (let f = 1; f <= totalFloors; f++) {
-        let floorName = `MẶT BẰNG TẦNG ${f}`;
-        if (f === 1) floorName = 'MẶT BẰNG TẦNG TRỆT';
-        else if (f === totalFloors && totalFloors > 2) floorName = 'MẶT BẰNG TẦNG THƯỢNG';
+    const numXSpans = isWideHouse ? 3 : 2;
+    const numYSpans = isWideHouse ? 2 : 3;
 
+    const axesX = [];
+    const axesY = [];
+    const axisLabelsX = ['A', 'B', 'C', 'D', 'E'];
+    const axisLabelsY = ['1', '2', '3', '4', '5'];
+
+    for (let i = 0; i <= numXSpans; i++) {
+        axesX.push({ label: axisLabelsX[i], pos: Math.round((W / numXSpans) * i) });
+    }
+    for (let j = 0; j <= numYSpans; j++) {
+        axesY.push({ label: axisLabelsY[j], pos: Math.round((D / numYSpans) * j) });
+    }
+
+    const columns = [];
+    axesX.forEach((ax, ci) => {
+        axesY.forEach((ay, ri) => {
+            columns.push({ id: `col_${ci}_${ri}`, x: ax.pos - colSize / 2, y: ay.pos - colSize / 2, size: colSize });
+        });
+    });
+
+    for (let f = 1; f <= totalFloors; f++) {
         const rooms = [];
         const furniture = [];
         const doors = [];
         const windows = [];
         const walls = [];
-        const columns = [];
-        const dims = [];
-
-        const wallThick = 220;
-        const partThick = 110;
-
-        walls.push({ id: 'w-out-top', x1: 0, y1: 0, x2: W, y2: 0, thickness: wallThick, type: 'outer' });
-        walls.push({ id: 'w-out-bot', x1: 0, y1: D, x2: W, y2: D, thickness: wallThick, type: 'outer' });
-        walls.push({ id: 'w-out-left', x1: 0, y1: 0, x2: 0, y2: D, thickness: wallThick, type: 'outer' });
-        walls.push({ id: 'w-out-right', x1: W, y1: 0, x2: W, y2: D, thickness: wallThick, type: 'outer' });
-
-        const colSpanX = W > 8000 ? Math.round(W / 3) : Math.round(W / 2);
-        const colSpanY = D > 18000 ? Math.round(D / 4) : (D > 10000 ? Math.round(D / 3) : Math.round(D / 2));
-
-        const axesX = [];
-        for (let x = 0; x <= W; x += colSpanX) {
-            if (x > W - 500) x = W;
-            axesX.push(x);
-        }
-        if (!axesX.includes(W)) axesX.push(W);
-
-        const axesY = [];
-        for (let y = 0; y <= D; y += colSpanY) {
-            if (y > D - 500) y = D;
-            axesY.push(y);
-        }
-        if (!axesY.includes(D)) axesY.push(D);
-
-        axesX.forEach((cx) => {
-            axesY.forEach((cy) => {
-                columns.push({ x: cx, y: cy, size: 220 });
-            });
-        });
-
         let entrancePorch = null;
+
+        walls.push({ id: 'w_front', x1: 0, y1: 0, x2: W, y2: 0, thickness: 220, type: 'exterior' });
+        walls.push({ id: 'w_right', x1: W, y1: 0, x2: W, y2: D, thickness: 220, type: 'exterior' });
+        walls.push({ id: 'w_rear', x1: W, y1: D, x2: 0, y2: D, thickness: 220, type: 'exterior' });
+        walls.push({ id: 'w_left', x1: 0, y1: D, x2: 0, y2: 0, thickness: 220, type: 'exterior' });
+
         if (f === 1) {
             const porchW = Math.min(3600, W * 0.6);
             const porchD = 1200;
@@ -605,7 +593,6 @@ export function generateParametricFloorplan({
                 const rearDepth = D - frontDepth - midDepth;
 
                 let curY = 0;
-
                 if (hasGarage) {
                     rooms.push({ id: 'r_garage', name: 'GARA XE', x: 0, y: 0, width: W, height: frontDepth, areaM2: (W * frontDepth) / 1000000 });
                     furniture.push({ id: 'f_car', type: 'garage_car', x: W * 0.15, y: 300, width: W * 0.7, height: frontDepth - 600 });
@@ -635,106 +622,92 @@ export function generateParametricFloorplan({
                     furniture.push({ id: 'f_skylight', type: 'skylight_vent', x: W - stairsW + 200, y: curY + (midDepth - stairsH) / 2, width: stairsW - 400, height: stairsH });
                 }
 
-                if (hasAltar === '2') {
-                    furniture.push({ id: 'f_altar_g', type: 'altar_set', x: W - 1800, y: curY + 200, width: 1600, height: 900 });
-                }
-
                 curY += midDepth;
                 walls.push({ id: 'pw_rear', x1: 0, y1: curY, x2: W, y2: curY, thickness: partThick, type: 'partition' });
 
-                const wcW = Math.min(1800, W * 0.4);
-                const kitW = W - wcW;
+                const diningW = Math.round(W * 0.65);
+                const wcW = W - diningW;
 
-                rooms.push({ id: 'r_kitchen_dining', name: 'BẾP & PHÒNG ĂN', x: 0, y: curY, width: kitW, height: rearDepth, areaM2: (kitW * rearDepth) / 1000000 });
-                furniture.push({ id: 'f_kitchen', type: 'kitchen_set', x: 200, y: curY + 200, width: kitW - 400, height: 650 });
-                furniture.push({ id: 'f_dining', type: 'dining_set', x: 200, y: curY + rearDepth - 1600, width: kitW - 400, height: 1200 });
+                rooms.push({ id: 'r_dining', name: 'BẾP & PHÒNG ĂN', x: 0, y: curY, width: diningW, height: rearDepth, areaM2: (diningW * rearDepth) / 1000000 });
+                furniture.push({ id: 'f_dining', type: 'dining_set', x: 200, y: curY + 200, width: diningW - 400, height: rearDepth - 400 });
 
-                rooms.push({ id: 'r_wc1', name: 'WC 1', x: kitW, y: curY, width: wcW, height: rearDepth, areaM2: (wcW * rearDepth) / 1000000 });
-                furniture.push({ id: 'f_wc1', type: 'toilet_set', x: kitW + 100, y: curY + 100, width: wcW - 200, height: rearDepth - 200 });
+                rooms.push({ id: 'r_wc', name: 'VỆ SINH', x: diningW, y: curY, width: wcW, height: rearDepth, areaM2: (wcW * rearDepth) / 1000000 });
+                furniture.push({ id: 'f_wc', type: 'toilet_set', x: diningW + 150, y: curY + 150, width: wcW - 300, height: rearDepth - 300 });
 
-                walls.push({ id: 'pw_wc', x1: kitW, y1: curY, x2: kitW, y2: D, thickness: partThick, type: 'partition' });
-                doors.push({ id: 'd_wc1', x: kitW, y: curY + 400, width: 800, swing: 'in', rotation: 90 });
-                windows.push({ id: 'win_back', x: 400, y: D, width: 1400, type: 'sliding' });
+                walls.push({ id: 'pw_wc', x1: diningW, y1: curY, x2: diningW, y2: D, thickness: partThick, type: 'partition' });
             }
-        } else if (f === totalFloors && hasAltar === '1') {
-            const frontD = Math.round(D * 0.35);
-            const midD = Math.round(D * 0.3);
-            const rearD = D - frontD - midD;
-
-            rooms.push({ id: 'r_altar_top', name: 'PHÒNG THỜ GIA TIÊN', x: 0, y: 0, width: W, height: frontD, areaM2: (W * frontD) / 1000000 });
-            furniture.push({ id: 'f_altar_top', type: 'altar_set', x: (W - 2200) / 2, y: 300, width: 2200, height: 1100 });
-            windows.push({ id: 'win_altar', x: (W - 1600) / 2, y: 0, width: 1600, type: 'sliding' });
-
-            walls.push({ id: 'pw_altar', x1: 0, y1: frontD, x2: W, y2: frontD, thickness: partThick, type: 'partition' });
-
-            rooms.push({ id: 'r_stairs_top', name: 'SẢNH THANG TẦNG THƯỢNG', x: 0, y: frontD, width: W, height: midD, areaM2: (W * midD) / 1000000 });
-            furniture.push({ id: 'f_stairs_top', type: 'stairs_flight', x: 200, y: frontD + 200, width: W * 0.5, height: midD - 400 });
-
-            walls.push({ id: 'pw_dry', x1: 0, y1: frontD + midD, x2: W, y2: frontD + midD, thickness: partThick, type: 'partition' });
-
-            rooms.push({ id: 'r_laundry', name: 'SÂN PHƠI & GIẶT', x: 0, y: frontD + midD, width: W, height: rearD, areaM2: (W * rearD) / 1000000 });
-            furniture.push({ id: 'f_skylight_top', type: 'skylight_vent', x: W * 0.2, y: frontD + midD + 300, width: W * 0.6, height: rearD - 600 });
         } else {
-            const frontD = Math.round(D * 0.4);
-            const midD = Math.round(D * 0.22);
+            // Tầng lầu (Tầng 2, 3...)
+            const frontD = Math.round(D * 0.38);
+            const midD = Math.round(D * 0.28);
             const rearD = D - frontD - midD;
 
-            rooms.push({ id: `r_bed_master_${f}`, name: `PHÒNG NGỦ MASTER (TẦNG ${f})`, x: 0, y: 0, width: W, height: frontD, areaM2: (W * frontD) / 1000000 });
-            furniture.push({ id: `f_bed_master_${f}`, type: 'bed_master', x: (W - 2000) / 2, y: 300, width: 2000, height: frontD - 600 });
-            windows.push({ id: `win_front_${f}`, x: (W - 2000) / 2, y: 0, width: 2000, type: 'sliding' });
+            if (f === totalFloors && hasAltar === '1') {
+                rooms.push({ id: `r_altar_${f}`, name: 'PHÒNG THỜ GIA TIÊN', x: 0, y: 0, width: W, height: frontD, areaM2: (W * frontD) / 1000000 });
+                furniture.push({ id: `f_altar_${f}`, type: 'altar_set', x: W * 0.2, y: 300, width: W * 0.6, height: 1200 });
+            } else {
+                rooms.push({ id: `r_bed_front_${f}`, name: `PHÒNG NGỦ ${f * 2 - 1}`, x: 0, y: 0, width: W, height: frontD, areaM2: (W * frontD) / 1000000 });
+                furniture.push({ id: `f_bed_${f}_1`, type: 'bed_master', x: W * 0.2, y: 300, width: W * 0.6, height: frontD - 600 });
+            }
 
-            walls.push({ id: `pw_f_${f}`, x1: 0, y1: frontD, x2: W, y2: frontD, thickness: partThick, type: 'partition' });
+            walls.push({ id: `pw_f_${f}_1`, x1: 0, y1: frontD, x2: W, y2: frontD, thickness: partThick, type: 'partition' });
 
-            const wcW = Math.min(1800, W * 0.45);
-            const stairsW = W - wcW;
+            const stairsW = Math.min(2400, W * 0.5);
+            const stairsH = Math.min(3200, midD * 0.85);
 
-            rooms.push({ id: `r_stairs_${f}`, name: hasCommonRoom ? 'SINH HOẠT CHUNG' : 'SẢNH CẦU THANG', x: 0, y: frontD, width: stairsW, height: midD, areaM2: (stairsW * midD) / 1000000 });
-            furniture.push({ id: `f_stairs_${f}`, type: 'stairs_flight', x: 200, y: frontD + 100, width: stairsW - 300, height: midD - 200 });
+            rooms.push({ id: `r_stairs_${f}`, name: 'SẢNH TẦNG & CẦU THANG', x: 0, y: frontD, width: W, height: midD, areaM2: (W * midD) / 1000000 });
+            furniture.push({ id: `f_stairs_${f}`, type: 'stairs_flight', x: 200, y: frontD + (midD - stairsH) / 2, width: stairsW, height: stairsH });
 
-            rooms.push({ id: `r_wc_${f}`, name: `WC TẦNG ${f}`, x: stairsW, y: frontD, width: wcW, height: midD, areaM2: (wcW * midD) / 1000000 });
-            furniture.push({ id: `f_wc_${f}`, type: 'toilet_set', x: stairsW + 100, y: frontD + 100, width: wcW - 200, height: midD - 200 });
+            walls.push({ id: `pw_f_${f}_2`, x1: 0, y1: frontD + midD, x2: W, y2: frontD + midD, thickness: partThick, type: 'partition' });
 
-            walls.push({ id: `pw_wc_mid_${f}`, x1: stairsW, y1: frontD, x2: stairsW, y2: frontD + midD, thickness: partThick, type: 'partition' });
-            walls.push({ id: `pw_r_${f}`, x1: 0, y1: frontD + midD, x2: W, y2: frontD + midD, thickness: partThick, type: 'partition' });
+            const bedW = Math.round(W * 0.65);
+            const wcW = W - bedW;
 
-            rooms.push({ id: `r_bed2_${f}`, name: `PHÒNG NGỦ 2 (TẦNG ${f})`, x: 0, y: frontD + midD, width: W, height: rearD, areaM2: (W * rearD) / 1000000 });
-            furniture.push({ id: `f_bed2_${f}`, type: 'bed_single', x: 300, y: frontD + midD + 300, width: 1400, height: rearD - 600 });
-            windows.push({ id: `win_rear_${f}`, x: (W - 1600) / 2, y: D, width: 1600, type: 'sliding' });
+            rooms.push({ id: `r_bed_rear_${f}`, name: `PHÒNG NGỦ ${f * 2}`, x: 0, y: frontD + midD, width: bedW, height: rearD, areaM2: (bedW * rearD) / 1000000 });
+            furniture.push({ id: `f_bed_${f}_2`, type: 'bed_master', x: 200, y: frontD + midD + 200, width: bedW - 400, height: rearD - 400 });
+
+            rooms.push({ id: `r_wc_${f}`, name: 'VỆ SINH', x: bedW, y: frontD + midD, width: wcW, height: rearD, areaM2: (wcW * rearD) / 1000000 });
+            furniture.push({ id: `f_wc_${f}`, type: 'toilet_set', x: bedW + 150, y: frontD + midD + 150, width: wcW - 300, height: rearD - 300 });
+
+            walls.push({ id: `pw_wc_${f}`, x1: bedW, y1: frontD + midD, x2: bedW, y2: D, thickness: partThick, type: 'partition' });
         }
-
-        dims.push({ type: 'vertical', side: 'left', tier: 1, x: -500, y1: 0, y2: D, text: `${D}` });
-        dims.push({ type: 'vertical', side: 'left', tier: 2, x: -850, y1: 0, y2: D, text: `TỔNG CHIỀU DÀI: ${D} mm` });
-        dims.push({ type: 'horizontal', side: 'top', tier: 1, y: -500, x1: 0, x2: W, text: `${W}` });
-        dims.push({ type: 'horizontal', side: 'top', tier: 2, y: -850, x1: 0, x2: W, text: `TỔNG BỀ RỘNG: ${W} mm` });
 
         plansByFloor.push({
             floorIndex: f,
-            floorName,
-            rooms,
-            walls,
-            columns,
-            doors,
-            windows,
-            furniture,
-            entrancePorch,
+            floorName: f === 1 ? 'MẶT BẰNG TẦNG TRỆT' : `MẶT BẰNG TẦNG ${f}`,
+            widthMm: W,
+            depthMm: D,
             axesX,
             axesY,
-            dimensions: dims
+            columns,
+            entrancePorch,
+            walls,
+            rooms,
+            furniture,
+            doors,
+            windows
         });
     }
-
-    const groundFloor = plansByFloor[0];
 
     return {
         widthMm: W,
         depthMm: D,
         totalFloors,
+        facingDegree,
+        axesX,
+        axesY,
+        columns,
         plansByFloor,
-        ...groundFloor
+        entrancePorch: plansByFloor[0].entrancePorch,
+        walls: plansByFloor[0].walls,
+        rooms: plansByFloor[0].rooms,
+        furniture: plansByFloor[0].furniture,
+        doors: plansByFloor[0].doors,
+        windows: plansByFloor[0].windows
     };
 }
 
-// 5. SVG CAD Renderer Module v2.0
+// 7. ARCHITECTURAL CAD SVG RENDERER (Crisp Delicate CAD 2/10)
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
         this.theme = options.theme || 'white';
@@ -763,32 +736,135 @@ export class ArchitecturalCADRenderer {
         const bgColor = isWhite ? '#ffffff' : '#0f172a';
         const borderColor = isWhite ? '#0284c7' : '#d97706';
 
-        const axesSvg = this.showAxes ? this.renderAxes(geometry.axesX, geometry.axesY, W, D, isWhite) : '';
-        const porchSvg = geometry.entrancePorch ? this.renderPorch(geometry.entrancePorch, isWhite) : '';
-        const wallsSvg = this.renderWalls(geometry.walls, isWhite);
-        const columnsSvg = this.renderColumns(geometry.columns, isWhite);
-        const furnitureSvg = this.showFurniture && geometry.furniture ? geometry.furniture.map(f => renderFurnitureSvg(f, isWhite)).join('\n') : '';
-        const roomsSvg = this.renderRooms(geometry.rooms, isWhite);
+        // 1. Trục
+        let axesSvg = '';
+        if (this.showAxes && geometry.axesX && geometry.axesY) {
+            geometry.axesX.forEach((ax) => {
+                axesSvg += `<line x1="${ax.pos}" y1="-400" x2="${ax.pos}" y2="${D + 400}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="6" stroke-dasharray="100,50,20,50"/>`;
+                axesSvg += `<circle cx="${ax.pos}" cy="-550" r="140" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>`;
+                axesSvg += `<text x="${ax.pos}" y="-535" text-anchor="middle" font-size="120" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${ax.label}</text>`;
+            });
+            geometry.axesY.forEach((ay) => {
+                axesSvg += `<line x1="-400" y1="${ay.pos}" x2="${W + 400}" y2="${ay.pos}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="6" stroke-dasharray="100,50,20,50"/>`;
+                axesSvg += `<circle cx="-550" cy="${ay.pos}" r="140" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>`;
+                axesSvg += `<text x="-550" y="${ay.pos + 15}" text-anchor="middle" font-size="120" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${ay.label}</text>`;
+            });
+        }
 
-        let doorsSvg = geometry.doors ? this.renderDoors(geometry.doors, isWhite) : '';
-        let windowsSvg = geometry.windows ? this.renderWindows(geometry.windows, isWhite) : '';
-        let dimsSvg = this.showDimensions ? this.renderDimensionChains(geometry, W, D, isWhite) : '';
-        let compassSvg = this.showCompass ? this.renderCompassRose(W - 500, -700, 320, facingDegree, isWhite) : '';
+        // 2. Sảnh
+        let porchSvg = '';
+        if (geometry.entrancePorch) {
+            const p = geometry.entrancePorch;
+            porchSvg = `
+                <rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" fill="${isWhite ? '#f8fafc' : '#1e293b'}" stroke="${isWhite ? '#0f172a' : '#94a3b8'}" stroke-width="25"/>
+                <line x1="${p.x}" y1="${p.y + p.height / 3}" x2="${p.x + p.width}" y2="${p.y + p.height / 3}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>
+                <line x1="${p.x}" y1="${p.y + (p.height * 2) / 3}" x2="${p.x + p.width}" y2="${p.y + (p.height * 2) / 3}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>
+            `;
+        }
 
-        const boxW = Math.min(viewW - 400, 4800);
-        const boxH = 320;
-        const boxX = viewX + 200;
-        const boxY = viewY + viewH - boxH - 120;
-        const titleBlockSvg = this.renderTitleBlock(boxX, boxY, boxW, boxH, geometry, options, isWhite);
+        // 3. Tường (Nét CAD mảnh 35px & 20px)
+        let wallsSvg = '';
+        if (geometry.walls) {
+            geometry.walls.forEach(w => {
+                const strokeW = w.type === 'exterior' ? 35 : 20;
+                const strokeColor = isWhite ? '#0f172a' : '#f8fafc';
+                wallsSvg += `<line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${strokeColor}" stroke-width="${strokeW}" stroke-linecap="square"/>`;
+            });
+        }
+
+        // 4. Cột
+        let columnsSvg = '';
+        if (geometry.columns) {
+            geometry.columns.forEach(c => {
+                columnsSvg += `<rect x="${c.x}" y="${c.y}" width="${c.size}" height="${c.size}" fill="${isWhite ? '#0f172a' : '#38bdf8'}" stroke="${isWhite ? '#0284c7' : '#ffffff'}" stroke-width="6"/>`;
+            });
+        }
+
+        // 5. Nội thất
+        let furnitureSvg = '';
+        if (this.showFurniture && geometry.furniture) {
+            geometry.furniture.forEach(f => {
+                if (f.type === 'sofa_living') {
+                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="30" fill="${isWhite ? 'rgba(2,132,199,0.06)' : 'rgba(56,189,248,0.08)'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10"/>`;
+                } else if (f.type === 'bed_master') {
+                    furnitureSvg += `
+                        <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="20" fill="${isWhite ? 'rgba(217,119,6,0.06)' : 'rgba(245,158,11,0.08)'}" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="10"/>
+                        <rect x="${f.x + f.width * 0.1}" y="${f.y + 80}" width="${f.width * 0.35}" height="280" rx="10" fill="none" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="8"/>
+                        <rect x="${f.x + f.width * 0.55}" y="${f.y + 80}" width="${f.width * 0.35}" height="280" rx="10" fill="none" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="8"/>
+                    `;
+                } else if (f.type === 'dining_set') {
+                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="40" fill="${isWhite ? 'rgba(16,185,129,0.06)' : 'rgba(52,211,153,0.08)'}" stroke="${isWhite ? '#10b981' : '#34d399'}" stroke-width="10"/>`;
+                } else if (f.type === 'toilet_set') {
+                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="20" fill="${isWhite ? 'rgba(100,116,139,0.06)' : 'rgba(148,163,184,0.08)'}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="10"/>`;
+                } else if (f.type === 'altar_set') {
+                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="${isWhite ? 'rgba(220,38,38,0.08)' : 'rgba(239,68,68,0.1)'}" stroke="${isWhite ? '#dc2626' : '#ef4444'}" stroke-width="14"/>`;
+                } else if (f.type === 'stairs_flight') {
+                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="none" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>`;
+                    for (let step = 1; step < 10; step++) {
+                        const stepY = f.y + (f.height / 10) * step;
+                        furnitureSvg += `<line x1="${f.x}" y1="${stepY}" x2="${f.x + f.width}" y2="${stepY}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="8"/>`;
+                    }
+                }
+            });
+        }
+
+        // 6. Nhãn Phòng
+        let roomsSvg = '';
+        if (geometry.rooms) {
+            geometry.rooms.forEach(r => {
+                const rx = r.x + r.width / 2;
+                const ry = r.y + r.height / 2;
+                roomsSvg += `
+                    <text x="${rx}" y="${ry - 20}" text-anchor="middle" font-size="90" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${r.name}</text>
+                    <text x="${rx}" y="${ry + 80}" text-anchor="middle" font-size="65" font-weight="600" fill="${isWhite ? '#64748b' : '#94a3b8'}">${r.areaM2 ? r.areaM2.toFixed(1) + ' m²' : ''}</text>
+                `;
+            });
+        }
+
+        // 7. Cửa
+        let doorsSvg = '';
+        if (geometry.doors) {
+            geometry.doors.forEach(d => {
+                doorsSvg += `
+                    <line x1="${d.x}" y1="${d.y}" x2="${d.x + d.width}" y2="${d.y}" stroke="${isWhite ? '#ffffff' : '#0f172a'}" stroke-width="38"/>
+                    <path d="M ${d.x} ${d.y} A ${d.width} ${d.width} 0 0 1 ${d.x + d.width} ${d.y + d.width}" fill="none" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10" stroke-dasharray="20,10"/>
+                `;
+            });
+        }
+
+        // 8. Kích thước (Dimensions)
+        let dimsSvg = '';
+        if (this.showDimensions) {
+            dimsSvg += `
+                <!-- Kích thước tổng ngang -->
+                <line x1="0" y1="-800" x2="${W}" y2="-800" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
+                <circle cx="0" cy="-800" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
+                <circle cx="${W}" cy="-800" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
+                <text x="${W / 2}" y="-830" text-anchor="middle" font-size="90" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${W}</text>
+
+                <!-- Kích thước tổng dọc -->
+                <line x1="-800" y1="0" x2="-800" y2="${D}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
+                <circle cx="-800" cy="0" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
+                <circle cx="-800" cy="${D}" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
+                <text x="-840" y="${D / 2}" text-anchor="middle" transform="rotate(-90 -840 ${D / 2})" font-size="90" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${D}</text>
+            `;
+        }
+
+        // 9. Khung Tiêu Đề Bản Vẽ
+        const titleBlockSvg = `
+            <g id="layer-title-block" transform="translate(${viewX + 200}, ${viewY + viewH - 420})">
+                <rect x="0" y="0" width="${Math.min(viewW - 400, 4800)}" height="300" fill="${isWhite ? '#f8fafc' : '#0b0f19'}" stroke="${borderColor}" stroke-width="12" rx="10"/>
+                <text x="50" y="80" font-size="70" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">DỰ ÁN: MẶT BẰNG THIẾT KẾ PHONG THỦY KIẾN TRÚC</text>
+                <text x="50" y="160" font-size="55" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">TÁC GIẢ: DỊCH SƯ NGUYỄN HUY HOÀNG</text>
+                <text x="50" y="230" font-size="45" font-weight="600" fill="${isWhite ? '#64748b' : '#94a3b8'}">TỶ LỆ: 1/100 · ĐƠN VỊ: MILIMET (MM) · VẬN 9 HUYỀN KHÔNG</text>
+            </g>
+        `;
 
         return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" class="cad-svg-drawing" style="background:${bgColor}; font-family: 'Inter', 'Noto Sans', sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="cad-svg-drawing" style="display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; background:${bgColor}; font-family: 'Inter', 'Noto Sans', sans-serif;">
     <defs>
         <pattern id="floorTile" width="600" height="600" patternUnits="userSpaceOnUse">
             <rect width="600" height="600" fill="none" stroke="${isWhite ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.03)'}" stroke-width="6"/>
-        </pattern>
-        <pattern id="hatchWall" width="120" height="120" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="0" x2="0" y2="120" stroke="${isWhite ? '#94a3b8' : '#475569'}" stroke-width="12" />
         </pattern>
     </defs>
     <rect x="${viewX + 80}" y="${viewY + 80}" width="${viewW - 160}" height="${viewH - 160}" fill="none" stroke="${borderColor}" stroke-width="25"/>
@@ -799,192 +875,15 @@ export class ArchitecturalCADRenderer {
     <g id="layer-furniture">${furnitureSvg}</g>
     <g id="layer-walls">${wallsSvg}</g>
     <g id="layer-columns">${columnsSvg}</g>
-    <g id="layer-openings">${doorsSvg}${windowsSvg}</g>
+    <g id="layer-openings">${doorsSvg}</g>
     <g id="layer-dimensions">${dimsSvg}</g>
-    <g id="layer-compass">${compassSvg}</g>
-    <g id="layer-title-block">${titleBlockSvg}</g>
+    ${titleBlockSvg}
 </svg>
         `.trim();
     }
-
-    renderAxes(axesX, axesY, W, D, isWhite) {
-        const bubbleR = 150;
-        const color = isWhite ? '#0284c7' : '#38bdf8';
-        const lineStroke = isWhite ? '#94a3b8' : '#475569';
-        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
-        let lines = '';
-        let bubbles = '';
-
-        axesX.forEach((x, idx) => {
-            const num = (idx + 1).toString();
-            lines += `<line x1="${x}" y1="-700" x2="${x}" y2="${D + 700}" stroke="${lineStroke}" stroke-width="8" stroke-dasharray="100,50,20,50"/>`;
-            bubbles += `
-                <circle cx="${x}" cy="-700" r="${bubbleR}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${color}" stroke-width="10"/>
-                <text x="${x}" y="-650" text-anchor="middle" font-size="120" font-weight="900" fill="${color}">${num}</text>
-                <circle cx="${x}" cy="${D + 700}" r="${bubbleR}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${color}" stroke-width="10"/>
-                <text x="${x}" y="${D + 750}" text-anchor="middle" font-size="120" font-weight="900" fill="${color}">${num}</text>
-            `;
-        });
-
-        axesY.forEach((y, idx) => {
-            const letter = letters[idx % letters.length];
-            lines += `<line x1="-700" y1="${y}" x2="${W + 700}" y2="${y}" stroke="${lineStroke}" stroke-width="8" stroke-dasharray="100,50,20,50"/>`;
-            bubbles += `
-                <circle cx="-700" cy="${y}" r="${bubbleR}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${color}" stroke-width="10"/>
-                <text x="-700" y="${y + 45}" text-anchor="middle" font-size="120" font-weight="900" fill="${color}">${letter}</text>
-                <circle cx="${W + 700}" cy="${y}" r="${bubbleR}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${color}" stroke-width="10"/>
-                <text x="${W + 700}" y="${y + 45}" text-anchor="middle" font-size="120" font-weight="900" fill="${color}">${letter}</text>
-            `;
-        });
-
-        return `<g class="cad-grid-axes">${lines}${bubbles}</g>`;
-    }
-
-    renderPorch(porch, isWhite) {
-        const { x, y, width: w, height: h, steps, pillars } = porch;
-        const stepH = h / steps;
-        let svg = '';
-
-        for (let i = 0; i < steps; i++) {
-            const sx = x + (i * 120);
-            const sw = w - (i * 240);
-            const sy = y + (i * stepH);
-            const fill = isWhite ? (i % 2 === 0 ? '#e2e8f0' : '#f8fafc') : (i % 2 === 0 ? '#1e293b' : '#334155');
-            svg += `<rect x="${sx}" y="${sy}" width="${sw}" height="${stepH}" fill="${fill}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="10"/>`;
-        }
-
-        if (pillars && pillars.length > 0) {
-            pillars.forEach(p => {
-                svg += `
-                    <rect x="${p.x}" y="${p.y}" width="${p.size}" height="${p.size}" fill="${isWhite ? '#0f172a' : '#f8fafc'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10"/>
-                    <circle cx="${p.x + p.size / 2}" cy="${p.y + p.size / 2}" r="35" fill="#ef4444"/>
-                `;
-            });
-        }
-
-        return svg;
-    }
-
-    renderRooms(rooms, isWhite) {
-        return rooms.map(r => {
-            const cx = r.x + r.width / 2;
-            const cy = r.y + r.height / 2;
-            return `
-                <g id="${r.id}" class="cad-room-label">
-                    <rect x="${cx - 750}" y="${cy - 160}" width="1500" height="280" fill="${isWhite ? 'rgba(255,255,255,0.92)' : 'rgba(15,23,42,0.92)'}" stroke="${isWhite ? '#cbd5e1' : '#334155'}" stroke-width="10" rx="20"/>
-                    <text x="${cx}" y="${cy - 20}" text-anchor="middle" font-size="110" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${r.name}</text>
-                    <text x="${cx}" y="${cy + 75}" text-anchor="middle" font-size="85" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${r.areaM2.toFixed(2)} m²</text>
-                </g>
-            `;
-        }).join('\n');
-    }
-
-    renderWalls(walls, isWhite) {
-        return walls.map(w => {
-            const strokeColor = w.type === 'outer' ? (isWhite ? '#0f172a' : '#f1f5f9') : (isWhite ? '#334155' : '#94a3b8');
-            const strokeW = w.type === 'outer' ? 35 : 20;
-            return `
-                <line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${strokeColor}" stroke-width="${strokeW}" stroke-linecap="square"/>
-                <line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${isWhite ? '#64748b' : '#475569'}" stroke-width="6" stroke-dasharray="80,40"/>
-            `;
-        }).join('\n');
-    }
-
-    renderColumns(columns, isWhite) {
-        return columns.map((col, idx) => {
-            const size = col.size || 220;
-            const cx = col.x - size / 2;
-            const cy = col.y - size / 2;
-            return `
-                <g id="col-${idx}">
-                    <rect x="${cx}" y="${cy}" width="${size}" height="${size}" fill="${isWhite ? '#0f172a' : '#f8fafc'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10"/>
-                    <line x1="${cx}" y1="${cy}" x2="${cx + size}" y2="${cy + size}" stroke="${isWhite ? '#cbd5e1' : '#475569'}" stroke-width="6"/>
-                    <line x1="${cx + size}" y1="${cy}" x2="${cx}" y2="${cy + size}" stroke="${isWhite ? '#cbd5e1' : '#475569'}" stroke-width="6"/>
-                </g>
-            `;
-        }).join('\n');
-    }
-
-    renderDoors(doors, isWhite) {
-        const stroke = isWhite ? '#0f172a' : '#f8fafc';
-        const arcStroke = isWhite ? '#0284c7' : '#38bdf8';
-
-        return doors.map(d => {
-            const { x, y, width: w } = d;
-            return `
-                <g id="${d.id}" class="cad-door">
-                    <line x1="${x}" y1="${y}" x2="${x}" y2="${y + w}" stroke="${stroke}" stroke-width="14"/>
-                    <path d="M ${x} ${y + w} A ${w} ${w} 0 0 1 ${x + w} ${y}" fill="none" stroke="${arcStroke}" stroke-width="8" stroke-dasharray="30,15"/>
-                </g>
-            `;
-        }).join('\n');
-    }
-
-    renderWindows(windows, isWhite) {
-        const stroke = isWhite ? '#0284c7' : '#38bdf8';
-        return windows.map(win => {
-            const { x, y, width: w } = win;
-            return `
-                <g id="${win.id}" class="cad-window">
-                    <rect x="${x}" y="${y - 40}" width="${w}" height="80" fill="${isWhite ? '#f0f9ff' : '#0369a1'}" stroke="${stroke}" stroke-width="10"/>
-                    <line x1="${x}" y1="${y}" x2="${x + w}" y2="${y}" stroke="${stroke}" stroke-width="6"/>
-                </g>
-            `;
-        }).join('\n');
-    }
-
-    renderDimensionChains(geometry, W, D, isWhite) {
-        const color = isWhite ? '#334155' : '#cbd5e1';
-        let svg = '';
-
-        svg += `
-            <line x1="-350" y1="0" x2="-350" y2="${D}" stroke="${color}" stroke-width="8"/>
-            <line x1="-420" y1="0" x2="-280" y2="0" stroke="${color}" stroke-width="6"/>
-            <line x1="-420" y1="${D}" x2="-280" y2="${D}" stroke="${color}" stroke-width="6"/>
-            <line x1="-390" y1="40" x2="-310" y2="-40" stroke="${color}" stroke-width="12"/>
-            <line x1="-390" y1="${D + 40}" x2="-310" y2="${D - 40}" stroke="${color}" stroke-width="12"/>
-            <text x="-400" y="${D / 2}" text-anchor="middle" transform="rotate(-90 -400 ${D / 2})" font-size="95" font-weight="900" fill="${color}">${D}</text>
-        `;
-
-        svg += `
-            <line x1="0" y1="-350" x2="${W}" y2="-350" stroke="${color}" stroke-width="8"/>
-            <line x1="0" y1="-420" x2="0" y2="-280" stroke="${color}" stroke-width="6"/>
-            <line x1="${W}" y1="-420" x2="${W}" y2="-280" stroke="${color}" stroke-width="6"/>
-            <line x1="-40" y1="-310" x2="40" y2="-390" stroke="${color}" stroke-width="12"/>
-            <line x1="${W - 40}" y1="-310" x2="${W + 40}" y2="-390" stroke="${color}" stroke-width="12"/>
-            <text x="${W / 2}" y="-400" text-anchor="middle" font-size="95" font-weight="900" fill="${color}">${W}</text>
-        `;
-
-        return `<g id="dimension-chains">${svg}</g>`;
-    }
-
-    renderCompassRose(cx, cy, r, facingDeg, isWhite) {
-        return `
-            <g id="compass-rose" transform="translate(${cx}, ${cy})">
-                <circle cx="0" cy="0" r="${r}" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#cbd5e1' : '#334155'}" stroke-width="15"/>
-                <polygon points="0,${-r + 40} -40,0 40,0" fill="#ef4444"/>
-                <polygon points="0,${r - 40} -40,0 40,0" fill="${isWhite ? '#64748b' : '#94a3b8'}"/>
-                <text x="0" y="${-r - 30}" text-anchor="middle" font-size="90" font-weight="bold" fill="#ef4444">BẮC</text>
-                <text x="0" y="${r + 90}" text-anchor="middle" font-size="80" font-weight="bold" fill="${isWhite ? '#64748b' : '#94a3b8'}">NAM</text>
-            </g>
-        `;
-    }
-
-    renderTitleBlock(x, y, w, h, geometry, options, isWhite) {
-        const padX = 80;
-        return `
-            <g id="architectural-title-block">
-                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? 'rgba(255,255,255,0.96)' : 'rgba(15,23,42,0.96)'}" stroke="${isWhite ? '#0284c7' : '#d97706'}" stroke-width="20" rx="15"/>
-                <text x="${x + padX}" y="${y + 85}" font-size="110" font-weight="900" fill="${isWhite ? '#0f172a' : '#fef08a'}">${(geometry.floorName || 'MẶT BẰNG TƯ VẤN THIẾT KẾ').toUpperCase()}</text>
-                <text x="${x + padX}" y="${y + 165}" font-size="75" font-weight="600" fill="${isWhite ? '#475569' : '#cbd5e1'}">Kích thước: ${(geometry.widthMm / 1000).toFixed(2)}m × ${(geometry.depthMm / 1000).toFixed(2)}m · Diện tích: ${(geometry.widthMm * geometry.depthMm / 1000000).toFixed(1)} m²</text>
-                <text x="${x + padX}" y="${y + 245}" font-size="75" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">Tư vấn: DỊCH SƯ NGUYỄN HUY HOÀNG — 0933 116 860 · Huyền Không Vận 9</text>
-            </g>
-        `;
-    }
 }
 
-// 6. Feng Shui Spatial Engine Module v2.0
+// 8. CỬU CUNG SPATIAL OVERLAY ENGINE
 export function calculateFengShuiSpatial(geometry, options = {}) {
     const {
         facingDegree = 180,
@@ -994,9 +893,7 @@ export function calculateFengShuiSpatial(geometry, options = {}) {
         currentDay = 19,
         currentHour = 7,
         ownerYear = 1990,
-        ownerGender = 'nam',
-        frontLandscape = 'duong_lo',
-        backLandscape = 'nha_cao'
+        ownerGender = 'nam'
     } = options;
 
     const flyingStars = calculateFlyingStars({
@@ -1005,20 +902,16 @@ export function calculateFengShuiSpatial(geometry, options = {}) {
         currentYear,
         currentMonth,
         currentDay,
-        currentHour,
-        frontLandscape,
-        backLandscape
+        currentHour
     });
 
     const batTrach = ownerYear ? calculateGua(ownerYear, ownerGender) : null;
-
     const W = geometry.widthMm;
     const D = geometry.depthMm;
     const cellW = W / 3;
     const cellH = D / 3;
 
     const orientedGrid = getOrientedPalaceGrid(flyingStars.facingPalace);
-
     const spatialPalaces = {};
     const gridLayout = [];
 
@@ -1028,9 +921,33 @@ export function calculateFengShuiSpatial(geometry, options = {}) {
             const palaceId = orientedGrid[idx];
             const starData = flyingStars.palaces[palaceId] || {};
 
+            let grade = 'BÌNH HÒA';
+            let analysis = 'Phương vị ổn định, tiếp nhận sinh khí tự nhiên.';
+            let remedy = 'Bố trí công năng phù hợp với tọa hướng công trình.';
+
+            if (starData.huongStar === 9 || starData.sonStar === 9) {
+                grade = 'ĐẠI CÁT';
+                analysis = 'Đắc Cửu Tử Đương Lệnh Vượng Khí (Vận 9). Tăng cường sinh tài lộc, gia đạo hưng thịnh.';
+                remedy = 'Rất tốt để đặt Cửa chính, Phòng Khách, Phòng Ngủ Master, Ban công lấy sáng.';
+            } else if (starData.huongStar === 1 || starData.sonStar === 1) {
+                grade = 'CÁT';
+                analysis = 'Nhất Bạch Tham Lang Tiến Khí. Chủ về văn chương, học vấn, quý nhân phù trợ.';
+                remedy = 'Thích hợp bố trí Phòng làm việc, Bàn học, Phòng khách.';
+            } else if (starData.huongStar === 2 || starData.sonStar === 2 || starData.huongStar === 5 || starData.sonStar === 5) {
+                grade = 'HUNG (HÓA GIẢI)';
+                analysis = 'Nhị Hắc Bệnh Phù hoặc Ngũ Hoàng Sát Khí đáo cung.';
+                remedy = 'Nên đặt Khu Vệ Sinh (WC), Cầu Thang, Nhà Kho để trấn áp; hoặc dùng vật phẩm hành Kim hóa giải.';
+            } else if (starData.huongStar === 6 || starData.sonStar === 6 || starData.huongStar === 8 || starData.sonStar === 8) {
+                grade = 'CÁT';
+                analysis = 'Lục Bạch Vũ Khúc hoặc Bát Bạch Cát Tinh trợ mệnh.';
+                remedy = 'Phù hợp bố trí Phòng ngủ, Phòng thờ, Phòng sinh hoạt chung.';
+            }
+
             const palaceBox = {
                 palaceId,
                 palaceName: PALACE_NAMES[palaceId],
+                name: PALACE_NAMES[palaceId],
+                trigram: PALACE_SHORT[palaceId],
                 short: PALACE_SHORT[palaceId],
                 row,
                 col,
@@ -1046,7 +963,10 @@ export function calculateFengShuiSpatial(geometry, options = {}) {
                 nhatStar: starData.nhatStar,
                 thoiStar: starData.thoiStar,
                 isFacing: starData.isFacing,
-                isSitting: starData.isSitting
+                isSitting: starData.isSitting,
+                grade,
+                analysis,
+                remedy
             };
 
             spatialPalaces[palaceId] = palaceBox;
@@ -1085,152 +1005,57 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
             <g class="time-star-badges">
                 <circle cx="${cx - badgeSpacing * 1.5}" cy="${timeBadgesY}" r="45" fill="#22c55e" stroke="#15803d" stroke-width="4"/>
                 <text x="${cx - badgeSpacing * 1.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nienStar}</text>
-
                 <circle cx="${cx - badgeSpacing * 0.5}" cy="${timeBadgesY}" r="45" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/>
                 <text x="${cx - badgeSpacing * 0.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nguyetStar}</text>
-
                 <circle cx="${cx + badgeSpacing * 0.5}" cy="${timeBadgesY}" r="45" fill="#3b82f6" stroke="#1d4ed8" stroke-width="4"/>
                 <text x="${cx + badgeSpacing * 0.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nhatStar}</text>
-
-                <circle cx="${cx + badgeSpacing * 1.5}" cy="${timeBadgesY}" r="45" fill="#eab308" stroke="#a16207" stroke-width="4"/>
+                <circle cx="${cx + badgeSpacing * 1.5}" cy="${timeBadgesY}" r="45" fill="#eab308" stroke="#ca8a04" stroke-width="4"/>
                 <text x="${cx + badgeSpacing * 1.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#000000">${thoiStar}</text>
             </g>
         `;
 
-        const mainStarY = cy + 30;
-        const offsetSide = Math.min(220, w * 0.24);
-
-        const trioStarsSvg = `
-            <g class="trio-flying-stars">
-                <rect x="${cx - offsetSide - 75}" y="${mainStarY - 80}" width="150" height="160" fill="#facc15" stroke="#ca8a04" stroke-width="6" rx="20"/>
-                <text x="${cx - offsetSide}" y="${mainStarY + 35}" text-anchor="middle" font-size="110" font-weight="900" fill="#000000">${sonStar}</text>
-
-                <text x="${cx}" y="${mainStarY + 45}" text-anchor="middle" font-size="160" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${vanStar}</text>
-
-                <circle cx="${cx + offsetSide}" cy="${mainStarY}" r="80" fill="#dc2626" stroke="#b91c1c" stroke-width="6"/>
-                <text x="${cx + offsetSide}" y="${mainStarY + 35}" text-anchor="middle" font-size="110" font-weight="900" fill="#ffffff">${huongStar}</text>
-            </g>
-        `;
-
-        const labelY = y + h - Math.min(100, h * 0.12);
-        const palaceTag = isFacing ? `${short} (HƯỚNG)` : (isSitting ? `${short} (TỌA)` : short);
-
         cellsSvg += `
-            <g id="palace-cell-${box.row}-${box.col}" class="palace-cell">
-                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellFill}" stroke="${cellStroke}" stroke-width="12" stroke-dasharray="30,15"/>
+            <g class="fengshui-palace-cell">
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellFill}" stroke="${cellStroke}" stroke-width="12" stroke-dasharray="40,20"/>
                 ${timeBadgesSvg}
-                ${trioStarsSvg}
-                <text x="${cx}" y="${labelY}" text-anchor="middle" font-size="95" font-weight="900" fill="${isFacing ? '#dc2626' : (isSitting ? '#2563eb' : (isWhite ? '#475569' : '#cbd5e1'))}">${palaceTag}</text>
+                <!-- Bộ 3 Sao Huyền Không -->
+                <text x="${cx - w * 0.28}" y="${cy + 30}" text-anchor="middle" font-size="160" font-weight="900" fill="#38bdf8">${sonStar}</text>
+                <text x="${cx}" y="${cy + 60}" text-anchor="middle" font-size="240" font-weight="900" fill="${isWhite ? '#0f172a' : '#ffffff'}">${vanStar}</text>
+                <text x="${cx + w * 0.28}" y="${cy + 30}" text-anchor="middle" font-size="160" font-weight="900" fill="#ef4444">${huongStar}</text>
+                <!-- Nhãn Cung -->
+                <text x="${cx}" y="${y + h - 80}" text-anchor="middle" font-size="95" font-weight="900" fill="${isWhite ? '#b45309' : '#fbbf24'}">${short}</text>
             </g>
         `;
     });
 
-    const arrowW = 160;
     const facingArrowSvg = `
         <g id="arrow-facing-top">
-            <line x1="${W / 2}" y1="-200" x2="${W / 2}" y2="-600" stroke="#ef4444" stroke-width="16"/>
-            <polygon points="${W / 2},-750 ${W / 2 - arrowW},-550 ${W / 2 + arrowW},-550" fill="#ef4444"/>
-            <rect x="${W / 2 - 450}" y="-1050" width="900" height="240" fill="#ef4444" rx="30"/>
-            <text x="${W / 2}" y="-890" text-anchor="middle" font-size="120" font-weight="900" fill="#ffffff">HƯỚNG ${flyingStars.facingMountain.toUpperCase()} (${flyingStars.facingDegree}°)</text>
+            <line x1="${W / 2}" y1="-300" x2="${W / 2}" y2="-700" stroke="#ef4444" stroke-width="30" stroke-linecap="round"/>
+            <polygon points="${W / 2}, -900 ${W / 2 - 80}, -700 ${W / 2 + 80}, -700" fill="#ef4444"/>
+            <rect x="${W / 2 - 450}" y="-1150" width="900" height="180" rx="40" fill="#ef4444"/>
+            <text x="${W / 2}" y="-1030" text-anchor="middle" font-size="110" font-weight="900" fill="#ffffff">HƯỚNG: ${flyingStars.facingMountain} (${flyingStars.facingDegree}°)</text>
         </g>
     `;
 
     const sittingArrowSvg = `
         <g id="arrow-sitting-bottom">
-            <line x1="${W / 2}" y1="${D + 200}" x2="${W / 2}" y2="${D + 600}" stroke="#3b82f6" stroke-width="16"/>
-            <polygon points="${W / 2},${D + 750} ${W / 2 - arrowW},${D + 550} ${W / 2 + arrowW},${D + 550}" fill="#3b82f6"/>
-            <rect x="${W / 2 - 450}" y="${D + 820}" width="900" height="240" fill="#3b82f6" rx="30"/>
-            <text x="${W / 2}" y="${D + 980}" text-anchor="middle" font-size="120" font-weight="900" fill="#ffffff">TỌA ${flyingStars.sittingMountain.toUpperCase()}</text>
+            <line x1="${W / 2}" y1="${D + 300}" x2="${W / 2}" y2="${D + 700}" stroke="#3b82f6" stroke-width="30" stroke-linecap="round"/>
+            <polygon points="${W / 2}, ${D + 900} ${W / 2 - 80}, ${D + 700} ${W / 2 + 80}, ${D + 700}" fill="#3b82f6"/>
+            <rect x="${W / 2 - 450}" y="${D + 950}" width="900" height="180" rx="40" fill="#3b82f6"/>
+            <text x="${W / 2}" y="${D + 1070}" text-anchor="middle" font-size="110" font-weight="900" fill="#ffffff">TỌA: ${flyingStars.sittingMountain}</text>
         </g>
     `;
 
     return `
-        <g id="layer-fengshui-overlay">
-            ${cellsSvg}
-            ${facingArrowSvg}
-            ${sittingArrowSvg}
-        </g>
+    <g id="layer-fengshui-overlay">
+        ${cellsSvg}
+        ${facingArrowSvg}
+        ${sittingArrowSvg}
+    </g>
     `;
 }
 
-// 7. Bát Trạch Quái Mệnh
-export function calculateGua(birthYear, gender = 'nam') {
-    const y = parseInt(birthYear, 10);
-    let sum = 0;
-    let temp = y;
-    while (temp > 0) {
-        sum += temp % 10;
-        temp = Math.floor(temp / 10);
-    }
-    let remainder = sum % 9;
-    if (remainder === 0) remainder = 9;
-    let base = remainder + 4;
-    if (base > 9) base -= 9;
-
-    const isNam = gender.toLowerCase() === 'nam' || gender === '1';
-
-    let guaNum = 1;
-    let guaName = '';
-    let trach = '';
-
-    if (base === 1) {
-        guaNum = isNam ? 8 : 1;
-        guaName = isNam ? 'Cấn (Thổ)' : 'Khảm (Thủy)';
-    } else if (base === 2) {
-        guaNum = isNam ? 4 : 2;
-        guaName = isNam ? 'Tốn (Mộc)' : 'Khôn (Thổ)';
-    } else if (base === 3) {
-        guaNum = 3;
-        guaName = 'Chấn (Mộc)';
-    } else if (base === 4) {
-        guaNum = isNam ? 2 : 4;
-        guaName = isNam ? 'Khôn (Thổ)' : 'Tốn (Mộc)';
-    } else if (base === 5) {
-        guaNum = isNam ? 8 : 2;
-        guaName = isNam ? 'Cấn (Thổ)' : 'Khôn (Thổ)';
-    } else if (base === 6) {
-        guaNum = isNam ? 9 : 6;
-        guaName = isNam ? 'Ly (Hỏa)' : 'Càn (Kim)';
-    } else if (base === 7) {
-        guaNum = isNam ? 8 : 7;
-        guaName = isNam ? 'Cấn (Thổ)' : 'Đoài (Kim)';
-    } else if (base === 8) {
-        guaNum = isNam ? 7 : 8;
-        guaName = isNam ? 'Đoài (Kim)' : 'Cấn (Thổ)';
-    } else if (base === 9) {
-        guaNum = isNam ? 6 : 9;
-        guaName = isNam ? 'Càn (Kim)' : 'Ly (Hỏa)';
-    }
-
-    const dongTu = [1, 3, 4, 9];
-    trach = dongTu.includes(guaNum) ? 'Đông Tứ Mệnh' : 'Tây Tứ Mệnh';
-
-    return {
-        birthYear: y,
-        gender: isNam ? 'Nam' : 'Nữ',
-        guaNumber: guaNum,
-        guaName,
-        trachGroup: trach
-    };
-}
-
-// 8. Thước Lỗ Ban
-export function checkLoBan(lengthMm, type = '522') {
-    const cycle = type === '522' ? 522 : 429;
-    const cungNames522 = ['Quý Nhân', 'Hiểm Họa', 'Thiên Tai', 'Thiên Tài', 'Nhân Lộc', 'Cô Độc', 'Thiên Tặc', 'Tể Tướng'];
-    const rem = lengthMm % cycle;
-    const cungIdx = Math.floor((rem / cycle) * 8);
-    const cung = cungNames522[cungIdx] || cungNames522[0];
-    const isCat = ['Quý Nhân', 'Thiên Tài', 'Nhân Lộc', 'Tể Tướng'].includes(cung);
-    return {
-        lengthMm,
-        type,
-        cung,
-        isCat
-    };
-}
-
-// 9. Interactive SVG Viewport Controller (Pan & Zoom & Touch)
+// 9. INTERACTIVE SVG VIEWPORT CONTROLLER
 export class SvgViewportController {
     constructor(containerElement) {
         this.container = containerElement;
@@ -1250,9 +1075,7 @@ export class SvgViewportController {
         this.container.innerHTML = svgString;
         this.svgElement = this.container.querySelector('svg');
         if (this.svgElement) {
-            this.svgElement.style.transformOrigin = 'center center';
-            this.svgElement.style.transition = 'transform 0.05s ease-out';
-            this.updateTransform();
+            this.fitToScreen();
         }
     }
 
@@ -1326,9 +1149,7 @@ export class SvgViewportController {
     }
 
     zoomAt(factor, clientX, clientY) {
-        const prevScale = this.scale;
-        const newScale = Math.max(0.3, Math.min(6.0, prevScale * factor));
-        this.scale = newScale;
+        this.scale = Math.max(0.3, Math.min(6.0, this.scale * factor));
         this.updateTransform();
     }
 
@@ -1346,11 +1167,6 @@ export class SvgViewportController {
         this.scale = 1.0;
         this.panX = 0;
         this.panY = 0;
-        this.updateTransform();
-    }
-
-    setScale(targetScale) {
-        this.scale = Math.max(0.3, Math.min(6.0, targetScale));
         this.updateTransform();
     }
 

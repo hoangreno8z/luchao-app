@@ -1,6 +1,6 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script
-// Parametric Floorplan Generator + Dual-Drawing SVG Viewport
+// Phong Thủy & Kiến Trúc Controller Script v3.0
+// Kiến trúc 4 lớp chuẩn Toán học, GPU Acceleration 60FPS
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
@@ -14,7 +14,9 @@ import {
     calculateFengShuiSpatial,
     renderNinePalacesOverlaySvg,
     SvgViewportController,
-    PALACE_NAMES
+    CompassSvgRenderer,
+    PALACE_NAMES,
+    PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
 
 let currentMode = 'empty_land';
@@ -28,6 +30,7 @@ let currentBatTrach = null;
 
 let cadRenderer = null;
 let viewportController = null;
+let compassRenderer = null;
 
 const layerState = {
     dimensions: true,
@@ -36,11 +39,16 @@ const layerState = {
     compass: true
 };
 
+const dndPlacements = {
+    1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initMenuDropdown();
     initModeTabs();
     initDrawingTabs();
     initCompassControls();
+    initDragAndDropPalaces();
     initViewport();
     initToolbar();
     initActionButtons();
@@ -84,6 +92,7 @@ function initModeTabs() {
         if (groupFloors) groupFloors.style.display = 'flex';
         if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'block';
         if (existingRoomsSection) existingRoomsSection.style.display = 'none';
+        handleCalculate();
     });
 
     tabExistingHouse.addEventListener('click', () => {
@@ -93,6 +102,7 @@ function initModeTabs() {
         if (groupFloors) groupFloors.style.display = 'none';
         if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'none';
         if (existingRoomsSection) existingRoomsSection.style.display = 'block';
+        handleCalculate();
     });
 }
 
@@ -118,34 +128,226 @@ function initDrawingTabs() {
     });
 }
 
-/* Compass Degree Slider */
+/* Compass 360° Interactive Dial (GPU Hardware Accelerated) */
 function initCompassControls() {
+    const dialContainer = document.getElementById('compassDialContainer');
+    const compassSvgStage = document.getElementById('compassSvgStage');
+    const txtCompassDegree = document.getElementById('txtCompassDegree');
+    const txtCompassMountain = document.getElementById('txtCompassMountain');
+    const mountainStatusBadge = document.getElementById('mountainStatusBadge');
     const slider = document.getElementById('inputFacingDegree');
     const number = document.getElementById('inputFacingNumber');
     const display = document.getElementById('mountainDisplay');
 
-    if (!slider || !number || !display) return;
+    if (!compassSvgStage) return;
 
-    function updateMountainLabel(deg) {
-        const match = findMountain(deg);
-        const opp = getOppositeMountain(deg);
-        display.textContent = `Hướng ${match.mountain.name} (${deg}°) — Tọa ${opp.mountain.name} Hướng ${match.mountain.name}`;
+    // 1. Render Static Polar Dial Graphics (Once)
+    compassRenderer = new CompassSvgRenderer({ size: 500 });
+    compassSvgStage.innerHTML = `
+        <svg viewBox="0 0 500 500" width="100%" height="100%" style="display:block;">
+            ${compassRenderer.renderStaticDialSvg()}
+        </svg>
+    `;
+
+    function updateCompass(deg, triggerCalculate = false) {
+        let normalized = ((deg % 360) + 360) % 360;
+        const match = findMountain(normalized);
+        const opp = getOppositeMountain(normalized);
+
+        // Xoay la bàn thuần túy bằng GPU Transform
+        compassSvgStage.style.transform = `rotate(${-normalized}deg) translateZ(0)`;
+
+        if (txtCompassDegree) txtCompassDegree.textContent = `${normalized.toFixed(1)}°`;
+        if (txtCompassMountain) txtCompassMountain.textContent = `Hướng ${match.mountain.name}`;
+        if (slider) slider.value = normalized;
+        if (number) number.value = normalized;
+
+        if (display) {
+            display.textContent = `Hướng ${match.mountain.name} (${normalized.toFixed(1)}°) — Tọa ${opp.mountain.name} Hướng ${match.mountain.name} · Quái ${match.mountain.trigram} (${match.mountain.element})`;
+        }
+
+        if (mountainStatusBadge) {
+            mountainStatusBadge.className = `audit-badge ${match.isKiemHuong ? 'bad' : 'good'}`;
+            mountainStatusBadge.textContent = match.isKiemHuong ? `Kiêm Hướng (Lệch ${match.deviation}°)` : 'Chính Hướng (Hạ Quái)';
+        }
+
+        if (triggerCalculate) {
+            handleCalculate();
+        }
     }
 
-    slider.addEventListener('input', (e) => {
-        const deg = parseFloat(e.target.value) || 0;
-        number.value = deg;
-        updateMountainLabel(deg);
+    if (slider) {
+        slider.addEventListener('input', (e) => {
+            const deg = parseFloat(e.target.value) || 0;
+            updateCompass(deg, true);
+        });
+    }
+
+    if (number) {
+        number.addEventListener('input', (e) => {
+            const deg = parseFloat(e.target.value) || 0;
+            updateCompass(deg, true);
+        });
+    }
+
+    // Touch & Pointer Drag on Dial
+    if (dialContainer) {
+        let isDialDragging = false;
+
+        function handlePointer(clientX, clientY) {
+            const rect = dialContainer.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = clientX - cx;
+            const dy = clientY - cy;
+            let deg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+            if (deg < 0) deg += 360;
+            updateCompass(parseFloat(deg.toFixed(1)), true);
+        }
+
+        dialContainer.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            isDialDragging = true;
+            handlePointer(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDialDragging) return;
+            requestAnimationFrame(() => handlePointer(e.clientX, e.clientY));
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDialDragging = false;
+        });
+
+        dialContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDialDragging = true;
+                handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        dialContainer.addEventListener('touchmove', (e) => {
+            if (isDialDragging && e.touches.length === 1) {
+                requestAnimationFrame(() => handlePointer(e.touches[0].clientX, e.touches[0].clientY));
+            }
+        }, { passive: true });
+
+        dialContainer.addEventListener('touchend', () => {
+            isDialDragging = false;
+        });
+    }
+
+    updateCompass(180, false);
+}
+
+/* Drag & Drop Room Configuration into 9-Palace Matrix */
+function initDragAndDropPalaces() {
+    const grid = document.getElementById('dndPalacesGrid');
+    const rack = document.getElementById('availableRoomsRack');
+    if (!grid || !rack) return;
+
+    // Lạc Thư: 4, 9, 2 / 3, 5, 7 / 8, 1, 6
+    const order = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+
+    grid.innerHTML = order.map(pId => `
+        <div class="palace-drop-zone" data-palace-id="${pId}">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-light); display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 3px;">
+                <span>${PALACE_NAMES[pId]}</span>
+                <span style="opacity: 0.5;">Cung ${pId}</span>
+            </div>
+            <div class="dropped-rooms-container" style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px; min-height: 40px;"></div>
+        </div>
+    `).join('');
+
+    let draggedRoomData = null;
+
+    rack.querySelectorAll('.room-drag-chip').forEach(chip => {
+        chip.addEventListener('dragstart', (e) => {
+            draggedRoomData = {
+                id: chip.getAttribute('data-room-id'),
+                name: chip.getAttribute('data-room-name')
+            };
+            e.dataTransfer.setData('application/json', JSON.stringify(draggedRoomData));
+        });
+
+        // Touch Click support on mobile
+        chip.addEventListener('click', () => {
+            // Pick first empty palace or prompt
+            const firstP = order.find(p => dndPlacements[p].length === 0) || 9;
+            addRoomToPalace(firstP, {
+                id: chip.getAttribute('data-room-id'),
+                name: chip.getAttribute('data-room-name')
+            });
+        });
     });
 
-    number.addEventListener('input', (e) => {
-        let deg = parseFloat(e.target.value) || 0;
-        deg = Math.max(0, Math.min(360, deg));
-        slider.value = deg;
-        updateMountainLabel(deg);
+    grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            const dataStr = e.dataTransfer.getData('application/json');
+            if (!dataStr) return;
+            const room = JSON.parse(dataStr);
+            const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
+            addRoomToPalace(pId, room);
+        });
     });
 
-    updateMountainLabel(parseFloat(slider.value) || 180);
+    function addRoomToPalace(palaceId, room) {
+        // Remove room from other palaces if exists
+        Object.keys(dndPlacements).forEach(p => {
+            dndPlacements[p] = dndPlacements[p].filter(r => r.id !== room.id);
+        });
+        dndPlacements[palaceId].push(room);
+        renderDroppedRooms();
+        handleCalculate();
+    }
+
+    function renderDroppedRooms() {
+        grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
+            const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
+            const container = zone.querySelector('.dropped-rooms-container');
+            if (!container) return;
+
+            const rooms = dndPlacements[pId] || [];
+            container.innerHTML = rooms.map(r => `
+                <div class="dropped-room-tag">
+                    <span>${r.name}</span>
+                    <button type="button" class="btn-remove-room" data-room-id="${r.id}" data-palace-id="${pId}">×</button>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.btn-remove-room').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rId = btn.getAttribute('data-room-id');
+                    const pal = btn.getAttribute('data-palace-id');
+                    dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
+                    renderDroppedRooms();
+                    handleCalculate();
+                });
+            });
+        });
+    }
+
+    // Default Placement
+    dndPlacements[9].push({ id: 'living', name: 'Phòng Khách' });
+    dndPlacements[4].push({ id: 'master_bed', name: 'Ngủ Master' });
+    dndPlacements[6].push({ id: 'altar', name: 'Phòng Thờ' });
+    dndPlacements[7].push({ id: 'kitchen', name: 'Bếp Nấu' });
+    dndPlacements[2].push({ id: 'wc', name: 'Khu WC' });
+    dndPlacements[5].push({ id: 'stairs', name: 'Cầu Thang' });
+    renderDroppedRooms();
 }
 
 /* SVG Viewport Initialization */
@@ -160,6 +362,8 @@ function initViewport() {
 function initToolbar() {
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const txtThemeMode = document.getElementById('txtThemeMode');
+    const viewportWrapper = document.querySelector('.canvas-viewport-wrapper');
+
     const btnToggleDimensions = document.getElementById('btnToggleDimensions');
     const btnToggleFurniture = document.getElementById('btnToggleFurniture');
     const btnToggleAxes = document.getElementById('btnToggleAxes');
@@ -168,20 +372,17 @@ function initToolbar() {
     const btnZoomIn = document.getElementById('btnZoomIn');
     const btnZoomOut = document.getElementById('btnZoomOut');
     const btnZoomFit = document.getElementById('btnZoomFit');
-
     const btnExportSvg = document.getElementById('btnExportSvg');
     const btnExportPng = document.getElementById('btnExportPng');
-    const wrapper = document.querySelector('.canvas-viewport-wrapper');
 
     if (btnToggleTheme) {
         btnToggleTheme.addEventListener('click', () => {
             currentThemeMode = currentThemeMode === 'white' ? 'dark' : 'white';
             if (txtThemeMode) {
-                txtThemeMode.textContent = currentThemeMode === 'white' ? 'Bản Vẽ Trắng (CAD)' : 'Bản Vẽ Tối (CAD)';
+                txtThemeMode.textContent = currentThemeMode === 'white' ? 'Bản Vẽ Trắng (CAD)' : 'Bản Vẽ Tối (Dark)';
             }
-            if (wrapper) {
-                if (currentThemeMode === 'dark') wrapper.classList.add('dark-mode');
-                else wrapper.classList.remove('dark-mode');
+            if (viewportWrapper) {
+                viewportWrapper.classList.toggle('dark-mode', currentThemeMode === 'dark');
             }
             cadRenderer.theme = currentThemeMode;
             renderActiveDrawing();
@@ -294,7 +495,7 @@ function handleCalculate() {
         roomCounts
     });
 
-    // 2. Tính Tinh Bàn Huyền Không (Vận + Niên, Nguyệt, Nhật, Thời) & Bát Trạch
+    // 2. Tính Tinh Bàn Huyền Không & Bát Trạch
     currentFlyingStars = calculateFlyingStars({
         facingDegree,
         buildYear,
@@ -346,7 +547,7 @@ function renderFloorNavigator(plansByFloor) {
     `).join('');
 
     nav.querySelectorAll('.floor-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', () => {
             currentFloorIndex = parseInt(btn.getAttribute('data-floor'), 10) || 1;
             nav.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -431,14 +632,17 @@ function renderDetailedReport(spatialResult) {
         return `
             <div class="report-card">
                 <div class="report-card-header">
-                    <span class="report-palace-title">${p.name} (${p.trigram})</span>
+                    <span class="report-palace-title">${p.palaceName || p.name} (${p.short || p.trigram})</span>
                     <span class="audit-badge ${isGood ? 'good' : 'bad'}">${p.grade || 'BÌNH HÒA'}</span>
                 </div>
                 <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
-                    <strong>Bộ Sao:</strong> Sơn ${p.sonStar} · Hướng ${p.huongStar} · Vận ${p.vanStar}
+                    <strong>Bộ Sao:</strong> Sơn ${p.sonStar} · Hướng ${p.huongStar} · Vận ${p.vanStar} · Niên ${p.nienStar}
+                </div>
+                <div style="font-size: 0.82rem; color: #fbbf24; line-height: 1.4;">
+                    ${p.analysis || 'Phương vị ổn định, tiếp nhận sinh khí tự nhiên.'}
                 </div>
                 <div style="font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">
-                    ${p.analysis ? p.analysis.remedy || 'Phương vị ổn định, tiếp nhận sinh khí tự nhiên.' : 'Bố trí công năng phù hợp với tọa hướng công trình.'}
+                    <strong>Đề xuất bố trí:</strong> ${p.remedy || 'Bố trí công năng phù hợp với tọa hướng công trình.'}
                 </div>
             </div>
         `;
