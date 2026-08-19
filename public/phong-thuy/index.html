@@ -75,9 +75,7 @@
     <div class="main-container">
         <!-- Hero Title -->
         <div class="hero-title-section">
-            <span class="hero-badge">Huyền Không Phi Tinh • Bát Trạch • CAD 2D</span>
-            <h1 class="hero-title">PHONG THỦY HUYỀN KHÔNG & THIẾT KẾ KIẾN TRÚC</h1>
-            <p class="hero-sub">Lập Tinh Bàn Vận 9 (2024–2043) — Tự Động Vẽ Bản Thiết Kế Mẫu Mặt Bằng Kiến Trúc Từ 1 Đến 7 Tầng</p>
+            <h1 class="hero-title">HUYỀN KHÔNG PHI TINH</h1>
         </div>
 
         <!-- Input Parameters Card -->
@@ -86,49 +84,49 @@
             <div class="mode-tabs-container">
                 <button type="button" class="mode-tab-btn active" id="tabEmptyLand" data-mode="empty_land">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                    <span>1. Đất Trống (Thiết Kế Mới Tự Động)</span>
+                    <span>Đất Trống</span>
                 </button>
                 <button type="button" class="mode-tab-btn" id="tabExistingHouse" data-mode="existing_house">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h7"/><path d="M14 15h7"/></svg>
-                    <span>2. Đã Có Nhà (Khảo Sát Hiện Trạng)</span>
+                    <span>Nhà Sẵn Có</span>
                 </button>
             </div>
 
             <!-- Main Form Controls Grid -->
             <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">Chiều Ngang Nhà (m) <small>Mặt tiền</small></label>
+                    <label class="form-label">Chiều Ngang (m)</label>
                     <input type="number" id="inputWidth" class="form-control" value="5.0" min="3.0" max="30.0" step="0.1">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Chiều Dài Nhà (m) <small>Chiều sâu</small></label>
+                    <label class="form-label">Chiều Dài (m)</label>
                     <input type="number" id="inputLength" class="form-control" value="16.0" min="6.0" max="60.0" step="0.1">
                 </div>
                 <div class="form-group" id="groupFloors">
-                    <label class="form-label">Quy Mô Số Tầng</label>
+                    <label class="form-label">Số Tầng</label>
                     <select id="inputFloors" class="form-control">
-                        <option value="1">Nhà Cấp 4 / Trệt (1 Tầng)</option>
-                        <option value="2" selected>Nhà 1 Lầu (2 Tầng)</option>
-                        <option value="3">Nhà 2 Lầu (3 Tầng)</option>
-                        <option value="4">Nhà 3 Lầu (4 Tầng)</option>
-                        <option value="5">Nhà 4 Lầu (5 Tầng)</option>
-                        <option value="6">Nhà 5 Lầu (6 Tầng)</option>
-                        <option value="7">Nhà 6 Lầu (7 Tầng)</option>
+                        <option value="1">Trệt (1 Tầng)</option>
+                        <option value="2" selected>1 Lầu (2 Tầng)</option>
+                        <option value="3">2 Lầu (3 Tầng)</option>
+                        <option value="4">3 Lầu (4 Tầng)</option>
+                        <option value="5">4 Lầu (5 Tầng)</option>
+                        <option value="6">5 Lầu (6 Tầng)</option>
+                        <option value="7">6 Lầu (7 Tầng)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Năm Xây Dựng / Nhập Trạch</label>
+                    <label class="form-label">Năm Xây Dựng</label>
                     <input type="number" id="inputBuildYear" class="form-control" value="2025" min="1864" max="2103">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Năm Sinh Gia Chủ <small>Âm/Dương</small></label>
+                    <label class="form-label">Năm Sinh Gia Chủ</label>
                     <input type="number" id="inputOwnerYear" class="form-control" value="1990" min="1900" max="2050">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Giới Tính Gia Chủ</label>
+                    <label class="form-label">Giới Tính</label>
                     <select id="inputOwnerGender" class="form-control">
-                        <option value="nam" selected>Nam (Dương Nam)</option>
-                        <option value="nu">Nữ (Âm Nữ)</option>
+                        <option value="nam" selected>Nam</option>
+                        <option value="nu">Nữ</option>
                     </select>
                 </div>
             </div>
@@ -136,7 +134,7 @@
             <!-- Compass Facing Degree Slider -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label class="form-label">
-                    <span>Hướng Nhà (Độ Số La Bàn: 0° - 360°)</span>
+                    <span>Hướng Nhà (0° - 360°)</span>
                     <span id="mountainDisplay" style="color: var(--accent-blue); font-weight: 800;">Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ</span>
                 </label>
                 <div class="compass-slider-box">
@@ -147,23 +145,23 @@
 
             <!-- Existing House Room Checkboxes (Only shown in Tab 2) -->
             <div id="existingRoomsSection" style="display: none;">
-                <label class="form-label">Chọn Các Phòng & Vị Trí Đã Bố Trí Trong Nhà <small>(Tùy chọn)</small></label>
+                <label class="form-label">Phòng Hiện Hữu Đang Có</label>
                 <div class="rooms-picker-grid">
                     <label class="room-picker-item"><input type="checkbox" name="roomItem" value="main_door" checked> <span>🚪 Cửa Chính</span></label>
                     <label class="room-picker-item"><input type="checkbox" name="roomItem" value="living_room" checked> <span>🛋️ Phòng Khách</span></label>
-                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="altar" checked> <span>🔥 Bàn Thờ Tổ Tiên</span></label>
-                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="kitchen" checked> <span>🍳 Bếp Nấu</span></label>
-                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="master_bed" checked> <span>🛏️ Phòng Ngủ Gia Chủ</span></label>
-                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="toilet" checked> <span>🚽 Nhà Vệ Sinh (WC)</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="altar" checked> <span>🔥 Bàn Thờ</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="kitchen" checked> <span>🍳 Bếp</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="master_bed" checked> <span>🛏️ Phòng Ngủ</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="toilet" checked> <span>🚽 Nhà Vệ Sinh</span></label>
                     <label class="room-picker-item"><input type="checkbox" name="roomItem" value="stairs" checked> <span>🪜 Cầu Thang</span></label>
-                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="work_room"> <span>📚 Phòng Làm Việc / Học</span></label>
+                    <label class="room-picker-item"><input type="checkbox" name="roomItem" value="work_room"> <span>📚 Phòng Làm Việc</span></label>
                 </div>
             </div>
 
             <!-- Submit Button -->
             <button type="button" class="btn-primary-action" id="btnCalculate">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                <span>LẬP TINH BÀN & THIẾT KẾ MẶT BẰNG KIẾN TRÚC</span>
+                <span>TRIỂN KHAI</span>
             </button>
         </div>
 
