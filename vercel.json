@@ -7,7 +7,8 @@
     { "source": "/kinh-dich", "destination": "/kinh-dich/index.html" },
     { "source": "/thai-at", "destination": "/thai-at/index.html" },
     { "source": "/bat-tu", "destination": "/bat-tu/index.html" },
-    { "source": "/tu-vi", "destination": "/tu-vi/index.html" }
+    { "source": "/tu-vi", "destination": "/tu-vi/index.html" },
+    { "source": "/phong-thuy", "destination": "/phong-thuy/index.html" }
   ],
   "headers": [
     {
