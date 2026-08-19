@@ -367,6 +367,10 @@
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 4 15 12 12 20 9 12 12 4"/></svg>
                             <span>La Kinh 24 Sơn</span>
                         </button>
+                        <button type="button" class="cad-tool-btn" id="btnToggleOrientation" title="Xoay hướng hiển thị bản vẽ (Dọc / Ngang)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            <span id="txtOrientationMode">Khổ Đứng (Dọc)</span>
+                        </button>
 
                         <!-- Viewport Zoom / Pan / Fit Controls -->
                         <div class="viewport-zoom-group">
@@ -402,7 +406,7 @@
 
                 <!-- Flying Stars Matrix & Summary Panel -->
                 <div class="glass-card" style="margin-bottom: 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span style="font-size: 0.88rem; font-weight: 800; color: var(--gold-light);">TINH BÀN HUYỀN KHÔNG</span>
                         <span id="chartTypeBadge" class="audit-badge good">Chính Hướng (Hạ Quái)</span>
                     </div>
@@ -412,6 +416,44 @@
                         <div class="meta-tag" id="metaVan">Vận 9 (2024 - 2043)</div>
                         <div class="meta-tag" id="metaToaHuong">Tọa Tý Hướng Ngọ</div>
                         <div class="meta-tag" id="metaGua">Khảm (Thủy)</div>
+                    </div>
+
+                    <!-- Visual Legend (Chú Thích Màu Sắc & Vị Trí Sao) -->
+                    <div class="star-legend-container" style="margin-bottom: 12px; padding: 10px; background: rgba(15, 23, 42, 0.7); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.25);">
+                        <div style="font-size: 0.74rem; font-weight: 800; color: var(--gold-light); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between;">
+                            <span>📌 CHÚ THÍCH BỘ SAO HUYỀN KHÔNG</span>
+                            <span style="color: #94a3b8; font-weight: 600;">(Vận 9)</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 0.72rem; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 5px; color: #38bdf8;">
+                                <span style="display: inline-block; width: 15px; height: 15px; background: #0284c7; color: #fff; border-radius: 3px; font-weight: 900; text-align: center; line-height: 15px; font-size: 9px;">S</span>
+                                <span><b>Sơn Tinh</b> (Trái)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px; color: #f8fafc;">
+                                <span style="display: inline-block; width: 15px; height: 15px; background: #334155; color: #fff; border-radius: 3px; font-weight: 900; text-align: center; line-height: 15px; font-size: 9px;">V</span>
+                                <span><b>Vận Tinh</b> (Giữa)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px; color: #f87171;">
+                                <span style="display: inline-block; width: 15px; height: 15px; background: #dc2626; color: #fff; border-radius: 3px; font-weight: 900; text-align: center; line-height: 15px; font-size: 9px;">H</span>
+                                <span><b>Hướng Tinh</b> (Phải)</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: #94a3b8; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;">
+                            <span><b style="color: #22c55e;">① Niên</b> (Năm)</span>
+                            <span><b style="color: #ef4444;">② Nguyệt</b> (Tháng)</span>
+                            <span><b style="color: #3b82f6;">③ Nhật</b> (Ngày)</span>
+                            <span><b style="color: #eab308;">④ Thời</b> (Giờ)</span>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Orientation Controls -->
+                    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                        <button type="button" class="cad-tool-btn active" id="btnMatrixOrientHouse" style="flex: 1; font-size: 0.72rem; padding: 5px 6px; justify-content: center;">
+                            🧭 Tự Động Xoay Theo Hướng Nhà
+                        </button>
+                        <button type="button" class="cad-tool-btn" id="btnMatrixOrientLoShu" style="flex: 1; font-size: 0.72rem; padding: 5px 6px; justify-content: center;">
+                            📐 Lạc Thư Chuẩn (Nam Trên)
+                        </button>
                     </div>
 
                     <!-- 9-Palace Matrix (Lo Shu 3x3 Grid) -->

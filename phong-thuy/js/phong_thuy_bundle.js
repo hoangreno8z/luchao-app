@@ -1,11 +1,12 @@
 // ============================================================
-// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.3
-// Chuẩn 100% Thẩm Thị Huyền Không Học & Toán Học Cực Biến
+// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.4
+// Kiến trúc chuẩn 4 lớp, SVD Rank Jacobian, Levenberg-Marquardt,
+// Đồ họa CAD Siêu Chi Tiết & Tự Động Xoay Cửu Cung
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
 // ------------------------------------------------------------
-// 1. DATA LAYER (24 Sơn & 60 Long)
+// 1. DATA LAYER (24 Sơn, 60 Long, Âm Dương Tam Nguyên Long)
 // ------------------------------------------------------------
 export const MOUNTAINS_24_DICT = {
     'Nhâm': { name: 'Nhâm', trigram: 1, type: 0, yinYang: 1,  center: 345, startDeg: 337.5, midDeg: 345, endDeg: 352.5, element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Địa', amDuong: '+' },
@@ -72,15 +73,6 @@ export const SIXTY_DRAGONS = CAN_CHI_60.map((canChi, index) => ({
     endDeg: (337.5 + (index + 1) * 6) % 360
 }));
 
-export const REPLACEMENT_STARS = {
-    'Giáp': 1, 'Thân': 1, 'Quý': 1, 'Tý': 1,
-    'Khôn': 2, 'Nhâm': 2, 'Ất': 2, 'Mão': 2,
-    'Càn': 6, 'Hợi': 6, 'Cấn': 6, 'Dần': 6,
-    'Tốn': 4, 'Tỵ': 4, 'Bính': 4,
-    'Ngọ': 9, 'Đinh': 9,
-    'Dậu': 7, 'Tân': 7, 'Canh': 7
-};
-
 export const PALACE_NAMES = {
     1: 'Khảm (Bắc)',
     2: 'Khôn (Tây Nam)',
@@ -109,7 +101,7 @@ export const FLYING_PATH = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 export const LO_SHU_PATHS = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 
 // ------------------------------------------------------------
-// 2. TOÁN HỌC & LA BÀN
+// 2. TOÁN HỌC TỌA ĐỘ CỰC & LA BÀN GPU
 // ------------------------------------------------------------
 export function polarToCartesian(cx, cy, r, deg) {
     const rad = ((deg - 90) * Math.PI) / 180;
@@ -180,6 +172,7 @@ export function findMountain(degree) {
         degree: deg,
         diff: bestDiff,
         deviation: parseFloat(bestDiff.toFixed(2)),
+        deviationDeg: parseFloat(bestDiff.toFixed(2)),
         isKiemHuong,
         type: isKiemHuong ? 'kiem_huong' : 'chinh_huong',
         chartType: isKiemHuong ? 'the_quai' : 'chinh_huong'
@@ -292,9 +285,6 @@ export function rotatePoint(x, y, cx, cy, angleDeg) {
     };
 }
 
-// ------------------------------------------------------------
-// 3. LA BÀN VECTOR SVG GPU RENDERER
-// ------------------------------------------------------------
 export class CompassSvgRenderer {
     constructor(options = {}) {
         this.size = options.size || 500;
@@ -354,7 +344,7 @@ export class CompassSvgRenderer {
 }
 
 // ------------------------------------------------------------
-// 4. HUYỀN KHÔNG PHI TINH THẨM THỊ ENGINE
+// 3. HUYỀN KHÔNG PHI TINH THẨM THỊ HỌC
 // ------------------------------------------------------------
 export function wrapStar(n) {
     let s = ((n - 1) % 9 + 9) % 9 + 1;
@@ -513,6 +503,7 @@ export function calculateFlyingStars(params = {}) {
         sittingPalace: sittingDetail.mountain.trigram,
         chartType: facingDetail.chartType,
         deviation: facingDetail.deviation,
+        deviationDeg: facingDetail.deviation,
         palaces,
         currentYear,
         currentMonth,
@@ -523,6 +514,9 @@ export function calculateFlyingStars(params = {}) {
     };
 }
 
+/**
+ * Lấy thứ tự 9 cung xoay theo hướng nhà (Cung Hướng nằm chính giữa hàng trên, Cung Tọa nằm chính giữa hàng dưới)
+ */
 export function getOrientedPalaceGrid(facingPalaceId) {
     const ring = [1, 8, 3, 4, 9, 2, 7, 6];
     const fIdx = ring.indexOf(facingPalaceId);
@@ -538,7 +532,7 @@ export function getOrientedPalaceGrid(facingPalaceId) {
 }
 
 // ------------------------------------------------------------
-// 5. BÁT TRẠCH & LỖ BAN ENGINE
+// 4. BÁT TRẠCH & LỖ BAN
 // ------------------------------------------------------------
 export function calculateGua(birthYear, gender = 'nam') {
     const isMale = (gender === 'nam' || gender === 1 || gender === '1');
@@ -593,18 +587,8 @@ export function calculateGua(birthYear, gender = 'nam') {
     };
 }
 
-export function checkLoBan(lengthMm, type = '522') {
-    const cycle = type === '522' ? 522 : 429;
-    const cungNames522 = ['Quý Nhân', 'Hiểm Họa', 'Thiên Tai', 'Thiên Tài', 'Nhân Lộc', 'Cô Độc', 'Thiên Tặc', 'Tể Tướng'];
-    const rem = lengthMm % cycle;
-    const cungIdx = Math.floor((rem / cycle) * 8);
-    const cung = cungNames522[cungIdx] || cungNames522[0];
-    const isCat = ['Quý Nhân', 'Thiên Tài', 'Nhân Lộc', 'Tể Tướng'].includes(cung);
-    return { lengthMm, type, cung, isCat };
-}
-
 // ------------------------------------------------------------
-// 6. PARAMETRIC FLOORPLAN GENERATOR
+// 5. PARAMETRIC FLOORPLAN GENERATOR
 // ------------------------------------------------------------
 export function generateParametricFloorplan(params = {}) {
     const {
@@ -799,7 +783,7 @@ export function generateParametricFloorplan(params = {}) {
 }
 
 // ------------------------------------------------------------
-// 7. ARCHITECTURAL CAD SVG RENDERER
+// 6. ARCHITECTURAL CAD SVG RENDERER (SIÊU CHI TIẾT & CHUYÊN NGHIỆP)
 // ------------------------------------------------------------
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
@@ -808,6 +792,7 @@ export class ArchitecturalCADRenderer {
         this.showFurniture = options.showFurniture !== false;
         this.showAxes = options.showAxes !== false;
         this.showCompass = options.showCompass !== false;
+        this.isLandscape = options.isLandscape === true;
     }
 
     renderSvg(geometry, options = {}) {
@@ -815,152 +800,252 @@ export class ArchitecturalCADRenderer {
         const W = geometry.widthMm;
         const D = geometry.depthMm;
 
-        const padX = Math.max(800, Math.round(W * 0.12));
-        const padY = Math.max(900, Math.round(D * 0.08));
+        const padX = Math.max(900, Math.round(W * 0.14));
+        const padY = Math.max(1000, Math.round(D * 0.1));
 
-        const padLeft = padX;
-        const padRight = padX;
-        const padTop = padY;
-        const padBottom = Math.round(padY * 1.15);
+        const viewX = -padX;
+        const viewY = -padY;
+        const viewW = W + padX * 2;
+        const viewH = D + padY * 2 + 200;
 
-        const viewX = -padLeft;
-        const viewY = -padTop;
-        const viewW = W + padLeft + padRight;
-        const viewH = D + padTop + padBottom;
+        const bgColor = isWhite ? '#ffffff' : '#0b1120';
+        const gridLineColor = isWhite ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.035)';
+        const wallFillColor = isWhite ? '#1e293b' : '#334155';
+        const wallStrokeColor = isWhite ? '#0f172a' : '#f8fafc';
+        const dimColor = isWhite ? '#0284c7' : '#38bdf8';
+        const titleBorder = isWhite ? '#0284c7' : '#d97706';
 
-        const bgColor = isWhite ? '#ffffff' : '#0f172a';
-        const borderColor = isWhite ? '#0284c7' : '#d97706';
-
+        // 1. Grid Axes
         let axesSvg = '';
         if (this.showAxes && geometry.axesX && geometry.axesY) {
             geometry.axesX.forEach((ax) => {
-                axesSvg += `<line x1="${ax.pos}" y1="-400" x2="${ax.pos}" y2="${D + 400}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="6" stroke-dasharray="100,50,20,50"/>`;
-                axesSvg += `<circle cx="${ax.pos}" cy="-550" r="140" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>`;
-                axesSvg += `<text x="${ax.pos}" y="-535" text-anchor="middle" font-size="120" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${ax.label}</text>`;
+                axesSvg += `
+                    <line x1="${ax.pos}" y1="-450" x2="${ax.pos}" y2="${D + 450}" stroke="${dimColor}" stroke-width="6" stroke-dasharray="100,50,20,50" opacity="0.75"/>
+                    <circle cx="${ax.pos}" cy="-600" r="150" fill="${bgColor}" stroke="${dimColor}" stroke-width="10"/>
+                    <text x="${ax.pos}" y="-580" text-anchor="middle" font-size="130" font-weight="900" fill="${dimColor}">${ax.label}</text>
+                `;
             });
             geometry.axesY.forEach((ay) => {
-                axesSvg += `<line x1="-400" y1="${ay.pos}" x2="${W + 400}" y2="${ay.pos}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="6" stroke-dasharray="100,50,20,50"/>`;
-                axesSvg += `<circle cx="-550" cy="${ay.pos}" r="140" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>`;
-                axesSvg += `<text x="-550" y="${ay.pos + 15}" text-anchor="middle" font-size="120" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${ay.label}</text>`;
+                axesSvg += `
+                    <line x1="-450" y1="${ay.pos}" x2="${W + 450}" y2="${ay.pos}" stroke="${dimColor}" stroke-width="6" stroke-dasharray="100,50,20,50" opacity="0.75"/>
+                    <circle cx="-600" cy="${ay.pos}" r="150" fill="${bgColor}" stroke="${dimColor}" stroke-width="10"/>
+                    <text x="-600" y="${ay.pos + 20}" text-anchor="middle" font-size="130" font-weight="900" fill="${dimColor}">${ay.label}</text>
+                `;
             });
         }
 
+        // 2. Porch
         let porchSvg = '';
         if (geometry.entrancePorch) {
             const p = geometry.entrancePorch;
             porchSvg = `
-                <rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" fill="${isWhite ? '#f8fafc' : '#1e293b'}" stroke="${isWhite ? '#0f172a' : '#94a3b8'}" stroke-width="25"/>
-                <line x1="${p.x}" y1="${p.y + p.height / 3}" x2="${p.x + p.width}" y2="${p.y + p.height / 3}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>
-                <line x1="${p.x}" y1="${p.y + (p.height * 2) / 3}" x2="${p.x + p.width}" y2="${p.y + (p.height * 2) / 3}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>
+                <rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" fill="${isWhite ? '#f1f5f9' : '#1e293b'}" stroke="${isWhite ? '#475569' : '#94a3b8'}" stroke-width="30"/>
+                <line x1="${p.x}" y1="${p.y + p.height * 0.33}" x2="${p.x + p.width}" y2="${p.y + p.height * 0.33}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="14"/>
+                <line x1="${p.x}" y1="${p.y + p.height * 0.66}" x2="${p.x + p.width}" y2="${p.y + p.height * 0.66}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="14"/>
+                <circle cx="${p.x + 110}" cy="${p.y + 110}" r="100" fill="${wallFillColor}" stroke="${wallStrokeColor}" stroke-width="8"/>
+                <circle cx="${p.x + p.width - 110}" cy="${p.y + 110}" r="100" fill="${wallFillColor}" stroke="${wallStrokeColor}" stroke-width="8"/>
             `;
         }
 
+        // 3. Walls
         let wallsSvg = '';
         if (geometry.walls) {
             geometry.walls.forEach(w => {
                 const strokeW = w.type === 'exterior' ? 35 : 20;
-                const strokeColor = isWhite ? '#0f172a' : '#f8fafc';
-                wallsSvg += `<line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${strokeColor}" stroke-width="${strokeW}" stroke-linecap="square"/>`;
+                wallsSvg += `<line x1="${w.x1}" y1="${w.y1}" x2="${w.x2}" y2="${w.y2}" stroke="${wallStrokeColor}" stroke-width="${strokeW}" stroke-linecap="square"/>`;
             });
         }
 
+        // 4. Columns
         let columnsSvg = '';
         if (geometry.columns) {
             geometry.columns.forEach(c => {
-                columnsSvg += `<rect x="${c.x}" y="${c.y}" width="${c.size}" height="${c.size}" fill="${isWhite ? '#0f172a' : '#38bdf8'}" stroke="${isWhite ? '#0284c7' : '#ffffff'}" stroke-width="6"/>`;
+                columnsSvg += `
+                    <rect x="${c.x}" y="${c.y}" width="${c.size}" height="${c.size}" fill="${wallFillColor}" stroke="${wallStrokeColor}" stroke-width="8"/>
+                    <line x1="${c.x}" y1="${c.y}" x2="${c.x + c.size}" y2="${c.y + c.size}" stroke="${isWhite ? '#ffffff' : '#0284c7'}" stroke-width="4"/>
+                    <line x1="${c.x}" y1="${c.y + c.size}" x2="${c.x + c.size}" y2="${c.y}" stroke="${isWhite ? '#ffffff' : '#0284c7'}" stroke-width="4"/>
+                `;
             });
         }
 
+        // 5. Furniture (High-End Vector Graphics)
         let furnitureSvg = '';
         if (this.showFurniture && geometry.furniture) {
             geometry.furniture.forEach(f => {
                 if (f.type === 'sofa_living') {
-                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="30" fill="${isWhite ? 'rgba(2,132,199,0.06)' : 'rgba(56,189,248,0.08)'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10"/>`;
+                    furnitureSvg += `
+                        <g class="cad-sofa">
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="40" fill="${isWhite ? 'rgba(2,132,199,0.08)' : 'rgba(56,189,248,0.1)'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="12"/>
+                            <!-- Ghế Băng Chính -->
+                            <rect x="${f.x + 80}" y="${f.y + 80}" width="${f.width - 160}" height="${f.height * 0.4}" rx="20" fill="${isWhite ? '#e0f2fe' : '#0369a1'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
+                            <!-- Bàn Trà Tròn -->
+                            <ellipse cx="${f.x + f.width / 2}" cy="${f.y + f.height * 0.72}" rx="${f.width * 0.22}" ry="${f.height * 0.16}" fill="${isWhite ? '#fef3c7' : '#78350f'}" stroke="#f59e0b" stroke-width="10"/>
+                        </g>
+                    `;
                 } else if (f.type === 'bed_master') {
                     furnitureSvg += `
-                        <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="20" fill="${isWhite ? 'rgba(217,119,6,0.06)' : 'rgba(245,158,11,0.08)'}" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="10"/>
-                        <rect x="${f.x + f.width * 0.1}" y="${f.y + 80}" width="${f.width * 0.35}" height="280" rx="10" fill="none" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="8"/>
-                        <rect x="${f.x + f.width * 0.55}" y="${f.y + 80}" width="${f.width * 0.35}" height="280" rx="10" fill="none" stroke="${isWhite ? '#d97706' : '#f59e0b'}" stroke-width="8"/>
+                        <g class="cad-bed">
+                            <!-- Nệm Giường -->
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="30" fill="${isWhite ? '#fffbeb' : '#1e1b4b'}" stroke="#d97706" stroke-width="12"/>
+                            <!-- Đầu Giường -->
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="140" fill="#d97706"/>
+                            <!-- Gối Đôi -->
+                            <rect x="${f.x + f.width * 0.1}" y="${f.y + 180}" width="${f.width * 0.35}" height="280" rx="20" fill="${isWhite ? '#ffffff' : '#312e81'}" stroke="#d97706" stroke-width="8"/>
+                            <rect x="${f.x + f.width * 0.55}" y="${f.y + 180}" width="${f.width * 0.35}" height="280" rx="20" fill="${isWhite ? '#ffffff' : '#312e81'}" stroke="#d97706" stroke-width="8"/>
+                            <!-- Chăn Ga Gấp -->
+                            <path d="M ${f.x + 40} ${f.y + 540} L ${f.x + f.width - 40} ${f.y + 540} L ${f.x + f.width - 40} ${f.y + f.height - 30} L ${f.x + 40} ${f.y + f.height - 30} Z" fill="${isWhite ? 'rgba(217,119,6,0.12)' : 'rgba(245,158,11,0.15)'}" stroke="#d97706" stroke-width="6"/>
+                        </g>
                     `;
                 } else if (f.type === 'dining_set') {
-                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="40" fill="${isWhite ? 'rgba(16,185,129,0.06)' : 'rgba(52,211,153,0.08)'}" stroke="${isWhite ? '#10b981' : '#34d399'}" stroke-width="10"/>`;
+                    furnitureSvg += `
+                        <g class="cad-dining">
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="50" fill="${isWhite ? '#f0fdf4' : '#064e3b'}" stroke="#10b981" stroke-width="12"/>
+                            <!-- Ghế Ăn Bao Quanh -->
+                            <circle cx="${f.x + f.width * 0.25}" cy="${f.y - 60}" r="65" fill="#10b981"/>
+                            <circle cx="${f.x + f.width * 0.75}" cy="${f.y - 60}" r="65" fill="#10b981"/>
+                            <circle cx="${f.x + f.width * 0.25}" cy="${f.y + f.height + 60}" r="65" fill="#10b981"/>
+                            <circle cx="${f.x + f.width * 0.75}" cy="${f.y + f.height + 60}" r="65" fill="#10b981"/>
+                        </g>
+                    `;
                 } else if (f.type === 'toilet_set') {
-                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="20" fill="${isWhite ? 'rgba(100,116,139,0.06)' : 'rgba(148,163,184,0.08)'}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="10"/>`;
+                    furnitureSvg += `
+                        <g class="cad-wc">
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="25" fill="${isWhite ? '#f8fafc' : '#0f172a'}" stroke="#64748b" stroke-width="10"/>
+                            <!-- Bồn Cầu Sứ -->
+                            <rect x="${f.x + 40}" y="${f.y + 40}" width="${f.width * 0.5}" height="140" rx="15" fill="#cbd5e1" stroke="#475569" stroke-width="6"/>
+                            <ellipse cx="${f.x + 40 + f.width * 0.25}" cy="${f.y + 300}" rx="${f.width * 0.22}" ry="120" fill="#ffffff" stroke="#475569" stroke-width="8"/>
+                        </g>
+                    `;
                 } else if (f.type === 'altar_set') {
-                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="${isWhite ? 'rgba(220,38,38,0.08)' : 'rgba(239,68,68,0.1)'}" stroke="${isWhite ? '#dc2626' : '#ef4444'}" stroke-width="14"/>`;
+                    furnitureSvg += `
+                        <g class="cad-altar">
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="${isWhite ? '#fef2f2' : '#450a0a'}" stroke="#dc2626" stroke-width="16"/>
+                            <!-- Lư Hương Tròn -->
+                            <circle cx="${f.x + f.width / 2}" cy="${f.y + f.height / 2}" r="120" fill="#eab308" stroke="#dc2626" stroke-width="10"/>
+                            <circle cx="${f.x + f.width * 0.2}" cy="${f.y + f.height / 2}" r="60" fill="#eab308"/>
+                            <circle cx="${f.x + f.width * 0.8}" cy="${f.y + f.height / 2}" r="60" fill="#eab308"/>
+                        </g>
+                    `;
                 } else if (f.type === 'stairs_flight') {
-                    furnitureSvg += `<rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="none" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="12"/>`;
-                    for (let step = 1; step < 10; step++) {
-                        const stepY = f.y + (f.height / 10) * step;
-                        furnitureSvg += `<line x1="${f.x}" y1="${stepY}" x2="${f.x + f.width}" y2="${stepY}" stroke="${isWhite ? '#64748b' : '#94a3b8'}" stroke-width="8"/>`;
+                    furnitureSvg += `
+                        <g class="cad-stairs">
+                            <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="${isWhite ? '#f8fafc' : '#0f172a'}" stroke="#64748b" stroke-width="14"/>
+                    `;
+                    for (let step = 1; step < 11; step++) {
+                        const stepY = f.y + (f.height / 11) * step;
+                        furnitureSvg += `<line x1="${f.x}" y1="${stepY}" x2="${f.x + f.width}" y2="${stepY}" stroke="#94a3b8" stroke-width="8"/>`;
                     }
+                    furnitureSvg += `
+                            <!-- Mũi Tên Hướng Đi Lên -->
+                            <line x1="${f.x + f.width / 2}" y1="${f.y + f.height - 150}" x2="${f.x + f.width / 2}" y2="${f.y + 200}" stroke="#0284c7" stroke-width="16" stroke-linecap="round"/>
+                            <polygon points="${f.x + f.width / 2}, ${f.y + 80} ${f.x + f.width / 2 - 60}, ${f.y + 220} ${f.x + f.width / 2 + 60}, ${f.y + 220}" fill="#0284c7"/>
+                            <text x="${f.x + f.width / 2 + 100}" y="${f.y + f.height / 2}" font-size="85" font-weight="900" fill="#0284c7">LÊN (21 BẬC)</text>
+                        </g>
+                    `;
                 }
             });
         }
 
+        // 6. Room Labels
         let roomsSvg = '';
         if (geometry.rooms) {
             geometry.rooms.forEach(r => {
                 const rx = r.x + r.width / 2;
                 const ry = r.y + r.height / 2;
                 roomsSvg += `
-                    <text x="${rx}" y="${ry - 20}" text-anchor="middle" font-size="90" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${r.name}</text>
-                    <text x="${rx}" y="${ry + 80}" text-anchor="middle" font-size="65" font-weight="600" fill="${isWhite ? '#64748b' : '#94a3b8'}">${r.areaM2 ? r.areaM2.toFixed(1) + ' m²' : ''}</text>
+                    <g class="room-tag">
+                        <rect x="${rx - 400}" y="${ry - 100}" width="800" height="200" rx="20" fill="${isWhite ? 'rgba(255,255,255,0.92)' : 'rgba(15,23,42,0.92)'}" stroke="${isWhite ? '#cbd5e1' : '#475569'}" stroke-width="4"/>
+                        <text x="${rx}" y="${ry - 20}" text-anchor="middle" font-size="95" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">${r.name}</text>
+                        <text x="${rx}" y="${ry + 60}" text-anchor="middle" font-size="70" font-weight="700" fill="${dimColor}">${r.areaM2 ? r.areaM2.toFixed(1) + ' m²' : ''}</text>
+                    </g>
                 `;
             });
         }
 
+        // 7. Doors & Openings
         let doorsSvg = '';
         if (geometry.doors) {
             geometry.doors.forEach(d => {
                 doorsSvg += `
-                    <line x1="${d.x}" y1="${d.y}" x2="${d.x + d.width}" y2="${d.y}" stroke="${isWhite ? '#ffffff' : '#0f172a'}" stroke-width="38"/>
-                    <path d="M ${d.x} ${d.y} A ${d.width} ${d.width} 0 0 1 ${d.x + d.width} ${d.y + d.width}" fill="none" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="10" stroke-dasharray="20,10"/>
+                    <g class="cad-door">
+                        <line x1="${d.x}" y1="${d.y}" x2="${d.x + d.width}" y2="${d.y}" stroke="${bgColor}" stroke-width="48"/>
+                        <!-- Cánh Cửa Mở -->
+                        <line x1="${d.x}" y1="${d.y}" x2="${d.x}" y2="${d.y + d.width}" stroke="${dimColor}" stroke-width="16"/>
+                        <!-- Cung Quét Mở Cửa -->
+                        <path d="M ${d.x} ${d.y + d.width} A ${d.width} ${d.width} 0 0 0 ${d.x + d.width} ${d.y}" fill="none" stroke="${dimColor}" stroke-width="10" stroke-dasharray="25,15"/>
+                    </g>
                 `;
             });
         }
 
+        // 8. Dimension Chains
         let dimsSvg = '';
         if (this.showDimensions) {
             dimsSvg += `
-                <line x1="0" y1="-800" x2="${W}" y2="-800" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
-                <circle cx="0" cy="-800" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
-                <circle cx="${W}" cy="-800" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
-                <text x="${W / 2}" y="-830" text-anchor="middle" font-size="90" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${W}</text>
+                <!-- Đo Chiều Ngang Mặt Tiền (W) -->
+                <line x1="0" y1="-850" x2="${W}" y2="-850" stroke="${dimColor}" stroke-width="10"/>
+                <line x1="0" y1="-1000" x2="0" y2="-700" stroke="${dimColor}" stroke-width="8"/>
+                <line x1="${W}" y1="-1000" x2="${W}" y2="-700" stroke="${dimColor}" stroke-width="8"/>
+                <line x1="-60" y1="-790" x2="60" y2="-910" stroke="${dimColor}" stroke-width="14"/>
+                <line x1="${W - 60}" y1="-790" x2="${W + 60}" y2="-910" stroke="${dimColor}" stroke-width="14"/>
+                <text x="${W / 2}" y="-890" text-anchor="middle" font-size="120" font-weight="900" fill="${dimColor}">${W} mm</text>
 
-                <line x1="-800" y1="0" x2="-800" y2="${D}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
-                <circle cx="-800" cy="0" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
-                <circle cx="-800" cy="${D}" r="16" fill="${isWhite ? '#0284c7' : '#38bdf8'}"/>
-                <text x="-840" y="${D / 2}" text-anchor="middle" transform="rotate(-90 -840 ${D / 2})" font-size="90" font-weight="800" fill="${isWhite ? '#0284c7' : '#38bdf8'}">${D}</text>
+                <!-- Đo Chiều Sâu Công Trình (D) -->
+                <line x1="-850" y1="0" x2="-850" y2="${D}" stroke="${dimColor}" stroke-width="10"/>
+                <line x1="-1000" y1="0" x2="-700" y2="0" stroke="${dimColor}" stroke-width="8"/>
+                <line x1="-1000" y1="${D}" x2="-700" y2="${D}" stroke="${dimColor}" stroke-width="8"/>
+                <line x1="-910" y1="-60" x2="-790" y2="60" stroke="${dimColor}" stroke-width="14"/>
+                <line x1="-910" y1="${D - 60}" x2="-790" y2="${D + 60}" stroke="${dimColor}" stroke-width="14"/>
+                <text x="-900" y="${D / 2}" text-anchor="middle" transform="rotate(-90 -900 ${D / 2})" font-size="120" font-weight="900" fill="${dimColor}">${D} mm</text>
             `;
         }
 
+        // 9. North Arrow (Kim La Bàn Hoa Tiêu)
+        let northArrowSvg = '';
+        if (this.showCompass) {
+            const facingDeg = options.facingDegree || 180;
+            northArrowSvg = `
+                <g id="cad-north-arrow" transform="translate(${viewX + 220}, ${viewY + 240}) rotate(${-facingDeg + 180})">
+                    <circle cx="0" cy="0" r="140" fill="${bgColor}" stroke="${dimColor}" stroke-width="10"/>
+                    <polygon points="0,-130 -45,0 0,-30" fill="#ef4444"/>
+                    <polygon points="0,-130 45,0 0,-30" fill="#dc2626"/>
+                    <polygon points="0,130 -45,0 0,30" fill="#64748b"/>
+                    <polygon points="0,130 45,0 0,30" fill="#475569"/>
+                    <text x="0" y="-155" text-anchor="middle" font-size="75" font-weight="900" fill="#ef4444">BẮC (N)</text>
+                </g>
+            `;
+        }
+
+        // 10. Title Block
         const titleBlockSvg = `
-            <g id="layer-title-block" transform="translate(${viewX + 200}, ${viewY + viewH - 420})">
-                <rect x="0" y="0" width="${Math.min(viewW - 400, 4800)}" height="300" fill="${isWhite ? '#f8fafc' : '#0b0f19'}" stroke="${borderColor}" stroke-width="12" rx="10"/>
-                <text x="50" y="80" font-size="70" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">DỰ ÁN: MẶT BẰNG THIẾT KẾ PHONG THỦY KIẾN TRÚC</text>
-                <text x="50" y="160" font-size="55" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">TÁC GIẢ: DỊCH SƯ NGUYỄN HUY HOÀNG</text>
-                <text x="50" y="230" font-size="45" font-weight="600" fill="${isWhite ? '#64748b' : '#94a3b8'}">TỶ LỆ: 1/100 · ĐƠN VỊ: MILIMET (MM) · VẬN 9 HUYỀN KHÔNG</text>
+            <g id="cad-title-block" transform="translate(${viewX + 120}, ${viewY + viewH - 340})">
+                <rect x="0" y="0" width="${Math.min(viewW - 240, 5200)}" height="260" fill="${isWhite ? '#f8fafc' : '#0b0f19'}" stroke="${titleBorder}" stroke-width="14" rx="12"/>
+                <text x="50" y="75" font-size="75" font-weight="900" fill="${isWhite ? '#0f172a' : '#f8fafc'}">DỰ ÁN: MẶT BẰNG THIẾT KẾ KIẾN TRÚC & PHONG THỦY CAD</text>
+                <text x="50" y="150" font-size="60" font-weight="800" fill="${dimColor}">CHỦ TRÌ: DỊCH SƯ NGUYỄN HUY HOÀNG</text>
+                <text x="50" y="215" font-size="48" font-weight="600" fill="${isWhite ? '#64748b' : '#94a3b8'}">TỶ LỆ: 1/100 · MILIMET (MM) · VẬN 9 HUYỀN KHÔNG PHI TINH</text>
             </g>
         `;
 
         return `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="cad-svg-drawing" style="display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; background:${bgColor}; font-family: 'Inter', 'Noto Sans', sans-serif;">
     <defs>
-        <pattern id="floorTile" width="600" height="600" patternUnits="userSpaceOnUse">
-            <rect width="600" height="600" fill="none" stroke="${isWhite ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.03)'}" stroke-width="6"/>
+        <pattern id="floorTileGrid" width="600" height="600" patternUnits="userSpaceOnUse">
+            <rect width="600" height="600" fill="none" stroke="${gridLineColor}" stroke-width="6"/>
         </pattern>
     </defs>
-    <rect x="${viewX + 80}" y="${viewY + 80}" width="${viewW - 160}" height="${viewH - 160}" fill="none" stroke="${borderColor}" stroke-width="25"/>
-    <rect x="0" y="0" width="${W}" height="${D}" fill="url(#floorTile)"/>
+    <!-- Khung Viền Bản Vẽ -->
+    <rect x="${viewX + 60}" y="${viewY + 60}" width="${viewW - 120}" height="${viewH - 120}" fill="none" stroke="${titleBorder}" stroke-width="24"/>
+    <!-- Lát Gạch Nền -->
+    <rect x="0" y="0" width="${W}" height="${D}" fill="url(#floorTileGrid)"/>
     <g id="layer-grid-axes">${axesSvg}</g>
     <g id="layer-porch">${porchSvg}</g>
-    <g id="layer-rooms">${roomsSvg}</g>
     <g id="layer-furniture">${furnitureSvg}</g>
     <g id="layer-walls">${wallsSvg}</g>
     <g id="layer-columns">${columnsSvg}</g>
     <g id="layer-openings">${doorsSvg}</g>
+    <g id="layer-rooms">${roomsSvg}</g>
     <g id="layer-dimensions">${dimsSvg}</g>
+    ${northArrowSvg}
     ${titleBlockSvg}
 </svg>
         `.trim();
@@ -968,7 +1053,7 @@ export class ArchitecturalCADRenderer {
 }
 
 // ------------------------------------------------------------
-// 8. FENG SHUI SPATIAL ENGINE & OVERLAY RENDERER
+// 7. FENG SHUI SPATIAL ENGINE & OVERLAY RENDERER (CỬU CUNG PHỦ ĐỒ HỌA)
 // ------------------------------------------------------------
 export function validatePalace(palace) {
     const requiredFields = [
@@ -1094,58 +1179,76 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
     let cellsSvg = '';
 
     gridLayout.forEach((box) => {
-        const { x, y, width: w, height: h, sonStar, vanStar, huongStar, nienStar, nguyetStar, nhatStar, thoiStar, directionName, isFacing, isSitting } = box;
+        const { x, y, width: w, height: h, sonStar, vanStar, huongStar, nienStar, nguyetStar, nhatStar, thoiStar, directionName, isFacing, isSitting, grade } = box;
         const cx = x + w / 2;
         const cy = y + h / 2;
 
-        const cellFill = isFacing ? 'rgba(239, 68, 68, 0.08)' : (isSitting ? 'rgba(59, 130, 246, 0.08)' : 'rgba(234, 179, 8, 0.04)');
+        const isGood = grade === 'CÁT' || grade === 'ĐẠI CÁT';
+        const isBad = grade === 'HUNG';
+
+        const cellFill = isFacing 
+            ? 'rgba(239, 68, 68, 0.12)' 
+            : (isSitting 
+                ? 'rgba(59, 130, 246, 0.12)' 
+                : (isGood 
+                    ? 'rgba(34, 197, 94, 0.07)' 
+                    : (isBad ? 'rgba(239, 68, 68, 0.06)' : 'rgba(234, 179, 8, 0.05)')));
+
         const cellStroke = isFacing ? '#ef4444' : (isSitting ? '#3b82f6' : (isWhite ? '#d97706' : '#f59e0b'));
 
-        const timeBadgesY = y + Math.min(180, h * 0.18);
+        const timeBadgesY = y + Math.min(180, h * 0.16);
         const badgeSpacing = Math.min(140, w * 0.18);
 
         const timeBadgesSvg = `
             <g class="time-star-badges">
-                <circle cx="${cx - badgeSpacing * 1.5}" cy="${timeBadgesY}" r="45" fill="#22c55e" stroke="#15803d" stroke-width="4"/>
-                <text x="${cx - badgeSpacing * 1.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nienStar}</text>
-                <circle cx="${cx - badgeSpacing * 0.5}" cy="${timeBadgesY}" r="45" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/>
-                <text x="${cx - badgeSpacing * 0.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nguyetStar}</text>
-                <circle cx="${cx + badgeSpacing * 0.5}" cy="${timeBadgesY}" r="45" fill="#3b82f6" stroke="#1d4ed8" stroke-width="4"/>
-                <text x="${cx + badgeSpacing * 0.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#ffffff">${nhatStar}</text>
-                <circle cx="${cx + badgeSpacing * 1.5}" cy="${timeBadgesY}" r="45" fill="#eab308" stroke="#ca8a04" stroke-width="4"/>
-                <text x="${cx + badgeSpacing * 1.5}" y="${timeBadgesY + 16}" text-anchor="middle" font-size="45" font-weight="900" fill="#000000">${thoiStar}</text>
+                <!-- Niên Tinh -->
+                <circle cx="${cx - badgeSpacing * 1.5}" cy="${timeBadgesY}" r="50" fill="#22c55e" stroke="#15803d" stroke-width="6"/>
+                <text x="${cx - badgeSpacing * 1.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nienStar}</text>
+                <!-- Nguyệt Tinh -->
+                <circle cx="${cx - badgeSpacing * 0.5}" cy="${timeBadgesY}" r="50" fill="#ef4444" stroke="#b91c1c" stroke-width="6"/>
+                <text x="${cx - badgeSpacing * 0.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nguyetStar}</text>
+                <!-- Nhật Tinh -->
+                <circle cx="${cx + badgeSpacing * 0.5}" cy="${timeBadgesY}" r="50" fill="#3b82f6" stroke="#1d4ed8" stroke-width="6"/>
+                <text x="${cx + badgeSpacing * 0.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nhatStar}</text>
+                <!-- Thời Tinh -->
+                <circle cx="${cx + badgeSpacing * 1.5}" cy="${timeBadgesY}" r="50" fill="#eab308" stroke="#ca8a04" stroke-width="6"/>
+                <text x="${cx + badgeSpacing * 1.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#000000">${thoiStar}</text>
             </g>
         `;
 
         cellsSvg += `
             <g class="fengshui-palace-cell">
-                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellFill}" stroke="${cellStroke}" stroke-width="12" stroke-dasharray="40,20"/>
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellFill}" stroke="${cellStroke}" stroke-width="14" stroke-dasharray="40,20"/>
                 ${timeBadgesSvg}
-                <!-- Bộ 3 Sao Huyền Không -->
-                <text x="${cx - w * 0.28}" y="${cy + 30}" text-anchor="middle" font-size="160" font-weight="900" fill="#38bdf8">${sonStar}</text>
-                <text x="${cx}" y="${cy + 60}" text-anchor="middle" font-size="240" font-weight="900" fill="${isWhite ? '#0f172a' : '#ffffff'}">${vanStar}</text>
-                <text x="${cx + w * 0.28}" y="${cy + 30}" text-anchor="middle" font-size="160" font-weight="900" fill="#ef4444">${huongStar}</text>
-                <!-- Nhãn Hướng Cung -->
-                <text x="${cx}" y="${y + h - 80}" text-anchor="middle" font-size="95" font-weight="900" fill="${isWhite ? '#b45309' : '#fbbf24'}">${directionName}</text>
+                <!-- Bộ 3 Sao Huyền Không Cửu Cung -->
+                <!-- Sơn Tinh (Trái - Xanh Dương) -->
+                <text x="${cx - w * 0.28}" y="${cy + 40}" text-anchor="middle" font-size="180" font-weight="900" fill="#38bdf8">${sonStar}</text>
+                <!-- Vận Tinh (Giữa - Chữ số Lớn) -->
+                <text x="${cx}" y="${cy + 70}" text-anchor="middle" font-size="260" font-weight="900" fill="${isWhite ? '#0f172a' : '#ffffff'}">${vanStar}</text>
+                <!-- Hướng Tinh (Phải - Đỏ) -->
+                <text x="${cx + w * 0.28}" y="${cy + 40}" text-anchor="middle" font-size="180" font-weight="900" fill="#ef4444">${huongStar}</text>
+                <!-- Nhãn Hướng & Cát Hung -->
+                <rect x="${cx - 300}" y="${y + h - 130}" width="600" height="90" rx="20" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${cellStroke}" stroke-width="6"/>
+                <text x="${cx}" y="${y + h - 68}" text-anchor="middle" font-size="65" font-weight="900" fill="${isWhite ? '#b45309' : '#fbbf24'}">${directionName} · ${grade}</text>
             </g>
         `;
     });
 
     const facingArrowSvg = `
         <g id="arrow-facing-top">
-            <line x1="${W / 2}" y1="-300" x2="${W / 2}" y2="-700" stroke="#ef4444" stroke-width="30" stroke-linecap="round"/>
-            <polygon points="${W / 2}, -900 ${W / 2 - 80}, -700 ${W / 2 + 80}, -700" fill="#ef4444"/>
-            <rect x="${W / 2 - 450}" y="-1150" width="900" height="180" rx="40" fill="#ef4444"/>
-            <text x="${W / 2}" y="-1030" text-anchor="middle" font-size="110" font-weight="900" fill="#ffffff">HƯỚNG: ${flyingStars.facingMountain} (${flyingStars.facingDegree}°)</text>
+            <line x1="${W / 2}" y1="-300" x2="${W / 2}" y2="-750" stroke="#ef4444" stroke-width="34" stroke-linecap="round"/>
+            <polygon points="${W / 2}, -950 ${W / 2 - 90}, -750 ${W / 2 + 90}, -750" fill="#ef4444"/>
+            <rect x="${W / 2 - 500}" y="-1200" width="1000" height="200" rx="40" fill="#ef4444"/>
+            <text x="${W / 2}" y="-1070" text-anchor="middle" font-size="115" font-weight="900" fill="#ffffff">HƯỚNG: ${flyingStars.facingMountain} (${flyingStars.facingDegree}°)</text>
         </g>
     `;
 
     const sittingArrowSvg = `
         <g id="arrow-sitting-bottom">
-            <line x1="${W / 2}" y1="${D + 300}" x2="${W / 2}" y2="${D + 700}" stroke="#3b82f6" stroke-width="30" stroke-linecap="round"/>
-            <polygon points="${W / 2}, ${D + 900} ${W / 2 - 80}, ${D + 700} ${W / 2 + 80}, ${D + 700}" fill="#3b82f6"/>
-            <rect x="${W / 2 - 450}" y="${D + 950}" width="900" height="180" rx="40" fill="#3b82f6"/>
-            <text x="${W / 2}" y="${D + 1070}" text-anchor="middle" font-size="110" font-weight="900" fill="#ffffff">TỌA: ${flyingStars.sittingMountain}</text>
+            <line x1="${W / 2}" y1="${D + 300}" x2="${W / 2}" y2="${D + 750}" stroke="#3b82f6" stroke-width="34" stroke-linecap="round"/>
+            <polygon points="${W / 2}, ${D + 950} ${W / 2 - 90}, ${D + 750} ${W / 2 + 90}, ${D + 750}" fill="#3b82f6"/>
+            <rect x="${W / 2 - 500}" y="${D + 1000}" width="1000" height="200" rx="40" fill="#3b82f6"/>
+            <text x="${W / 2}" y="${D + 1130}" text-anchor="middle" font-size="115" font-weight="900" fill="#ffffff">TỌA: ${flyingStars.sittingMountain}</text>
         </g>
     `;
 
@@ -1159,7 +1262,7 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
 }
 
 // ------------------------------------------------------------
-// 9. SVG VIEWPORT CONTROLLER
+// 8. SVG VIEWPORT CONTROLLER
 // ------------------------------------------------------------
 export class SvgViewportController {
     constructor(containerElement) {

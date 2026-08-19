@@ -1,6 +1,6 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v3.0
-// Kiến trúc 4 lớp chuẩn Toán học, GPU Acceleration 60FPS
+// Phong Thủy & Kiến Trúc Controller Script v3.4
+// Tự động xoay Cửu Cung theo Hướng Nhà, Chú thích trực quan & CAD Siêu Cấp
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
@@ -15,6 +15,7 @@ import {
     renderNinePalacesOverlaySvg,
     SvgViewportController,
     CompassSvgRenderer,
+    getOrientedPalaceGrid,
     PALACE_NAMES,
     PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
@@ -23,6 +24,9 @@ let currentMode = 'empty_land';
 let currentFloorIndex = 1;
 let currentDrawingTab = 'arch'; // 'arch' | 'fengshui'
 let currentThemeMode = 'white'; // 'white' | 'dark'
+let currentMatrixOrientMode = 'house'; // 'house' (Xoay theo hướng nhà) | 'loshu' (Lạc thư chuẩn)
+let isLandscapeMode = false; // false = Dọc | true = Ngang
+
 let currentGeometry = null;
 let currentSpatialResult = null;
 let currentFlyingStars = null;
@@ -75,63 +79,58 @@ function initMenuDropdown() {
     });
 
     document.addEventListener('click', (e) => {
-        if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+        if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.remove('show');
         }
     });
 }
 
-/* Mode Tabs: Đất Trống vs Nhà Sẵn Có */
+/* Mode Selection Tabs (Đất Trống vs Đã Có Nhà) */
 function initModeTabs() {
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
-    const groupFloors = document.getElementById('groupFloors');
-    const emptyLandRoomsConfig = document.getElementById('emptyLandRoomsConfig');
-    const existingRoomsSection = document.getElementById('existingRoomsSection');
+    const emptyLandPanel = document.getElementById('emptyLandPanel');
+    const existingHousePanel = document.getElementById('existingHousePanel');
 
-    if (!tabEmptyLand || !tabExistingHouse) return;
+    if (tabEmptyLand && tabExistingHouse) {
+        tabEmptyLand.addEventListener('click', () => {
+            currentMode = 'empty_land';
+            tabEmptyLand.classList.add('active');
+            tabExistingHouse.classList.remove('active');
+            if (emptyLandPanel) emptyLandPanel.style.display = 'block';
+            if (existingHousePanel) existingHousePanel.style.display = 'none';
+        });
 
-    tabEmptyLand.addEventListener('click', () => {
-        currentMode = 'empty_land';
-        tabEmptyLand.classList.add('active');
-        tabExistingHouse.classList.remove('active');
-        if (groupFloors) groupFloors.style.display = 'flex';
-        if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'block';
-        if (existingRoomsSection) existingRoomsSection.style.display = 'none';
-        handleCalculate();
-    });
-
-    tabExistingHouse.addEventListener('click', () => {
-        currentMode = 'existing_house';
-        tabExistingHouse.classList.add('active');
-        tabEmptyLand.classList.remove('active');
-        if (groupFloors) groupFloors.style.display = 'none';
-        if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'none';
-        if (existingRoomsSection) existingRoomsSection.style.display = 'block';
-        handleCalculate();
-    });
+        tabExistingHouse.addEventListener('click', () => {
+            currentMode = 'existing_house';
+            tabExistingHouse.classList.add('active');
+            tabEmptyLand.classList.remove('active');
+            if (emptyLandPanel) emptyLandPanel.style.display = 'none';
+            if (existingHousePanel) existingHousePanel.style.display = 'block';
+        });
+    }
 }
 
-/* 2 Main Drawing Mode Tabs: Bản Vẽ Kiến Trúc vs Bản Vẽ Cửu Cung */
+/* Drawing Tab Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung) */
 function initDrawingTabs() {
-    const tabArch = document.getElementById('tabDrawingArch');
-    const tabFengShui = document.getElementById('tabDrawingFengShui');
+    const btnTabArch = document.getElementById('btnTabArch');
+    const btnTabFengShui = document.getElementById('btnTabFengShui');
 
-    if (!tabArch || !tabFengShui) return;
+    if (btnTabArch && btnTabFengShui) {
+        btnTabArch.addEventListener('click', () => {
+            currentDrawingTab = 'arch';
+            btnTabArch.classList.add('active');
+            btnTabFengShui.classList.remove('active');
+            renderActiveDrawing();
+        });
 
-    tabArch.addEventListener('click', () => {
-        currentDrawingTab = 'arch';
-        tabArch.classList.add('active');
-        tabFengShui.classList.remove('active');
-        renderActiveDrawing();
-    });
-
-    tabFengShui.addEventListener('click', () => {
-        currentDrawingTab = 'fengshui';
-        tabFengShui.classList.add('active');
-        tabArch.classList.remove('active');
-        renderActiveDrawing();
-    });
+        btnTabFengShui.addEventListener('click', () => {
+            currentDrawingTab = 'fengshui';
+            btnTabFengShui.classList.add('active');
+            btnTabArch.classList.remove('active');
+            renderActiveDrawing();
+        });
+    }
 }
 
 /* Compass 360° Interactive Dial (GPU Hardware Accelerated) */
@@ -147,7 +146,6 @@ function initCompassControls() {
 
     if (!compassSvgStage) return;
 
-    // 1. Render Static Polar Dial Graphics (Once)
     compassRenderer = new CompassSvgRenderer({ size: 500 });
     compassSvgStage.innerHTML = `
         <svg viewBox="0 0 500 500" width="100%" height="100%" style="display:block;">
@@ -196,77 +194,63 @@ function initCompassControls() {
         });
     }
 
-    // Touch & Pointer Drag on Dial
+    // Pointer rotation on Compass Dial
     if (dialContainer) {
-        let isDialDragging = false;
+        let isRotating = false;
+        let startAngle = 0;
+        let initialDeg = 0;
 
-        function handlePointer(clientX, clientY) {
+        const getAngleFromCenter = (clientX, clientY) => {
             const rect = dialContainer.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
-            const dx = clientX - cx;
-            const dy = clientY - cy;
-            let deg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-            if (deg < 0) deg += 360;
-            updateCompass(parseFloat(deg.toFixed(1)), true);
-        }
+            const rad = Math.atan2(clientY - cy, clientX - cx);
+            let deg = (rad * 180) / Math.PI + 90;
+            return (deg + 360) % 360;
+        };
 
-        dialContainer.addEventListener('mousedown', (e) => {
-            if (e.button !== 0) return;
-            isDialDragging = true;
-            handlePointer(e.clientX, e.clientY);
+        dialContainer.addEventListener('pointerdown', (e) => {
+            isRotating = true;
+            startAngle = getAngleFromCenter(e.clientX, e.clientY);
+            initialDeg = parseFloat(number?.value || slider?.value || 180);
+            dialContainer.setPointerCapture(e.pointerId);
         });
 
-        window.addEventListener('mousemove', (e) => {
-            if (!isDialDragging) return;
-            requestAnimationFrame(() => handlePointer(e.clientX, e.clientY));
+        dialContainer.addEventListener('pointermove', (e) => {
+            if (!isRotating) return;
+            const currentAngle = getAngleFromCenter(e.clientX, e.clientY);
+            const delta = currentAngle - startAngle;
+            let targetDeg = ((initialDeg - delta) % 360 + 360) % 360;
+            requestAnimationFrame(() => updateCompass(targetDeg, true));
         });
 
-        window.addEventListener('mouseup', () => {
-            isDialDragging = false;
-        });
-
-        dialContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                isDialDragging = true;
-                handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+        const stopRotate = (e) => {
+            if (isRotating) {
+                isRotating = false;
+                try { dialContainer.releasePointerCapture(e.pointerId); } catch (_) {}
             }
-        }, { passive: true });
+        };
 
-        dialContainer.addEventListener('touchmove', (e) => {
-            if (isDialDragging && e.touches.length === 1) {
-                requestAnimationFrame(() => handlePointer(e.touches[0].clientX, e.touches[0].clientY));
-            }
-        }, { passive: true });
-
-        dialContainer.addEventListener('touchend', () => {
-            isDialDragging = false;
-        });
+        dialContainer.addEventListener('pointerup', stopRotate);
+        dialContainer.addEventListener('pointercancel', stopRotate);
     }
-
-    updateCompass(180, false);
 }
 
-/* Drag & Drop Room Configuration into 9-Palace Matrix */
+/* Drag and Drop 9-Palaces */
 function initDragAndDropPalaces() {
-    const grid = document.getElementById('dndPalacesGrid');
-    const rack = document.getElementById('availableRoomsRack');
-    if (!grid || !rack) return;
+    const rack = document.getElementById('roomPaletteRack');
+    const grid = document.getElementById('palaceDropGrid');
+    if (!rack || !grid) return;
 
-    // Lạc Thư: 4, 9, 2 / 3, 5, 7 / 8, 1, 6
+    let draggedRoomData = null;
     const order = [4, 9, 2, 3, 5, 7, 8, 1, 6];
 
     grid.innerHTML = order.map(pId => `
         <div class="palace-drop-zone" data-palace-id="${pId}">
-            <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-light); display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 3px;">
-                <span>${PALACE_NAMES[pId]}</span>
-                <span style="opacity: 0.5;">Cung ${pId}</span>
-            </div>
-            <div class="dropped-rooms-container" style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px; min-height: 40px;"></div>
+            <span class="palace-zone-title">${PALACE_NAMES[pId] || pId}</span>
+            <div class="dropped-rooms-container"></div>
         </div>
     `).join('');
-
-    let draggedRoomData = null;
 
     rack.querySelectorAll('.room-drag-chip').forEach(chip => {
         chip.addEventListener('dragstart', (e) => {
@@ -277,9 +261,7 @@ function initDragAndDropPalaces() {
             e.dataTransfer.setData('application/json', JSON.stringify(draggedRoomData));
         });
 
-        // Touch Click support on mobile
         chip.addEventListener('click', () => {
-            // Pick first empty palace or prompt
             const firstP = order.find(p => dndPlacements[p].length === 0) || 9;
             addRoomToPalace(firstP, {
                 id: chip.getAttribute('data-room-id'),
@@ -310,7 +292,6 @@ function initDragAndDropPalaces() {
     });
 
     function addRoomToPalace(palaceId, room) {
-        // Remove room from other palaces if exists
         Object.keys(dndPlacements).forEach(p => {
             dndPlacements[p] = dndPlacements[p].filter(r => r.id !== room.id);
         });
@@ -346,17 +327,12 @@ function initDragAndDropPalaces() {
         });
     }
 
-    // Default Placement
     dndPlacements[9].push({ id: 'living', name: 'Phòng Khách' });
-    dndPlacements[4].push({ id: 'master_bed', name: 'Ngủ Master' });
-    dndPlacements[6].push({ id: 'altar', name: 'Phòng Thờ' });
-    dndPlacements[7].push({ id: 'kitchen', name: 'Bếp Nấu' });
-    dndPlacements[2].push({ id: 'wc', name: 'Khu WC' });
-    dndPlacements[5].push({ id: 'stairs', name: 'Cầu Thang' });
+    dndPlacements[1].push({ id: 'dining', name: 'Bếp Ăn' });
     renderDroppedRooms();
 }
 
-/* SVG Viewport Initialization */
+/* Viewport Shell Initialization */
 function initViewport() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
@@ -364,22 +340,26 @@ function initViewport() {
     cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
 }
 
-/* Toolbar Controls */
+/* Toolbar Buttons & Matrix Controls */
 function initToolbar() {
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const txtThemeMode = document.getElementById('txtThemeMode');
-    const viewportWrapper = document.querySelector('.canvas-viewport-wrapper');
-
     const btnToggleDimensions = document.getElementById('btnToggleDimensions');
     const btnToggleFurniture = document.getElementById('btnToggleFurniture');
     const btnToggleAxes = document.getElementById('btnToggleAxes');
     const btnToggleCompass = document.getElementById('btnToggleCompass');
+    const btnToggleOrientation = document.getElementById('btnToggleOrientation');
+    const txtOrientationMode = document.getElementById('txtOrientationMode');
+    const viewportWrapper = document.getElementById('svgViewportShell');
 
     const btnZoomIn = document.getElementById('btnZoomIn');
     const btnZoomOut = document.getElementById('btnZoomOut');
     const btnZoomFit = document.getElementById('btnZoomFit');
     const btnExportSvg = document.getElementById('btnExportSvg');
     const btnExportPng = document.getElementById('btnExportPng');
+
+    const btnMatrixOrientHouse = document.getElementById('btnMatrixOrientHouse');
+    const btnMatrixOrientLoShu = document.getElementById('btnMatrixOrientLoShu');
 
     if (btnToggleTheme) {
         btnToggleTheme.addEventListener('click', () => {
@@ -431,6 +411,39 @@ function initToolbar() {
         });
     }
 
+    if (btnToggleOrientation) {
+        btnToggleOrientation.addEventListener('click', () => {
+            isLandscapeMode = !isLandscapeMode;
+            btnToggleOrientation.classList.toggle('active', isLandscapeMode);
+            if (txtOrientationMode) {
+                txtOrientationMode.textContent = isLandscapeMode ? 'Khổ Nằm (Ngang)' : 'Khổ Đứng (Dọc)';
+            }
+            cadRenderer.isLandscape = isLandscapeMode;
+            handleCalculate();
+        });
+    }
+
+    // Matrix Orientation Toggles
+    if (btnMatrixOrientHouse && btnMatrixOrientLoShu) {
+        btnMatrixOrientHouse.addEventListener('click', () => {
+            currentMatrixOrientMode = 'house';
+            btnMatrixOrientHouse.classList.add('active');
+            btnMatrixOrientLoShu.classList.remove('active');
+            if (currentFlyingStars && currentBatTrach) {
+                renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
+            }
+        });
+
+        btnMatrixOrientLoShu.addEventListener('click', () => {
+            currentMatrixOrientMode = 'loshu';
+            btnMatrixOrientLoShu.classList.add('active');
+            btnMatrixOrientHouse.classList.remove('active');
+            if (currentFlyingStars && currentBatTrach) {
+                renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
+            }
+        });
+    }
+
     if (btnZoomIn && viewportController) {
         btnZoomIn.addEventListener('click', () => viewportController.zoomIn());
     }
@@ -451,112 +464,129 @@ function initToolbar() {
     if (btnExportPng && viewportController) {
         btnExportPng.addEventListener('click', () => {
             const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.png' : 'Ban_Ve_Cuu_Cung.png';
-            viewportController.exportPng(fileName, 3);
+            viewportController.exportPng(fileName);
         });
     }
 }
 
-/* Action Button: TRIỂN KHAI */
+/* Calculate & Form Input Listeners */
 function initActionButtons() {
     const btnCalculate = document.getElementById('btnCalculate');
     if (btnCalculate) {
         btnCalculate.addEventListener('click', handleCalculate);
     }
+
+    const liveInputs = [
+        'inputLandWidth', 'inputLandLength', 'inputFloors',
+        'inputBuildYear', 'inputOwnerYear', 'inputOwnerGender',
+        'inputBedrooms', 'inputToilets', 'inputAltar'
+    ];
+
+    liveInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', handleCalculate);
+            if (el.tagName === 'INPUT') {
+                el.addEventListener('input', () => {
+                    clearTimeout(window._calcDebounce);
+                    window._calcDebounce = setTimeout(handleCalculate, 300);
+                });
+            }
+        }
+    });
 }
 
-/* Main Calculation & Geometry Synthesis */
+/* Core Master Calculation Pipeline */
 function handleCalculate() {
-    const widthM = parseFloat(document.getElementById('inputWidth').value) || 5.0;
-    const lengthM = parseFloat(document.getElementById('inputLength').value) || 16.0;
-    const floors = parseInt(document.getElementById('inputFloors').value, 10) || 2;
-    const buildYear = parseInt(document.getElementById('inputBuildYear').value, 10) || 2025;
-    const currentYear = document.getElementById('inputCurrentYear') ? parseInt(document.getElementById('inputCurrentYear').value, 10) || 2026 : 2026;
-    const currentMonth = document.getElementById('inputCurrentMonth') ? parseInt(document.getElementById('inputCurrentMonth').value, 10) || 8 : 8;
-    const currentDay = document.getElementById('inputCurrentDay') ? parseInt(document.getElementById('inputCurrentDay').value, 10) || 19 : 19;
-    const currentHour = document.getElementById('inputCurrentHour') ? parseInt(document.getElementById('inputCurrentHour').value, 10) || 7 : 7;
-    const ownerYear = parseInt(document.getElementById('inputOwnerYear').value, 10) || 1990;
-    const ownerGender = document.getElementById('inputOwnerGender').value || 'nam';
-    const facingDegree = parseFloat(document.getElementById('inputFacingDegree').value) || 180;
+    let widthM = parseFloat(document.getElementById('inputLandWidth')?.value) || 5.0;
+    let lengthM = parseFloat(document.getElementById('inputLandLength')?.value) || 16.0;
 
-    const roomCounts = {
-        livingRoom: document.getElementById('inputLivingRoom') ? document.getElementById('inputLivingRoom').value : '1',
-        kitchen: document.getElementById('inputKitchen') ? document.getElementById('inputKitchen').value : '1',
-        hasGarage: document.getElementById('inputGarage') ? document.getElementById('inputGarage').value : '0',
-        stairsType: document.getElementById('inputStairsType') ? document.getElementById('inputStairsType').value : 'middle',
-        bedrooms: document.getElementById('inputBedCount') ? document.getElementById('inputBedCount').value : '3',
-        toilets: document.getElementById('inputWcCount') ? document.getElementById('inputWcCount').value : '2',
-        hasAltar: document.getElementById('inputHasAltar') ? document.getElementById('inputHasAltar').value : '1',
-        hasCommonRoom: document.getElementById('inputHasCommonRoom') ? document.getElementById('inputHasCommonRoom').value : '0',
-        hasLaundry: document.getElementById('inputHasLaundry') ? document.getElementById('inputHasLaundry').value : 'roof',
-        hasSkylight: document.getElementById('inputHasSkylight') ? document.getElementById('inputHasSkylight').value : '1'
-    };
+    // Swap if landscape mode
+    if (isLandscapeMode && widthM < lengthM) {
+        const temp = widthM;
+        widthM = lengthM;
+        lengthM = temp;
+    }
 
-    // 1. Sinh HouseGeometry (Single Source of Truth)
+    const floors = parseInt(document.getElementById('inputFloors')?.value, 10) || 2;
+    const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
+    const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
+    const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
+    const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
+
+    const bedrooms = parseInt(document.getElementById('inputBedrooms')?.value, 10) || 3;
+    const toilets = parseInt(document.getElementById('inputToilets')?.value, 10) || 2;
+    const hasAltar = document.getElementById('inputAltar')?.value || '1';
+
+    // 1. Generate Parametric Floorplan Geometry
     currentGeometry = generateParametricFloorplan({
-        mode: currentMode,
         widthM,
         lengthM,
         floors,
         facingDegree,
-        roomCounts
+        roomCounts: { bedrooms, toilets, hasAltar }
     });
 
-    // 2. Tính Tinh Bàn Huyền Không & Bát Trạch
+    // 2. Compute Flying Stars Chart
     currentFlyingStars = calculateFlyingStars({
         facingDegree,
         buildYear,
-        currentYear,
-        currentMonth,
-        currentDay,
-        currentHour
+        currentYear: 2026,
+        currentMonth: 8,
+        currentDay: 19,
+        currentHour: 7
     });
+
+    // 3. Compute Owner Gua (Bát Trạch Phối Mệnh)
     currentBatTrach = calculateGua(ownerYear, ownerGender);
 
-    // 3. Tính Cửu Cung Không Gian
-    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
+    // 4. Compute 9-Palace Spatial Assignment
+    const floorGeo = currentGeometry.plansByFloor[currentFloorIndex - 1] || currentGeometry;
+    currentSpatialResult = calculateFengShuiSpatial(floorGeo, {
         facingDegree,
         buildYear,
-        currentYear,
-        currentMonth,
-        currentDay,
-        currentHour,
+        currentYear: 2026,
+        currentMonth: 8,
+        currentDay: 19,
+        currentHour: 7,
         ownerYear,
         ownerGender
     });
 
-    // 4. Hiển thị khu vực kết quả
-    const resultsSection = document.getElementById('resultsSection');
-    if (resultsSection) resultsSection.style.display = 'block';
+    // 5. Render Floor Navigator
+    renderFloorNavigator(currentGeometry.totalFloors);
 
-    // 5. Cập nhật thanh điều hướng tầng
-    renderFloorNavigator(currentGeometry.plansByFloor);
-
-    // 6. Render bản vẽ SVG đang chọn
+    // 6. Render Active Drawing (CAD or Feng Shui Overlay)
     renderActiveDrawing();
 
-    // 7. Cập nhật Tinh Bàn 9 ô bên phải
+    // 7. Render 9-Palace Matrix (Oriented by House facing or Lo Shu)
     renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
 
-    // 8. Cập nhật báo cáo luận đoán chi tiết
+    // 8. Render Audit Report
     renderDetailedReport(currentSpatialResult);
 }
 
-/* Floor Switcher Navigation */
-function renderFloorNavigator(plansByFloor) {
-    const nav = document.getElementById('floorNavigator');
-    if (!nav || !plansByFloor) return;
+/* Render Floor Navigator */
+function renderFloorNavigator(totalFloors) {
+    const nav = document.getElementById('floorPlanNavigator');
+    if (!nav) return;
 
-    nav.innerHTML = plansByFloor.map((p, idx) => `
-        <button type="button" class="floor-btn ${p.floorIndex === currentFloorIndex ? 'active' : ''}" data-floor="${p.floorIndex}">
-            ${p.floorName}
-        </button>
-    `).join('');
+    let buttons = '';
+    for (let f = 1; f <= totalFloors; f++) {
+        const isActive = f === currentFloorIndex;
+        const name = f === 1 ? 'TẦNG TRỆT' : `TẦNG ${f}`;
+        buttons += `
+            <button type="button" class="floor-btn ${isActive ? 'active' : ''}" data-floor="${f}">
+                ${name}
+            </button>
+        `;
+    }
 
+    nav.innerHTML = buttons;
     nav.querySelectorAll('.floor-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            currentFloorIndex = parseInt(btn.getAttribute('data-floor'), 10) || 1;
-            nav.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            currentFloorIndex = parseInt(btn.getAttribute('data-floor'), 10);
+            renderFloorNavigator(totalFloors);
             renderActiveDrawing();
         });
     });
@@ -593,7 +623,7 @@ function renderActiveDrawing() {
     viewportController.setSvgContent(baseSvg);
 }
 
-/* Render 9-Palace Xuan Kong Matrix Display */
+/* Render 9-Palace Xuan Kong Matrix Display (TỰ ĐỘNG XOAY THEO HƯỚNG NHÀ HOẶC LẠC THƯ) */
 function renderFlyingStarsMatrix(flyingStars, batTrach) {
     const matrixContainer = document.getElementById('flyingStarsMatrix');
     const metaVan = document.getElementById('metaVan');
@@ -610,26 +640,39 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     if (!matrixContainer || !flyingStars.palaces) return;
 
-    // Lạc Thư: 4, 9, 2 / 3, 5, 7 / 8, 1, 6
-    const order = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+    // Xác định thứ tự 9 cung: Xoay theo hướng nhà (House) hoặc Lạc Thư chuẩn (Lo Shu)
+    const order = currentMatrixOrientMode === 'house'
+        ? getOrientedPalaceGrid(flyingStars.facingPalace)
+        : [4, 9, 2, 3, 5, 7, 8, 1, 6];
 
     matrixContainer.innerHTML = order.map(pId => {
         const pal = flyingStars.palaces[pId];
         if (!pal) return '';
+
+        const isFacingPal = pId === flyingStars.facingPalace;
+        const isSittingPal = pId === flyingStars.sittingPalace;
+
+        let palTag = PALACE_NAMES[pId] || pId;
+        if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
+        else if (isSittingPal) palTag = `🔵 TỌA (${PALACE_SHORT[pId]})`;
+
         return `
-            <div class="palace-cell">
-                <div class="time-stars-row" style="display: flex; justify-content: center; gap: 3px; margin-bottom: 4px;">
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#22c55e; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Niên Tinh">${pal.nienStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#ef4444; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Nguyệt Tinh">${pal.nguyetStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:bold; text-align:center;" title="Nhật Tinh">${pal.nhatStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:bold; text-align:center;" title="Thời Tinh">${pal.thoiStar}</span>
+            <div class="palace-cell ${isFacingPal ? 'facing-cell' : (isSittingPal ? 'sitting-cell' : '')}" style="${isFacingPal ? 'border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.08);' : (isSittingPal ? 'border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.08);' : '')}">
+                <!-- Hàng 4 Sao Thời Gian -->
+                <div class="time-stars-row" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 5px;">
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#22c55e; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Niên Tinh (Năm)">${pal.nienStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#ef4444; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nguyệt Tinh (Tháng)">${pal.nguyetStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nhật Tinh (Ngày)">${pal.nhatStar}</span>
+                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:900; text-align:center;" title="Thời Tinh (Giờ)">${pal.thoiStar}</span>
                 </div>
-                <div class="palace-stars-trio">
-                    <span class="star-badge-son" title="Sơn Tinh">${pal.sonStar}</span>
-                    <span class="star-badge-van" title="Vận Tinh" style="font-size: 1.4rem; font-weight: 900;">${pal.vanStar}</span>
-                    <span class="star-badge-huong" title="Hướng Tinh">${pal.huongStar}</span>
+                <!-- Bộ 3 Sao Huyền Không -->
+                <div class="palace-stars-trio" style="display: flex; justify-content: space-around; align-items: center; margin: 4px 0;">
+                    <span class="star-badge-son" style="color: #38bdf8; font-weight: 900; font-size: 1.15rem;" title="Sơn Tinh (Trái)">${pal.sonStar}</span>
+                    <span class="star-badge-van" style="font-size: 1.5rem; font-weight: 900; color: #ffffff;" title="Vận Tinh (Giữa)">${pal.vanStar}</span>
+                    <span class="star-badge-huong" style="color: #f87171; font-weight: 900; font-size: 1.15rem;" title="Hướng Tinh (Phải)">${pal.huongStar}</span>
                 </div>
-                <span class="palace-name-badge">${PALACE_NAMES[pId] || pId}</span>
+                <!-- Tên Cung & Phương Vị -->
+                <span class="palace-name-badge" style="font-size: 0.72rem; font-weight: 800; color: ${isFacingPal ? '#f87171' : (isSittingPal ? '#38bdf8' : '#fbbf24')};">${palTag}</span>
             </div>
         `;
     }).join('');
@@ -651,7 +694,7 @@ function renderDetailedReport(spatialResult) {
                     <span class="audit-badge ${isGood ? 'good' : 'bad'}">${p.grade || 'BÌNH HÒA'}</span>
                 </div>
                 <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
-                    <strong>Bộ Sao:</strong> Sơn ${p.sonStar} · Hướng ${p.huongStar} · Vận ${p.vanStar} · Niên ${p.nienStar}
+                    <strong>Bộ Sao:</strong> Sơn ${p.sonStar} (Trái) · Hướng ${p.huongStar} (Phải) · Vận ${p.vanStar} (Giữa) · Niên ${p.nienStar}
                 </div>
                 <div style="font-size: 0.82rem; color: #fbbf24; line-height: 1.4;">
                     ${p.analysis || 'Phương vị ổn định, tiếp nhận sinh khí tự nhiên.'}
