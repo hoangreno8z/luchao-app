@@ -1,39 +1,59 @@
 // ============================================================
-// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.2
-// Kiến trúc 4 lớp chuẩn Toán học, GPU Acceleration 60FPS
-// Tự chứa hoàn toàn (Self-contained ES Module), Tương thích 100% Web Browser
+// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.3
+// Chuẩn 100% Thẩm Thị Huyền Không Học & Toán Học Cực Biến
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
 // ------------------------------------------------------------
-// 1. DATA LAYER (compass_data.js)
+// 1. DATA LAYER (24 Sơn & 60 Long)
 // ------------------------------------------------------------
-export const MOUNTAINS_24 = [
-    { id: 1, name: 'Nhâm', quai: 'Khảm', palaceId: 1, hanh: 'Thủy', startDeg: 337.5, midDeg: 345, endDeg: 352.5, nguyenLong: 'Địa', amDuong: '+' },
-    { id: 2, name: 'Tý', quai: 'Khảm', palaceId: 1, hanh: 'Thủy', startDeg: 352.5, midDeg: 0, endDeg: 7.5, nguyenLong: 'Thiên', amDuong: '-' },
-    { id: 3, name: 'Quý', quai: 'Khảm', palaceId: 1, hanh: 'Thủy', startDeg: 7.5, midDeg: 15, endDeg: 22.5, nguyenLong: 'Nhân', amDuong: '-' },
-    { id: 4, name: 'Sửu', quai: 'Cấn', palaceId: 8, hanh: 'Thổ', startDeg: 22.5, midDeg: 30, endDeg: 37.5, nguyenLong: 'Địa', amDuong: '-' },
-    { id: 5, name: 'Cấn', quai: 'Cấn', palaceId: 8, hanh: 'Thổ', startDeg: 37.5, midDeg: 45, endDeg: 52.5, nguyenLong: 'Thiên', amDuong: '+' },
-    { id: 6, name: 'Dần', quai: 'Cấn', palaceId: 8, hanh: 'Mộc', startDeg: 52.5, midDeg: 60, endDeg: 67.5, nguyenLong: 'Nhân', amDuong: '+' },
-    { id: 7, name: 'Giáp', quai: 'Chấn', palaceId: 3, hanh: 'Mộc', startDeg: 67.5, midDeg: 75, endDeg: 82.5, nguyenLong: 'Địa', amDuong: '+' },
-    { id: 8, name: 'Mão', quai: 'Chấn', palaceId: 3, hanh: 'Mộc', startDeg: 82.5, midDeg: 90, endDeg: 97.5, nguyenLong: 'Thiên', amDuong: '-' },
-    { id: 9, name: 'Ất', quai: 'Chấn', palaceId: 3, hanh: 'Mộc', startDeg: 97.5, midDeg: 105, endDeg: 112.5, nguyenLong: 'Nhân', amDuong: '-' },
-    { id: 10, name: 'Thìn', quai: 'Tốn', palaceId: 4, hanh: 'Thổ', startDeg: 112.5, midDeg: 120, endDeg: 127.5, nguyenLong: 'Địa', amDuong: '-' },
-    { id: 11, name: 'Tốn', quai: 'Tốn', palaceId: 4, hanh: 'Mộc', startDeg: 127.5, midDeg: 135, endDeg: 142.5, nguyenLong: 'Thiên', amDuong: '+' },
-    { id: 12, name: 'Tỵ', quai: 'Tốn', palaceId: 4, hanh: 'Hỏa', startDeg: 142.5, midDeg: 150, endDeg: 157.5, nguyenLong: 'Nhân', amDuong: '+' },
-    { id: 13, name: 'Bính', quai: 'Ly', palaceId: 9, hanh: 'Hỏa', startDeg: 157.5, midDeg: 165, endDeg: 172.5, nguyenLong: 'Địa', amDuong: '+' },
-    { id: 14, name: 'Ngọ', quai: 'Ly', palaceId: 9, hanh: 'Hỏa', startDeg: 172.5, midDeg: 180, endDeg: 187.5, nguyenLong: 'Thiên', amDuong: '-' },
-    { id: 15, name: 'Đinh', quai: 'Ly', palaceId: 9, hanh: 'Hỏa', startDeg: 187.5, midDeg: 195, endDeg: 202.5, nguyenLong: 'Nhân', amDuong: '-' },
-    { id: 16, name: 'Mùi', quai: 'Khôn', palaceId: 2, hanh: 'Thổ', startDeg: 202.5, midDeg: 210, endDeg: 217.5, nguyenLong: 'Địa', amDuong: '-' },
-    { id: 17, name: 'Khôn', quai: 'Khôn', palaceId: 2, hanh: 'Thổ', startDeg: 217.5, midDeg: 225, endDeg: 232.5, nguyenLong: 'Thiên', amDuong: '+' },
-    { id: 18, name: 'Thân', quai: 'Khôn', palaceId: 2, hanh: 'Kim', startDeg: 232.5, midDeg: 240, endDeg: 247.5, nguyenLong: 'Nhân', amDuong: '+' },
-    { id: 19, name: 'Canh', quai: 'Đoài', palaceId: 7, hanh: 'Kim', startDeg: 247.5, midDeg: 255, endDeg: 262.5, nguyenLong: 'Địa', amDuong: '+' },
-    { id: 20, name: 'Dậu', quai: 'Đoài', palaceId: 7, hanh: 'Kim', startDeg: 262.5, midDeg: 270, endDeg: 277.5, nguyenLong: 'Thiên', amDuong: '-' },
-    { id: 21, name: 'Tân', quai: 'Đoài', palaceId: 7, hanh: 'Kim', startDeg: 277.5, midDeg: 285, endDeg: 292.5, nguyenLong: 'Nhân', amDuong: '-' },
-    { id: 22, name: 'Tuất', quai: 'Càn', palaceId: 6, hanh: 'Thổ', startDeg: 292.5, midDeg: 300, endDeg: 307.5, nguyenLong: 'Địa', amDuong: '-' },
-    { id: 23, name: 'Càn', quai: 'Càn', palaceId: 6, hanh: 'Kim', startDeg: 307.5, midDeg: 315, endDeg: 322.5, nguyenLong: 'Thiên', amDuong: '+' },
-    { id: 24, name: 'Hợi', quai: 'Càn', palaceId: 6, hanh: 'Thủy', startDeg: 322.5, midDeg: 330, endDeg: 337.5, nguyenLong: 'Nhân', amDuong: '+' }
-];
+export const MOUNTAINS_24_DICT = {
+    'Nhâm': { name: 'Nhâm', trigram: 1, type: 0, yinYang: 1,  center: 345, startDeg: 337.5, midDeg: 345, endDeg: 352.5, element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Địa', amDuong: '+' },
+    'Tý':   { name: 'Tý',   trigram: 1, type: 1, yinYang: -1, center: 0,   startDeg: 352.5, midDeg: 0,   endDeg: 7.5,   element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Thiên', amDuong: '-' },
+    'Quý':  { name: 'Quý',  trigram: 1, type: 2, yinYang: -1, center: 15,  startDeg: 7.5,   midDeg: 15,  endDeg: 22.5,  element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Nhân', amDuong: '-' },
+    
+    'Sửu':  { name: 'Sửu',  trigram: 8, type: 0, yinYang: -1, center: 30,  startDeg: 22.5,  midDeg: 30,  endDeg: 37.5,  element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Địa', amDuong: '-' },
+    'Cấn':  { name: 'Cấn',  trigram: 8, type: 1, yinYang: 1,  center: 45,  startDeg: 37.5,  midDeg: 45,  endDeg: 52.5,  element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Thiên', amDuong: '+' },
+    'Dần':  { name: 'Dần',  trigram: 8, type: 2, yinYang: 1,  center: 60,  startDeg: 52.5,  midDeg: 60,  endDeg: 67.5,  element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Nhân', amDuong: '+' },
+    
+    'Giáp': { name: 'Giáp', trigram: 3, type: 0, yinYang: 1,  center: 75,  startDeg: 67.5,  midDeg: 75,  endDeg: 82.5,  element: 'Mộc',  hanh: 'Mộc',  nguyenLong: 'Địa', amDuong: '+' },
+    'Mão':  { name: 'Mão',  trigram: 3, type: 1, yinYang: -1, center: 90,  startDeg: 82.5,  midDeg: 90,  endDeg: 97.5,  element: 'Mộc',  hanh: 'Mộc',  nguyenLong: 'Thiên', amDuong: '-' },
+    'Ất':   { name: 'Ất',   trigram: 3, type: 2, yinYang: -1, center: 105, startDeg: 97.5,  midDeg: 105, endDeg: 112.5, element: 'Mộc',  hanh: 'Mộc',  nguyenLong: 'Nhân', amDuong: '-' },
+    
+    'Thìn': { name: 'Thìn', trigram: 4, type: 0, yinYang: -1, center: 120, startDeg: 112.5, midDeg: 120, endDeg: 127.5, element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Địa', amDuong: '-' },
+    'Tốn':  { name: 'Tốn',  trigram: 4, type: 1, yinYang: 1,  center: 135, startDeg: 127.5, midDeg: 135, endDeg: 142.5, element: 'Mộc',  hanh: 'Mộc',  nguyenLong: 'Thiên', amDuong: '+' },
+    'Tỵ':   { name: 'Tỵ',   trigram: 4, type: 2, yinYang: 1,  center: 150, startDeg: 142.5, midDeg: 150, endDeg: 157.5, element: 'Hỏa',  hanh: 'Hỏa',  nguyenLong: 'Nhân', amDuong: '+' },
+    
+    'Bính': { name: 'Bính', trigram: 9, type: 0, yinYang: 1,  center: 165, startDeg: 157.5, midDeg: 165, endDeg: 172.5, element: 'Hỏa',  hanh: 'Hỏa',  nguyenLong: 'Địa', amDuong: '+' },
+    'Ngọ':  { name: 'Ngọ',  trigram: 9, type: 1, yinYang: -1, center: 180, startDeg: 172.5, midDeg: 180, endDeg: 187.5, element: 'Hỏa',  hanh: 'Hỏa',  nguyenLong: 'Thiên', amDuong: '-' },
+    'Đinh': { name: 'Đinh', trigram: 9, type: 2, yinYang: -1, center: 195, startDeg: 187.5, midDeg: 195, endDeg: 202.5, element: 'Hỏa',  hanh: 'Hỏa',  nguyenLong: 'Nhân', amDuong: '-' },
+    
+    'Mùi':  { name: 'Mùi',  trigram: 2, type: 0, yinYang: -1, center: 210, startDeg: 202.5, midDeg: 210, endDeg: 217.5, element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Địa', amDuong: '-' },
+    'Khôn': { name: 'Khôn', trigram: 2, type: 1, yinYang: 1,  center: 225, startDeg: 217.5, midDeg: 225, endDeg: 232.5, element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Thiên', amDuong: '+' },
+    'Thân': { name: 'Thân', trigram: 2, type: 2, yinYang: 1,  center: 240, startDeg: 232.5, midDeg: 240, endDeg: 247.5, element: 'Kim',  hanh: 'Kim',  nguyenLong: 'Nhân', amDuong: '+' },
+    
+    'Canh': { name: 'Canh', trigram: 7, type: 0, yinYang: 1,  center: 255, startDeg: 247.5, midDeg: 255, endDeg: 262.5, element: 'Kim',  hanh: 'Kim',  nguyenLong: 'Địa', amDuong: '+' },
+    'Dậu':  { name: 'Dậu',  trigram: 7, type: 1, yinYang: -1, center: 270, startDeg: 262.5, midDeg: 270, endDeg: 277.5, element: 'Kim',  hanh: 'Kim',  nguyenLong: 'Thiên', amDuong: '-' },
+    'Tân':  { name: 'Tân',  trigram: 7, type: 2, yinYang: -1, center: 285, startDeg: 277.5, midDeg: 285, endDeg: 292.5, element: 'Kim',  hanh: 'Kim',  nguyenLong: 'Nhân', amDuong: '-' },
+    
+    'Tuất': { name: 'Tuất', trigram: 6, type: 0, yinYang: -1, center: 300, startDeg: 292.5, midDeg: 300, endDeg: 307.5, element: 'Thổ',  hanh: 'Thổ',  nguyenLong: 'Địa', amDuong: '-' },
+    'Càn':  { name: 'Càn',  trigram: 6, type: 1, yinYang: 1,  center: 315, startDeg: 307.5, midDeg: 315, endDeg: 322.5, element: 'Kim',  hanh: 'Kim',  nguyenLong: 'Thiên', amDuong: '+' },
+    'Hợi':  { name: 'Hợi',  trigram: 6, type: 2, yinYang: 1,  center: 330, startDeg: 322.5, midDeg: 330, endDeg: 337.5, element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Nhân', amDuong: '+' }
+};
+
+export const MOUNTAINS_24 = Object.values(MOUNTAINS_24_DICT);
+
+export const STARS_YIN_YANG = {
+    1: [1, -1, -1],  // Khảm: Nhâm(+), Tý(-), Quý(-)
+    2: [-1, 1, 1],   // Khôn: Mùi(-), Khôn(+), Thân(+)
+    3: [1, -1, -1],  // Chấn: Giáp(+), Mão(-), Ất(-)
+    4: [-1, 1, 1],   // Tốn: Thìn(-), Tốn(+), Tỵ(+)
+    5: null,         // Ngũ Hoàng mượn tính Âm/Dương của Sơn
+    6: [-1, 1, 1],   // Càn: Tuất(-), Càn(+), Hợi(+)
+    7: [1, -1, -1],  // Đoài: Canh(+), Dậu(-), Tân(-)
+    8: [-1, 1, 1],   // Cấn: Sửu(-), Cấn(+), Dần(+)
+    9: [1, -1, -1]   // Ly: Bính(+), Ngọ(-), Đinh(-)
+};
 
 const CAN_CHI_60 = [
     'Giáp Tý', 'Ất Sửu', 'Bính Dần', 'Đinh Mão', 'Mậu Thìn', 'Kỷ Tỵ', 'Canh Ngọ', 'Tân Mùi', 'Nhâm Thân', 'Quý Dậu',
@@ -85,10 +105,11 @@ export const PALACE_SHORT = {
     9: 'NAM'
 };
 
+export const FLYING_PATH = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 export const LO_SHU_PATHS = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 
 // ------------------------------------------------------------
-// 2. PURE MATH LAYER (compass_math.js)
+// 2. TOÁN HỌC & LA BÀN
 // ------------------------------------------------------------
 export function polarToCartesian(cx, cy, r, deg) {
     const rad = ((deg - 90) * Math.PI) / 180;
@@ -136,28 +157,32 @@ export function generateCompassPaths(data, innerR, outerR, cx = 250, cy = 250) {
     };
 }
 
-export function findMountain(deg) {
-    const normDeg = ((deg % 360) + 360) % 360;
-    const mountain = MOUNTAINS_24.find(m => {
-        if (m.startDeg > m.endDeg) {
-            return normDeg >= m.startDeg || normDeg < m.endDeg;
+export function findMountain(degree) {
+    let deg = ((degree % 360) + 360) % 360;
+    let bestName = 'Tý';
+    let best = MOUNTAINS_24_DICT['Tý'];
+    let bestDiff = 999;
+
+    for (let name in MOUNTAINS_24_DICT) {
+        let m = MOUNTAINS_24_DICT[name];
+        let diff = Math.abs(deg - m.center);
+        if (diff > 180) diff = 360 - diff;
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            best = m;
+            bestName = name;
         }
-        return normDeg >= m.startDeg && normDeg < m.endDeg;
-    }) || MOUNTAINS_24[1];
+    }
 
-    let delta = Math.abs(normDeg - mountain.midDeg);
-    if (delta > 180) delta = 360 - delta;
-
-    const isKiemHuong = delta >= 3.0;
-
+    const isKiemHuong = bestDiff >= 3.0;
     return {
-        type: isKiemHuong ? 'Kiêm Hướng' : 'Chính Hướng',
-        chartType: isKiemHuong ? 'the_quai' : 'chinh_huong',
-        mountain,
-        degree: normDeg,
-        deviationDeg: parseFloat(delta.toFixed(2)),
-        deviation: parseFloat(delta.toFixed(2)),
-        isKiemHuong
+        mountain: { ...best, name: bestName, id: best.trigram, palaceId: best.trigram, amDuong: best.yinYang === 1 ? '+' : '-' },
+        degree: deg,
+        diff: bestDiff,
+        deviation: parseFloat(bestDiff.toFixed(2)),
+        isKiemHuong,
+        type: isKiemHuong ? 'kiem_huong' : 'chinh_huong',
+        chartType: isKiemHuong ? 'the_quai' : 'chinh_huong'
     };
 }
 
@@ -268,7 +293,7 @@ export function rotatePoint(x, y, cx, cy, angleDeg) {
 }
 
 // ------------------------------------------------------------
-// 3. COMPASS SVG GPU RENDERER (compass_svg_renderer.js)
+// 3. LA BÀN VECTOR SVG GPU RENDERER
 // ------------------------------------------------------------
 export class CompassSvgRenderer {
     constructor(options = {}) {
@@ -329,35 +354,34 @@ export class CompassSvgRenderer {
 }
 
 // ------------------------------------------------------------
-// 4. HUYỀN KHÔNG PHI TINH ENGINE VẬN 9 + SAO THỜI GIAN
+// 4. HUYỀN KHÔNG PHI TINH THẨM THỊ ENGINE
 // ------------------------------------------------------------
 export function wrapStar(n) {
     let s = ((n - 1) % 9 + 9) % 9 + 1;
     return s === 0 ? 9 : s;
 }
 
-export function getVanBan(period = 9) {
+export function fly(centerStar, direction = 1) {
     let grid = {};
-    let cur = period;
-    LO_SHU_PATHS.forEach((pId) => {
-        grid[pId] = cur;
-        cur = cur === 9 ? 1 : cur + 1;
-    });
+    let currentStar = centerStar;
+    for (let i = 0; i < FLYING_PATH.length; i++) {
+        const palaceId = FLYING_PATH[i];
+        grid[palaceId] = currentStar;
+        currentStar += direction;
+        if (currentStar > 9) currentStar = 1;
+        if (currentStar < 1) currentStar = 9;
+    }
     return grid;
 }
 
-export function flyStars(centerStar, isForward = true) {
-    let grid = {};
-    let cur = centerStar;
-    LO_SHU_PATHS.forEach((pId) => {
-        grid[pId] = cur;
-        if (isForward) {
-            cur = cur === 9 ? 1 : cur + 1;
-        } else {
-            cur = cur === 1 ? 9 : cur - 1;
-        }
-    });
-    return grid;
+export function getPeriod(year) {
+    const y = parseInt(year, 10) || 2025;
+    if (y >= 1 && y <= 9) return y;
+    if (y >= 2024 && y <= 2043) return 9;
+    if (y >= 2004 && y <= 2023) return 8;
+    if (y >= 1984 && y <= 2003) return 7;
+    const cycleYear = ((y - 1864) % 180 + 180) % 180;
+    return Math.floor(cycleYear / 20) + 1;
 }
 
 export function getAnnualStar(year, month = 8, day = 19) {
@@ -372,15 +396,19 @@ export function getAnnualStar(year, month = 8, day = 19) {
     return wrapStar(star);
 }
 
-export function getMonthlyStar(year, month, day = 19) {
-    let annStar = getAnnualStar(year, month, day);
-    let baseOffset = 0;
-    if ([1, 4, 7].includes(annStar)) baseOffset = 8;
-    else if ([3, 6, 9].includes(annStar)) baseOffset = 2;
-    else baseOffset = 5;
+export function getMonthlyStar(year, month = 8, day = 19) {
+    let effectiveYear = year;
+    if (month === 1 || (month === 2 && day < 4)) {
+        effectiveYear = year - 1;
+    }
+    const yearZhi = ((effectiveYear - 4) % 12 + 12) % 12;
+    let baseStar = 2;
+    if ([0, 3, 6, 9].includes(yearZhi)) baseStar = 8;
+    else if ([2, 5, 8, 11].includes(yearZhi)) baseStar = 2;
+    else baseStar = 5;
 
-    let mStar = (baseOffset - (month - 1)) % 9;
-    return wrapStar(mStar);
+    let monthStar = baseStar - (month - 1);
+    return wrapStar(monthStar);
 }
 
 export function getDailyStar(year, month, day) {
@@ -391,10 +419,108 @@ export function getDailyStar(year, month, day) {
     return wrapStar(star);
 }
 
-export function getHourlyStar(year, month, day, hourIndex) {
+export function getHourlyStar(year, month, day, hourIndex = 7) {
     let dStar = getDailyStar(year, month, day);
     let hStar = (dStar + hourIndex) % 9;
     return wrapStar(hStar);
+}
+
+export function calculateHuyenKhong(period, facingMountainStr, sittingMountainStr) {
+    const facingMnt = MOUNTAINS_24_DICT[facingMountainStr] || MOUNTAINS_24_DICT['Ngọ'];
+    const sittingMnt = MOUNTAINS_24_DICT[sittingMountainStr] || MOUNTAINS_24_DICT['Tý'];
+
+    const vanBan = fly(period, 1);
+    const saoToa = vanBan[sittingMnt.trigram];
+    const saoHuong = vanBan[facingMnt.trigram];
+
+    function getFlyingDirection(star, mountainObj) {
+        if (star === 5) {
+            return mountainObj.yinYang;
+        } else {
+            return STARS_YIN_YANG[star][mountainObj.type];
+        }
+    }
+
+    const toaDirection = getFlyingDirection(saoToa, sittingMnt);
+    const huongDirection = getFlyingDirection(saoHuong, facingMnt);
+
+    const sonBan = fly(saoToa, toaDirection);
+    const huongBan = fly(saoHuong, huongDirection);
+
+    return {
+        period,
+        vanBan,
+        sonBan,
+        huongBan,
+        saoToa,
+        saoHuong,
+        toaDirection: toaDirection === 1 ? 'Thuận' : 'Nghịch',
+        huongDirection: huongDirection === 1 ? 'Thuận' : 'Nghịch'
+    };
+}
+
+export function calculateFlyingStars(params = {}) {
+    const {
+        facingDegree = 180,
+        buildYear = 2025,
+        currentYear = 2026,
+        currentMonth = 8,
+        currentDay = 19,
+        currentHour = 7
+    } = params;
+
+    const van = getPeriod(buildYear);
+    const facingDetail = findMountain(facingDegree);
+    const sittingDetail = getOppositeMountain(facingDegree);
+
+    const coreResult = calculateHuyenKhong(van, facingDetail.mountain.name, sittingDetail.mountain.name);
+
+    const nienStar = getAnnualStar(currentYear, currentMonth, currentDay);
+    const nguyetStar = getMonthlyStar(currentYear, currentMonth, currentDay);
+    const nhatStar = getDailyStar(currentYear, currentMonth, currentDay);
+    const thoiStar = getHourlyStar(currentYear, currentMonth, currentDay, currentHour);
+
+    const nienBan = fly(nienStar, -1);
+    const nguyetBan = fly(nguyetStar, -1);
+    const nhatBan = fly(nhatStar, 1);
+    const thoiBan = fly(thoiStar, 1);
+
+    const palaces = {};
+    for (let p = 1; p <= 9; p++) {
+        palaces[p] = {
+            palaceId: p,
+            palaceName: PALACE_NAMES[p],
+            vanStar: coreResult.vanBan[p],
+            sonStar: coreResult.sonBan[p],
+            huongStar: coreResult.huongBan[p],
+            nienStar: nienBan[p],
+            nguyetStar: nguyetBan[p],
+            nhatStar: nhatBan[p],
+            thoiStar: thoiBan[p],
+            isFacing: p === facingDetail.mountain.trigram,
+            isSitting: p === sittingDetail.mountain.trigram
+        };
+    }
+
+    return {
+        van,
+        period: van,
+        buildYear,
+        facingDegree: facingDetail.degree,
+        facingMountain: facingDetail.mountain.name,
+        facingPalace: facingDetail.mountain.trigram,
+        sittingMountain: sittingDetail.mountain.name,
+        sittingPalace: sittingDetail.mountain.trigram,
+        chartType: facingDetail.chartType,
+        deviation: facingDetail.deviation,
+        palaces,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
+        toaDirection: coreResult.toaDirection,
+        huongDirection: coreResult.huongDirection
+    };
 }
 
 export function getOrientedPalaceGrid(facingPalaceId) {
@@ -409,72 +535,6 @@ export function getOrientedPalaceGrid(facingPalaceId) {
         getP(-2), 5,       getP(2),
         getP(-3), getP(4), getP(3)
     ];
-}
-
-export function calculateFlyingStars(params = {}) {
-    const {
-        facingDegree = 180,
-        buildYear = 2025,
-        currentYear = 2026,
-        currentMonth = 8,
-        currentDay = 19,
-        currentHour = 7
-    } = params;
-
-    const van = (buildYear >= 2024 && buildYear <= 2043) ? 9 : 8;
-    const vanBan = getVanBan(van);
-
-    const facingDetail = findMountain(facingDegree);
-    const sittingDetail = getOppositeMountain(facingDegree);
-
-    const nienStar = getAnnualStar(currentYear, currentMonth, currentDay);
-    const nguyetStar = getMonthlyStar(currentYear, currentMonth, currentDay);
-    const nhatStar = getDailyStar(currentYear, currentMonth, currentDay);
-    const thoiStar = getHourlyStar(currentYear, currentMonth, currentDay, currentHour);
-
-    const nienBan = flyStars(nienStar, false);
-    const nguyetBan = flyStars(nguyetStar, false);
-    const nhatBan = flyStars(nhatStar, true);
-    const thoiBan = flyStars(thoiStar, true);
-
-    const sonCenterStar = vanBan[sittingDetail.mountain.palaceId] || 9;
-    const huongCenterStar = vanBan[facingDetail.mountain.palaceId] || 9;
-
-    const sonBan = flyStars(sonCenterStar, sittingDetail.mountain.amDuong === '+');
-    const huongBan = flyStars(huongCenterStar, facingDetail.mountain.amDuong === '+');
-
-    const palaces = {};
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(pId => {
-        palaces[pId] = {
-            palaceId: pId,
-            palaceName: PALACE_NAMES[pId],
-            vanStar: vanBan[pId],
-            sonStar: sonBan[pId],
-            huongStar: huongBan[pId],
-            nienStar: nienBan[pId],
-            nguyetStar: nguyetBan[pId],
-            nhatStar: nhatBan[pId],
-            thoiStar: thoiBan[pId],
-            isFacing: pId === facingDetail.mountain.palaceId,
-            isSitting: pId === sittingDetail.mountain.palaceId
-        };
-    });
-
-    return {
-        van,
-        facingDegree,
-        facingMountain: facingDetail.mountain.name,
-        facingPalace: facingDetail.mountain.palaceId,
-        sittingMountain: sittingDetail.mountain.name,
-        sittingPalace: sittingDetail.mountain.palaceId,
-        chartType: facingDetail.chartType,
-        deviation: facingDetail.deviation,
-        palaces,
-        currentYear,
-        currentMonth,
-        currentDay,
-        currentHour
-    };
 }
 
 // ------------------------------------------------------------
@@ -544,7 +604,7 @@ export function checkLoBan(lengthMm, type = '522') {
 }
 
 // ------------------------------------------------------------
-// 6. PARAMETRIC FLOORPLAN GENERATOR (Single Source of Truth)
+// 6. PARAMETRIC FLOORPLAN GENERATOR
 // ------------------------------------------------------------
 export function generateParametricFloorplan(params = {}) {
     const {
@@ -739,7 +799,7 @@ export function generateParametricFloorplan(params = {}) {
 }
 
 // ------------------------------------------------------------
-// 7. ARCHITECTURAL CAD SVG RENDERER (Nét thanh mảnh & Viewport Auto-fit)
+// 7. ARCHITECTURAL CAD SVG RENDERER
 // ------------------------------------------------------------
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
@@ -755,7 +815,6 @@ export class ArchitecturalCADRenderer {
         const W = geometry.widthMm;
         const D = geometry.depthMm;
 
-        // Tỷ lệ lề bao quanh (Padding linh hoạt) theo kích thước công trình
         const padX = Math.max(800, Math.round(W * 0.12));
         const padY = Math.max(900, Math.round(D * 0.08));
 
@@ -772,7 +831,6 @@ export class ArchitecturalCADRenderer {
         const bgColor = isWhite ? '#ffffff' : '#0f172a';
         const borderColor = isWhite ? '#0284c7' : '#d97706';
 
-        // 1. Trục
         let axesSvg = '';
         if (this.showAxes && geometry.axesX && geometry.axesY) {
             geometry.axesX.forEach((ax) => {
@@ -787,7 +845,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 2. Sảnh
         let porchSvg = '';
         if (geometry.entrancePorch) {
             const p = geometry.entrancePorch;
@@ -798,7 +855,6 @@ export class ArchitecturalCADRenderer {
             `;
         }
 
-        // 3. Tường (Nét CAD mảnh 35px & 20px)
         let wallsSvg = '';
         if (geometry.walls) {
             geometry.walls.forEach(w => {
@@ -808,7 +864,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 4. Cột
         let columnsSvg = '';
         if (geometry.columns) {
             geometry.columns.forEach(c => {
@@ -816,7 +871,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 5. Nội thất
         let furnitureSvg = '';
         if (this.showFurniture && geometry.furniture) {
             geometry.furniture.forEach(f => {
@@ -844,7 +898,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 6. Nhãn Phòng
         let roomsSvg = '';
         if (geometry.rooms) {
             geometry.rooms.forEach(r => {
@@ -857,7 +910,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 7. Cửa
         let doorsSvg = '';
         if (geometry.doors) {
             geometry.doors.forEach(d => {
@@ -868,7 +920,6 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 8. Kích thước (Dimensions)
         let dimsSvg = '';
         if (this.showDimensions) {
             dimsSvg += `
@@ -884,7 +935,6 @@ export class ArchitecturalCADRenderer {
             `;
         }
 
-        // 9. Khung Tiêu Đề Bản Vẽ
         const titleBlockSvg = `
             <g id="layer-title-block" transform="translate(${viewX + 200}, ${viewY + viewH - 420})">
                 <rect x="0" y="0" width="${Math.min(viewW - 400, 4800)}" height="300" fill="${isWhite ? '#f8fafc' : '#0b0f19'}" stroke="${borderColor}" stroke-width="12" rx="10"/>
@@ -1109,7 +1159,7 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
 }
 
 // ------------------------------------------------------------
-// 9. SVG VIEWPORT CONTROLLER (svg_viewport.js)
+// 9. SVG VIEWPORT CONTROLLER
 // ------------------------------------------------------------
 export class SvgViewportController {
     constructor(containerElement) {

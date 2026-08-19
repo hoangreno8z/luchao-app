@@ -577,9 +577,14 @@ function renderActiveDrawing() {
     });
 
     if (currentDrawingTab === 'fengshui') {
+        const buildYear = currentFlyingStars ? (currentFlyingStars.buildYear || 2025) : 2025;
         const spatial = calculateFengShuiSpatial(floorGeometry, {
             facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
-            buildYear: currentFlyingStars ? currentFlyingStars.van : 2025
+            buildYear: buildYear,
+            currentYear: currentFlyingStars ? currentFlyingStars.currentYear : 2026,
+            currentMonth: currentFlyingStars ? currentFlyingStars.currentMonth : 8,
+            currentDay: currentFlyingStars ? currentFlyingStars.currentDay : 19,
+            currentHour: currentFlyingStars ? currentFlyingStars.currentHour : 7
         });
         const overlaySvg = renderNinePalacesOverlaySvg(spatial, currentThemeMode === 'white');
         baseSvg = baseSvg.replace('</svg>', `${overlaySvg}</svg>`);
