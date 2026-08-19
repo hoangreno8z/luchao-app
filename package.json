@@ -1,6 +1,6 @@
 {
   "name": "luchao-app",
-  "version": "3.5.0",
+  "version": "1.5.0",
   "description": "Kinh Dich Luc Hao & Thai At Than So Divination App",
   "main": "app.js",
   "type": "module",
