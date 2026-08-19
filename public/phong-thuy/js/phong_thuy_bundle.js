@@ -804,7 +804,11 @@ export class ArchitecturalCADRenderer {
         let windowsSvg = geometry.windows ? this.renderWindows(geometry.windows, isWhite) : '';
         let dimsSvg = this.showDimensions ? this.renderDimensionChains(geometry, W, D, isWhite) : '';
         let compassSvg = this.showCompass ? this.renderCompassRose(W - 600, -600, 350, facingDegree, isWhite) : '';
-        const titleBlockSvg = this.renderTitleBlock(viewX + 200, viewY + viewH - 550, 4200, 380, geometry, options, isWhite);
+        const boxW = Math.min(viewW - 400, 4800);
+        const boxH = 340;
+        const boxX = viewX + 200;
+        const boxY = viewY + viewH - boxH - 150;
+        const titleBlockSvg = this.renderTitleBlock(boxX, boxY, boxW, boxH, geometry, options, isWhite);
 
         return `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" class="cad-svg-drawing" style="background:${bgColor};">
@@ -1004,12 +1008,13 @@ export class ArchitecturalCADRenderer {
     }
 
     renderTitleBlock(x, y, w, h, geometry, options, isWhite) {
+        const padX = 80;
         return `
             <g id="architectural-title-block">
-                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? 'rgba(255,255,255,0.95)' : 'rgba(15,23,42,0.95)'}" stroke="${isWhite ? '#0284c7' : '#d97706'}" stroke-width="30" rx="30"/>
-                <text x="${x + 120}" y="${y + 120}" font-family="Inter, sans-serif" font-size="150" font-weight="900" fill="${isWhite ? '#0f172a' : '#fef08a'}">${(geometry.floorName || 'MẶT BẰNG TƯ VẤN THIẾT KẾ').toUpperCase()}</text>
-                <text x="${x + 120}" y="${y + 220}" font-family="Inter, sans-serif" font-size="110" font-weight="600" fill="${isWhite ? '#475569' : '#cbd5e1'}">Kích thước: ${(geometry.widthMm / 1000).toFixed(2)}m × ${(geometry.depthMm / 1000).toFixed(2)}m · Diện tích: ${(geometry.widthMm * geometry.depthMm / 1000000).toFixed(1)} m²</text>
-                <text x="${x + 120}" y="${y + 320}" font-family="Inter, sans-serif" font-size="110" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">Tư vấn: DỊCH SƯ NGUYỄN HUY HOÀNG — 0933 116 860 · Huyền Không Phi Tinh Vận 9</text>
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${isWhite ? 'rgba(255,255,255,0.96)' : 'rgba(15,23,42,0.96)'}" stroke="${isWhite ? '#0284c7' : '#d97706'}" stroke-width="25" rx="20"/>
+                <text x="${x + padX}" y="${y + 90}" font-family="Inter, sans-serif" font-size="120" font-weight="900" fill="${isWhite ? '#0f172a' : '#fef08a'}">${(geometry.floorName || 'MẶT BẰNG TƯ VẤN THIẾT KẾ').toUpperCase()}</text>
+                <text x="${x + padX}" y="${y + 175}" font-family="Inter, sans-serif" font-size="80" font-weight="600" fill="${isWhite ? '#475569' : '#cbd5e1'}">Kích thước: ${(geometry.widthMm / 1000).toFixed(2)}m × ${(geometry.depthMm / 1000).toFixed(2)}m · Diện tích: ${(geometry.widthMm * geometry.depthMm / 1000000).toFixed(1)} m²</text>
+                <text x="${x + padX}" y="${y + 260}" font-family="Inter, sans-serif" font-size="80" font-weight="700" fill="${isWhite ? '#0284c7' : '#38bdf8'}">Tư vấn: DỊCH SƯ NGUYỄN HUY HOÀNG — 0933 116 860 · Huyền Không Vận 9</text>
             </g>
         `;
     }
