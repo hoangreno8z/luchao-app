@@ -5,7 +5,15 @@
 
 import { CADFloorplanRenderer } from './js/cad_floorplan_renderer.js';
 import { LaKinhRenderer } from './js/la_kinh_renderer.js';
-import { findMountain, getOppositeMountain, MOUNTAINS, calculateFlyingStars, calculateGua, generateArchitecturalPlan } from './js/phong_thuy_bundle.js';
+import { 
+    findMountain, 
+    getOppositeMountain, 
+    MOUNTAINS, 
+    calculateFlyingStars, 
+    calculateGua, 
+    generateArchitecturalPlan,
+    PALACE_NAMES
+} from './js/phong_thuy_bundle.js';
 
 let currentMode = 'empty_land';
 let currentFloorIndex = 1;
@@ -47,21 +55,25 @@ function initModeTabs() {
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
     const groupFloors = document.getElementById('groupFloors');
+    const emptyLandRoomsConfig = document.getElementById('emptyLandRoomsConfig');
     const existingRoomsSection = document.getElementById('existingRoomsSection');
 
     tabEmptyLand.addEventListener('click', () => {
         currentMode = 'empty_land';
         tabEmptyLand.classList.add('active');
         tabExistingHouse.classList.remove('active');
-        groupFloors.style.display = 'flex';
-        existingRoomsSection.style.display = 'none';
+        if (groupFloors) groupFloors.style.display = 'flex';
+        if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'block';
+        if (existingRoomsSection) existingRoomsSection.style.display = 'none';
     });
 
     tabExistingHouse.addEventListener('click', () => {
         currentMode = 'existing_house';
         tabExistingHouse.classList.add('active');
         tabEmptyLand.classList.remove('active');
-        existingRoomsSection.style.display = 'block';
+        if (groupFloors) groupFloors.style.display = 'none';
+        if (emptyLandRoomsConfig) emptyLandRoomsConfig.style.display = 'none';
+        if (existingRoomsSection) existingRoomsSection.style.display = 'block';
     });
 }
 
@@ -101,11 +113,21 @@ function initCanvas() {
     // High DPI Support
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
-    canvas.width = (rect.width || 800) * dpr;
-    canvas.height = 560 * dpr;
+    const width = rect.width || 800;
+    const height = Math.min(650, Math.max(480, window.innerHeight * 0.55));
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
 
     cadRenderer = new CADFloorplanRenderer(canvas);
     laKinhRenderer = new LaKinhRenderer(canvas);
+
+    window.addEventListener('resize', () => {
+        const newRect = canvas.getBoundingClientRect();
+        canvas.width = (newRect.width || 800) * (window.devicePixelRatio || 1);
+        canvas.height = height * (window.devicePixelRatio || 1);
+        renderCurrentFloor();
+    });
 }
 
 /* Action Buttons & Toolbar */
@@ -114,28 +136,37 @@ function initActionButtons() {
     btnCalculate.addEventListener('click', handleCalculate);
 
     const btnToggleDimensions = document.getElementById('btnToggleDimensions');
-    btnToggleDimensions.addEventListener('click', () => {
-        cadRenderer.showDimensions = !cadRenderer.showDimensions;
-        btnToggleDimensions.classList.toggle('active', cadRenderer.showDimensions);
-        renderCurrentFloor();
-    });
+    if (btnToggleDimensions) {
+        btnToggleDimensions.addEventListener('click', () => {
+            cadRenderer.showDimensions = !cadRenderer.showDimensions;
+            btnToggleDimensions.classList.toggle('active', cadRenderer.showDimensions);
+            renderCurrentFloor();
+        });
+    }
 
     const btnToggleFurniture = document.getElementById('btnToggleFurniture');
-    btnToggleFurniture.addEventListener('click', () => {
-        cadRenderer.showFurniture = !cadRenderer.showFurniture;
-        btnToggleFurniture.classList.toggle('active', cadRenderer.showFurniture);
-        renderCurrentFloor();
-    });
+    if (btnToggleFurniture) {
+        btnToggleFurniture.addEventListener('click', () => {
+            cadRenderer.showFurniture = !cadRenderer.showFurniture;
+            btnToggleFurniture.classList.toggle('active', cadRenderer.showFurniture);
+            renderCurrentFloor();
+        });
+    }
 
     const btnToggleCompass = document.getElementById('btnToggleCompass');
-    btnToggleCompass.addEventListener('click', () => {
-        cadRenderer.showCompass = !cadRenderer.showCompass;
-        btnToggleCompass.classList.toggle('active', cadRenderer.showCompass);
-        renderCurrentFloor();
-    });
+    if (btnToggleCompass) {
+        btnToggleCompass.addEventListener('click', () => {
+            cadRenderer.showPalaceOverlay = !cadRenderer.showPalaceOverlay;
+            cadRenderer.showCompass = !cadRenderer.showCompass;
+            btnToggleCompass.classList.toggle('active', cadRenderer.showPalaceOverlay);
+            renderCurrentFloor();
+        });
+    }
 
     const btnExportPng = document.getElementById('btnExportPng');
-    btnExportPng.addEventListener('click', handleExportPng);
+    if (btnExportPng) {
+        btnExportPng.addEventListener('click', handleExportPng);
+    }
 }
 
 /* Handle Calculate Calculation */
@@ -147,14 +178,33 @@ async function handleCalculate() {
     const buildYear = parseInt(document.getElementById('inputBuildYear').value) || 2025;
     const ownerYear = parseInt(document.getElementById('inputOwnerYear').value) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender').value || 'nam';
+    const frontLandscape = document.getElementById('inputFrontLandscape')?.value || 'duong_lo';
+    const backLandscape = document.getElementById('inputBackLandscape')?.value || 'nha_cao';
 
-    // Existing rooms if in tab 2
-    const existingRooms = [];
+    // 1. Thu thập dữ liệu Tab 2 (Nhà Sẵn Có) - Đủ 9 Cung
+    const existingRoomsMap = {};
     if (currentMode === 'existing_house') {
-        document.querySelectorAll('input[name="roomItem"]:checked').forEach(cb => {
-            existingRooms.push(cb.value);
+        const roomIds = [
+            'main_door', 'living_room', 'altar', 'kitchen',
+            'master_bed', 'bed_2', 'bed_3', 'toilet_1', 'toilet_2', 'stairs', 'work_room'
+        ];
+        roomIds.forEach(id => {
+            const el = document.getElementById(`sel_${id}`);
+            if (el) {
+                existingRoomsMap[id] = el.value;
+            }
         });
     }
+
+    // 2. Thu thập dữ liệu Tab 1 (Đất Trống) - Số lượng phòng
+    const roomCounts = {
+        bedrooms: document.getElementById('inputBedCount')?.value || 3,
+        toilets: document.getElementById('inputWcCount')?.value || 2,
+        hasAltar: document.getElementById('inputHasAltar')?.value === '1',
+        hasSkylight: document.getElementById('inputHasSkylight')?.value === '1',
+        frontLandscape,
+        backLandscape
+    };
 
     const payload = {
         mode: currentMode,
@@ -165,7 +215,10 @@ async function handleCalculate() {
         buildYear,
         ownerYear,
         ownerGender,
-        existingRooms
+        frontLandscape,
+        backLandscape,
+        existingRoomsMap,
+        roomCounts
     };
 
     let result = null;
@@ -182,9 +235,9 @@ async function handleCalculate() {
         console.warn('API error, using local fallback:', e);
     }
 
-    // Local Fallback if offline or API unavailable
+    // Local Fallback offline
     if (!result || !result.flyingStars) {
-        const flyingStars = calculateFlyingStars({ facingDegree, buildYear });
+        const flyingStars = calculateFlyingStars({ facingDegree, buildYear, frontLandscape, backLandscape });
         const batTrach = calculateGua(ownerYear, ownerGender);
         const architecturalPlan = generateArchitecturalPlan({
             mode: currentMode,
@@ -194,7 +247,8 @@ async function handleCalculate() {
             facingDegree,
             flyingStarsData: flyingStars,
             batTrachData: batTrach,
-            existingRooms
+            existingRoomsMap,
+            roomCounts
         });
         result = { flyingStars, batTrach, architecturalPlan };
     }
@@ -211,7 +265,7 @@ async function handleCalculate() {
     renderFlyingStarsMatrix(result.flyingStars);
 
     // Render Detailed Assessment
-    renderDetailedReport(result);
+    renderDetailedReport(result, existingRoomsMap);
 
     // Render CAD Canvas
     renderCurrentFloor();
@@ -225,6 +279,12 @@ function renderFloorNavigator(plans = []) {
     const nav = document.getElementById('floorNavigator');
     nav.innerHTML = '';
 
+    if (currentMode === 'existing_house' || plans.length <= 1) {
+        nav.style.display = 'none';
+        return;
+    }
+
+    nav.style.display = 'flex';
     plans.forEach((p, idx) => {
         const fNum = idx + 1;
         const btn = document.createElement('button');
@@ -254,7 +314,8 @@ function renderCurrentFloor() {
     cadRenderer.render(floorPlan, {
         facingDegree: currentResultData.flyingStars.facingDegree,
         facingMountain: currentResultData.flyingStars.facingMountain,
-        sittingMountain: currentResultData.flyingStars.sittingMountain
+        sittingMountain: currentResultData.flyingStars.sittingMountain,
+        flyingStars: currentResultData.flyingStars
     });
 }
 
@@ -306,7 +367,7 @@ function renderFlyingStarsMatrix(fs) {
 }
 
 /* Render Detailed Feng Shui Report */
-function renderDetailedReport(data) {
+function renderDetailedReport(data, existingRoomsMap = {}) {
     const container = document.getElementById('detailedReportContainer');
     if (!container || !data || !data.flyingStars) return;
 
@@ -316,6 +377,33 @@ function renderDetailedReport(data) {
     const bt = data.batTrach || {};
     const btMap = bt.batTrachMap || {};
 
+    // Mapping room labels
+    const roomLabels = {
+        main_door: '🚪 Cửa Chính',
+        living_room: '🛋️ Phòng Khách',
+        altar: '🔥 Bàn Thờ',
+        kitchen: '🍳 Bếp Nấu',
+        master_bed: '🛏️ Phòng Ngủ Master',
+        bed_2: '🛏️ Phòng Ngủ 2',
+        bed_3: '🛏️ Phòng Ngủ 3',
+        toilet_1: '🚽 Nhà Vệ Sinh 1',
+        toilet_2: '🚽 Nhà Vệ Sinh 2',
+        stairs: '🪜 Cầu Thang',
+        work_room: '📚 Phòng Làm Việc'
+    };
+
+    // Tìm các phòng được bố trí trong từng cung
+    const roomsInPalace = {};
+    if (currentMode === 'existing_house') {
+        Object.entries(existingRoomsMap).forEach(([roomId, pId]) => {
+            if (pId && pId !== 'none') {
+                const palaceNum = parseInt(pId, 10);
+                if (!roomsInPalace[palaceNum]) roomsInPalace[palaceNum] = [];
+                roomsInPalace[palaceNum].push(roomLabels[roomId] || roomId);
+            }
+        });
+    }
+
     for (let p = 1; p <= 9; p++) {
         const pal = fs.palaces[p];
         if (!pal) continue;
@@ -323,9 +411,9 @@ function renderDetailedReport(data) {
         const btInfo = btMap[pal.direction] || { name: 'Bình Hòa', type: 'BÌNH', desc: 'Cung vị trung tính' };
 
         const card = document.createElement('div');
-        card.style.background = 'rgba(15, 23, 42, 0.7)';
-        card.style.border = '1px solid rgba(245, 158, 11, 0.2)';
-        card.style.borderRadius = '10px';
+        card.style.background = 'rgba(15, 23, 42, 0.75)';
+        card.style.border = '1px solid rgba(245, 158, 11, 0.25)';
+        card.style.borderRadius = '12px';
         card.style.padding = '14px';
 
         let gradeBadge = '<span class="audit-badge good">Cát Tinh</span>';
@@ -335,11 +423,19 @@ function renderDetailedReport(data) {
             gradeBadge = '<span class="audit-badge good" style="background:#10b981; color:#fff;">Đại Cát</span>';
         }
 
+        let existingRoomTag = '';
+        if (roomsInPalace[p] && roomsInPalace[p].length > 0) {
+            existingRoomTag = `<div style="background:rgba(56, 189, 248, 0.15); border:1px solid rgba(56, 189, 248, 0.4); border-radius:6px; padding:4px 8px; margin-bottom:8px; font-size:0.82rem; color:#38bdf8;">
+                <strong>Phòng hiện hữu đang đặt tại đây:</strong> ${roomsInPalace[p].join(', ')}
+            </div>`;
+        }
+
         card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <strong style="color:var(--gold-light); font-size:0.95rem;">${pal.palaceName}</strong>
                 ${gradeBadge}
             </div>
+            ${existingRoomTag}
             <div style="font-size:0.82rem; color:#cbd5e1; margin-bottom:6px;">
                 <strong>Sao Tinh Bàn:</strong> Sơn ${pal.sonStar} — Hướng ${pal.huongStar} (Vận ${pal.vanStar})
             </div>
