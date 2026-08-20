@@ -391,44 +391,17 @@ function renderDndGrid() {
             addUnlimitedRoomToPalace(pId, data.type, data.baseName);
         });
 
-            zone.classList.remove('dragover');
-            try {
-                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-                const palaceId = parseInt(zone.getAttribute('data-palace-id'), 10);
-                if (palaceId && data.type) addRoomToPalace(palaceId, data.type, data.name);
-            } catch (err) { console.error(err); }
+        zone.querySelectorAll('.btn-remove-room').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const rId = btn.getAttribute('data-room-id');
+                const pal = btn.getAttribute('data-palace-id');
+                delete roomPositionCache[rId];
+                dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
+                renderDndGrid();
+                handleCalculate(false);
+            });
         });
-    });
-}
-
-function addRoomToPalace(palaceId, type, baseName) {
-    if (!roomCounters[type]) roomCounters[type] = 0;
-    roomCounters[type]++;
-    const name = `${baseName} ${roomCounters[type]}`;
-    const id = `room_${type}_${Date.now()}`;
-    if (!dndPlacements[palaceId]) dndPlacements[palaceId] = [];
-    dndPlacements[palaceId].push({ id, type, name, palaceId });
-    renderDndGrid();
-    handleCalculate(false);
-}
-
-function removeRoomFromPalace(palaceId, roomId) {
-    if (!dndPlacements[palaceId]) return;
-    dndPlacements[palaceId] = dndPlacements[palaceId].filter(r => r.id !== roomId);
-    delete roomPositionCache[roomId];
-    renderDndGrid();
-    handleCalculate(false);
-}
-
-function renderDndGrid() {
-    const dropZones = document.querySelectorAll('.dnd-drop-zone');
-    dropZones.forEach(zone => {
-        const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
-        const rooms = dndPlacements[pId] || [];
-        const content = zone.querySelector('.dnd-zone-content');
-        if (!content) return;
-        content.innerHTML = rooms.length === 0 ? `<span class="dnd-empty-placeholder">Thả phòng vào đây</span>` :
-            rooms.map(r => `<div class="dnd-room-badge" data-room-id="${r.id}"><span>${r.name}</span><button type="button" class="btn-remove-room" onclick="removeRoomFromPalace(${pId}, '${r.id}')">×</button></div>`).join('');
     });
 }
 
@@ -437,6 +410,7 @@ function initViewport() {
     if (!stage) return;
     viewportController = new SvgViewportController(stage);
     cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
+    luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
 function initCadInteractiveEngine() {

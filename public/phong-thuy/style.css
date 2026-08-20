@@ -440,14 +440,23 @@ body {
 /* CAD Studio Container */
 .cad-studio-container {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr 360px;
     gap: 20px;
     margin-bottom: 24px;
+    align-items: start;
 }
 @media (max-width: 1024px) {
     .cad-studio-container {
         grid-template-columns: 1fr;
     }
+}
+
+.cad-viewport-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    width: 100%;
 }
 
 /* CAD WORKSPACE & FULLSCREEN SYSTEM (Scale 100% tràn viền) */
