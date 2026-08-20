@@ -242,12 +242,27 @@ function initScanImageControls() {
 function handleScanUploadedFile(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
+        const imgPreview = document.getElementById('scanPreviewImg');
+        const imgWrapper = document.getElementById('scanPreviewWrapper');
+        if (imgPreview && imgWrapper) {
+            imgPreview.src = e.target.result;
+            imgWrapper.style.display = 'block';
+        }
+
         const img = new Image();
         img.onload = async () => {
             try {
-                const widthM = parseFloat(document.getElementById('inputWidth')?.value) || 7.0;
-                const depthM = parseFloat(document.getElementById('inputLength')?.value) || 11.725;
-                
+                const aspect = img.naturalWidth / img.naturalHeight;
+                let widthM = 7.0;
+                let depthM = 11.725;
+                if (aspect < 1) {
+                    widthM = 7.0;
+                    depthM = parseFloat((7.0 / aspect).toFixed(2));
+                } else {
+                    depthM = 7.0;
+                    widthM = parseFloat((7.0 * aspect).toFixed(2));
+                }
+
                 const result = await FloorplanVisionVectorizer.processImage(img, {
                     targetWidthM: widthM,
                     targetDepthM: depthM
@@ -255,6 +270,7 @@ function handleScanUploadedFile(file) {
 
                 lastScannedData = result;
                 displayScanAnalysis(result);
+                applyScanResultToCad(); // Tự động số hóa và vẽ ngay lập tức lên Canvas CAD!
             } catch (err) {
                 console.error('Scan Error:', err);
                 alert('Lỗi xử lý ảnh bản vẽ: ' + err.message);
@@ -302,6 +318,7 @@ function loadSampleDrawing() {
     if (inputLength) inputLength.value = '11.7';
 
     displayScanAnalysis(lastScannedData);
+    applyScanResultToCad(); // Tự động số hóa và vẽ ngay lập tức lên Canvas CAD!
 }
 
 function displayScanAnalysis(data) {
