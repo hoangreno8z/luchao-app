@@ -20,12 +20,12 @@ import {
     calculateFengShuiSpatial,
     SvgViewportController,
     getOrientedPalaceGrid,
+    renderUnifiedSvg,
     PALACE_NAMES,
     PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
 
 let currentMode = 'empty_land'; // 'empty_land' | 'existing_house'
-let currentDrawingTab = 'arch'; // 'arch' | 'fengshui'
 let currentThemeMode = 'white'; // 'white' | 'dark'
 let currentMatrixOrientMode = 'house'; // 'house' | 'loshu'
 let currentDndOrientMode = 'house'; // 'house' | 'loshu'
@@ -52,12 +52,15 @@ let roomCounters = {
     laundry: 0
 };
 
+// Cache lưu vị trí phòng đã kéo / co giãn / xoay trên canvas cho cả Đất và Nhà Sẵn Có
+const roomPositionCache = {};
+
 const layerState = {
     dimensions: true,
     furniture: true,
     axes: true,
-    compass: true,
-    compassOverlay: true
+    luoPan: true,
+    ninePalaces: true
 };
 
 const dndPlacements = {
@@ -167,23 +170,35 @@ function initModeTabs() {
     }
 }
 
-/* 4. Drawing Tab Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung) */
+/* 4. Drawing Layer Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung Layers) */
 function initDrawingTabs() {
     const btnTabArch = document.getElementById('tabDrawingArch');
     const btnTabFengShui = document.getElementById('tabDrawingFengShui');
 
-    if (btnTabArch && btnTabFengShui) {
+    if (btnTabArch) {
         btnTabArch.addEventListener('click', () => {
-            currentDrawingTab = 'arch';
-            btnTabArch.classList.add('active');
-            btnTabFengShui.classList.remove('active');
+            layerState.furniture = !layerState.furniture;
+            layerState.dimensions = layerState.furniture;
+            btnTabArch.classList.toggle('active', layerState.furniture);
+
+            const btnDim = document.getElementById('btnToggleDimensions');
+            const btnFurn = document.getElementById('btnToggleFurniture');
+            if (btnDim) btnDim.classList.toggle('active', layerState.dimensions);
+            if (btnFurn) btnFurn.classList.toggle('active', layerState.furniture);
+
             renderActiveDrawing();
         });
+    }
 
+    if (btnTabFengShui) {
         btnTabFengShui.addEventListener('click', () => {
-            currentDrawingTab = 'fengshui';
-            btnTabFengShui.classList.add('active');
-            btnTabArch.classList.remove('active');
+            layerState.luoPan = !layerState.luoPan;
+            layerState.ninePalaces = layerState.luoPan;
+            btnTabFengShui.classList.toggle('active', layerState.luoPan);
+
+            const btnCompass = document.getElementById('btnToggleCompass');
+            if (btnCompass) btnCompass.classList.toggle('active', layerState.luoPan);
+
             renderActiveDrawing();
         });
     }
@@ -379,6 +394,7 @@ function renderDndGrid() {
                 e.stopPropagation();
                 const rId = btn.getAttribute('data-room-id');
                 const pal = btn.getAttribute('data-palace-id');
+                delete roomPositionCache[rId];
                 dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
                 renderDndGrid();
                 handleCalculate(false);
@@ -452,7 +468,7 @@ function initCadInteractiveEngine() {
 
         const svgEl = stage.querySelector('svg');
         const ctm = svgEl ? svgEl.getScreenCTM() : null;
-        const scale = ctm ? ctm.a : 0.2;
+        const scale = ctm ? ctm.a : 1.0;
         const dx = (e.clientX - pointerState.startClientX) / scale;
         const dy = (e.clientY - pointerState.startClientY) / scale;
 
@@ -475,9 +491,10 @@ function initCadInteractiveEngine() {
         if (pointerState.mode === 'move') {
             room.x = Math.round(Math.max(0, Math.min(currentGeometry.widthMm - room.w, pointerState.origX + dx)));
             room.y = Math.round(Math.max(0, Math.min(currentGeometry.depthMm - room.h, pointerState.origY + dy)));
+            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
         } else if (pointerState.mode === 'resize') {
             const h = pointerState.handle;
-            const minSize = 1200;
+            const minSize = 800;
 
             if (h.includes('e')) {
                 room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
@@ -495,6 +512,7 @@ function initCadInteractiveEngine() {
                 room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
                 room.h = newH;
             }
+            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
         }
 
         requestAnimationFrame(() => renderActiveDrawing());
@@ -502,6 +520,12 @@ function initCadInteractiveEngine() {
 
     window.addEventListener('pointerup', () => {
         if (pointerState.isInteracting) {
+            if (pointerState.targetRoomId && currentGeometry && currentGeometry.rooms) {
+                const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
+                if (room) {
+                    roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+                }
+            }
             pointerState.isInteracting = false;
             pointerState.mode = null;
             pointerState.handle = null;
@@ -549,6 +573,7 @@ function handleMiniActionClick(btn) {
 
     if (action === 'confirm') {
         room.history = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+        roomPositionCache[room.id] = { ...room.history };
         selectedRoomId = null;
         cadRenderer.selectedRoomId = null;
         renderActiveDrawing();
@@ -558,6 +583,8 @@ function handleMiniActionClick(btn) {
             room.y = room.history.y;
             room.w = room.history.w;
             room.h = room.history.h;
+            room.rot = room.history.rot || 0;
+            roomPositionCache[room.id] = { ...room.history };
         }
         selectedRoomId = null;
         cadRenderer.selectedRoomId = null;
@@ -566,9 +593,16 @@ function handleMiniActionClick(btn) {
         const temp = room.w;
         room.w = room.h;
         room.h = temp;
+        room.rot = ((room.rot || 0) + 90) % 360;
+        roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot };
         renderActiveDrawing();
     } else if (action === 'delete') {
+        delete roomPositionCache[roomId];
         currentGeometry.rooms.splice(roomIndex, 1);
+        for (let p in dndPlacements) {
+            dndPlacements[p] = dndPlacements[p].filter(r => r.id !== roomId);
+        }
+        renderDndGrid();
         selectedRoomId = null;
         cadRenderer.selectedRoomId = null;
         renderActiveDrawing();
@@ -614,7 +648,6 @@ function initToolbar() {
         btnToggleDimensions.addEventListener('click', () => {
             layerState.dimensions = !layerState.dimensions;
             btnToggleDimensions.classList.toggle('active', layerState.dimensions);
-            cadRenderer.showDimensions = layerState.dimensions;
             renderActiveDrawing();
         });
     }
@@ -623,7 +656,6 @@ function initToolbar() {
         btnToggleFurniture.addEventListener('click', () => {
             layerState.furniture = !layerState.furniture;
             btnToggleFurniture.classList.toggle('active', layerState.furniture);
-            cadRenderer.showFurniture = layerState.furniture;
             renderActiveDrawing();
         });
     }
@@ -632,18 +664,19 @@ function initToolbar() {
         btnToggleAxes.addEventListener('click', () => {
             layerState.axes = !layerState.axes;
             btnToggleAxes.classList.toggle('active', layerState.axes);
-            cadRenderer.showAxes = layerState.axes;
             renderActiveDrawing();
         });
     }
 
     if (btnToggleCompass) {
         btnToggleCompass.addEventListener('click', () => {
-            layerState.compass = !layerState.compass;
-            layerState.compassOverlay = layerState.compass;
-            btnToggleCompass.classList.toggle('active', layerState.compass);
-            cadRenderer.showCompass = layerState.compass;
-            cadRenderer.showCompassOverlay = layerState.compassOverlay;
+            layerState.luoPan = !layerState.luoPan;
+            layerState.ninePalaces = layerState.luoPan;
+            btnToggleCompass.classList.toggle('active', layerState.luoPan);
+
+            const tabFS = document.getElementById('tabDrawingFengShui');
+            if (tabFS) tabFS.classList.toggle('active', layerState.luoPan);
+
             renderActiveDrawing();
         });
     }
@@ -692,15 +725,13 @@ function initToolbar() {
 
     if (btnExportSvg && viewportController) {
         btnExportSvg.addEventListener('click', () => {
-            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.svg' : 'Ban_Ve_La_Kinh_Cuu_Cung.svg';
-            viewportController.exportSvg(fileName);
+            viewportController.exportSvg('Ban_Ve_Phong_Thuy_CAD.svg');
         });
     }
 
     if (btnExportPng && viewportController) {
         btnExportPng.addEventListener('click', () => {
-            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.png' : 'Ban_Ve_La_Kinh_Cuu_Cung.png';
-            viewportController.exportPng(fileName);
+            viewportController.exportPng('Ban_Ve_Phong_Thuy_CAD.png');
         });
     }
 }
@@ -779,6 +810,22 @@ function handleCalculate(shouldScroll = false) {
             const roomsInPalace = dndPlacements[pId] || [];
 
             roomsInPalace.forEach((r, rIdx) => {
+                // Kiểm tra cache vị trí phòng đã lưu trước
+                const cached = roomPositionCache[r.id];
+                if (cached) {
+                    customRooms.push({
+                        id: r.id,
+                        name: r.name.toUpperCase(),
+                        type: r.type,
+                        x: cached.x,
+                        y: cached.y,
+                        w: cached.w,
+                        h: cached.h,
+                        rot: cached.rot || 0
+                    });
+                    return;
+                }
+
                 const subH = (cellH - 400) / Math.max(1, roomsInPalace.length);
                 customRooms.push({
                     id: r.id,
@@ -855,26 +902,58 @@ function renderFloorNavigator(totalFloors) {
     nav.innerHTML = buttons;
 }
 
-/* 13. Render Active Drawing (CAD Floorplan vs La Kinh 24 Sơn Cửu Cung) */
+/* 13. Render Active Drawing (Multi-layer Unified CAD + La Kinh + Cửu Cung) */
 function renderActiveDrawing() {
     if (!currentGeometry || !viewportController) return;
 
-    if (currentDrawingTab === 'arch') {
-        const svgCode = cadRenderer.renderSvg(currentGeometry, {
-            theme: currentThemeMode,
-            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
-            selectedRoomId: selectedRoomId
-        });
-        viewportController.setSvgContent(svgCode);
-    } else {
-        if (!luoPanRenderer) {
-            luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
-        }
-        const svgCode = luoPanRenderer.renderSvg(currentFlyingStars, {
-            theme: currentThemeMode
-        });
-        viewportController.setSvgContent(svgCode);
+    if (!cadRenderer) {
+        cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
     }
+    if (!luoPanRenderer) {
+        luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
+    }
+
+    cadRenderer.theme = currentThemeMode;
+    cadRenderer.showDimensions = layerState.dimensions;
+    cadRenderer.showFurniture = layerState.furniture;
+    cadRenderer.showAxes = layerState.axes;
+
+    const cadLayers = cadRenderer.renderLayers(currentGeometry, {
+        theme: currentThemeMode,
+        selectedRoomId: selectedRoomId
+    });
+
+    const luoPanOverlay = currentFlyingStars
+        ? luoPanRenderer.renderOverlayLayer(
+            currentFlyingStars,
+            cadLayers.houseCenterX,
+            cadLayers.houseCenterY,
+            cadLayers.houseWidth,
+            cadLayers.houseDepth,
+            { theme: currentThemeMode }
+        )
+        : '';
+
+    const ninePalacesOverlay = currentFlyingStars
+        ? luoPanRenderer.renderNinePalacesLayer(
+            currentFlyingStars,
+            cadLayers.houseMinX,
+            cadLayers.houseMinY,
+            cadLayers.houseWidth,
+            cadLayers.houseDepth,
+            currentFlyingStars.facingPalace
+        )
+        : '';
+
+    const svgCode = renderUnifiedSvg(
+        cadLayers,
+        luoPanOverlay,
+        ninePalacesOverlay,
+        layerState,
+        { theme: currentThemeMode }
+    );
+
+    viewportController.setSvgContent(svgCode);
 }
 
 /* 14. Render 9-Palace Xuan Kong Matrix Display */

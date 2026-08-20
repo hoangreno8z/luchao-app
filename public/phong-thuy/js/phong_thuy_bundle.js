@@ -553,6 +553,11 @@ export function calculateFengShuiSpatial(geometry, options = {}) {
 // Nét Đen Trắng Không Fill Màu, Polygon Viền Nhà + Circle Neo Chỉnh Đỉnh
 // Tự Động Tính Chuỗi Kích Thước Bám Theo Từng Cạnh Của Polygon
 // ------------------------------------------------------------
+// ------------------------------------------------------------
+// 5. SCAN2CAD ARCHITECTURAL RENDERER (CHUẨN 100% CAD KIẾN TRÚC)
+// Nét Đen Trắng Không Fill Màu, Polygon Viền Nhà + Circle Neo Chỉnh Đỉnh
+// Tự Động Tính Chuỗi Kích Thước Bám Theo Từng Cạnh Của Polygon
+// ------------------------------------------------------------
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
         this.theme = options.theme || 'white';
@@ -565,7 +570,7 @@ export class ArchitecturalCADRenderer {
         this.isEditPolygonMode = false;
     }
 
-    renderSvg(geometry, options = {}) {
+    renderLayers(geometry, options = {}) {
         const pts = geometry.footprintPoints || [
             { x: 0, y: 0 }, { x: geometry.widthMm, y: 0 },
             { x: geometry.widthMm, y: geometry.depthMm }, { x: 0, y: geometry.depthMm }
@@ -591,7 +596,7 @@ export class ArchitecturalCADRenderer {
         const viewW = W + padX * 2;
         const viewH = D + padY * 2;
 
-        const selectedId = options.selectedRoomId || this.selectedRoomId;
+        const selectedId = options.selectedRoomId !== undefined ? options.selectedRoomId : this.selectedRoomId;
 
         // 1. TỰ ĐỘNG VẼ ĐƯỜNG KÍCH THƯỚC (DIMENSION LINES) BÁM THEO TỪNG CẠNH CỦA POLYGON
         let dimsSvg = '';
@@ -780,38 +785,206 @@ export class ArchitecturalCADRenderer {
             <circle class="cad-vertex-handle" data-vertex-idx="${idx}" cx="${p.x}" cy="${p.y}" r="90" fill="#2563eb" stroke="#ffffff" stroke-width="14" style="cursor: crosshair;" title="Kéo để chỉnh sửa góc nhà"/>
         `).join('');
 
+        return {
+            viewBox: { x: viewX, y: viewY, w: viewW, h: viewH },
+            houseWidth: W,
+            houseDepth: D,
+            houseMinX: minX,
+            houseMinY: minY,
+            houseCenterX: (minX + maxX) / 2,
+            houseCenterY: (minY + maxY) / 2,
+            wallsLayer: `<polygon points="${polyPointsStr}" fill="none" stroke="#000000" stroke-width="45" stroke-linejoin="miter"/>`,
+            vertexLayer: `<g id="layer-vertex-handles">${vertexCircles}</g>`,
+            roomsLayer: `<g id="layer-rooms-container">${roomsSvg}</g>`,
+            dimensionsLayer: `<g id="layer-dimensions">${dimsSvg}</g>`
+        };
+    }
+
+    renderSvg(geometry, options = {}) {
+        const layers = this.renderLayers(geometry, options);
+        const vb = layers.viewBox;
         return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
-    <!-- Polygon Tường Ngoại Thất Đậm Chuẩn CAD -->
-    <polygon points="${polyPointsStr}" fill="none" stroke="#000000" stroke-width="45" stroke-linejoin="miter"/>
-    
-    <!-- Các điểm neo chỉnh đỉnh nhà méo/dị dạng -->
-    <g id="layer-vertex-handles">
-        ${vertexCircles}
-    </g>
-
-    <!-- Các phòng & nội thất -->
-    <g id="layer-rooms-container">
-        ${roomsSvg}
-    </g>
-
-    <!-- Chuỗi kích thước Dimension Lines bao quanh từng cạnh -->
-    <g id="layer-dimensions">
-        ${dimsSvg}
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
+    ${layers.wallsLayer}
+    ${layers.vertexLayer}
+    ${layers.roomsLayer}
+    ${layers.dimensionsLayer}
 </svg>
         `.trim();
     }
 }
 
 // ------------------------------------------------------------
-// 6. LUOPAN AND FLYING STARS SVG RENDERER (CHUẨN 100% ẢNH 2 HKPT)
+// 6. LUOPAN AND FLYING STARS SVG RENDERER (CHUẨN 100% LA KINH HUYỀN KHÔNG)
 // Vòng Tròn 360° Đỏ, 24 Sơn, Bát Quái, Mũi Tên Tọa/Hướng, 3x3 Cửu Cung
 // ------------------------------------------------------------
 export class LuoPanAndFlyingStarsSvgRenderer {
     constructor(options = {}) {
         this.size = options.size || 800;
         this.center = this.size / 2;
+    }
+
+    renderOverlayLayer(flyingStars, houseCenterX, houseCenterY, houseWidth, houseDepth, options = {}) {
+        if (!flyingStars) return '';
+
+        const facingDeg = flyingStars.facingDegree || 180;
+        const sittingDeg = (facingDeg + 180) % 360;
+
+        // Bán kính La Kinh tự động co giãn theo kích thước thực tế của nhà (chiều hẹp nhất)
+        const R_OUTER = Math.max(1200, Math.min(houseWidth, houseDepth) * 0.48);
+        const R_DEG = R_OUTER * 0.94;
+        const R_MOUNTAIN = R_OUTER * 0.72;
+        const R_TRIGRAM = R_OUTER * 0.52;
+
+        const c = 0; // Local center, bọc trong <g transform="translate(houseCenterX, houseCenterY)">
+
+        let degTicks = '';
+        let degLabels = '';
+        for (let i = 0; i < 360; i += 2) {
+            const is10 = i % 10 === 0;
+            const is5 = i % 5 === 0;
+            const rIn = is10 ? R_DEG - (R_OUTER * 0.05) : (is5 ? R_DEG - (R_OUTER * 0.03) : R_DEG - (R_OUTER * 0.018));
+            const p1 = polarToCartesian(c, c, rIn, i);
+            const p2 = polarToCartesian(c, c, R_DEG, i);
+            degTicks += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#dc2626" stroke-width="${is10 ? 4 : 2}"/>`;
+
+            if (is10) {
+                const tp = polarToCartesian(c, c, R_DEG - (R_OUTER * 0.075), i);
+                let rot = i;
+                if (i > 90 && i < 270) rot = (rot + 180) % 360;
+                degLabels += `<text x="${tp.x}" y="${tp.y}" transform="rotate(${rot}, ${tp.x}, ${tp.y})" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(R_OUTER * 0.024)}" font-family="'Courier New', monospace" font-weight="bold" fill="#7f1d1d">${i}</text>`;
+            }
+        }
+
+        let mountainSectors = '';
+        let mountainLabels = '';
+        MOUNTAINS_24.forEach(m => {
+            const p1 = polarToCartesian(c, c, R_TRIGRAM, m.startDeg);
+            const p2 = polarToCartesian(c, c, R_DEG, m.startDeg);
+            mountainSectors += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="8,6"/>`;
+
+            const tp = polarToCartesian(c, c, (R_DEG + R_TRIGRAM) / 2 + 10, m.center);
+            let rot = m.center;
+            if (m.center > 90 && m.center < 270) rot = (rot + 180) % 360;
+            mountainLabels += `<text x="${tp.x}" y="${tp.y}" transform="rotate(${rot}, ${tp.x}, ${tp.y})" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(R_OUTER * 0.036)}" font-weight="900" fill="#000">${m.name}</text>`;
+        });
+
+        const trigrams = [
+            { name: 'BẮC', deg: 0 },
+            { name: 'ĐÔNG BẮC', deg: 45 },
+            { name: 'ĐÔNG', deg: 90 },
+            { name: 'ĐÔNG NAM', deg: 135 },
+            { name: 'NAM', deg: 180 },
+            { name: 'TÂY NAM', deg: 225 },
+            { name: 'TÂY', deg: 270 },
+            { name: 'TÂY BẮC', deg: 315 }
+        ];
+
+        let trigramSectors = '';
+        let trigramLabels = '';
+        trigrams.forEach(t => {
+            const p1 = polarToCartesian(c, c, R_TRIGRAM * 0.35, t.deg - 22.5);
+            const p2 = polarToCartesian(c, c, R_OUTER, t.deg - 22.5);
+            trigramSectors += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#dc2626" stroke-width="4"/>`;
+
+            const tp = polarToCartesian(c, c, R_TRIGRAM - (R_OUTER * 0.06), t.deg);
+            let rot = t.deg;
+            if (t.deg > 90 && t.deg < 270) rot = (rot + 180) % 360;
+            trigramLabels += `<text x="${tp.x}" y="${tp.y}" transform="rotate(${rot}, ${tp.x}, ${tp.y})" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(R_OUTER * 0.04)}" font-weight="900" fill="#dc2626">${t.name}</text>`;
+        });
+
+        const pHuong = polarToCartesian(c, c, R_OUTER + 80, facingDeg);
+        const pHuongBadge = polarToCartesian(c, c, R_OUTER - 40, facingDeg);
+        const pToa = polarToCartesian(c, c, R_OUTER + 80, sittingDeg);
+        const pToaBadge = polarToCartesian(c, c, R_OUTER - 40, sittingDeg);
+
+        const badgeW = Math.round(R_OUTER * 0.22);
+        const badgeH = Math.round(R_OUTER * 0.08);
+
+        const arrowsSvg = `
+            <!-- Mũi tên Hướng -->
+            <line x1="${c}" y1="${c}" x2="${pHuong.x}" y2="${pHuong.y}" stroke="#dc2626" stroke-width="8" stroke-linecap="round"/>
+            <polygon points="${pHuong.x},${pHuong.y} ${pHuong.x - 24},${pHuong.y + 45} ${pHuong.x + 24},${pHuong.y + 45}" transform="rotate(${facingDeg} ${pHuong.x} ${pHuong.y})" fill="#dc2626"/>
+            <rect x="${pHuongBadge.x - badgeW / 2}" y="${pHuongBadge.y - badgeH / 2}" width="${badgeW}" height="${badgeH}" rx="8" fill="#dc2626" stroke="#ffffff" stroke-width="3"/>
+            <text x="${pHuongBadge.x}" y="${pHuongBadge.y + 8}" text-anchor="middle" font-size="${Math.round(badgeH * 0.55)}" font-weight="900" fill="#fff">HƯỚNG</text>
+
+            <!-- Mũi tên Tọa -->
+            <line x1="${c}" y1="${c}" x2="${pToa.x}" y2="${pToa.y}" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+            <polygon points="${pToa.x},${pToa.y} ${pToa.x - 24},${pToa.y + 45} ${pToa.x + 24},${pToa.y + 45}" transform="rotate(${sittingDeg} ${pToa.x} ${pToa.y})" fill="#2563eb"/>
+            <rect x="${pToaBadge.x - badgeW / 2}" y="${pToaBadge.y - badgeH / 2}" width="${badgeW}" height="${badgeH}" rx="8" fill="#2563eb" stroke="#ffffff" stroke-width="3"/>
+            <text x="${pToaBadge.x}" y="${pToaBadge.y + 8}" text-anchor="middle" font-size="${Math.round(badgeH * 0.55)}" font-weight="900" fill="#fff">TỌA</text>
+        `;
+
+        return `
+            <g id="layer-luopan-overlay" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none" style="opacity: 0.85;">
+                <circle cx="${c}" cy="${c}" r="${R_OUTER}" fill="none" stroke="#dc2626" stroke-width="7"/>
+                <circle cx="${c}" cy="${c}" r="${R_DEG}" fill="none" stroke="#dc2626" stroke-width="3"/>
+                <circle cx="${c}" cy="${c}" r="${R_MOUNTAIN}" fill="none" stroke="#dc2626" stroke-width="3"/>
+                <circle cx="${c}" cy="${c}" r="${R_TRIGRAM}" fill="none" stroke="#dc2626" stroke-width="4.5"/>
+                ${degTicks}
+                ${degLabels}
+                ${mountainSectors}
+                ${mountainLabels}
+                ${trigramSectors}
+                ${trigramLabels}
+                ${arrowsSvg}
+            </g>
+        `;
+    }
+
+    renderNinePalacesLayer(flyingStars, houseMinX, houseMinY, houseWidth, houseDepth, facingPalace = 9) {
+        if (!flyingStars || !flyingStars.palaces) return '';
+
+        const cellW = houseWidth / 3;
+        const cellH = houseDepth / 3;
+        const order = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+        let matrixSvg = '';
+
+        order.forEach((pId, idx) => {
+            const row = Math.floor(idx / 3);
+            const col = idx % 3;
+            const x = houseMinX + col * cellW;
+            const y = houseMinY + row * cellH;
+            const cx = x + cellW / 2;
+            const cy = y + cellH / 2;
+
+            const star = flyingStars.palaces[pId] || { vanStar: 9, sonStar: 9, huongStar: 9, nienStar: 1, nguyetStar: 9, nhatStar: 9, thoiStar: 9 };
+            const isFacing = pId === flyingStars.facingPalace;
+            const isSitting = pId === flyingStars.sittingPalace;
+
+            const baseFontSize = Math.min(cellW, cellH) * 0.12;
+
+            matrixSvg += `
+                <!-- Ô lưới Cung ${PALACE_NAMES[pId]} -->
+                <rect x="${x}" y="${y}" width="${cellW}" height="${cellH}" fill="${isFacing ? 'rgba(239, 68, 68, 0.04)' : (isSitting ? 'rgba(59, 130, 246, 0.04)' : 'rgba(245, 158, 11, 0.02)')}" stroke="${isFacing ? '#ef4444' : (isSitting ? '#3b82f6' : '#ea580c')}" stroke-width="6" stroke-dasharray="24,14"/>
+
+                <!-- Nhãn tên cung & Tọa/Hướng badge -->
+                <rect x="${cx - 160}" y="${y + 16}" width="320" height="50" rx="10" fill="rgba(255,255,255,0.85)" stroke="${isFacing ? '#ef4444' : (isSitting ? '#3b82f6' : '#d97706')}" stroke-width="2"/>
+                <text x="${cx}" y="${y + 48}" text-anchor="middle" font-size="${Math.round(baseFontSize * 0.75)}" font-weight="900" fill="${isFacing ? '#ef4444' : (isSitting ? '#2563eb' : '#b45309')}">${isFacing ? `⭐ HƯỚNG (${PALACE_SHORT[pId]})` : (isSitting ? `🔵 TỌA (${PALACE_SHORT[pId]})` : PALACE_NAMES[pId])}</text>
+
+                <!-- 4 Tinh Thời Gian (Niên, Nguyệt, Nhật, Thời) -->
+                <g transform="translate(${cx - 150}, ${y + 80})">
+                    <circle cx="20" cy="15" r="18" fill="#16a34a"/>
+                    <text x="20" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">${star.nienStar}</text>
+                    
+                    <circle cx="100" cy="15" r="18" fill="#dc2626"/>
+                    <text x="100" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">${star.nguyetStar}</text>
+                    
+                    <circle cx="180" cy="15" r="18" fill="#ea580c"/>
+                    <text x="180" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">${star.nhatStar}</text>
+                    
+                    <circle cx="260" cy="15" r="18" fill="#9333ea"/>
+                    <text x="260" y="22" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">${star.thoiStar}</text>
+                </g>
+
+                <!-- Bộ 3 Sao Chính: Sơn Tinh (Trái) - Vận Tinh (Giữa) - Hướng Tinh (Phải) -->
+                <text x="${x + cellW * 0.22}" y="${cy + baseFontSize * 0.6}" text-anchor="middle" font-size="${Math.round(baseFontSize * 1.5)}" font-weight="900" fill="#0284c7" filter="drop-shadow(2px 2px 0px #fff)">${star.sonStar}</text>
+                <text x="${cx}" y="${cy + baseFontSize * 0.7}" text-anchor="middle" font-size="${Math.round(baseFontSize * 2.1)}" font-weight="900" fill="#0f172a" filter="drop-shadow(3px 3px 0px #fff)">${star.vanStar}</text>
+                <text x="${x + cellW * 0.78}" y="${cy + baseFontSize * 0.6}" text-anchor="middle" font-size="${Math.round(baseFontSize * 1.5)}" font-weight="900" fill="#dc2626" filter="drop-shadow(2px 2px 0px #fff)">${star.huongStar}</text>
+            `;
+        });
+
+        return `<g id="layer-nine-palaces" pointer-events="none" style="opacity: 0.9;">${matrixSvg}</g>`;
     }
 
     renderSvg(flyingStars, options = {}) {
@@ -962,52 +1135,121 @@ export class LuoPanAndFlyingStarsSvgRenderer {
 }
 
 // ------------------------------------------------------------
-// 7. SVG VIEWPORT CONTROLLER (FIT TO SCREEN TỐI ƯU KHUNG DỌC/NGANG)
+// 7. UNIFIED SVG BUILDER (GHÉP CÁC LỚP VÀO 1 SVG DUY NHẤT)
+// ------------------------------------------------------------
+export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, layerVisibility = {}, options = {}) {
+    if (!cadLayers || !cadLayers.viewBox) return '';
+    const vb = cadLayers.viewBox;
+    const themeBg = options.theme === 'dark' ? '#0f172a' : '#ffffff';
+
+    const showFurniture = layerVisibility.furniture !== false;
+    const showDimensions = layerVisibility.dimensions !== false;
+    const showLuoPan = layerVisibility.luoPan !== false;
+    const showNinePalaces = layerVisibility.ninePalaces !== false;
+
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: ${themeBg}; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
+    <!-- LỚP 1: BẢN VẼ KIẾN TRÚC CAD (Tường & Neo) -->
+    <g id="layer-cad-architecture">
+        ${cadLayers.wallsLayer}
+        ${showFurniture ? cadLayers.roomsLayer : ''}
+        ${cadLayers.vertexLayer}
+        ${showDimensions ? cadLayers.dimensionsLayer : ''}
+    </g>
+
+    <!-- LỚP 2: LƯỚI CỬU CUNG PHI TINH TRONG SUỐT (3x3 Palace Grid) -->
+    ${showNinePalaces && ninePalacesOverlay ? ninePalacesOverlay : ''}
+
+    <!-- LỚP 3: LA KINH 24 SƠN TRONG SUỐT (Compass Dial Overlay) -->
+    ${showLuoPan && luoPanOverlay ? luoPanOverlay : ''}
+</svg>
+    `.trim();
+}
+
+// ------------------------------------------------------------
+// 8. SVG VIEWPORT CONTROLLER (VIEWBOX-BASED ZOOM & PAN CHUẨN CAD)
+// Thay thế hoàn toàn CSS transform bằng viewBox manipulation
 // ------------------------------------------------------------
 export class SvgViewportController {
     constructor(containerElement) {
         this.container = containerElement;
-        this.scale = 1.0;
-        this.panX = 0;
-        this.panY = 0;
-        this.isDragging = false;
-        this.startX = 0;
-        this.startY = 0;
         this.svgElement = null;
+        this.baseVB = { x: 0, y: 0, w: 1000, h: 1000 };
+        this.currentVB = { x: 0, y: 0, w: 1000, h: 1000 };
+        this.isDragging = false;
+        this.dragStartX = 0;
+        this.dragStartY = 0;
+        this.dragStartVBX = 0;
+        this.dragStartVBY = 0;
+        this.hasUserAdjustedView = false;
 
         this.initEvents();
-        this.initResizeListener();
     }
 
     setSvgContent(svgString) {
         if (!this.container) return;
         this.container.innerHTML = svgString;
         this.svgElement = this.container.querySelector('svg');
-        if (this.svgElement) {
-            this.fitToScreen();
+        if (!this.svgElement) return;
+
+        const vbAttr = this.svgElement.getAttribute('viewBox');
+        if (vbAttr) {
+            const parts = vbAttr.trim().split(/[\s,]+/).map(Number);
+            if (parts.length === 4 && !parts.some(isNaN)) {
+                this.baseVB = { x: parts[0], y: parts[1], w: parts[2], h: parts[3] };
+                if (!this.hasUserAdjustedView) {
+                    this.currentVB = { ...this.baseVB };
+                } else {
+                    // Giữ nguyên vị trí zoom tương đối
+                    this.applyViewBox();
+                }
+            }
         }
+    }
+
+    applyViewBox() {
+        if (!this.svgElement) return;
+        this.svgElement.setAttribute('viewBox', `${this.currentVB.x.toFixed(2)} ${this.currentVB.y.toFixed(2)} ${this.currentVB.w.toFixed(2)} ${this.currentVB.h.toFixed(2)}`);
     }
 
     initEvents() {
         if (!this.container) return;
 
         this.container.addEventListener('pointerdown', (e) => {
-            if (e.target.closest('.cad-resize-handle') || e.target.closest('.cad-mini-action-bar') || e.target.closest('.cad-room-interactive') || e.target.closest('.cad-vertex-handle')) {
+            // Không kéo pan nếu đang bấm vào các đối tượng tương tác của bản vẽ
+            if (e.target.closest('.cad-resize-handle') || 
+                e.target.closest('.cad-mini-action-bar') || 
+                e.target.closest('.cad-room-interactive') || 
+                e.target.closest('.cad-vertex-handle') ||
+                e.target.closest('.btn-cad-mini-action')) {
                 return;
             }
             if (e.button !== 0 && e.pointerType === 'mouse') return;
+
             this.isDragging = true;
-            this.startX = e.clientX - this.panX;
-            this.startY = e.clientY - this.panY;
+            this.dragStartX = e.clientX;
+            this.dragStartY = e.clientY;
+            this.dragStartVBX = this.currentVB.x;
+            this.dragStartVBY = this.currentVB.y;
             this.container.style.cursor = 'grabbing';
             try { this.container.setPointerCapture(e.pointerId); } catch (_) {}
         });
 
         this.container.addEventListener('pointermove', (e) => {
-            if (!this.isDragging) return;
-            this.panX = e.clientX - this.startX;
-            this.panY = e.clientY - this.startY;
-            requestAnimationFrame(() => this.updateTransform());
+            if (!this.isDragging || !this.svgElement) return;
+            const rect = this.container.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+
+            const scaleX = this.currentVB.w / rect.width;
+            const scaleY = this.currentVB.h / rect.height;
+
+            const dx = (e.clientX - this.dragStartX) * scaleX;
+            const dy = (e.clientY - this.dragStartY) * scaleY;
+
+            this.currentVB.x = this.dragStartVBX - dx;
+            this.currentVB.y = this.dragStartVBY - dy;
+            this.hasUserAdjustedView = true;
+            this.applyViewBox();
         });
 
         const stopDrag = (e) => {
@@ -1023,14 +1265,18 @@ export class SvgViewportController {
         this.container.addEventListener('pointerup', stopDrag);
         this.container.addEventListener('pointercancel', stopDrag);
 
+        // Zoom bằng con lăn chuột (Wheel) bám theo tâm trỏ chuột
         this.container.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const delta = e.deltaY < 0 ? 1.15 : 0.85;
-            this.zoomAt(delta, e.clientX, e.clientY);
+            const factor = e.deltaY < 0 ? 0.88 : 1.14;
+            this.zoomAt(factor, e.clientX, e.clientY);
         }, { passive: false });
 
+        // Pinch-to-zoom trên màn hình cảm ứng di động
         let initialDistance = 0;
-        let initialScale = 1.0;
+        let initialVBW = 0;
+        let initialVBH = 0;
+        let pinchCenterClient = { x: 0, y: 0 };
 
         this.container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
@@ -1038,7 +1284,12 @@ export class SvgViewportController {
                 const dx = e.touches[0].clientX - e.touches[1].clientX;
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
                 initialDistance = Math.hypot(dx, dy);
-                initialScale = this.scale;
+                initialVBW = this.currentVB.w;
+                initialVBH = this.currentVB.h;
+                pinchCenterClient = {
+                    x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
             }
         }, { passive: true });
 
@@ -1047,9 +1298,9 @@ export class SvgViewportController {
                 const dx = e.touches[0].clientX - e.touches[1].clientX;
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
                 const dist = Math.hypot(dx, dy);
-                const factor = dist / initialDistance;
-                this.scale = Math.max(0.3, Math.min(6.0, initialScale * factor));
-                requestAnimationFrame(() => this.updateTransform());
+                const factor = initialDistance / dist;
+                this.zoomAt(factor, pinchCenterClient.x, pinchCenterClient.y);
+                initialDistance = dist;
             }
         }, { passive: true });
 
@@ -1058,40 +1309,47 @@ export class SvgViewportController {
         });
     }
 
-    initResizeListener() {
-        window.addEventListener('resize', () => {
-            requestAnimationFrame(() => this.fitToScreen());
-        });
-    }
-
     zoomAt(factor, clientX, clientY) {
-        this.scale = Math.max(0.3, Math.min(6.0, this.scale * factor));
-        this.updateTransform();
+        if (!this.svgElement) return;
+        const rect = this.container.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+
+        // Tính tọa độ SVG của điểm chuột
+        const ratioX = (clientX - rect.left) / rect.width;
+        const ratioY = (clientY - rect.top) / rect.height;
+
+        const mouseSvgX = this.currentVB.x + ratioX * this.currentVB.w;
+        const mouseSvgY = this.currentVB.y + ratioY * this.currentVB.h;
+
+        const newW = Math.max(this.baseVB.w * 0.1, Math.min(this.baseVB.w * 5.0, this.currentVB.w * factor));
+        const newH = Math.max(this.baseVB.h * 0.1, Math.min(this.baseVB.h * 5.0, this.currentVB.h * factor));
+
+        this.currentVB.x = mouseSvgX - ratioX * newW;
+        this.currentVB.y = mouseSvgY - ratioY * newH;
+        this.currentVB.w = newW;
+        this.currentVB.h = newH;
+        this.hasUserAdjustedView = true;
+
+        this.applyViewBox();
     }
 
     zoomIn() {
-        this.scale = Math.min(6.0, this.scale * 1.25);
-        this.updateTransform();
+        const rect = this.container.getBoundingClientRect();
+        this.zoomAt(0.8, rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
 
     zoomOut() {
-        this.scale = Math.max(0.3, this.scale * 0.8);
-        this.updateTransform();
+        const rect = this.container.getBoundingClientRect();
+        this.zoomAt(1.25, rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
 
     fitToScreen() {
-        this.scale = 1.0;
-        this.panX = 0;
-        this.panY = 0;
-        this.updateTransform();
+        this.currentVB = { ...this.baseVB };
+        this.hasUserAdjustedView = false;
+        this.applyViewBox();
     }
 
-    updateTransform() {
-        if (!this.svgElement) return;
-        this.svgElement.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
-    }
-
-    exportSvg(fileName = 'Ban_Ve_Kien_Truc.svg') {
+    exportSvg(fileName = 'Ban_Ve_Phong_Thuy_CAD.svg') {
         if (!this.svgElement) return;
         const svgData = new XMLSerializer().serializeToString(this.svgElement);
         const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
@@ -1103,7 +1361,7 @@ export class SvgViewportController {
         URL.revokeObjectURL(url);
     }
 
-    exportPng(fileName = 'Ban_Ve_Kien_Truc.png', scaleFactor = 3) {
+    exportPng(fileName = 'Ban_Ve_Phong_Thuy_CAD.png', scaleFactor = 3) {
         if (!this.svgElement) return;
         const svgData = new XMLSerializer().serializeToString(this.svgElement);
         const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
@@ -1116,12 +1374,12 @@ export class SvgViewportController {
             const width = (rect.width || 1200) * (scaleFactor / 4);
             const height = (rect.height || 800) * (scaleFactor / 4);
 
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = Math.max(800, width);
+            canvas.height = Math.max(600, height);
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
             const pngUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
@@ -1134,3 +1392,4 @@ export class SvgViewportController {
         img.src = url;
     }
 }
+
