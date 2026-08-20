@@ -812,17 +812,17 @@ function renderSmartPopup() {
         const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
         popup.style.display = 'flex';
         popup.innerHTML = `
-            <div class="popup-drag-header" id="popupDragHeader">
-                <span>CHỈNH CHIỀU DÀI CẠNH ${selectedEdgeIndex + 1}</span>
-                <button type="button" id="btnPopupCloseEdge" style="background:none; border:none; color:#cbd5e1; font-weight:bold; cursor:pointer; font-size:0.9rem;">✕</button>
+            <div class="popup-drag-header" id="popupDragHeader" style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding-bottom:3px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <span style="font-size:0.68rem; font-weight:800; color:var(--gold-light);">CẠNH ${selectedEdgeIndex + 1}</span>
+                <button type="button" id="btnPopupCloseEdge" title="Đóng bảng (Vẫn giữ chọn)" style="background:none; border:none; color:#94a3b8; font-weight:bold; cursor:pointer; font-size:0.85rem; padding:0 3px;">✕</button>
             </div>
-            <div class="popup-field-col">
-                <label>Chiều dài cạnh (mm):</label>
-                <input type="number" id="popupInputEdgeL" class="popup-input-ctrl" value="${len}" min="200" step="100">
+            <div style="display:flex; align-items:center; gap:3px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px; margin-top:2px;">
+                <span style="font-size:0.6rem; color:#94a3b8; font-weight:700;">Dài:</span>
+                <input type="number" id="popupInputEdgeL" value="${len}" min="200" step="100" style="width:100%; background:transparent; border:none; color:#fff; font-size:0.72rem; font-weight:800; font-family:monospace; outline:none; text-align:right;">
             </div>
-            <div class="popup-actions-row">
-                <button type="button" class="popup-action-btn save" id="btnPopupSaveEdge">LƯU THAY ĐỔI</button>
-                <button type="button" class="popup-action-btn cancel" id="btnPopupCancelEdge">HỦY</button>
+            <div style="display:flex; gap:3px; margin-top:2px;">
+                <button type="button" class="popup-action-btn save" id="btnPopupSaveEdge" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:800; background:#16a34a; color:#fff; border:none; border-radius:4px; cursor:pointer;">LƯU</button>
+                <button type="button" class="popup-action-btn cancel" id="btnPopupCancelEdge" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:700; background:rgba(255,255,255,0.1); color:#cbd5e1; border:none; border-radius:4px; cursor:pointer;">ẨN</button>
             </div>
         `;
 
@@ -835,12 +835,11 @@ function renderSmartPopup() {
             if (newL > 100 && curL > 0) {
                 p2.x = Math.round(p1.x + (dx / curL) * newL);
                 p2.y = Math.round(p1.y + (dy / curL) * newL);
-                selectedEdgeIndex = null;
-                renderActiveDrawing(); renderSmartPopup(); renderPopovers();
+                renderActiveDrawing(); renderPopovers();
             }
         });
-        document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
-        document.getElementById('btnPopupCloseEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
+        document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { popup.style.display = 'none'; });
+        document.getElementById('btnPopupCloseEdge')?.addEventListener('click', () => { popup.style.display = 'none'; });
         return;
     }
 
@@ -849,23 +848,23 @@ function renderSmartPopup() {
         if (room) {
             popup.style.display = 'flex';
             popup.innerHTML = `
-                <div class="popup-drag-header" id="popupDragHeader">
-                    <span>SỬA KÍCH THƯỚC: ${room.name}</span>
-                    <button type="button" id="btnPopupCloseRoom" style="background:none; border:none; color:#cbd5e1; font-weight:bold; cursor:pointer; font-size:0.9rem;">✕</button>
+                <div class="popup-drag-header" id="popupDragHeader" style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding-bottom:3px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="font-size:0.68rem; font-weight:800; color:var(--gold-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:125px;">${room.name}</span>
+                    <button type="button" id="btnPopupCloseRoom" title="Ẩn bảng (Giữ 8 điểm kéo trên phòng)" style="background:none; border:none; color:#94a3b8; font-weight:bold; cursor:pointer; font-size:0.85rem; padding:0 3px;">✕</button>
                 </div>
-                <div class="popup-fields-grid">
-                    <div class="popup-field-col">
-                        <label>Rộng W (mm):</label>
-                        <input type="number" id="popupInputRoomW" class="popup-input-ctrl" value="${room.w}" min="300" step="100">
+                <div style="display:flex; gap:3px; align-items:center; margin-top:2px;">
+                    <div style="flex:1; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px;">
+                        <span style="font-size:0.6rem; color:#94a3b8; font-weight:700;">R:</span>
+                        <input type="number" id="popupInputRoomW" value="${room.w}" min="300" step="100" style="width:100%; background:transparent; border:none; color:#fff; font-size:0.72rem; font-weight:800; font-family:monospace; outline:none; text-align:right;">
                     </div>
-                    <div class="popup-field-col">
-                        <label>Dài H (mm):</label>
-                        <input type="number" id="popupInputRoomH" class="popup-input-ctrl" value="${room.h}" min="300" step="100">
+                    <div style="flex:1; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px;">
+                        <span style="font-size:0.6rem; color:#94a3b8; font-weight:700;">D:</span>
+                        <input type="number" id="popupInputRoomH" value="${room.h}" min="300" step="100" style="width:100%; background:transparent; border:none; color:#fff; font-size:0.72rem; font-weight:800; font-family:monospace; outline:none; text-align:right;">
                     </div>
                 </div>
-                <div class="popup-actions-row">
-                    <button type="button" class="popup-action-btn save" id="btnPopupSaveRoom">LƯU KÍCH THƯỚC</button>
-                    <button type="button" class="popup-action-btn cancel" id="btnPopupCancelRoom">HỦY</button>
+                <div style="display:flex; gap:3px; margin-top:2px;">
+                    <button type="button" class="popup-action-btn save" id="btnPopupSaveRoom" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:800; background:#16a34a; color:#fff; border:none; border-radius:4px; cursor:pointer;">LƯU</button>
+                    <button type="button" class="popup-action-btn cancel" id="btnPopupCancelRoom" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:700; background:rgba(255,255,255,0.1); color:#cbd5e1; border:none; border-radius:4px; cursor:pointer;">ẨN</button>
                 </div>
             `;
 
@@ -875,11 +874,17 @@ function renderSmartPopup() {
                 room.w = Math.max(300, parseInt(document.getElementById('popupInputRoomW').value, 10) || room.w);
                 room.h = Math.max(300, parseInt(document.getElementById('popupInputRoomH').value, 10) || room.h);
                 roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-                selectedRoomId = null; 
-                renderActiveDrawing(); renderSmartPopup(); renderPopovers();
+                // Giữ nguyên 8 điểm kéo trên phòng!
+                renderActiveDrawing(); renderPopovers();
             });
-            document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
-            document.getElementById('btnPopupCloseRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
+            document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { 
+                // Chỉ ẩn bảng nhập, giữ nguyên 8 điểm kéo trên phòng!
+                popup.style.display = 'none'; 
+            });
+            document.getElementById('btnPopupCloseRoom')?.addEventListener('click', () => { 
+                // Chỉ ẩn bảng nhập, giữ nguyên 8 điểm kéo trên phòng!
+                popup.style.display = 'none'; 
+            });
             return;
         }
     }
