@@ -1196,3 +1196,74 @@ body {
     color: var(--text-muted);
     font-size: 0.85rem;
 }
+
+/* AI Floorplan Scan & Vectorizer Zone */
+.scan-upload-dropzone {
+    border: 2px dashed rgba(245, 158, 11, 0.4);
+    border-radius: 14px;
+    padding: 24px 16px;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.6);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.scan-upload-dropzone:hover, .scan-upload-dropzone.dragover {
+    border-color: var(--gold-light);
+    background: rgba(245, 158, 11, 0.08);
+    transform: translateY(-2px);
+}
+.dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.dropzone-icon {
+    margin-bottom: 10px;
+}
+.btn-scan-action {
+    background: var(--gold-gradient);
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 0.84rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(217, 119, 6, 0.3);
+}
+.btn-scan-action:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45);
+}
+.btn-scan-action.outline {
+    background: rgba(15, 23, 42, 0.85);
+    color: var(--gold-light);
+    border: 1px solid var(--gold-primary);
+    box-shadow: none;
+}
+.btn-scan-action.outline:hover {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: var(--gold-light);
+}
+.scan-stat-box {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.stat-lbl {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.stat-val {
+    font-size: 0.88rem;
+    color: var(--gold-light);
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+}

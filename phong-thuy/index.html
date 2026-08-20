@@ -86,6 +86,61 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h7"/><path d="M14 15h7"/></svg>
                     <span>Nhà</span>
                 </button>
+                <button type="button" class="mode-tab-btn" id="tabScanImage" data-mode="scan_image">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <span>Tải Bản Vẽ (AI Scan)</span>
+                </button>
+            </div>
+
+            <!-- AI Floorplan Scan & Vectorizer Section (Tab 3: Tải Bản Vẽ) -->
+            <div id="scanImageSection" style="display: none; margin-bottom: 20px;">
+                <div class="scan-upload-dropzone" id="scanUploadDropzone">
+                    <input type="file" id="inputScanFile" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                    <div class="dropzone-content">
+                        <div class="dropzone-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/><path d="M14 14l3-3 3 3"/></svg>
+                        </div>
+                        <div style="font-weight: 800; font-size: 1.05rem; color: var(--gold-light); margin-bottom: 4px;">KÉO THẢ ẢNH BẢN VẼ HOẶC TẢI LÊN</div>
+                        <div style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 14px;">Hỗ trợ PNG, JPEG, Scan, Camera... Tự động quét viền polygon, vector hóa kiến trúc và tính tâm nhà hình học</div>
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <button type="button" class="btn-scan-action" id="btnSelectScanFile">Chọn File Ảnh</button>
+                            <button type="button" class="btn-scan-action outline" id="btnUseSampleDrawing">Dùng Bản Vẽ Mẫu 7m x 11.7m (3 P.Ngủ)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Analysis Dashboard (Hiển thị sau khi quét) -->
+                <div id="scanAnalysisDashboard" style="display: none; margin-top: 14px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 158, 11, 0.25); padding-bottom: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 0.95rem; font-weight: 800; color: var(--gold-light);">KẾT QUẢ QUÉT VECTOR & TÂM NHÀ HÌNH HỌC</span>
+                        <span id="scanConfidenceBadge" class="audit-badge good">Độ Tin Cậy: 96.8%</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;">
+                        <div class="scan-stat-box">
+                            <span class="stat-lbl">Hình Dáng Nhận Diện:</span>
+                            <span class="stat-val" id="scanStatShape">Hình Chữ Nhật (Standard)</span>
+                        </div>
+                        <div class="scan-stat-box">
+                            <span class="stat-lbl">Kích Thước Ước Tính:</span>
+                            <span class="stat-val" id="scanStatDims">7000 mm x 11725 mm</span>
+                        </div>
+                        <div class="scan-stat-box">
+                            <span class="stat-lbl">Diện Tích Đo Đạc:</span>
+                            <span class="stat-val" id="scanStatArea">82.08 m²</span>
+                        </div>
+                        <div class="scan-stat-box">
+                            <span class="stat-lbl">Tâm Centroid (Shoelace):</span>
+                            <span class="stat-val" id="scanStatCentroid">X: 3500 mm | Y: 5863 mm</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn-primary-action" id="btnApplyScanToCad" style="width: auto; padding: 10px 22px; margin: 0;">
+                            ÁP DỤNG VÀO CAD & CHIẾU LA KINH
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Accordion 1: THÔNG TIN (Hình Dạng, Kích Thước, Hướng Nhà, Thời Gian, Bát Trạch) -->
@@ -104,11 +159,11 @@
                         <div class="form-group">
                             <label class="form-label">Hình Dạng Khu Đất / Nhà</label>
                             <select id="inputShape" class="form-control">
-                                <option value="RECTANGLE" selected>🔲 Hình Chữ Nhật (Tiêu Chuẩn)</option>
-                                <option value="L_SHAPE">📐 Nhà Chữ L (Sân Trước / Khuyết Góc)</option>
-                                <option value="U_SHAPE">🏢 Nhà Chữ U (Sân Vườn / Giếng Trời Giữa)</option>
-                                <option value="STEPPED">🪜 Nhà Giật Cấp (Z-Shape / Thụt Thò)</option>
-                                <option value="CONCAVE_POLYGON">🔶 Hình Đa Giác Lõm / Vát Góc</option>
+                                <option value="RECTANGLE" selected>Hình Chữ Nhật (Tiêu Chuẩn)</option>
+                                <option value="L_SHAPE">Nhà Chữ L (Sân Trước / Khuyết Góc)</option>
+                                <option value="U_SHAPE">Nhà Chữ U (Sân Vườn / Giếng Trời Giữa)</option>
+                                <option value="STEPPED">Nhà Giật Cấp (Z-Shape / Thụt Thò)</option>
+                                <option value="CONCAVE_POLYGON">Hình Đa Giác Lõm / Vát Góc</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -135,7 +190,7 @@
                         <!-- Hướng Nhà (° Độ La Bàn & Phân Kim) -->
                         <div class="form-group" style="grid-column: 1 / -1; background: rgba(15, 23, 42, 0.85); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.25);">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <label class="form-label" style="margin: 0; font-size: 0.86rem; color: var(--gold-light);">🧭 HƯỚNG NHÀ (ĐỘ LA BÀN 0° - 360°):</label>
+                                <label class="form-label" style="margin: 0; font-size: 0.86rem; color: var(--gold-light);">HƯỚNG NHÀ (ĐỘ LA BÀN 0° - 360°):</label>
                                 <span id="mountainStatusBadge" class="audit-badge good">Chính Hướng (Hạ Quái)</span>
                             </div>
                             <div style="display: flex; gap: 12px; align-items: center;">
@@ -310,8 +365,8 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 6px;">
                     <span style="font-size: 0.92rem; font-weight: 800; color: var(--gold-light);">KHẢO SÁT 9 CUNG THEO HƯỚNG NHÀ</span>
                     <div style="display: flex; gap: 6px;">
-                        <button type="button" class="cad-tool-btn active" id="btnDndOrientHouse" style="font-size: 0.72rem; padding: 4px 8px;">🧭 Xoay Theo Hướng Nhà</button>
-                        <button type="button" class="cad-tool-btn" id="btnDndOrientLoShu" style="font-size: 0.72rem; padding: 4px 8px;">📐 Lạc Thư Chuẩn</button>
+                        <button type="button" class="cad-tool-btn active" id="btnDndOrientHouse" style="font-size: 0.72rem; padding: 4px 8px;">Xoay Theo Hướng Nhà</button>
+                        <button type="button" class="cad-tool-btn" id="btnDndOrientLoShu" style="font-size: 0.72rem; padding: 4px 8px;">Lạc Thư Chuẩn</button>
                     </div>
                 </div>
 
@@ -319,13 +374,13 @@
                     <div class="dnd-room-rack">
                         <span style="font-size: 0.78rem; font-weight: 700; color: #94a3b8;">Kéo thả công năng hoặc chạm vào ô cung bên dưới:</span>
                         <div class="room-chips-list" id="availableRoomsRack">
-                            <div class="room-drag-chip" draggable="true" data-room-id="living" data-room-name="Phòng Khách"><span>🛋️</span> Phòng Khách</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="kitchen" data-room-name="Bếp Nấu"><span>🍳</span> Bếp Nấu</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="master_bed" data-room-name="Ngủ Master"><span>🛏️</span> Ngủ Master</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="altar" data-room-name="Phòng Thờ"><span>🕯️</span> Phòng Thờ</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="wc" data-room-name="Khu WC"><span>🚽</span> Khu WC</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="stairs" data-room-name="Cầu Thang"><span>🪜</span> Cầu Thang</div>
-                            <div class="room-drag-chip" draggable="true" data-room-id="garage" data-room-name="Gara Xe"><span>🚗</span> Gara Xe</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="living" data-room-name="Phòng Khách">Phòng Khách</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="kitchen" data-room-name="Bếp Nấu">Bếp Nấu</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="master_bed" data-room-name="Ngủ Master">Ngủ Master</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="altar" data-room-name="Phòng Thờ">Phòng Thờ</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="wc" data-room-name="Khu WC">Khu WC</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="stairs" data-room-name="Cầu Thang">Cầu Thang</div>
+                            <div class="room-drag-chip" draggable="true" data-room-id="garage" data-room-name="Gara Xe">Gara Xe</div>
                         </div>
                     </div>
 
@@ -383,7 +438,7 @@
                                 </div>
                                 <div class="hud-window-controls">
                                     <button type="button" class="hud-win-btn" id="btnMinimizeToolbar" title="Thu nhỏ thanh công cụ">−</button>
-                                    <button type="button" class="hud-win-btn" id="btnMaximizeToolbar" title="Đặt lại vị trí mặc định">🗖</button>
+                                    <button type="button" class="hud-win-btn" id="btnMaximizeToolbar" title="Đặt lại vị trí mặc định">[]</button>
                                 </div>
                             </div>
 
@@ -403,17 +458,17 @@
                                                 <button type="button" class="btn-popover-close" id="btnClosePopoverAdd">×</button>
                                             </div>
                                             <div class="popover-grid">
-                                                <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">🛏️ Phòng Ngủ</button>
-                                                <button type="button" class="hud-comp-chip" data-type="toilet" data-name="Vệ Sinh" data-w="1800" data-h="2500">🚿 WC</button>
-                                                <button type="button" class="hud-comp-chip" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">🍳 Bếp & Ăn</button>
-                                                <button type="button" class="hud-comp-chip" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">🛋️ P. Khách</button>
-                                                <button type="button" class="hud-comp-chip" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">🚪 Cửa Chính</button>
-                                                <button type="button" class="hud-comp-chip" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">🚪 Cửa Đi</button>
-                                                <button type="button" class="hud-comp-chip" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">⛩️ Cổng</button>
-                                                <button type="button" class="hud-comp-chip" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">🪜 Cầu Thang</button>
-                                                <button type="button" class="hud-comp-chip" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">🕯️ P. Thờ</button>
-                                                <button type="button" class="hud-comp-chip" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">🚗 Gara Xe</button>
-                                                <button type="button" class="hud-comp-chip" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">☀️ Giếng Trời</button>
+                                                <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">Phòng Ngủ</button>
+                                                <button type="button" class="hud-comp-chip" data-type="toilet" data-name="Vệ Sinh" data-w="1800" data-h="2500">WC</button>
+                                                <button type="button" class="hud-comp-chip" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">Bếp & Ăn</button>
+                                                <button type="button" class="hud-comp-chip" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">P. Khách</button>
+                                                <button type="button" class="hud-comp-chip" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">Cửa Chính</button>
+                                                <button type="button" class="hud-comp-chip" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">Cửa Đi</button>
+                                                <button type="button" class="hud-comp-chip" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">Cổng</button>
+                                                <button type="button" class="hud-comp-chip" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">Cầu Thang</button>
+                                                <button type="button" class="hud-comp-chip" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">P. Thờ</button>
+                                                <button type="button" class="hud-comp-chip" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">Gara Xe</button>
+                                                <button type="button" class="hud-comp-chip" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">Giếng Trời</button>
                                             </div>
                                         </div>
                                     </div>
@@ -449,7 +504,7 @@
 
                                 <!-- Danh Sách Các Phòng Đang Có (Các nút mờ độc lập bấm chọn phòng trực tiếp) -->
                                 <div class="hud-rooms-section">
-                                    <div class="hud-section-label">📍 CHỌN PHÒNG ĐỂ SỬA:</div>
+                                    <div class="hud-section-label">CHỌN PHÒNG ĐỂ SỬA:</div>
                                     <div class="hud-room-chips-list" id="hudRoomChipsList">
                                         <!-- Rendered dynamically by script.js -->
                                     </div>
@@ -487,7 +542,7 @@
                     <!-- Visual Legend (Chú Thích Màu Sắc & Vị Trí Sao) -->
                     <div class="star-legend-container" style="margin-bottom: 12px; padding: 10px; background: rgba(15, 23, 42, 0.7); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.25);">
                         <div style="font-size: 0.74rem; font-weight: 800; color: var(--gold-light); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between;">
-                            <span>📌 CHÚ THÍCH BỘ SAO HUYỀN KHÔNG</span>
+                            <span>CHÚ THÍCH BỘ SAO HUYỀN KHÔNG</span>
                             <span style="color: #94a3b8; font-weight: 600;">(Vận 9)</span>
                         </div>
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 0.72rem; margin-bottom: 6px;">
@@ -515,10 +570,10 @@
                     <!-- Matrix Orientation Controls -->
                     <div style="display: flex; gap: 6px; margin-bottom: 10px;">
                         <button type="button" class="cad-tool-btn active" id="btnMatrixOrientHouse" style="flex: 1; font-size: 0.72rem; padding: 5px 6px; justify-content: center;">
-                            🧭 Tự Động Xoay Theo Hướng Nhà
+                            Tự Động Xoay Theo Hướng Nhà
                         </button>
                         <button type="button" class="cad-tool-btn" id="btnMatrixOrientLoShu" style="flex: 1; font-size: 0.72rem; padding: 5px 6px; justify-content: center;">
-                            📐 Lạc Thư Chuẩn (Nam Trên)
+                            Lạc Thư Chuẩn (Nam Trên)
                         </button>
                     </div>
 

@@ -1,12 +1,7 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v7.0
-// Tác giả: Dịch Sư Nguyễn Huy Hoàng
-// Hỗ trợ:
-// 1. Kéo-thả không giới hạn số lượng phòng vào 9 cung
-// 2. Khung viền Polygon tự động khớp kích thước thực W x D
-// 3. Chỉnh sửa đa giác viền nhà (Vertex Dragging) cho nhà chữ L, xéo, méo, dị dạng
-// 4. Interactive CAD Studio: Kéo di chuyển, co giãn 8 điểm neo, nút mini Xác Nhận/Làm Lại
-// 5. Hai Tab Bản Vẽ Độc Lập Chuẩn 100%: Scan2CAD (Ảnh 3) & La Kinh Cửu Cung (Ảnh 2)
+// Phong Thủy & Kiến Trúc Controller Script v8.0
+// Tác giả: Dịch Sư Nguyễn Huy Hoàng & Computational Geometry Core
+// 100% Thuần Code Vector (SVG / Canvas) — Không sử dụng Emoji
 // ============================================================
 
 import {
@@ -21,11 +16,13 @@ import {
     SvgViewportController,
     getOrientedPalaceGrid,
     renderUnifiedSvg,
+    FloorplanVisionVectorizer,
+    HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
 
-let currentMode = 'empty_land'; // 'empty_land' | 'existing_house'
+let currentMode = 'empty_land'; // 'empty_land' | 'existing_house' | 'scan_image'
 let currentThemeMode = 'white'; // 'white' | 'dark'
 let currentMatrixOrientMode = 'house'; // 'house' | 'loshu'
 let currentDndOrientMode = 'house'; // 'house' | 'loshu'
@@ -42,6 +39,8 @@ let viewportController = null;
 
 let selectedRoomId = null;
 let selectedEdgeIndex = null;
+let lastScannedData = null;
+
 let roomCounters = {
     bed: 0,
     wc: 0,
@@ -94,6 +93,7 @@ function bootstrapApp() {
     initFloatingToolbar();
     initActionButtons();
     initCadInteractiveEngine();
+    initScanImageControls();
 
     // Auto-calculate and render immediately on load
     handleCalculate(false);
@@ -143,31 +143,249 @@ function initAccordions() {
     }
 }
 
-/* 3. Mode Selection Tabs (Đất & Nhà) */
+/* 3. Mode Selection Tabs (Đất, Nhà, Tải Bản Vẽ) */
 function initModeTabs() {
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
+    const tabScanImage = document.getElementById('tabScanImage');
     const cardDesign = document.getElementById('accordionCardDesign');
     const existingHousePanel = document.getElementById('existingRoomsSection');
+    const scanImageSection = document.getElementById('scanImageSection');
 
-    if (tabEmptyLand && tabExistingHouse) {
+    if (tabEmptyLand) {
         tabEmptyLand.addEventListener('click', () => {
             currentMode = 'empty_land';
             tabEmptyLand.classList.add('active');
-            tabExistingHouse.classList.remove('active');
+            if (tabExistingHouse) tabExistingHouse.classList.remove('active');
+            if (tabScanImage) tabScanImage.classList.remove('active');
             if (cardDesign) cardDesign.style.display = 'block';
             if (existingHousePanel) existingHousePanel.style.display = 'none';
+            if (scanImageSection) scanImageSection.style.display = 'none';
             handleCalculate(false);
         });
+    }
 
+    if (tabExistingHouse) {
         tabExistingHouse.addEventListener('click', () => {
             currentMode = 'existing_house';
             tabExistingHouse.classList.add('active');
-            tabEmptyLand.classList.remove('active');
+            if (tabEmptyLand) tabEmptyLand.classList.remove('active');
+            if (tabScanImage) tabScanImage.classList.remove('active');
             if (cardDesign) cardDesign.style.display = 'none';
             if (existingHousePanel) existingHousePanel.style.display = 'block';
+            if (scanImageSection) scanImageSection.style.display = 'none';
             renderDndGrid();
         });
+    }
+
+    if (tabScanImage) {
+        tabScanImage.addEventListener('click', () => {
+            currentMode = 'scan_image';
+            tabScanImage.classList.add('active');
+            if (tabEmptyLand) tabEmptyLand.classList.remove('active');
+            if (tabExistingHouse) tabExistingHouse.classList.remove('active');
+            if (cardDesign) cardDesign.style.display = 'none';
+            if (existingHousePanel) existingHousePanel.style.display = 'none';
+            if (scanImageSection) scanImageSection.style.display = 'block';
+        });
+    }
+}
+
+/* 3.1 AI Scan & Floorplan Upload Controls */
+function initScanImageControls() {
+    const inputScanFile = document.getElementById('inputScanFile');
+    const dropzone = document.getElementById('scanUploadDropzone');
+    const btnSelectScanFile = document.getElementById('btnSelectScanFile');
+    const btnUseSampleDrawing = document.getElementById('btnUseSampleDrawing');
+    const btnApplyScanToCad = document.getElementById('btnApplyScanToCad');
+
+    if (btnSelectScanFile && inputScanFile) {
+        btnSelectScanFile.addEventListener('click', () => inputScanFile.click());
+    }
+
+    if (dropzone) {
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleScanUploadedFile(e.dataTransfer.files[0]);
+            }
+        });
+    }
+
+    if (inputScanFile) {
+        inputScanFile.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleScanUploadedFile(e.target.files[0]);
+            }
+        });
+    }
+
+    if (btnUseSampleDrawing) {
+        btnUseSampleDrawing.addEventListener('click', () => {
+            loadSampleDrawing();
+        });
+    }
+
+    if (btnApplyScanToCad) {
+        btnApplyScanToCad.addEventListener('click', () => {
+            applyScanResultToCad();
+        });
+    }
+}
+
+function handleScanUploadedFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = async () => {
+            try {
+                const widthM = parseFloat(document.getElementById('inputWidth')?.value) || 7.0;
+                const depthM = parseFloat(document.getElementById('inputLength')?.value) || 11.725;
+                
+                const result = await FloorplanVisionVectorizer.processImage(img, {
+                    targetWidthM: widthM,
+                    targetDepthM: depthM
+                });
+
+                lastScannedData = result;
+                displayScanAnalysis(result);
+            } catch (err) {
+                console.error('Scan Error:', err);
+                alert('Lỗi xử lý ảnh bản vẽ: ' + err.message);
+            }
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function loadSampleDrawing() {
+    const W = 7000;
+    const D = 11725;
+    const pts = [{ x: 0, y: 0 }, { x: W, y: 0 }, { x: W, y: D }, { x: 0, y: D }];
+    const analysis = HouseCenterGeometryEngine.analyzePolygon(pts);
+
+    const colLeftW = Math.round(W * 0.42); // 2940 mm
+    const colRightW = W - colLeftW - 440;  // 3620 mm
+    const bedH = Math.round((D - 660) / 3.4); // 3254 mm
+    const wcH = Math.round(bedH * 0.7);
+
+    const detectedRooms = [
+        { id: 'scan_bed3', name: 'P.NGỦ 3', type: 'bed_regular', x: 220, y: 220, w: colLeftW, h: bedH, rot: 0 },
+        { id: 'scan_bed2', name: 'P.NGỦ 2', type: 'bed_regular', x: 220, y: 220 + bedH + 110, w: colLeftW, h: bedH, rot: 0 },
+        { id: 'scan_wc', name: 'WC CHUNG', type: 'toilet', x: 220, y: 220 + bedH * 2 + 220, w: colLeftW, h: wcH, rot: 0 },
+        { id: 'scan_bed1', name: 'P.NGỦ 1', type: 'bed_master', x: 220, y: 220 + bedH * 2 + wcH + 330, w: colLeftW, h: D - (220 + bedH * 2 + wcH + 330) - 220, rot: 0 },
+        { id: 'scan_yard_rear', name: 'SÂN SAU', type: 'yard', x: colLeftW + 330, y: 220, w: colRightW, h: Math.round(bedH * 0.65), rot: 0 },
+        { id: 'scan_kitchen', name: 'P.BẾP + ĂN', type: 'kitchen_dining', x: colLeftW + 330, y: 220 + Math.round(bedH * 0.65) + 110, w: colRightW, h: Math.round(bedH * 1.35), rot: 0 },
+        { id: 'scan_living', name: 'P.KHÁCH', type: 'living_room', x: colLeftW + 330, y: 220 + Math.round(bedH * 2.0) + 220, w: colRightW, h: Math.round(bedH * 1.2), rot: 0 },
+        { id: 'scan_porch', name: 'SẢNH TRƯỚC', type: 'yard', x: colLeftW + 330, y: 220 + Math.round(bedH * 3.2) + 330, w: colRightW, h: D - (220 + Math.round(bedH * 3.2) + 330) - 220, rot: 0 }
+    ];
+
+    lastScannedData = {
+        points: pts,
+        analysis,
+        rooms: detectedRooms,
+        widthMm: W,
+        depthMm: D,
+        confidence: 98.6
+    };
+
+    const inputWidth = document.getElementById('inputWidth');
+    const inputLength = document.getElementById('inputLength');
+    if (inputWidth) inputWidth.value = '7.0';
+    if (inputLength) inputLength.value = '11.7';
+
+    displayScanAnalysis(lastScannedData);
+}
+
+function displayScanAnalysis(data) {
+    const dashboard = document.getElementById('scanAnalysisDashboard');
+    if (!dashboard) return;
+
+    dashboard.style.display = 'block';
+    const shapeEl = document.getElementById('scanStatShape');
+    const dimsEl = document.getElementById('scanStatDims');
+    const areaEl = document.getElementById('scanStatArea');
+    const centroidEl = document.getElementById('scanStatCentroid');
+    const confEl = document.getElementById('scanConfidenceBadge');
+
+    if (shapeEl) shapeEl.textContent = data.analysis.shape === 'RECTANGLE' ? 'Hình Chữ Nhật (Standard)' : data.analysis.shape;
+    if (dimsEl) dimsEl.textContent = `${data.widthMm} mm x ${data.depthMm} mm`;
+    if (areaEl) areaEl.textContent = `${data.analysis.areaM2} m²`;
+    if (centroidEl) centroidEl.textContent = `X: ${data.analysis.centroid.x} mm | Y: ${data.analysis.centroid.y} mm`;
+    if (confEl) {
+        confEl.textContent = `Độ Tin Cậy: ${data.confidence}%`;
+        confEl.className = 'audit-badge good';
+    }
+}
+
+function applyScanResultToCad() {
+    if (!lastScannedData) return;
+
+    const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
+    const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
+    const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
+    const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
+    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 20;
+    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 6;
+    const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
+    const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
+
+    currentGeometry = {
+        shape: lastScannedData.analysis.shape,
+        footprintPoints: lastScannedData.points,
+        widthMm: lastScannedData.widthMm,
+        depthMm: lastScannedData.depthMm,
+        totalFloors: 1,
+        currentFloor: 1,
+        floorsData: {
+            1: {
+                name: 'TẦNG TRỆT',
+                rooms: lastScannedData.rooms
+            }
+        },
+        facingDegree,
+        rooms: lastScannedData.rooms
+    };
+
+    currentFlyingStars = calculateFlyingStars({
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour
+    });
+
+    currentBatTrach = calculateGua(ownerYear, ownerGender);
+
+    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
+        ownerYear,
+        ownerGender
+    });
+
+    renderFloorNavigator(1);
+    renderActiveDrawing();
+    renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
+    renderDetailedReport(currentSpatialResult);
+    renderPopovers();
+    renderSmartPopup();
+
+    const resultsSection = document.getElementById('resultsSection');
+    if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
@@ -249,63 +467,61 @@ function initFacingDegreeControls() {
     }
 }
 
-/* 6. Drag and Drop 9-Palaces (KHÔNG GIỚI HẠN SỐ LƯỢNG PHÒNG TRONG MỖI CUNG) */
+/* 6. Drag & Drop Palaces Setup (Tab 2: Nhà) */
 function initDragAndDropPalaces() {
     const rack = document.getElementById('availableRoomsRack');
-    const btnOrientHouse = document.getElementById('btnDndOrientHouse');
-    const btnOrientLoShu = document.getElementById('btnDndOrientLoShu');
+    if (!rack) return;
 
-    if (btnOrientHouse && btnOrientLoShu) {
-        btnOrientHouse.addEventListener('click', () => {
+    rack.querySelectorAll('.room-drag-chip').forEach(chip => {
+        chip.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                id: chip.getAttribute('data-room-id'),
+                name: chip.getAttribute('data-room-name'),
+                type: chip.getAttribute('data-room-id')
+            }));
+        });
+    });
+
+    const btnDndOrientHouse = document.getElementById('btnDndOrientHouse');
+    const btnDndOrientLoShu = document.getElementById('btnDndOrientLoShu');
+
+    if (btnDndOrientHouse && btnDndOrientLoShu) {
+        btnDndOrientHouse.addEventListener('click', () => {
             currentDndOrientMode = 'house';
-            btnOrientHouse.classList.add('active');
-            btnOrientLoShu.classList.remove('active');
+            btnDndOrientHouse.classList.add('active');
+            btnDndOrientLoShu.classList.remove('active');
             renderDndGrid();
         });
 
-        btnOrientLoShu.addEventListener('click', () => {
+        btnDndOrientLoShu.addEventListener('click', () => {
             currentDndOrientMode = 'loshu';
-            btnOrientLoShu.classList.add('active');
-            btnOrientHouse.classList.remove('active');
+            btnDndOrientLoShu.classList.add('active');
+            btnDndOrientHouse.classList.remove('active');
             renderDndGrid();
         });
     }
-
-    if (rack) {
-        rack.querySelectorAll('.room-drag-chip').forEach(chip => {
-            chip.addEventListener('dragstart', (e) => {
-                const type = chip.getAttribute('data-room-id');
-                const baseName = chip.getAttribute('data-room-name');
-                e.dataTransfer.setData('application/json', JSON.stringify({ type, baseName }));
-            });
-
-            chip.addEventListener('click', () => {
-                const facingPalace = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
-                const type = chip.getAttribute('data-room-id');
-                const baseName = chip.getAttribute('data-room-name');
-                addUnlimitedRoomToPalace(facingPalace, type, baseName);
-            });
-        });
-    }
-
-    dndPlacements[9] = [{ id: 'r_living_1', type: 'living_room', name: 'Phòng Khách 1' }];
-    dndPlacements[1] = [{ id: 'r_kitchen_1', type: 'kitchen_dining', name: 'Bếp Nấu 1' }];
-    dndPlacements[8] = [{ id: 'r_bed_1', type: 'bed_master', name: 'Phòng Ngủ 1' }];
-    dndPlacements[2] = [{ id: 'r_wc_1', type: 'toilet', name: 'Vệ Sinh 1' }, { id: 'r_wc_2', type: 'toilet', name: 'Vệ Sinh 2' }];
 }
 
-function addUnlimitedRoomToPalace(palaceId, type, baseName) {
-    roomCounters[type] = (roomCounters[type] || 0) + 1;
-    const roomIndex = roomCounters[type];
-    const uniqueId = `r_${type}_${Date.now()}_${roomIndex}`;
-    const displayName = `${baseName} ${roomIndex}`;
+function handleAddRoomToPalace(palaceId, roomType, roomName) {
+    const prefix = roomType.substring(0, 4);
+    roomCounters[prefix] = (roomCounters[prefix] || 0) + 1;
+    const uniqueId = `${roomType}_${roomCounters[prefix]}`;
+
+    const cleanName = roomCounters[prefix] > 1 ? `${roomName} ${roomCounters[prefix]}` : roomName;
 
     dndPlacements[palaceId].push({
         id: uniqueId,
-        type: mapTypeToCadType(type),
-        name: displayName
+        type: mapTypeToCadType(roomType),
+        name: cleanName
     });
 
+    renderDndGrid();
+    handleCalculate(false);
+}
+
+function handleRemoveRoomFromPalace(palaceId, roomId) {
+    dndPlacements[palaceId] = dndPlacements[palaceId].filter(r => r.id !== roomId);
+    delete roomPositionCache[roomId];
     renderDndGrid();
     handleCalculate(false);
 }
@@ -338,8 +554,8 @@ function renderDndGrid() {
         const isSitting = pId === sittingPalace;
 
         let badgeTitle = PALACE_NAMES[pId] || `Cung ${pId}`;
-        if (isFacing) badgeTitle = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
-        else if (isSitting) badgeTitle = `🔵 TỌA (${PALACE_SHORT[pId]})`;
+        if (isFacing) badgeTitle = `[HƯỚNG] (${PALACE_SHORT[pId]})`;
+        else if (isSitting) badgeTitle = `[TỌA] (${PALACE_SHORT[pId]})`;
 
         const palData = currentFlyingStars && currentFlyingStars.palaces ? currentFlyingStars.palaces[pId] : null;
         const starsBadge = palData ? `· Vận ${palData.vanStar}` : '';
@@ -359,263 +575,209 @@ function renderDndGrid() {
                 : 'border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.85);');
 
         return `
-            <div class="palace-drop-zone ${isFacing ? 'facing-zone' : (isSitting ? 'sitting-zone' : '')}" data-palace-id="${pId}" style="${cellBorder} padding: 6px; border-radius: 8px; min-height: 95px; display: flex; flex-direction: column; justify-content: space-between;">
-                <div style="font-size: 0.74rem; font-weight: 800; color: ${isFacing ? '#f87171' : (isSitting ? '#38bdf8' : '#fbbf24')}; text-align: center; margin-bottom: 4px;">
-                    ${badgeTitle} ${starsBadge}
+            <div class="dnd-palace-box" data-palace-id="${pId}" style="${cellBorder} border-radius: 8px; padding: 8px; min-height: 105px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 4px;">
+                    <span style="font-size: 0.76rem; font-weight: 800; color: ${isFacing ? '#ef4444' : (isSitting ? '#38bdf8' : 'var(--gold-light)')};">${badgeTitle}</span>
+                    <span style="font-size: 0.68rem; color: #94a3b8;">${starsBadge}</span>
                 </div>
-                <div class="dropped-rooms-container" style="flex: 1; display: flex; flex-direction: column; gap: 2px; max-height: 120px; overflow-y: auto;">
-                    ${roomTags}
+                <div class="dnd-room-target" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                    ${roomTags.length > 0 ? roomTags : '<span style="font-size: 0.7rem; color: #64748b; font-style: italic;">+ Kéo phòng vào đây</span>'}
                 </div>
             </div>
         `;
     }).join('');
 
-    grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
-        zone.addEventListener('dragover', (e) => {
+    // Attach drag & drop listeners
+    grid.querySelectorAll('.dnd-palace-box').forEach(box => {
+        const pId = parseInt(box.getAttribute('data-palace-id'), 10);
+
+        box.addEventListener('dragover', (e) => {
             e.preventDefault();
-            zone.style.background = 'rgba(245, 158, 11, 0.2)';
+            box.style.borderColor = '#0284c7';
+            box.style.background = 'rgba(2, 132, 199, 0.15)';
         });
 
-        zone.addEventListener('dragleave', () => {
-            zone.style.background = '';
+        box.addEventListener('dragleave', () => {
+            box.style.borderColor = '';
+            box.style.background = '';
         });
 
-        zone.addEventListener('drop', (e) => {
+        box.addEventListener('drop', (e) => {
             e.preventDefault();
-            zone.style.background = '';
-            const dataStr = e.dataTransfer.getData('application/json');
-            if (!dataStr) return;
-            const data = JSON.parse(dataStr);
-            const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
-            addUnlimitedRoomToPalace(pId, data.type, data.baseName);
+            box.style.borderColor = '';
+            box.style.background = '';
+            try {
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                if (data && data.type) {
+                    handleAddRoomToPalace(pId, data.type, data.name);
+                }
+            } catch (err) {
+                console.error(err);
+            }
         });
+    });
 
-        zone.querySelectorAll('.btn-remove-room').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const rId = btn.getAttribute('data-room-id');
-                const pal = btn.getAttribute('data-palace-id');
-                delete roomPositionCache[rId];
-                dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
-                renderDndGrid();
-                handleCalculate(false);
-            });
+    grid.querySelectorAll('.btn-remove-room').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const rId = btn.getAttribute('data-room-id');
+            const pId = parseInt(btn.getAttribute('data-palace-id'), 10);
+            handleRemoveRoomFromPalace(pId, rId);
         });
     });
 }
 
+/* 7. Viewport Initialization */
 function initViewport() {
     const stage = document.getElementById('svgStage');
-    if (!stage) return;
-    viewportController = new SvgViewportController(stage);
-    cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
-    luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
+    if (stage) {
+        viewportController = new SvgViewportController(stage);
+    }
 }
 
-function startCadVertexInteraction(vertexIdx, clientX, clientY) {
-    if (!currentGeometry || !currentGeometry.footprintPoints) return;
-    const pt = currentGeometry.footprintPoints[vertexIdx];
-    if (!pt) return;
-    pointerState.isInteracting = true;
-    pointerState.mode = 'vertex';
-    pointerState.targetVertexIdx = vertexIdx;
-    pointerState.startClientX = clientX;
-    pointerState.startClientY = clientY;
-    pointerState.origX = pt.x;
-    pointerState.origY = pt.y;
-}
+/* 8. Floating Toolbar Initialization & Movable Drag Logic */
+function initFloatingToolbar() {
+    const tb = document.getElementById('cadFloatingToolbar');
+    const dragHeader = document.getElementById('hudDragHeader');
+    const btnMin = document.getElementById('btnMinimizeToolbar');
+    const btnMax = document.getElementById('btnMaximizeToolbar');
+    const body = document.getElementById('hudBody');
 
-function startCadPointerInteraction(mode, roomId, handleId, clientX, clientY) {
-    const room = currentGeometry?.rooms?.find(r => r.id === roomId);
-    if (!room) return;
-    pointerState.isInteracting = true;
-    pointerState.mode = mode; // 'move' | 'resize'
-    pointerState.targetRoomId = roomId;
-    pointerState.handle = handleId;
-    pointerState.startClientX = clientX;
-    pointerState.startClientY = clientY;
-    pointerState.origX = room.x;
-    pointerState.origY = room.y;
-    pointerState.origW = room.w;
-    pointerState.origH = room.h;
-}
+    if (!tb || !dragHeader) return;
 
-function initCadInteractiveEngine() {
-    const stage = document.getElementById('svgStage');
-    if (!stage) return;
+    let isDragging = false;
+    let startX = 0, startY = 0, origLeft = 0, origTop = 0;
 
-    stage.addEventListener('pointerdown', (e) => {
-        // 1. Mini Action Bar
-        const miniActionBtn = e.target.closest('.btn-cad-mini-action');
-        if (miniActionBtn) {
-            e.stopPropagation();
-            const action = miniActionBtn.getAttribute('data-action');
-            const rId = miniActionBtn.getAttribute('data-room-id');
-            const room = currentGeometry?.rooms?.find(r => r.id === rId);
-            if (!room) return;
+    dragHeader.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.hud-win-btn')) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = tb.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+        dragHeader.setPointerCapture(e.pointerId);
+    });
 
-            if (action === 'confirm') {
-                selectedRoomId = null;
-                renderActiveDrawing();
-                renderSmartPopup();
-                renderPopovers();
-            } else if (action === 'rotate') {
-                const temp = room.w;
-                room.w = room.h;
-                room.h = temp;
-                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
-                renderActiveDrawing();
-                renderSmartPopup();
-                renderPopovers();
-            } else if (action === 'size_plus') {
-                room.w = Math.round(room.w * 1.12);
-                room.h = Math.round(room.h * 1.12);
-                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
-                renderActiveDrawing();
-                renderSmartPopup();
-                renderPopovers();
-            } else if (action === 'size_minus') {
-                room.w = Math.max(500, Math.round(room.w * 0.88));
-                room.h = Math.max(500, Math.round(room.h * 0.88));
-                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
-                renderActiveDrawing();
-                renderSmartPopup();
-                renderPopovers();
-            } else if (action === 'delete') {
-                delete roomPositionCache[rId];
-                currentGeometry.rooms = currentGeometry.rooms.filter(r => r.id !== rId);
-                selectedRoomId = null;
-                renderActiveDrawing();
-                renderSmartPopup();
-                renderPopovers();
-            }
-            return;
+    dragHeader.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        tb.style.left = `${origLeft + dx}px`;
+        tb.style.top = `${origTop + dy}px`;
+        tb.style.right = 'auto';
+        tb.style.bottom = 'auto';
+    });
+
+    const stopDrag = (e) => {
+        if (isDragging) {
+            isDragging = false;
+            try { dragHeader.releasePointerCapture(e.pointerId); } catch (_) {}
         }
+    };
 
-        // 2. Resize Handles
-        const resizeHandle = e.target.closest('.cad-resize-handle');
-        if (resizeHandle) {
+    dragHeader.addEventListener('pointerup', stopDrag);
+    dragHeader.addEventListener('pointercancel', stopDrag);
+
+    if (btnMin && body) {
+        btnMin.addEventListener('click', () => {
+            body.classList.toggle('collapsed');
+            btnMin.textContent = body.classList.contains('collapsed') ? '+' : '−';
+        });
+    }
+
+    if (btnMax) {
+        btnMax.addEventListener('click', () => {
+            tb.style.left = '20px';
+            tb.style.top = '70px';
+            tb.style.right = 'auto';
+            tb.style.bottom = 'auto';
+        });
+    }
+
+    // Popover Triggers
+    const btnAdd = document.getElementById('btnTriggerAdd');
+    const popAdd = document.getElementById('popoverMenuAdd');
+    const btnCloseAdd = document.getElementById('btnClosePopoverAdd');
+
+    const btnEdges = document.getElementById('btnTriggerEdges');
+    const popEdges = document.getElementById('popoverMenuEdges');
+    const btnCloseEdges = document.getElementById('btnClosePopoverEdges');
+
+    if (btnAdd && popAdd) {
+        btnAdd.addEventListener('click', (e) => {
             e.stopPropagation();
-            const handleId = resizeHandle.getAttribute('data-handle');
-            const rId = resizeHandle.getAttribute('data-room-id');
-            startCadPointerInteraction('resize', rId, handleId, e.clientX, e.clientY);
-            return;
-        }
+            const isVisible = popAdd.style.display === 'block';
+            closeAllPopovers();
+            popAdd.style.display = isVisible ? 'none' : 'block';
+        });
+    }
 
-        // 3. Vertex Handle
-        const vertexHandle = e.target.closest('.cad-vertex-handle');
-        if (vertexHandle) {
+    if (btnCloseAdd && popAdd) {
+        btnCloseAdd.addEventListener('click', () => popAdd.style.display = 'none');
+    }
+
+    if (btnEdges && popEdges) {
+        btnEdges.addEventListener('click', (e) => {
             e.stopPropagation();
-            startCadVertexInteraction(parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10), e.clientX, e.clientY);
-            return;
-        }
-
-        // 4. Room Hitbox
-        const roomEl = e.target.closest('.cad-room-interactive') || e.target.closest('.cad-room-hitbox');
-        if (roomEl) {
-            e.stopPropagation();
-            const rId = roomEl.getAttribute('data-room-id');
-            selectRoom(rId);
-            startCadPointerInteraction('move', rId, null, e.clientX, e.clientY);
-            return;
-        }
-
-        // 5. Edge Hitbox
-        const edgeEl = e.target.closest('.cad-edge-hitbox');
-        if (edgeEl) {
-            e.stopPropagation();
-            selectEdge(parseInt(edgeEl.getAttribute('data-edge-idx'), 10));
-            return;
-        }
-
-        // Click out
-        if (selectedRoomId || selectedEdgeIndex !== null) {
-            selectedRoomId = null;
-            selectedEdgeIndex = null;
-            if (cadRenderer) cadRenderer.selectedRoomId = null;
-            renderActiveDrawing();
-            renderSmartPopup();
+            const isVisible = popEdges.style.display === 'block';
+            closeAllPopovers();
+            popEdges.style.display = isVisible ? 'none' : 'block';
             renderPopovers();
-        }
+        });
+    }
+
+    if (btnCloseEdges && popEdges) {
+        btnCloseEdges.addEventListener('click', () => popEdges.style.display = 'none');
+    }
+
+    document.querySelectorAll('.hud-comp-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = chip.getAttribute('data-type');
+            const name = chip.getAttribute('data-name');
+            const w = parseInt(chip.getAttribute('data-w'), 10) || 3000;
+            const h = parseInt(chip.getAttribute('data-h'), 10) || 3000;
+            handleAddRoomDirect(type, name, w, h);
+            if (popAdd) popAdd.style.display = 'none';
+        });
     });
 
-    window.addEventListener('pointermove', (e) => {
-        if (!pointerState.isInteracting || !currentGeometry) return;
-        const svgEl = stage.querySelector('svg');
-        const ctm = svgEl ? svgEl.getScreenCTM() : null;
-        const scale = ctm ? ctm.a : 1.0;
-        const dx = (e.clientX - pointerState.startClientX) / scale;
-        const dy = (e.clientY - pointerState.startClientY) / scale;
-
-        if (pointerState.mode === 'vertex') {
-            const pt = currentGeometry.footprintPoints[pointerState.targetVertexIdx];
-            if (pt) {
-                pt.x = Math.round(pointerState.origX + dx);
-                pt.y = Math.round(pointerState.origY + dy);
-                requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
-            }
-            return;
-        }
-
-        const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
-        if (!room) return;
-
-        if (pointerState.mode === 'move') {
-            room.x = Math.round(Math.max(0, Math.min((currentGeometry.widthMm || 10000) - room.w, pointerState.origX + dx)));
-            room.y = Math.round(Math.max(0, Math.min((currentGeometry.depthMm || 20000) - room.h, pointerState.origY + dy)));
-            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-        } else if (pointerState.mode === 'resize') {
-            const h = pointerState.handle;
-            const minSize = 400;
-
-            if (h === 'e' || h === 'se' || h === 'ne') {
-                room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
-            }
-            if (h === 's' || h === 'se' || h === 'sw') {
-                room.h = Math.max(minSize, Math.round(pointerState.origH + dy));
-            }
-            if (h === 'w' || h === 'nw' || h === 'sw') {
-                const newW = Math.max(minSize, Math.round(pointerState.origW - dx));
-                room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
-                room.w = newW;
-            }
-            if (h === 'n' || h === 'nw' || h === 'ne') {
-                const newH = Math.max(minSize, Math.round(pointerState.origH - dy));
-                room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
-                room.h = newH;
-            }
-            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-        }
-        requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
-    });
-
-    window.addEventListener('pointerup', () => {
-        if (pointerState.isInteracting) {
-            pointerState.isInteracting = false;
-            renderSmartPopup();
-            renderPopovers();
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.hud-popover-wrapper')) {
+            closeAllPopovers();
         }
     });
 }
 
-function selectEdge(edgeIdx, shouldFocus = true) {
-    selectedEdgeIndex = edgeIdx;
-    selectedRoomId = null;
-    if (cadRenderer) cadRenderer.selectedRoomId = null;
-    closeAllPopovers();
-    renderActiveDrawing();
-    renderSmartPopup();
-    renderPopovers();
-}
+function handleAddRoomDirect(type, name, w, h) {
+    if (!currentGeometry) return;
+    const prefix = type.substring(0, 4);
+    roomCounters[prefix] = (roomCounters[prefix] || 0) + 1;
+    const id = `custom_${type}_${roomCounters[prefix]}`;
+    const cleanName = roomCounters[prefix] > 1 ? `${name} ${roomCounters[prefix]}` : name;
 
-function selectRoom(roomId, shouldFocus = true) {
-    selectedRoomId = roomId;
-    selectedEdgeIndex = null;
-    if (cadRenderer) cadRenderer.selectedRoomId = roomId;
-    closeAllPopovers();
+    const cx = currentGeometry.widthMm ? currentGeometry.widthMm / 2 - w / 2 : 1000;
+    const cy = currentGeometry.depthMm ? currentGeometry.depthMm / 2 - h / 2 : 1000;
+
+    const newRoom = {
+        id,
+        name: cleanName.toUpperCase(),
+        type,
+        x: Math.round(cx),
+        y: Math.round(cy),
+        w,
+        h,
+        rot: 0
+    };
+
+    if (!currentGeometry.rooms) currentGeometry.rooms = [];
+    currentGeometry.rooms.push(newRoom);
+    selectedRoomId = id;
+
     renderActiveDrawing();
-    renderSmartPopup();
     renderPopovers();
+    renderSmartPopup();
 }
 
 function closeAllPopovers() {
@@ -632,7 +794,7 @@ function renderSmartPopup() {
         const p2 = pts[(selectedEdgeIndex + 1) % pts.length];
         const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
         popup.style.display = 'flex';
-        popup.innerHTML = `<span class="popup-label">📏 Cạnh ${selectedEdgeIndex + 1}:</span><div class="popup-input-group"><input type="number" id="popupInputEdgeL" value="${len}" min="200"></div><button type="button" class="popup-btn save" id="btnPopupSaveEdge">✓</button><button type="button" class="popup-btn cancel" id="btnPopupCancelEdge">✕</button>`;
+        popup.innerHTML = `<span class="popup-label">Cạnh ${selectedEdgeIndex + 1}:</span><div class="popup-input-group"><input type="number" id="popupInputEdgeL" value="${len}" min="200"></div><button type="button" class="popup-btn save" id="btnPopupSaveEdge">LƯU</button><button type="button" class="popup-btn cancel" id="btnPopupCancelEdge">HỦY</button>`;
 
         document.getElementById('btnPopupSaveEdge')?.addEventListener('click', () => {
             const newL = parseFloat(document.getElementById('popupInputEdgeL')?.value);
@@ -653,7 +815,7 @@ function renderSmartPopup() {
         const room = currentGeometry.rooms?.find(r => r.id === selectedRoomId);
         if (room) {
             popup.style.display = 'flex';
-            popup.innerHTML = `<span class="popup-label">🚪 ${room.name}:</span><div class="popup-input-group"><input type="number" id="popupInputRoomW" value="${room.w}"><input type="number" id="popupInputRoomH" value="${room.h}"></div><button type="button" class="popup-btn save" id="btnPopupSaveRoom">✓</button><button type="button" class="popup-btn cancel" id="btnPopupCancelRoom">✕</button>`;
+            popup.innerHTML = `<span class="popup-label">${room.name}:</span><div class="popup-input-group"><input type="number" id="popupInputRoomW" value="${room.w}"><input type="number" id="popupInputRoomH" value="${room.h}"></div><button type="button" class="popup-btn save" id="btnPopupSaveRoom">LƯU</button><button type="button" class="popup-btn cancel" id="btnPopupCancelRoom">HỦY</button>`;
             document.getElementById('btnPopupSaveRoom')?.addEventListener('click', () => {
                 room.w = parseInt(document.getElementById('popupInputRoomW').value);
                 room.h = parseInt(document.getElementById('popupInputRoomH').value);
@@ -683,7 +845,7 @@ function renderPopovers() {
                 const isSel = selectedEdgeIndex === idx;
                 return `
                     <div class="popover-item-row ${isSel ? 'active' : ''}" data-edge-idx="${idx}">
-                        <span>📏 Cạnh ${idx + 1}</span>
+                        <span>Cạnh ${idx + 1}</span>
                         <span class="chip-dim">${len} mm</span>
                     </div>
                 `;
@@ -699,24 +861,23 @@ function renderPopovers() {
         }
     }
 
-    // 2. Danh Sách Nút Phòng Độc Lập Nằm Ngay Trong Toolbar
+    // 2. Danh sách phòng độc lập
     if (hudRoomChipsList) {
         const rooms = currentGeometry.rooms || [];
         if (rooms.length === 0) {
-            hudRoomChipsList.innerHTML = '<span style="font-size:0.65rem; color:#94a3b8; padding: 2px;">Chưa có phòng</span>';
+            hudRoomChipsList.innerHTML = '<span style="font-size:0.75rem; color:#64748b; font-style:italic;">Chưa có phòng nào</span>';
         } else {
             hudRoomChipsList.innerHTML = rooms.map(r => {
-                const isSel = selectedRoomId === r.id;
-                const area = ((r.w * r.h) / 1000000).toFixed(1);
+                const isSel = r.id === selectedRoomId;
                 return `
-                    <button type="button" class="hud-room-chip-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}">
+                    <div class="hud-room-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chọn ${r.name}">
                         <span>${r.name}</span>
-                        <span class="chip-dim">${area}m²</span>
-                    </button>
+                        <span class="chip-dim">${r.w}x${r.h}</span>
+                    </div>
                 `;
             }).join('');
 
-            hudRoomChipsList.querySelectorAll('.hud-room-chip-btn').forEach(btn => {
+            hudRoomChipsList.querySelectorAll('.hud-room-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const rId = btn.getAttribute('data-room-id');
@@ -727,258 +888,275 @@ function renderPopovers() {
     }
 }
 
-function initFloatingToolbar() {
-    const toolbar = document.getElementById('cadFloatingToolbar');
-    const dragHeader = document.getElementById('hudDragHeader');
-    const btnMinimize = document.getElementById('btnMinimizeToolbar');
-    const btnMaximize = document.getElementById('btnMaximizeToolbar');
-    const hudBody = document.getElementById('hudBody');
-    const btnRestoreToolbar = document.getElementById('btnRestoreToolbar');
+function selectRoom(roomId, rerender = true) {
+    selectedRoomId = roomId;
+    selectedEdgeIndex = null;
+    if (rerender) {
+        renderActiveDrawing();
+        renderPopovers();
+        renderSmartPopup();
+    }
+}
 
-    const btnTriggerAdd = document.getElementById('btnTriggerAdd');
-    const popoverMenuAdd = document.getElementById('popoverMenuAdd');
-    const btnClosePopoverAdd = document.getElementById('btnClosePopoverAdd');
+function selectEdge(edgeIdx, rerender = true) {
+    selectedEdgeIndex = edgeIdx;
+    selectedRoomId = null;
+    if (rerender) {
+        renderActiveDrawing();
+        renderPopovers();
+        renderSmartPopup();
+    }
+}
 
-    const btnTriggerEdges = document.getElementById('btnTriggerEdges');
-    const popoverMenuEdges = document.getElementById('popoverMenuEdges');
-    const btnClosePopoverEdges = document.getElementById('btnClosePopoverEdges');
-
-    const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
+/* 9. Action Buttons & Export */
+function initActionButtons() {
+    const btnCalc = document.getElementById('btnCalculate');
+    const btnToggleFs = document.getElementById('btnToggleFullscreen');
     const btnExportPng = document.getElementById('btnExportPng');
 
-    // Draggable Movable Toolbar Logic
-    if (toolbar && dragHeader) {
-        let isDraggingToolbar = false;
-        let dragStartX = 0, dragStartY = 0;
-        let tbStartX = 0, tbStartY = 0;
+    if (btnCalc) {
+        btnCalc.addEventListener('click', () => handleCalculate(true));
+    }
 
-        dragHeader.addEventListener('pointerdown', (e) => {
-            if (e.target.closest('.hud-win-btn')) return;
-            isDraggingToolbar = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            const rect = toolbar.getBoundingClientRect();
-            const parentRect = toolbar.parentElement.getBoundingClientRect();
-            tbStartX = rect.left - parentRect.left;
-            tbStartY = rect.top - parentRect.top;
-            toolbar.style.right = 'auto';
-            toolbar.style.left = `${tbStartX}px`;
-            toolbar.style.top = `${tbStartY}px`;
-            dragHeader.setPointerCapture(e.pointerId);
-        });
-
-        dragHeader.addEventListener('pointermove', (e) => {
-            if (!isDraggingToolbar) return;
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            toolbar.style.left = `${Math.max(0, tbStartX + dx)}px`;
-            toolbar.style.top = `${Math.max(0, tbStartY + dy)}px`;
-        });
-
-        const stopDragTb = (e) => {
-            if (isDraggingToolbar) {
-                isDraggingToolbar = false;
-                try { dragHeader.releasePointerCapture(e.pointerId); } catch (_) {}
+    if (btnToggleFs) {
+        btnToggleFs.addEventListener('click', () => {
+            const ws = document.getElementById('cad-workspace');
+            if (!ws) return;
+            if (!document.fullscreenElement) {
+                ws.requestFullscreen().catch(err => console.error(err));
+            } else {
+                document.exitFullscreen();
             }
-        };
-        dragHeader.addEventListener('pointerup', stopDragTb);
-        dragHeader.addEventListener('pointercancel', stopDragTb);
-
-        btnMinimize?.addEventListener('click', () => {
-            if (hudBody) hudBody.style.display = 'none';
-            if (dragHeader) dragHeader.style.display = 'none';
-            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'flex';
-            toolbar.style.padding = '0';
-            toolbar.style.background = 'transparent';
-            toolbar.style.border = 'none';
-            toolbar.style.boxShadow = 'none';
-        });
-
-        btnRestoreToolbar?.addEventListener('click', () => {
-            if (hudBody) hudBody.style.display = 'block';
-            if (dragHeader) dragHeader.style.display = 'flex';
-            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
-            toolbar.style.padding = '';
-            toolbar.style.background = '';
-            toolbar.style.border = '';
-            toolbar.style.boxShadow = '';
-        });
-
-        btnMaximize?.addEventListener('click', () => {
-            toolbar.style.left = 'auto';
-            toolbar.style.right = '12px';
-            toolbar.style.top = '12px';
-            if (hudBody) hudBody.style.display = 'block';
-            if (dragHeader) dragHeader.style.display = 'flex';
-            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
-            toolbar.style.padding = '';
-            toolbar.style.background = '';
-            toolbar.style.border = '';
-            toolbar.style.boxShadow = '';
         });
     }
 
-    btnTriggerAdd?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = popoverMenuAdd.style.display === 'flex';
-        closeAllPopovers();
-        popoverMenuAdd.style.display = isOpen ? 'none' : 'flex';
-    });
-    btnClosePopoverAdd?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        popoverMenuAdd.style.display = 'none';
-    });
-
-    btnTriggerEdges?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = popoverMenuEdges.style.display === 'flex';
-        closeAllPopovers();
-        renderPopovers();
-        popoverMenuEdges.style.display = isOpen ? 'none' : 'flex';
-    });
-    btnClosePopoverEdges?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        popoverMenuEdges.style.display = 'none';
-    });
-
-    document.querySelectorAll('.hud-comp-chip').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const type = btn.getAttribute('data-type');
-            const baseName = btn.getAttribute('data-name') || 'Phòng Mới';
-            const w = parseInt(btn.getAttribute('data-w'), 10) || 3500;
-            const h = parseInt(btn.getAttribute('data-h'), 10) || 3500;
-
-            if (!roomCounters[type]) roomCounters[type] = 0;
-            roomCounters[type]++;
-            const name = `${baseName} ${roomCounters[type]}`;
-            const id = `obj_${type}_${Date.now()}`;
-
-            const newRoom = {
-                id,
-                name: name.toUpperCase(),
-                type,
-                x: 500,
-                y: 500,
-                w,
-                h,
-                rot: 0
-            };
-
-            if (!currentGeometry.rooms) currentGeometry.rooms = [];
-            currentGeometry.rooms.push(newRoom);
-            roomPositionCache[newRoom.id] = { x: newRoom.x, y: newRoom.y, w: newRoom.w, h: newRoom.h, rot: 0 };
-
-            closeAllPopovers();
-            selectRoom(newRoom.id, true);
+    if (btnExportPng) {
+        btnExportPng.addEventListener('click', () => {
+            exportSvgToPng();
         });
-    });
-
-    // Fullscreen Toggle (Native Fullscreen API)
-    btnToggleFullscreen?.addEventListener('click', () => {
-        const container = document.getElementById('cad-workspace');
-        if (!container) return;
-
-        if (!document.fullscreenElement) {
-            if (container.requestFullscreen) {
-                container.requestFullscreen().catch(() => {
-                    container.classList.toggle('is-fullscreen');
-                });
-            } else {
-                container.classList.toggle('is-fullscreen');
-            }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(() => {});
-            }
-            container.classList.remove('is-fullscreen');
-        }
-        setTimeout(() => {
-            if (viewportController) viewportController.fitToScreen();
-        }, 150);
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-        const isFs = !!document.fullscreenElement;
-        const iconOpen = document.getElementById('iconFullscreenOpen');
-        const iconExit = document.getElementById('iconFullscreenExit');
-        const txtFs = document.getElementById('txtFullscreen');
-        if (iconOpen) iconOpen.style.display = isFs ? 'none' : 'inline-block';
-        if (iconExit) iconExit.style.display = isFs ? 'inline-block' : 'none';
-        if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
-        setTimeout(() => {
-            if (viewportController) viewportController.fitToScreen();
-        }, 150);
-    });
-
-    btnExportPng?.addEventListener('click', () => {
-        exportCadSvgAsPng();
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.hud-popover-wrapper') && !e.target.closest('.hud-popover-menu')) {
-            closeAllPopovers();
-        }
-    });
+    }
 }
 
-function exportCadSvgAsPng() {
-    const stage = document.getElementById('svgStage');
-    const svgEl = stage ? stage.querySelector('svg') : null;
+function exportSvgToPng() {
+    const svgEl = document.querySelector('#svgStage svg');
     if (!svgEl) return;
 
-    const svgData = new XMLSerializer().serializeToString(svgEl);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const DOMURL = window.URL || window.webkitURL || window;
-    const url = DOMURL.createObjectURL(svgBlob);
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgEl);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
 
-    const img = new Image();
-    img.onload = function () {
+    const image = new Image();
+    image.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = 2400;
-        canvas.height = 1800;
+        canvas.width = 3840; // 4K Resolution
+        canvas.height = Math.round((3840 * image.naturalHeight) / image.naturalWidth);
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = currentThemeMode === 'dark' ? '#090d16' : '#ffffff';
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        DOMURL.revokeObjectURL(url);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-        const a = document.createElement('a');
-        a.download = `BanVe_PhongThuy_${Date.now()}.png`;
-        a.href = canvas.toDataURL('image/png');
-        a.click();
+        const pngURL = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngURL;
+        downloadLink.download = `Ban-Ve-Phong-Thuy-${Date.now()}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     };
-    img.src = url;
+    image.src = blobURL;
 }
 
-/* 10. Form Actions & Input Listeners */
-function initActionButtons() {
-    const btnCalculate = document.getElementById('btnCalculate');
-    if (btnCalculate) {
-        btnCalculate.addEventListener('click', () => handleCalculate(true));
-    }
+/* 10. Interactive CAD Manipulation Engine (Pointer Events) */
+function initCadInteractiveEngine() {
+    const stage = document.getElementById('svgStage');
+    if (!stage) return;
 
-    const liveInputs = [
-        'inputShape', 'inputWidth', 'inputLength', 'inputFloors',
-        'inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour',
-        'inputOwnerYear', 'inputOwnerGender',
-        'inputBedCount', 'inputWcCount', 'inputHasAltar',
-        'inputLivingRoom', 'inputKitchen', 'inputGarage', 'inputStairsType',
-        'inputHasCommonRoom', 'inputHasLaundry', 'inputHasSkylight'
-    ];
+    stage.addEventListener('pointerdown', (e) => {
+        const miniActionBtn = e.target.closest('.btn-cad-mini-action');
+        if (miniActionBtn) {
+            e.stopPropagation();
+            const action = miniActionBtn.getAttribute('data-action');
+            const roomId = miniActionBtn.getAttribute('data-room-id');
+            handleMiniAction(action, roomId);
+            return;
+        }
 
-    liveInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', () => handleCalculate(false));
-            if (el.tagName === 'INPUT') {
-                el.addEventListener('input', () => {
-                    clearTimeout(window._calcDebounce);
-                    window._calcDebounce = setTimeout(() => handleCalculate(false), 250);
-                });
+        const resizeHandle = e.target.closest('.cad-resize-handle') || e.target.closest('.cad-resize-handle-group');
+        if (resizeHandle) {
+            e.stopPropagation();
+            const handleId = resizeHandle.getAttribute('data-handle');
+            const rId = resizeHandle.getAttribute('data-room-id');
+            const room = currentGeometry.rooms?.find(r => r.id === rId);
+            if (!room) return;
+
+            pointerState.isInteracting = true;
+            pointerState.mode = 'resize';
+            pointerState.handle = handleId;
+            pointerState.targetRoomId = rId;
+            pointerState.startClientX = e.clientX;
+            pointerState.startClientY = e.clientY;
+            pointerState.origX = room.x;
+            pointerState.origY = room.y;
+            pointerState.origW = room.w;
+            pointerState.origH = room.h;
+
+            stage.setPointerCapture(e.pointerId);
+            return;
+        }
+
+        const vertexHandle = e.target.closest('.cad-vertex-handle') || e.target.closest('.cad-vertex-group');
+        if (vertexHandle) {
+            e.stopPropagation();
+            const vIdx = parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10);
+            const pt = currentGeometry.footprintPoints?.[vIdx];
+            if (!pt) return;
+
+            pointerState.isInteracting = true;
+            pointerState.mode = 'vertex';
+            pointerState.targetVertexIdx = vIdx;
+            pointerState.startClientX = e.clientX;
+            pointerState.startClientY = e.clientY;
+            pointerState.origX = pt.x;
+            pointerState.origY = pt.y;
+
+            stage.setPointerCapture(e.pointerId);
+            return;
+        }
+
+        const roomEl = e.target.closest('.cad-room-interactive');
+        if (roomEl) {
+            e.stopPropagation();
+            const rId = roomEl.getAttribute('data-room-id');
+            selectRoom(rId, true);
+
+            const room = currentGeometry.rooms?.find(r => r.id === rId);
+            if (!room) return;
+
+            pointerState.isInteracting = true;
+            pointerState.mode = 'move';
+            pointerState.targetRoomId = rId;
+            pointerState.startClientX = e.clientX;
+            pointerState.startClientY = e.clientY;
+            pointerState.origX = room.x;
+            pointerState.origY = room.y;
+
+            stage.setPointerCapture(e.pointerId);
+            return;
+        }
+
+        const edgeEl = e.target.closest('.cad-edge-hitbox') || e.target.closest('.cad-edge-group');
+        if (edgeEl) {
+            e.stopPropagation();
+            const eIdx = parseInt(edgeEl.getAttribute('data-edge-idx'), 10);
+            selectEdge(eIdx, true);
+            return;
+        }
+    });
+
+    stage.addEventListener('pointermove', (e) => {
+        if (!pointerState.isInteracting) return;
+
+        const svgEl = stage.querySelector('svg');
+        if (!svgEl) return;
+
+        const rect = svgEl.getBoundingClientRect();
+        const vb = cadRenderer.renderLayers(currentGeometry).viewBox;
+        const scaleX = vb.w / rect.width;
+        const scaleY = vb.h / rect.height;
+
+        const dx = (e.clientX - pointerState.startClientX) * scaleX;
+        const dy = (e.clientY - pointerState.startClientY) * scaleY;
+
+        if (pointerState.mode === 'move') {
+            const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
+            if (room) {
+                room.x = Math.round(pointerState.origX + dx);
+                room.y = Math.round(pointerState.origY + dy);
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+                renderActiveDrawing();
+            }
+        } else if (pointerState.mode === 'resize') {
+            const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
+            if (room) {
+                const h = pointerState.handle;
+                if (h.includes('e')) room.w = Math.max(800, Math.round(pointerState.origW + dx));
+                if (h.includes('s')) room.h = Math.max(800, Math.round(pointerState.origH + dy));
+                if (h.includes('w')) {
+                    const newW = Math.max(800, Math.round(pointerState.origW - dx));
+                    room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
+                    room.w = newW;
+                }
+                if (h.includes('n')) {
+                    const newH = Math.max(800, Math.round(pointerState.origH - dy));
+                    room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
+                    room.h = newH;
+                }
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+                renderActiveDrawing();
+            }
+        } else if (pointerState.mode === 'vertex') {
+            const pt = currentGeometry.footprintPoints?.[pointerState.targetVertexIdx];
+            if (pt) {
+                pt.x = Math.round(pointerState.origX + dx);
+                pt.y = Math.round(pointerState.origY + dy);
+                renderActiveDrawing();
             }
         }
     });
+
+    const stopInteraction = (e) => {
+        if (pointerState.isInteracting) {
+            pointerState.isInteracting = false;
+            pointerState.mode = null;
+            try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+            renderSmartPopup();
+            renderPopovers();
+        }
+    };
+
+    stage.addEventListener('pointerup', stopInteraction);
+    stage.addEventListener('pointercancel', stopInteraction);
+}
+
+function handleMiniAction(action, roomId) {
+    const room = currentGeometry.rooms?.find(r => r.id === roomId);
+    if (!room) return;
+
+    if (action === 'confirm') {
+        selectedRoomId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+        renderPopovers();
+    } else if (action === 'rotate') {
+        const tempW = room.w;
+        room.w = room.h;
+        room.h = tempW;
+        room.rot = ((room.rot || 0) + 90) % 360;
+        roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot };
+        renderActiveDrawing();
+        renderSmartPopup();
+    } else if (action === 'size_plus') {
+        room.w = Math.round(room.w * 1.1);
+        room.h = Math.round(room.h * 1.1);
+        roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+        renderActiveDrawing();
+        renderSmartPopup();
+    } else if (action === 'size_minus') {
+        room.w = Math.max(800, Math.round(room.w * 0.9));
+        room.h = Math.max(800, Math.round(room.h * 0.9));
+        roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+        renderActiveDrawing();
+        renderSmartPopup();
+    } else if (action === 'delete') {
+        currentGeometry.rooms = currentGeometry.rooms.filter(r => r.id !== roomId);
+        delete roomPositionCache[roomId];
+        selectedRoomId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+        renderPopovers();
+    }
 }
 
 /* 11. Core Master Calculation Pipeline */
@@ -1099,14 +1277,15 @@ function handleCalculate(shouldScroll = false) {
     }
 }
 
-/* 12. Render Floor Navigator */
+/* 12. Render Floor Navigator with Click Handlers */
 function renderFloorNavigator(totalFloors) {
     const nav = document.getElementById('floorNavigator');
     if (!nav) return;
 
     let buttons = '';
+    const curF = currentGeometry ? (currentGeometry.currentFloor || 1) : 1;
     for (let f = 1; f <= totalFloors; f++) {
-        const isActive = f === 1;
+        const isActive = (f === curF);
         const name = f === 1 ? 'TẦNG TRỆT' : `TẦNG ${f}`;
         buttons += `
             <button type="button" class="floor-btn ${isActive ? 'active' : ''}" data-floor="${f}">
@@ -1116,6 +1295,25 @@ function renderFloorNavigator(totalFloors) {
     }
 
     nav.innerHTML = buttons;
+
+    nav.querySelectorAll('.floor-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetFloor = parseInt(btn.getAttribute('data-floor'), 10);
+            if (currentGeometry && currentGeometry.floorsData && currentGeometry.floorsData[targetFloor]) {
+                currentGeometry.currentFloor = targetFloor;
+                currentGeometry.rooms = currentGeometry.floorsData[targetFloor].rooms.map(r => {
+                    const cached = roomPositionCache[r.id];
+                    if (cached) {
+                        return { ...r, x: cached.x, y: cached.y, w: cached.w, h: cached.h, rot: cached.rot || 0 };
+                    }
+                    return { ...r };
+                });
+                renderFloorNavigator(totalFloors);
+                renderActiveDrawing();
+                renderPopovers();
+            }
+        });
+    });
 }
 
 /* 13. Render Active Drawing (Multi-layer Unified CAD + La Kinh + Cửu Cung) */
@@ -1129,124 +1327,87 @@ function renderActiveDrawing() {
         luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
     }
 
-    cadRenderer.theme = currentThemeMode;
-    cadRenderer.showDimensions = layerState.dimensions;
-    cadRenderer.showFurniture = layerState.furniture;
-    cadRenderer.showAxes = layerState.axes;
-
     const cadLayers = cadRenderer.renderLayers(currentGeometry, {
-        theme: currentThemeMode,
-        selectedRoomId: selectedRoomId,
-        selectedEdgeIndex: selectedEdgeIndex
+        selectedRoomId,
+        selectedEdgeIndex
     });
 
-    const luoPanOverlay = currentFlyingStars
-        ? luoPanRenderer.renderOverlayLayer(
-            currentFlyingStars,
-            cadLayers.houseCenterX,
-            cadLayers.houseCenterY,
-            cadLayers.houseWidth,
-            cadLayers.houseDepth,
-            { theme: currentThemeMode }
-        )
-        : '';
+    const luoPanOverlay = luoPanRenderer.renderOverlayLayer(
+        currentFlyingStars,
+        cadLayers.houseCenterX,
+        cadLayers.houseCenterY,
+        cadLayers.houseWidth,
+        cadLayers.houseDepth
+    );
 
-    const ninePalacesOverlay = currentFlyingStars
-        ? luoPanRenderer.renderNinePalacesLayer(
-            currentFlyingStars,
-            cadLayers.houseMinX,
-            cadLayers.houseMinY,
-            cadLayers.houseWidth,
-            cadLayers.houseDepth,
-            currentFlyingStars.facingPalace
-        )
-        : '';
+    const ninePalacesOverlay = luoPanRenderer.renderNinePalacesLayer(
+        currentFlyingStars,
+        cadLayers.houseMinX,
+        cadLayers.houseMinY,
+        cadLayers.houseWidth,
+        cadLayers.houseDepth,
+        currentFlyingStars ? currentFlyingStars.facingPalace : 9
+    );
 
-    const svgCode = renderUnifiedSvg(
+    const fullSvg = renderUnifiedSvg(
         cadLayers,
         luoPanOverlay,
         ninePalacesOverlay,
-        layerState,
-        { theme: currentThemeMode }
+        layerState
     );
 
-    viewportController.setSvgContent(svgCode);
+    viewportController.setSvgContent(fullSvg);
 }
 
-/* 14. Render 9-Palace Xuan Kong Matrix Display */
+/* 14. Render Flying Stars 3x3 Matrix */
 function renderFlyingStarsMatrix(flyingStars, batTrach) {
-    const matrixContainer = document.getElementById('flyingStarsMatrix');
-    const metaVan = document.getElementById('metaVan');
-    const metaToaHuong = document.getElementById('metaToaHuong');
-    const metaGua = document.getElementById('metaGua');
+    const grid = document.getElementById('flyingStarsGrid');
+    if (!grid || !flyingStars) return;
 
-    if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (${flyingStars.currentYear || 2026})`;
-    if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain} (${flyingStars.chartType === 'chinh_huong' ? 'Hạ Quái' : 'Thế Quái'})`;
-    if (metaGua && batTrach) {
-        const gName = batTrach.guaName || 'Khảm (Thủy)';
-        const gGroup = batTrach.groupName || 'Đông Tứ Mệnh';
-        metaGua.textContent = `${gName} (${gGroup})`;
-    }
+    const order = [4, 9, 2, 3, 5, 7, 8, 1, 6]; // Standard Lo Shu order for reference table
 
-    if (!matrixContainer || !flyingStars.palaces) return;
-
-    const order = currentMatrixOrientMode === 'house'
-        ? getOrientedPalaceGrid(flyingStars.facingPalace)
-        : [4, 9, 2, 3, 5, 7, 8, 1, 6];
-
-    matrixContainer.innerHTML = order.map(pId => {
+    grid.innerHTML = order.map(pId => {
         const pal = flyingStars.palaces[pId];
         if (!pal) return '';
 
-        const isFacingPal = pId === flyingStars.facingPalace;
-        const isSittingPal = pId === flyingStars.sittingPalace;
+        const isFacingPal = (pId === flyingStars.facingPalace);
+        const isSittingPal = (pId === flyingStars.sittingPalace);
 
-        let palTag = PALACE_NAMES[pId] || pId;
-        if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
-        else if (isSittingPal) palTag = `🔵 TỌA (${PALACE_SHORT[pId]})`;
+        let palTag = PALACE_NAMES[pId];
+        if (isFacingPal) palTag = `[HƯỚNG] (${PALACE_SHORT[pId]})`;
+        else if (isSittingPal) palTag = `[TỌA] (${PALACE_SHORT[pId]})`;
 
         return `
-            <div class="palace-cell ${isFacingPal ? 'facing-cell' : (isSittingPal ? 'sitting-cell' : '')}" style="${isFacingPal ? 'border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.08);' : (isSittingPal ? 'border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.08);' : '')}">
-                <div class="time-stars-row" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 5px;">
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#22c55e; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Niên Tinh (Năm)">${pal.nienStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#ef4444; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nguyệt Tinh (Tháng)">${pal.nguyetStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nhật Tinh (Ngày)">${pal.nhatStar}</span>
-                    <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:900; text-align:center;" title="Thời Tinh (Giờ)">${pal.thoiStar}</span>
+            <div class="palace-cell">
+                <div class="palace-name-badge">${palTag}</div>
+                <div class="palace-stars-trio">
+                    <span class="star-badge-son" title="Sơn Tinh (Tọa)">${pal.sonStar}</span>
+                    <span class="star-badge-van" title="Vận Tinh">${pal.vanStar}</span>
+                    <span class="star-badge-huong" title="Hướng Tinh">${pal.huongStar}</span>
                 </div>
-                <div class="palace-stars-trio" style="display: flex; justify-content: space-around; align-items: center; margin: 4px 0;">
-                    <span class="star-badge-son" style="color: #38bdf8; font-weight: 900; font-size: 1.15rem;" title="Sơn Tinh (Trái)">${pal.sonStar}</span>
-                    <span class="star-badge-van" style="font-size: 1.5rem; font-weight: 900; color: #ffffff;" title="Vận Tinh (Giữa)">${pal.vanStar}</span>
-                    <span class="star-badge-huong" style="color: #f87171; font-weight: 900; font-size: 1.15rem;" title="Hướng Tinh (Phải)">${pal.huongStar}</span>
-                </div>
-                <span class="palace-name-badge" style="font-size: 0.72rem; font-weight: 800; color: ${isFacingPal ? '#f87171' : (isSittingPal ? '#38bdf8' : '#fbbf24')};">${palTag}</span>
             </div>
         `;
     }).join('');
 }
 
-/* 15. Render Detailed Report */
+/* 15. Render Detailed Architectural & Spatial Report */
 function renderDetailedReport(spatialResult) {
-    const container = document.getElementById('detailedReportContainer');
+    const container = document.getElementById('palaceReportsContainer');
     if (!container || !spatialResult || !spatialResult.spatialPalaces) return;
 
     const palaces = Object.values(spatialResult.spatialPalaces);
-
     container.innerHTML = palaces.map(p => {
-        const isGood = p.grade === 'CÁT' || p.grade === 'ĐẠI CÁT';
         return `
             <div class="report-card">
                 <div class="report-card-header">
-                    <span class="report-palace-title">${p.palaceName} (${p.directionName})</span>
-                    <span class="audit-badge ${isGood ? 'good' : 'bad'}">${p.grade}</span>
+                    <span class="report-palace-title">${p.palaceName}</span>
+                    <span class="audit-badge ${p.grade === 'ĐẠI CÁT' || p.grade === 'CÁT' ? 'good' : 'bad'}">${p.grade}</span>
                 </div>
-                <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
-                    <strong>Bộ Sao:</strong> Sơn ${p.sonStar} (Trái) · Hướng ${p.huongStar} (Phải) · Vận ${p.vanStar} (Giữa) · Niên ${p.nienStar}
-                </div>
-                <div style="font-size: 0.82rem; color: #fbbf24; line-height: 1.4;">
+                <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.4;">
                     ${p.analysis}
                 </div>
-                <div style="font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">
-                    <strong>Đề xuất bố trí:</strong> ${p.remedy}
+                <div style="font-size: 0.8rem; color: var(--gold-light); font-weight: 600;">
+                    Bố trí: ${p.remedy}
                 </div>
             </div>
         `;
