@@ -1,6 +1,7 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v3.5
-// Tự động xoay Cửu Cung theo Hướng Nhà, Chú thích trực quan & CAD Siêu Cấp
+// Phong Thủy & Kiến Trúc Controller Script v4.0
+// Tự động xoay Cửu Cung theo Hướng Nhà, La Kinh 360°/24 Sơn/72 Long,
+// Đa Dạng Footprint (Rectangle, L-Shape, U-Shape, Stepped, Polygon)
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // ============================================================
 
@@ -40,7 +41,8 @@ const layerState = {
     dimensions: true,
     furniture: true,
     axes: true,
-    compass: true
+    compass: true,
+    compassOverlay: true
 };
 
 const dndPlacements = {
@@ -405,8 +407,10 @@ function initToolbar() {
     if (btnToggleCompass) {
         btnToggleCompass.addEventListener('click', () => {
             layerState.compass = !layerState.compass;
+            layerState.compassOverlay = layerState.compass;
             btnToggleCompass.classList.toggle('active', layerState.compass);
             cadRenderer.showCompass = layerState.compass;
+            cadRenderer.showCompassOverlay = layerState.compassOverlay;
             renderActiveDrawing();
         });
     }
@@ -477,7 +481,7 @@ function initActionButtons() {
     }
 
     const liveInputs = [
-        'inputWidth', 'inputLength', 'inputFloors',
+        'inputShape', 'inputWidth', 'inputLength', 'inputFloors',
         'inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour',
         'inputOwnerYear', 'inputOwnerGender',
         'inputBedCount', 'inputWcCount', 'inputHasAltar',
@@ -505,6 +509,7 @@ function handleCalculate(shouldScroll = false) {
         resultsSection.style.display = 'block';
     }
 
+    const shape = document.getElementById('inputShape')?.value || 'RECTANGLE';
     let widthM = parseFloat(document.getElementById('inputWidth')?.value) || 5.0;
     let lengthM = parseFloat(document.getElementById('inputLength')?.value) || 16.0;
 
@@ -530,8 +535,9 @@ function handleCalculate(shouldScroll = false) {
     const toilets = parseInt(document.getElementById('inputWcCount')?.value, 10) || 2;
     const hasAltar = document.getElementById('inputHasAltar')?.value || '1';
 
-    // 1. Generate Parametric Floorplan Geometry
+    // 1. Generate Parametric Floorplan Geometry with Shape
     currentGeometry = generateParametricFloorplan({
+        shape,
         widthM,
         lengthM,
         floors,

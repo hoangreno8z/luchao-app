@@ -91,6 +91,16 @@
             <!-- Main Form Controls Grid -->
             <div class="form-grid">
                 <div class="form-group">
+                    <label class="form-label">Hình Dạng Khu Đất / Nhà</label>
+                    <select id="inputShape" class="form-control">
+                        <option value="RECTANGLE" selected>🔲 Hình Chữ Nhật (Tiêu Chuẩn)</option>
+                        <option value="L_SHAPE">📐 Nhà Chữ L (Sân Trước / Khuyết Góc)</option>
+                        <option value="U_SHAPE">🏢 Nhà Chữ U (Sân Vườn / Giếng Trời Giữa)</option>
+                        <option value="STEPPED">🪜 Nhà Giật Cấp (Z-Shape / Thụt Thò)</option>
+                        <option value="CONCAVE_POLYGON">🔶 Hình Đa Giác Lõm / Vát Góc</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Chiều Ngang (m)</label>
                     <input type="number" id="inputWidth" class="form-control" value="5.0" min="3.0" max="30.0" step="0.1">
                 </div>

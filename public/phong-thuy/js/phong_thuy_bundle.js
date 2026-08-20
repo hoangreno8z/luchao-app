@@ -1,12 +1,12 @@
 // ============================================================
-// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v3.4
-// Kiến trúc chuẩn 4 lớp, SVD Rank Jacobian, Levenberg-Marquardt,
-// Đồ họa CAD Siêu Chi Tiết & Tự Động Xoay Cửu Cung
-// Tác giả: Dịch Sư Nguyễn Huy Hoàng
+// PHONG THỦY & ARCHITECTURAL CAD FULL ENGINE BUNDLE v4.0
+// Tác giả: Dịch Sư Nguyễn Huy Hoàng & Computational Geometry Core
+// Hỗ trợ: Đa dạng Footprint (Rectangle, L-Shape, U-Shape, Stepped, Polygon),
+// La Kinh Chuẩn 360° / 24 Sơn / 72 Long / 8 Quái, Bản Vẽ CAD Siêu Chi Tiết
 // ============================================================
 
 // ------------------------------------------------------------
-// 1. DATA LAYER (24 Sơn, 60 Long, Âm Dương Tam Nguyên Long)
+// 1. DATA LAYER (24 Sơn, 60 Long, 72 Phân Khu, Bát Quái)
 // ------------------------------------------------------------
 export const MOUNTAINS_24_DICT = {
     'Nhâm': { name: 'Nhâm', trigram: 1, type: 0, yinYang: 1,  center: 345, startDeg: 337.5, midDeg: 345, endDeg: 352.5, element: 'Thủy', hanh: 'Thủy', nguyenLong: 'Địa', amDuong: '+' },
@@ -73,6 +73,25 @@ export const SIXTY_DRAGONS = CAN_CHI_60.map((canChi, index) => ({
     endDeg: (337.5 + (index + 1) * 6) % 360
 }));
 
+// 72 Phân Khu / 72 Long (mỗi sơn 15° chia làm 3 phân khu 5°)
+export const SEVENTY_TWO_SECTORS = [];
+for (let i = 0; i < 72; i++) {
+    const centerDeg = i * 5;
+    const startDeg = (centerDeg - 2.5 + 360) % 360;
+    const endDeg = (centerDeg + 2.5) % 360;
+    const mntIdx = Math.floor((i + 1.5) / 3) % 24;
+    const mntName = MOUNTAINS_24[mntIdx]?.name || 'Tý';
+    SEVENTY_TWO_SECTORS.push({
+        id: i + 1,
+        index72: i,
+        name: `${mntName}-${(i % 3) + 1}`,
+        mountainName: mntName,
+        centerDeg,
+        startDeg,
+        endDeg
+    });
+}
+
 export const PALACE_NAMES = {
     1: 'Khảm (Bắc)',
     2: 'Khôn (Tây Nam)',
@@ -98,7 +117,6 @@ export const PALACE_SHORT = {
 };
 
 export const FLYING_PATH = [5, 6, 7, 8, 9, 1, 2, 3, 4];
-export const LO_SHU_PATHS = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 
 // ------------------------------------------------------------
 // 2. TOÁN HỌC TỌA ĐỘ CỰC & LA BÀN GPU
@@ -285,6 +303,9 @@ export function rotatePoint(x, y, cx, cy, angleDeg) {
     };
 }
 
+// ------------------------------------------------------------
+// 3. LA KINH SVG RENDERER (360° / 24 SƠN / 72 LONG / 8 QUÁI)
+// ------------------------------------------------------------
 export class CompassSvgRenderer {
     constructor(options = {}) {
         this.size = options.size || 500;
@@ -295,19 +316,19 @@ export class CompassSvgRenderer {
 
     buildDialGraphics() {
         const c = this.center;
-        const ring24 = generateCompassPaths(MOUNTAINS_24, 175, 215, c, c);
-        const ring60 = generateCompassPaths(SIXTY_DRAGONS, 140, 175, c, c);
+        const ring24 = generateCompassPaths(MOUNTAINS_24, 180, 215, c, c);
+        const ring60 = generateCompassPaths(SIXTY_DRAGONS, 150, 180, c, c);
         const trigrams8 = [
-            { name: 'KHẢM', startDeg: 337.5, midDeg: 0, endDeg: 22.5, hanh: 'Thủy' },
-            { name: 'CẤN', startDeg: 22.5, midDeg: 45, endDeg: 67.5, hanh: 'Thổ' },
-            { name: 'CHẤN', startDeg: 67.5, midDeg: 90, endDeg: 112.5, hanh: 'Mộc' },
-            { name: 'TỐN', startDeg: 112.5, midDeg: 135, endDeg: 157.5, hanh: 'Mộc' },
-            { name: 'LY', startDeg: 157.5, midDeg: 180, endDeg: 202.5, hanh: 'Hỏa' },
-            { name: 'KHÔN', startDeg: 202.5, midDeg: 225, endDeg: 247.5, hanh: 'Thổ' },
-            { name: 'ĐOÀI', startDeg: 247.5, midDeg: 270, endDeg: 292.5, hanh: 'Kim' },
-            { name: 'CÀN', startDeg: 292.5, midDeg: 315, endDeg: 337.5, hanh: 'Kim' }
+            { name: 'KHẢM (THỦY)', startDeg: 337.5, midDeg: 0, endDeg: 22.5, hanh: 'Thủy' },
+            { name: 'CẤN (THỔ)', startDeg: 22.5, midDeg: 45, endDeg: 67.5, hanh: 'Thổ' },
+            { name: 'CHẤN (MỘC)', startDeg: 67.5, midDeg: 90, endDeg: 112.5, hanh: 'Mộc' },
+            { name: 'TỐN (MỘC)', startDeg: 112.5, midDeg: 135, endDeg: 157.5, hanh: 'Mộc' },
+            { name: 'LY (HỎA)', startDeg: 157.5, midDeg: 180, endDeg: 202.5, hanh: 'Hỏa' },
+            { name: 'KHÔN (THỔ)', startDeg: 202.5, midDeg: 225, endDeg: 247.5, hanh: 'Thổ' },
+            { name: 'ĐOÀI (KIM)', startDeg: 247.5, midDeg: 270, endDeg: 292.5, hanh: 'Kim' },
+            { name: 'CÀN (KIM)', startDeg: 292.5, midDeg: 315, endDeg: 337.5, hanh: 'Kim' }
         ];
-        const ring8 = generateCompassPaths(trigrams8, 105, 140, c, c);
+        const ring8 = generateCompassPaths(trigrams8, 105, 150, c, c);
 
         let degLines = [];
         for (let i = 0; i < 360; i += 5) {
@@ -321,16 +342,16 @@ export class CompassSvgRenderer {
         const combinedPathD = `${ring24.pathD} ${ring60.pathD} ${ring8.pathD} ${degLines.join(' ')}`;
 
         const allLabels = [
-            ...ring24.labels.map(l => `<text x="${l.x}" y="${l.y}" transform="rotate(${l.rotation}, ${l.x}, ${l.y})" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="700" fill="#f59e0b">${l.text}</text>`),
+            ...ring24.labels.map(l => `<text x="${l.x}" y="${l.y}" transform="rotate(${l.rotation}, ${l.x}, ${l.y})" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="800" fill="#f59e0b">${l.text}</text>`),
             ...ring60.labels.map(l => `<text x="${l.x}" y="${l.y}" transform="rotate(${l.rotation}, ${l.x}, ${l.y})" text-anchor="middle" dominant-baseline="central" font-size="6.5" font-weight="600" fill="#94a3b8">${l.text}</text>`),
-            ...ring8.labels.map(l => `<text x="${l.x}" y="${l.y}" transform="rotate(${l.rotation}, ${l.x}, ${l.y})" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="900" fill="#fbbf24">${l.text}</text>`)
+            ...ring8.labels.map(l => `<text x="${l.x}" y="${l.y}" transform="rotate(${l.rotation}, ${l.x}, ${l.y})" text-anchor="middle" dominant-baseline="central" font-size="9.5" font-weight="900" fill="#fbbf24">${l.text}</text>`)
         ].join('');
 
         this.cachedDialSvg = `
             <circle cx="${c}" cy="${c}" r="230" fill="#0b0f19" stroke="#d97706" stroke-width="2" />
             <circle cx="${c}" cy="${c}" r="215" fill="none" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1" />
-            <circle cx="${c}" cy="${c}" r="175" fill="#0f172a" stroke="rgba(217, 119, 6, 0.5)" stroke-width="1" />
-            <circle cx="${c}" cy="${c}" r="140" fill="#0b0f19" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1" />
+            <circle cx="${c}" cy="${c}" r="180" fill="#0f172a" stroke="rgba(217, 119, 6, 0.5)" stroke-width="1" />
+            <circle cx="${c}" cy="${c}" r="150" fill="#0b0f19" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1" />
             <circle cx="${c}" cy="${c}" r="105" fill="#090d16" stroke="rgba(217, 119, 6, 0.7)" stroke-width="1.5" />
             <circle cx="${c}" cy="${c}" r="55" fill="#020617" stroke="#d97706" stroke-width="2" />
             <path d="${combinedPathD}" stroke="rgba(217, 119, 6, 0.45)" stroke-width="0.75" />
@@ -344,7 +365,7 @@ export class CompassSvgRenderer {
 }
 
 // ------------------------------------------------------------
-// 3. HUYỀN KHÔNG PHI TINH THẨM THỊ HỌC
+// 4. HUYỀN KHÔNG PHI TINH THẨM THỊ HỌC
 // ------------------------------------------------------------
 export function wrapStar(n) {
     let s = ((n - 1) % 9 + 9) % 9 + 1;
@@ -514,9 +535,6 @@ export function calculateFlyingStars(params = {}) {
     };
 }
 
-/**
- * Lấy thứ tự 9 cung xoay theo hướng nhà (Cung Hướng nằm chính giữa hàng trên, Cung Tọa nằm chính giữa hàng dưới)
- */
 export function getOrientedPalaceGrid(facingPalaceId) {
     const ring = [1, 8, 3, 4, 9, 2, 7, 6];
     const fIdx = ring.indexOf(facingPalaceId);
@@ -532,7 +550,7 @@ export function getOrientedPalaceGrid(facingPalaceId) {
 }
 
 // ------------------------------------------------------------
-// 4. BÁT TRẠCH & LỖ BAN
+// 5. BÁT TRẠCH & LỖ BAN
 // ------------------------------------------------------------
 export function calculateGua(birthYear, gender = 'nam') {
     const isMale = (gender === 'nam' || gender === 1 || gender === '1');
@@ -588,10 +606,11 @@ export function calculateGua(birthYear, gender = 'nam') {
 }
 
 // ------------------------------------------------------------
-// 5. PARAMETRIC FLOORPLAN GENERATOR
+// 6. PARAMETRIC FOOTPRINT & ARCHITECTURAL CAD GENERATOR
 // ------------------------------------------------------------
 export function generateParametricFloorplan(params = {}) {
     const {
+        shape = 'RECTANGLE',
         widthM = 5.0,
         lengthM = 16.0,
         floors = 2,
@@ -607,6 +626,61 @@ export function generateParametricFloorplan(params = {}) {
     const colSize = 220;
     const partThick = 110;
     const plansByFloor = [];
+
+    // Footprint Polygon Outline based on Shape
+    let footprintPoints = [];
+    if (shape === 'L_SHAPE') {
+        const cutW = Math.round(W * 0.4);
+        const cutD = Math.round(D * 0.45);
+        footprintPoints = [
+            { x: 0, y: 0 },
+            { x: W, y: 0 },
+            { x: W, y: D - cutD },
+            { x: W - cutW, y: D - cutD },
+            { x: W - cutW, y: D },
+            { x: 0, y: D }
+        ];
+    } else if (shape === 'U_SHAPE') {
+        const armW = Math.round(W * 0.32);
+        const slotD = Math.round(D * 0.38);
+        footprintPoints = [
+            { x: 0, y: 0 },
+            { x: W, y: 0 },
+            { x: W, y: D },
+            { x: W - armW, y: D },
+            { x: W - armW, y: D - slotD },
+            { x: armW, y: D - slotD },
+            { x: armW, y: D },
+            { x: 0, y: D }
+        ];
+    } else if (shape === 'STEPPED') {
+        const stepW = Math.round(W * 0.25);
+        const stepD = Math.round(D * 0.35);
+        footprintPoints = [
+            { x: 0, y: 0 },
+            { x: W - stepW, y: 0 },
+            { x: W - stepW, y: stepD },
+            { x: W, y: stepD },
+            { x: W, y: D },
+            { x: 0, y: D }
+        ];
+    } else if (shape === 'CONCAVE_POLYGON') {
+        footprintPoints = [
+            { x: 0, y: 0 },
+            { x: W, y: Math.round(D * 0.15) },
+            { x: Math.round(W * 0.85), y: D },
+            { x: Math.round(W * 0.3), y: Math.round(D * 0.8) },
+            { x: 0, y: Math.round(D * 0.9) }
+        ];
+    } else {
+        // RECTANGLE
+        footprintPoints = [
+            { x: 0, y: 0 },
+            { x: W, y: 0 },
+            { x: W, y: D },
+            { x: 0, y: D }
+        ];
+    }
 
     const numXSpans = isWideHouse ? 3 : 2;
     const numYSpans = isWideHouse ? 2 : 3;
@@ -638,10 +712,20 @@ export function generateParametricFloorplan(params = {}) {
         const walls = [];
         let entrancePorch = null;
 
-        walls.push({ id: 'w_front', x1: 0, y1: 0, x2: W, y2: 0, thickness: 220, type: 'exterior' });
-        walls.push({ id: 'w_right', x1: W, y1: 0, x2: W, y2: D, thickness: 220, type: 'exterior' });
-        walls.push({ id: 'w_rear', x1: W, y1: D, x2: 0, y2: D, thickness: 220, type: 'exterior' });
-        walls.push({ id: 'w_left', x1: 0, y1: D, x2: 0, y2: 0, thickness: 220, type: 'exterior' });
+        // Build exterior perimeter walls from footprint points
+        for (let i = 0; i < footprintPoints.length; i++) {
+            const p1 = footprintPoints[i];
+            const p2 = footprintPoints[(i + 1) % footprintPoints.length];
+            walls.push({
+                id: `w_ext_${i}`,
+                x1: p1.x,
+                y1: p1.y,
+                x2: p2.x,
+                y2: p2.y,
+                thickness: 220,
+                type: 'exterior'
+            });
+        }
 
         if (f === 1) {
             const porchW = Math.min(3600, W * 0.6);
@@ -750,6 +834,8 @@ export function generateParametricFloorplan(params = {}) {
         plansByFloor.push({
             floorIndex: f,
             floorName: f === 1 ? 'MẶT BẰNG TẦNG TRỆT' : `MẶT BẰNG TẦNG ${f}`,
+            shape,
+            footprintPoints,
             widthMm: W,
             depthMm: D,
             axesX,
@@ -765,6 +851,8 @@ export function generateParametricFloorplan(params = {}) {
     }
 
     return {
+        shape,
+        footprintPoints,
         widthMm: W,
         depthMm: D,
         totalFloors,
@@ -783,7 +871,7 @@ export function generateParametricFloorplan(params = {}) {
 }
 
 // ------------------------------------------------------------
-// 6. ARCHITECTURAL CAD SVG RENDERER (SIÊU CHI TIẾT & CHUYÊN NGHIỆP)
+// 7. ARCHITECTURAL CAD SVG RENDERER (SIÊU CHI TIẾT & LA KINH OVERLAY)
 // ------------------------------------------------------------
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
@@ -792,6 +880,7 @@ export class ArchitecturalCADRenderer {
         this.showFurniture = options.showFurniture !== false;
         this.showAxes = options.showAxes !== false;
         this.showCompass = options.showCompass !== false;
+        this.showCompassOverlay = options.showCompassOverlay === true;
         this.isLandscape = options.isLandscape === true;
     }
 
@@ -876,23 +965,17 @@ export class ArchitecturalCADRenderer {
                     furnitureSvg += `
                         <g class="cad-sofa">
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="40" fill="${isWhite ? 'rgba(2,132,199,0.08)' : 'rgba(56,189,248,0.1)'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="12"/>
-                            <!-- Ghế Băng Chính -->
                             <rect x="${f.x + 80}" y="${f.y + 80}" width="${f.width - 160}" height="${f.height * 0.4}" rx="20" fill="${isWhite ? '#e0f2fe' : '#0369a1'}" stroke="${isWhite ? '#0284c7' : '#38bdf8'}" stroke-width="8"/>
-                            <!-- Bàn Trà Tròn -->
                             <ellipse cx="${f.x + f.width / 2}" cy="${f.y + f.height * 0.72}" rx="${f.width * 0.22}" ry="${f.height * 0.16}" fill="${isWhite ? '#fef3c7' : '#78350f'}" stroke="#f59e0b" stroke-width="10"/>
                         </g>
                     `;
                 } else if (f.type === 'bed_master') {
                     furnitureSvg += `
                         <g class="cad-bed">
-                            <!-- Nệm Giường -->
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="30" fill="${isWhite ? '#fffbeb' : '#1e1b4b'}" stroke="#d97706" stroke-width="12"/>
-                            <!-- Đầu Giường -->
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="140" fill="#d97706"/>
-                            <!-- Gối Đôi -->
                             <rect x="${f.x + f.width * 0.1}" y="${f.y + 180}" width="${f.width * 0.35}" height="280" rx="20" fill="${isWhite ? '#ffffff' : '#312e81'}" stroke="#d97706" stroke-width="8"/>
                             <rect x="${f.x + f.width * 0.55}" y="${f.y + 180}" width="${f.width * 0.35}" height="280" rx="20" fill="${isWhite ? '#ffffff' : '#312e81'}" stroke="#d97706" stroke-width="8"/>
-                            <!-- Chăn Ga Gấp -->
                             <path d="M ${f.x + 40} ${f.y + 540} L ${f.x + f.width - 40} ${f.y + 540} L ${f.x + f.width - 40} ${f.y + f.height - 30} L ${f.x + 40} ${f.y + f.height - 30} Z" fill="${isWhite ? 'rgba(217,119,6,0.12)' : 'rgba(245,158,11,0.15)'}" stroke="#d97706" stroke-width="6"/>
                         </g>
                     `;
@@ -900,7 +983,6 @@ export class ArchitecturalCADRenderer {
                     furnitureSvg += `
                         <g class="cad-dining">
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="50" fill="${isWhite ? '#f0fdf4' : '#064e3b'}" stroke="#10b981" stroke-width="12"/>
-                            <!-- Ghế Ăn Bao Quanh -->
                             <circle cx="${f.x + f.width * 0.25}" cy="${f.y - 60}" r="65" fill="#10b981"/>
                             <circle cx="${f.x + f.width * 0.75}" cy="${f.y - 60}" r="65" fill="#10b981"/>
                             <circle cx="${f.x + f.width * 0.25}" cy="${f.y + f.height + 60}" r="65" fill="#10b981"/>
@@ -911,7 +993,6 @@ export class ArchitecturalCADRenderer {
                     furnitureSvg += `
                         <g class="cad-wc">
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" rx="25" fill="${isWhite ? '#f8fafc' : '#0f172a'}" stroke="#64748b" stroke-width="10"/>
-                            <!-- Bồn Cầu Sứ -->
                             <rect x="${f.x + 40}" y="${f.y + 40}" width="${f.width * 0.5}" height="140" rx="15" fill="#cbd5e1" stroke="#475569" stroke-width="6"/>
                             <ellipse cx="${f.x + 40 + f.width * 0.25}" cy="${f.y + 300}" rx="${f.width * 0.22}" ry="120" fill="#ffffff" stroke="#475569" stroke-width="8"/>
                         </g>
@@ -920,7 +1001,6 @@ export class ArchitecturalCADRenderer {
                     furnitureSvg += `
                         <g class="cad-altar">
                             <rect x="${f.x}" y="${f.y}" width="${f.width}" height="${f.height}" fill="${isWhite ? '#fef2f2' : '#450a0a'}" stroke="#dc2626" stroke-width="16"/>
-                            <!-- Lư Hương Tròn -->
                             <circle cx="${f.x + f.width / 2}" cy="${f.y + f.height / 2}" r="120" fill="#eab308" stroke="#dc2626" stroke-width="10"/>
                             <circle cx="${f.x + f.width * 0.2}" cy="${f.y + f.height / 2}" r="60" fill="#eab308"/>
                             <circle cx="${f.x + f.width * 0.8}" cy="${f.y + f.height / 2}" r="60" fill="#eab308"/>
@@ -936,7 +1016,6 @@ export class ArchitecturalCADRenderer {
                         furnitureSvg += `<line x1="${f.x}" y1="${stepY}" x2="${f.x + f.width}" y2="${stepY}" stroke="#94a3b8" stroke-width="8"/>`;
                     }
                     furnitureSvg += `
-                            <!-- Mũi Tên Hướng Đi Lên -->
                             <line x1="${f.x + f.width / 2}" y1="${f.y + f.height - 150}" x2="${f.x + f.width / 2}" y2="${f.y + 200}" stroke="#0284c7" stroke-width="16" stroke-linecap="round"/>
                             <polygon points="${f.x + f.width / 2}, ${f.y + 80} ${f.x + f.width / 2 - 60}, ${f.y + 220} ${f.x + f.width / 2 + 60}, ${f.y + 220}" fill="#0284c7"/>
                             <text x="${f.x + f.width / 2 + 100}" y="${f.y + f.height / 2}" font-size="85" font-weight="900" fill="#0284c7">LÊN (21 BẬC)</text>
@@ -969,9 +1048,7 @@ export class ArchitecturalCADRenderer {
                 doorsSvg += `
                     <g class="cad-door">
                         <line x1="${d.x}" y1="${d.y}" x2="${d.x + d.width}" y2="${d.y}" stroke="${bgColor}" stroke-width="48"/>
-                        <!-- Cánh Cửa Mở -->
                         <line x1="${d.x}" y1="${d.y}" x2="${d.x}" y2="${d.y + d.width}" stroke="${dimColor}" stroke-width="16"/>
-                        <!-- Cung Quét Mở Cửa -->
                         <path d="M ${d.x} ${d.y + d.width} A ${d.width} ${d.width} 0 0 0 ${d.x + d.width} ${d.y}" fill="none" stroke="${dimColor}" stroke-width="10" stroke-dasharray="25,15"/>
                     </g>
                 `;
@@ -1016,7 +1093,29 @@ export class ArchitecturalCADRenderer {
             `;
         }
 
-        // 10. Title Block
+        // 10. Direct Compass Overlay on Floorplan (La Kinh 24 Sơn / 72 Long phủ trực tiếp lên mặt bằng)
+        let compassOverlaySvg = '';
+        if (this.showCompassOverlay) {
+            const cx = W / 2;
+            const cy = D / 2;
+            const radius = Math.min(W, D) * 0.8;
+            const facingDeg = options.facingDegree || 180;
+
+            compassOverlaySvg = `
+                <g id="layer-compass-plan-overlay" transform="translate(${cx}, ${cy}) rotate(${-facingDeg + 180})" opacity="0.35">
+                    <circle cx="0" cy="0" r="${radius}" fill="none" stroke="#f59e0b" stroke-width="16" stroke-dasharray="30,15"/>
+                    <circle cx="0" cy="0" r="${radius * 0.75}" fill="none" stroke="#38bdf8" stroke-width="10"/>
+                    <circle cx="0" cy="0" r="${radius * 0.45}" fill="rgba(15,23,42,0.6)" stroke="#f59e0b" stroke-width="8"/>
+                    <!-- 8 Cung Bát Quái Lines -->
+                    <line x1="0" y1="-${radius}" x2="0" y2="${radius}" stroke="#ef4444" stroke-width="12"/>
+                    <line x1="-${radius}" y1="0" x2="${radius}" y2="0" stroke="#0284c7" stroke-width="12"/>
+                    <line x1="-${radius * 0.707}" y1="-${radius * 0.707}" x2="${radius * 0.707}" y2="${radius * 0.707}" stroke="#f59e0b" stroke-width="8"/>
+                    <line x1="-${radius * 0.707}" y1="${radius * 0.707}" x2="${radius * 0.707}" y2="-${radius * 0.707}" stroke="#f59e0b" stroke-width="8"/>
+                </g>
+            `;
+        }
+
+        // 11. Title Block
         const titleBlockSvg = `
             <g id="cad-title-block" transform="translate(${viewX + 120}, ${viewY + viewH - 340})">
                 <rect x="0" y="0" width="${Math.min(viewW - 240, 5200)}" height="260" fill="${isWhite ? '#f8fafc' : '#0b0f19'}" stroke="${titleBorder}" stroke-width="14" rx="12"/>
@@ -1033,9 +1132,7 @@ export class ArchitecturalCADRenderer {
             <rect width="600" height="600" fill="none" stroke="${gridLineColor}" stroke-width="6"/>
         </pattern>
     </defs>
-    <!-- Khung Viền Bản Vẽ -->
     <rect x="${viewX + 60}" y="${viewY + 60}" width="${viewW - 120}" height="${viewH - 120}" fill="none" stroke="${titleBorder}" stroke-width="24"/>
-    <!-- Lát Gạch Nền -->
     <rect x="0" y="0" width="${W}" height="${D}" fill="url(#floorTileGrid)"/>
     <g id="layer-grid-axes">${axesSvg}</g>
     <g id="layer-porch">${porchSvg}</g>
@@ -1045,6 +1142,7 @@ export class ArchitecturalCADRenderer {
     <g id="layer-openings">${doorsSvg}</g>
     <g id="layer-rooms">${roomsSvg}</g>
     <g id="layer-dimensions">${dimsSvg}</g>
+    ${compassOverlaySvg}
     ${northArrowSvg}
     ${titleBlockSvg}
 </svg>
@@ -1053,7 +1151,7 @@ export class ArchitecturalCADRenderer {
 }
 
 // ------------------------------------------------------------
-// 7. FENG SHUI SPATIAL ENGINE & OVERLAY RENDERER (CỬU CUNG PHỦ ĐỒ HỌA)
+// 8. FENG SHUI SPATIAL ENGINE & OVERLAY RENDERER (CỬU CUNG PHỦ ĐỒ HỌA)
 // ------------------------------------------------------------
 export function validatePalace(palace) {
     const requiredFields = [
@@ -1201,16 +1299,12 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
 
         const timeBadgesSvg = `
             <g class="time-star-badges">
-                <!-- Niên Tinh -->
                 <circle cx="${cx - badgeSpacing * 1.5}" cy="${timeBadgesY}" r="50" fill="#22c55e" stroke="#15803d" stroke-width="6"/>
                 <text x="${cx - badgeSpacing * 1.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nienStar}</text>
-                <!-- Nguyệt Tinh -->
                 <circle cx="${cx - badgeSpacing * 0.5}" cy="${timeBadgesY}" r="50" fill="#ef4444" stroke="#b91c1c" stroke-width="6"/>
                 <text x="${cx - badgeSpacing * 0.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nguyetStar}</text>
-                <!-- Nhật Tinh -->
                 <circle cx="${cx + badgeSpacing * 0.5}" cy="${timeBadgesY}" r="50" fill="#3b82f6" stroke="#1d4ed8" stroke-width="6"/>
                 <text x="${cx + badgeSpacing * 0.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#ffffff">${nhatStar}</text>
-                <!-- Thời Tinh -->
                 <circle cx="${cx + badgeSpacing * 1.5}" cy="${timeBadgesY}" r="50" fill="#eab308" stroke="#ca8a04" stroke-width="6"/>
                 <text x="${cx + badgeSpacing * 1.5}" y="${timeBadgesY + 18}" text-anchor="middle" font-size="50" font-weight="900" fill="#000000">${thoiStar}</text>
             </g>
@@ -1220,14 +1314,9 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
             <g class="fengshui-palace-cell">
                 <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cellFill}" stroke="${cellStroke}" stroke-width="14" stroke-dasharray="40,20"/>
                 ${timeBadgesSvg}
-                <!-- Bộ 3 Sao Huyền Không Cửu Cung -->
-                <!-- Sơn Tinh (Trái - Xanh Dương) -->
                 <text x="${cx - w * 0.28}" y="${cy + 40}" text-anchor="middle" font-size="180" font-weight="900" fill="#38bdf8">${sonStar}</text>
-                <!-- Vận Tinh (Giữa - Chữ số Lớn) -->
                 <text x="${cx}" y="${cy + 70}" text-anchor="middle" font-size="260" font-weight="900" fill="${isWhite ? '#0f172a' : '#ffffff'}">${vanStar}</text>
-                <!-- Hướng Tinh (Phải - Đỏ) -->
                 <text x="${cx + w * 0.28}" y="${cy + 40}" text-anchor="middle" font-size="180" font-weight="900" fill="#ef4444">${huongStar}</text>
-                <!-- Nhãn Hướng & Cát Hung -->
                 <rect x="${cx - 300}" y="${y + h - 130}" width="600" height="90" rx="20" fill="${isWhite ? '#ffffff' : '#0f172a'}" stroke="${cellStroke}" stroke-width="6"/>
                 <text x="${cx}" y="${y + h - 68}" text-anchor="middle" font-size="65" font-weight="900" fill="${isWhite ? '#b45309' : '#fbbf24'}">${directionName} · ${grade}</text>
             </g>
@@ -1262,7 +1351,7 @@ export function renderNinePalacesOverlaySvg(spatialResult, isWhite = true) {
 }
 
 // ------------------------------------------------------------
-// 8. SVG VIEWPORT CONTROLLER
+// 9. SVG VIEWPORT CONTROLLER
 // ------------------------------------------------------------
 export class SvgViewportController {
     constructor(containerElement) {
