@@ -91,8 +91,7 @@ function bootstrapApp() {
     initFacingDegreeControls();
     initDragAndDropPalaces();
     initViewport();
-    initToolbar();
-    initFloatingHud();
+    initFloatingToolbar();
     initActionButtons();
     initCadInteractiveEngine();
 
@@ -546,29 +545,250 @@ function renderSmartPopup() {
     popup.style.display = 'none';
 }
 
+function renderPopovers() {
+    const edgesList = document.getElementById('popoverEdgesList');
+    const roomsList = document.getElementById('popoverRoomsList');
+    if (!currentGeometry) return;
+
+    if (edgesList) {
+        const pts = currentGeometry.footprintPoints || [];
+        if (pts.length < 2) {
+            edgesList.innerHTML = '<span style="font-size:0.75rem; color:#94a3b8; padding: 4px;">Không có cạnh</span>';
+        } else {
+            edgesList.innerHTML = pts.map((p1, idx) => {
+                const p2 = pts[(idx + 1) % pts.length];
+                const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
+                const isSel = selectedEdgeIndex === idx;
+                return `
+                    <div class="popover-item ${isSel ? 'active' : ''}" data-edge-idx="${idx}">
+                        <span>📏 Cạnh ${idx + 1} (${p1.name || ''} ➔ ${p2.name || ''})</span>
+                        <span class="item-badge">${len} mm</span>
+                    </div>
+                `;
+            }).join('');
+
+            edgesList.querySelectorAll('.popover-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const idx = parseInt(item.getAttribute('data-edge-idx'), 10);
+                    selectEdge(idx, true);
+                });
+            });
+        }
+    }
+
+    if (roomsList) {
+        const rooms = currentGeometry.rooms || [];
+        if (rooms.length === 0) {
+            roomsList.innerHTML = '<span style="font-size:0.75rem; color:#94a3b8; padding: 4px;">Chưa có phòng nào</span>';
+        } else {
+            roomsList.innerHTML = rooms.map(r => {
+                const isSel = selectedRoomId === r.id;
+                return `
+                    <div class="popover-item ${isSel ? 'active' : ''}" data-room-id="${r.id}">
+                        <span>${r.name}</span>
+                        <span class="item-badge">${r.w} × ${r.h}</span>
+                    </div>
+                `;
+            }).join('');
+
+            roomsList.querySelectorAll('.popover-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const rId = item.getAttribute('data-room-id');
+                    selectRoom(rId, true);
+                });
+            });
+        }
+    }
+}
+
 function initFloatingToolbar() {
     const btnTriggerAdd = document.getElementById('btnTriggerAdd');
     const popoverMenuAdd = document.getElementById('popoverMenuAdd');
+    const btnClosePopoverAdd = document.getElementById('btnClosePopoverAdd');
+
+    const btnTriggerEdges = document.getElementById('btnTriggerEdges');
+    const popoverMenuEdges = document.getElementById('popoverMenuEdges');
+    const btnClosePopoverEdges = document.getElementById('btnClosePopoverEdges');
+
+    const btnTriggerRooms = document.getElementById('btnTriggerRooms');
+    const popoverMenuRooms = document.getElementById('popoverMenuRooms');
+    const btnClosePopoverRooms = document.getElementById('btnClosePopoverRooms');
+
+    const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
+    const btnZoomFit = document.getElementById('btnZoomFit');
+    const btnZoomIn = document.getElementById('btnZoomIn');
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    const btnToggleTheme = document.getElementById('btnToggleTheme');
+    const txtThemeMode = document.getElementById('txtThemeMode');
+    const btnExportPng = document.getElementById('btnExportPng');
 
     btnTriggerAdd?.addEventListener('click', (e) => {
         e.stopPropagation();
+        const isOpen = popoverMenuAdd.style.display === 'flex';
         closeAllPopovers();
-        popoverMenuAdd.style.display = popoverMenuAdd.style.display === 'flex' ? 'none' : 'flex';
+        popoverMenuAdd.style.display = isOpen ? 'none' : 'flex';
+    });
+    btnClosePopoverAdd?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popoverMenuAdd.style.display = 'none';
+    });
+
+    btnTriggerEdges?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = popoverMenuEdges.style.display === 'flex';
+        closeAllPopovers();
+        renderPopovers();
+        popoverMenuEdges.style.display = isOpen ? 'none' : 'flex';
+    });
+    btnClosePopoverEdges?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popoverMenuEdges.style.display = 'none';
+    });
+
+    btnTriggerRooms?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = popoverMenuRooms.style.display === 'flex';
+        closeAllPopovers();
+        renderPopovers();
+        popoverMenuRooms.style.display = isOpen ? 'none' : 'flex';
+    });
+    btnClosePopoverRooms?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popoverMenuRooms.style.display = 'none';
     });
 
     document.querySelectorAll('.hud-comp-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const type = btn.getAttribute('data-type');
-            const newRoom = { id: 'obj_' + Date.now(), name: btn.getAttribute('data-name'), type: type, x: 500, y: 500, w: 3000, h: 3000, rot: 0 };
+            const baseName = btn.getAttribute('data-name') || 'Phòng Mới';
+            const w = parseInt(btn.getAttribute('data-w'), 10) || 3500;
+            const h = parseInt(btn.getAttribute('data-h'), 10) || 3500;
+
+            if (!roomCounters[type]) roomCounters[type] = 0;
+            roomCounters[type]++;
+            const name = `${baseName} ${roomCounters[type]}`;
+            const id = `obj_${type}_${Date.now()}`;
+
+            const newRoom = {
+                id,
+                name: name.toUpperCase(),
+                type,
+                x: 500,
+                y: 500,
+                w,
+                h,
+                rot: 0
+            };
+
+            if (!currentGeometry.rooms) currentGeometry.rooms = [];
             currentGeometry.rooms.push(newRoom);
+            roomPositionCache[newRoom.id] = { x: newRoom.x, y: newRoom.y, w: newRoom.w, h: newRoom.h, rot: 0 };
+
             closeAllPopovers();
-            selectRoom(newRoom.id);
+            selectRoom(newRoom.id, true);
         });
+    });
+
+    // Fullscreen Toggle (Native Fullscreen API)
+    btnToggleFullscreen?.addEventListener('click', () => {
+        const container = document.getElementById('cad-workspace');
+        if (!container) return;
+
+        if (!document.fullscreenElement) {
+            if (container.requestFullscreen) {
+                container.requestFullscreen().catch(() => {
+                    container.classList.toggle('is-fullscreen');
+                });
+            } else {
+                container.classList.toggle('is-fullscreen');
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+            container.classList.remove('is-fullscreen');
+        }
+        setTimeout(() => {
+            if (viewportController) viewportController.fitToScreen();
+        }, 150);
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        const isFs = !!document.fullscreenElement;
+        const iconOpen = document.getElementById('iconFullscreenOpen');
+        const iconExit = document.getElementById('iconFullscreenExit');
+        const txtFs = document.getElementById('txtFullscreen');
+        if (iconOpen) iconOpen.style.display = isFs ? 'none' : 'inline-block';
+        if (iconExit) iconExit.style.display = isFs ? 'inline-block' : 'none';
+        if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
+        setTimeout(() => {
+            if (viewportController) viewportController.fitToScreen();
+        }, 150);
+    });
+
+    btnZoomFit?.addEventListener('click', () => {
+        if (viewportController) viewportController.fitToScreen();
+    });
+
+    btnZoomIn?.addEventListener('click', () => {
+        if (viewportController) viewportController.zoomIn();
+    });
+
+    btnZoomOut?.addEventListener('click', () => {
+        if (viewportController) viewportController.zoomOut();
+    });
+
+    btnToggleTheme?.addEventListener('click', () => {
+        currentThemeMode = currentThemeMode === 'white' ? 'dark' : 'white';
+        const workspace = document.getElementById('cad-workspace');
+        if (workspace) {
+            workspace.classList.toggle('dark-mode', currentThemeMode === 'dark');
+        }
+        if (txtThemeMode) {
+            txtThemeMode.textContent = currentThemeMode === 'white' ? 'Trắng' : 'Tối';
+        }
+        renderActiveDrawing();
+    });
+
+    btnExportPng?.addEventListener('click', () => {
+        exportCadSvgAsPng();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.hud-popover-wrapper') && !e.target.closest('.hud-popover-menu')) {
+            closeAllPopovers();
+        }
     });
 }
 
-        }
-    });
+function exportCadSvgAsPng() {
+    const stage = document.getElementById('svgStage');
+    const svgEl = stage ? stage.querySelector('svg') : null;
+    if (!svgEl) return;
+
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const DOMURL = window.URL || window.webkitURL || window;
+    const url = DOMURL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = 2400;
+        canvas.height = 1800;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = currentThemeMode === 'dark' ? '#090d16' : '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        DOMURL.revokeObjectURL(url);
+
+        const a = document.createElement('a');
+        a.download = `BanVe_PhongThuy_${Date.now()}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+    };
+    img.src = url;
 }
 
 /* 10. Form Actions & Input Listeners */
