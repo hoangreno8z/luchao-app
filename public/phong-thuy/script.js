@@ -1,11 +1,12 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v6.0
+// Phong Thủy & Kiến Trúc Controller Script v7.0
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
 // Hỗ trợ:
 // 1. Kéo-thả không giới hạn số lượng phòng vào 9 cung
-// 2. Khung viền CAD tự động khớp kích thước thực W x D
-// 3. Interactive CAD Studio: Kéo di chuyển, co giãn 8 điểm neo, nút mini Xác Nhận/Làm Lại
-// 4. Hai Tab Bản Vẽ Độc Lập Chuẩn 100%: Scan2CAD (Ảnh 3) & La Kinh Cửu Cung (Ảnh 2)
+// 2. Khung viền Polygon tự động khớp kích thước thực W x D
+// 3. Chỉnh sửa đa giác viền nhà (Vertex Dragging) cho nhà chữ L, xéo, méo, dị dạng
+// 4. Interactive CAD Studio: Kéo di chuyển, co giãn 8 điểm neo, nút mini Xác Nhận/Làm Lại
+// 5. Hai Tab Bản Vẽ Độc Lập Chuẩn 100%: Scan2CAD (Ảnh 3) & La Kinh Cửu Cung (Ảnh 2)
 // ============================================================
 
 import {
@@ -66,9 +67,10 @@ const dndPlacements = {
 // Pointer Drag & Resize State for CAD Manipulation
 const pointerState = {
     isInteracting: false,
-    mode: null, // 'move' | 'resize'
+    mode: null, // 'move' | 'resize' | 'vertex'
     handle: null,
     targetRoomId: null,
+    targetVertexIdx: null,
     startClientX: 0,
     startClientY: 0,
     origX: 0,
@@ -270,7 +272,6 @@ function initDragAndDropPalaces() {
         });
     }
 
-    // Khởi tạo mẫu ban đầu không giới hạn
     dndPlacements[9] = [{ id: 'r_living_1', type: 'living_room', name: 'Phòng Khách 1' }];
     dndPlacements[1] = [{ id: 'r_kitchen_1', type: 'kitchen_dining', name: 'Bếp Nấu 1' }];
     dndPlacements[8] = [{ id: 'r_bed_1', type: 'bed_master', name: 'Phòng Ngủ 1' }];
@@ -395,12 +396,11 @@ function initViewport() {
     luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
-/* 8. Interactive CAD Manipulation Engine (Pointer Events, Move, Resize, Undo, Confirm) */
+/* 8. Interactive CAD Manipulation Engine (Pointer Events, Move, Resize, Vertex Dragging) */
 function initCadInteractiveEngine() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
 
-    // Pointer Down: Chọn phòng hoặc nắm điểm neo co giãn
     stage.addEventListener('pointerdown', (e) => {
         const miniActionBtn = e.target.closest('.btn-cad-mini-action');
         if (miniActionBtn) {
@@ -408,6 +408,16 @@ function initCadInteractiveEngine() {
             return;
         }
 
+        // 1. Kéo điểm neo đỉnh của Polygon (Vertex Handles)
+        const vertexHandle = e.target.closest('.cad-vertex-handle');
+        if (vertexHandle) {
+            e.stopPropagation();
+            const vIdx = parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10);
+            startCadVertexInteraction(vIdx, e.clientX, e.clientY);
+            return;
+        }
+
+        // 2. Kéo điểm neo co giãn phòng (Resize Handles)
         const resizeHandle = e.target.closest('.cad-resize-handle');
         if (resizeHandle) {
             e.stopPropagation();
@@ -417,6 +427,7 @@ function initCadInteractiveEngine() {
             return;
         }
 
+        // 3. Kéo di chuyển thân phòng (Room Move)
         const roomEl = e.target.closest('.cad-room-interactive');
         if (roomEl) {
             e.stopPropagation();
@@ -436,26 +447,37 @@ function initCadInteractiveEngine() {
         }
     });
 
-    // Pointer Move: Kéo di chuyển hoặc co giãn kích thước thời gian thực
     window.addEventListener('pointermove', (e) => {
-        if (!pointerState.isInteracting || !currentGeometry || !currentGeometry.rooms) return;
+        if (!pointerState.isInteracting || !currentGeometry) return;
 
-        const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
-        if (!room) return;
-
-        // Tính tỉ lệ quy đổi pixel màn hình sang đơn vị milimet bản vẽ
         const svgEl = stage.querySelector('svg');
         const ctm = svgEl ? svgEl.getScreenCTM() : null;
         const scale = ctm ? ctm.a : 0.2;
         const dx = (e.clientX - pointerState.startClientX) / scale;
         const dy = (e.clientY - pointerState.startClientY) / scale;
 
+        // Kéo đỉnh polygon
+        if (pointerState.mode === 'vertex') {
+            if (currentGeometry.footprintPoints && currentGeometry.footprintPoints[pointerState.targetVertexIdx]) {
+                const pt = currentGeometry.footprintPoints[pointerState.targetVertexIdx];
+                pt.x = Math.round(pointerState.origX + dx);
+                pt.y = Math.round(pointerState.origY + dy);
+                requestAnimationFrame(() => renderActiveDrawing());
+            }
+            return;
+        }
+
+        // Kéo hoặc co giãn phòng
+        if (!currentGeometry.rooms) return;
+        const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
+        if (!room) return;
+
         if (pointerState.mode === 'move') {
             room.x = Math.round(Math.max(0, Math.min(currentGeometry.widthMm - room.w, pointerState.origX + dx)));
             room.y = Math.round(Math.max(0, Math.min(currentGeometry.depthMm - room.h, pointerState.origY + dy)));
         } else if (pointerState.mode === 'resize') {
             const h = pointerState.handle;
-            const minSize = 1200; // kích thước tối thiểu 1.2m
+            const minSize = 1200;
 
             if (h.includes('e')) {
                 room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
@@ -478,7 +500,6 @@ function initCadInteractiveEngine() {
         requestAnimationFrame(() => renderActiveDrawing());
     });
 
-    // Pointer Up: Kết thúc thao tác kéo
     window.addEventListener('pointerup', () => {
         if (pointerState.isInteracting) {
             pointerState.isInteracting = false;
@@ -486,6 +507,18 @@ function initCadInteractiveEngine() {
             pointerState.handle = null;
         }
     });
+}
+
+function startCadVertexInteraction(vertexIdx, clientX, clientY) {
+    if (!currentGeometry || !currentGeometry.footprintPoints || !currentGeometry.footprintPoints[vertexIdx]) return;
+    const pt = currentGeometry.footprintPoints[vertexIdx];
+    pointerState.isInteracting = true;
+    pointerState.mode = 'vertex';
+    pointerState.targetVertexIdx = vertexIdx;
+    pointerState.startClientX = clientX;
+    pointerState.startClientY = clientY;
+    pointerState.origX = pt.x;
+    pointerState.origY = pt.y;
 }
 
 function startCadPointerInteraction(mode, roomId, handle, clientX, clientY) {
@@ -515,13 +548,11 @@ function handleMiniActionClick(btn) {
     const room = currentGeometry.rooms[roomIndex];
 
     if (action === 'confirm') {
-        // Lưu lịch sử vị trí mới
         room.history = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
         selectedRoomId = null;
         cadRenderer.selectedRoomId = null;
         renderActiveDrawing();
     } else if (action === 'reset') {
-        // Hoàn tác về vị trí ban đầu
         if (room.history) {
             room.x = room.history.x;
             room.y = room.history.y;
@@ -532,13 +563,11 @@ function handleMiniActionClick(btn) {
         cadRenderer.selectedRoomId = null;
         renderActiveDrawing();
     } else if (action === 'rotate') {
-        // Xoay 90°
         const temp = room.w;
         room.w = room.h;
         room.h = temp;
         renderActiveDrawing();
     } else if (action === 'delete') {
-        // Xóa phòng
         currentGeometry.rooms.splice(roomIndex, 1);
         selectedRoomId = null;
         cadRenderer.selectedRoomId = null;
@@ -706,7 +735,7 @@ function initActionButtons() {
     });
 }
 
-/* 11. Core Master Calculation Pipeline (KHUNG KÍCH THƯỚC THỰC TẾ & TỰ DO THẢ PHÒNG) */
+/* 11. Core Master Calculation Pipeline */
 function handleCalculate(shouldScroll = false) {
     const resultsSection = document.getElementById('resultsSection');
     if (resultsSection) {
@@ -734,14 +763,12 @@ function handleCalculate(shouldScroll = false) {
     const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
 
-    // Tổng hợp danh sách phòng tùy biến nếu ở Tab Nhà
     let customRooms = null;
     if (currentMode === 'existing_house') {
         const W = Math.round(widthM * 1000);
         const D = Math.round(lengthM * 1000);
         customRooms = [];
 
-        // Chuyển đổi các phòng từ 9 cung sang tọa độ bản vẽ CAD
         const orientedGrid = getOrientedPalaceGrid(findMountain(facingDegree).mountain.trigram);
         const cellW = W / 3;
         const cellH = D / 3;
@@ -767,7 +794,6 @@ function handleCalculate(shouldScroll = false) {
         });
     }
 
-    // 1. Generate Parametric Floorplan Geometry
     currentGeometry = generateParametricFloorplan({
         shape,
         widthM,
@@ -777,7 +803,6 @@ function handleCalculate(shouldScroll = false) {
         customRooms
     });
 
-    // 2. Compute Flying Stars Chart
     currentFlyingStars = calculateFlyingStars({
         facingDegree,
         buildYear,
@@ -787,10 +812,8 @@ function handleCalculate(shouldScroll = false) {
         currentHour
     });
 
-    // 3. Compute Owner Gua
     currentBatTrach = calculateGua(ownerYear, ownerGender);
 
-    // 4. Compute 9-Palace Spatial Assignment
     currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
         facingDegree,
         buildYear,
@@ -802,19 +825,10 @@ function handleCalculate(shouldScroll = false) {
         ownerGender
     });
 
-    // 5. Render Floor Navigator
     renderFloorNavigator(currentGeometry.totalFloors);
-
-    // 6. Render Active Drawing (CAD Floorplan hoặc La Kinh Cửu Cung)
     renderActiveDrawing();
-
-    // 7. Render 9-Palace Matrix (Oriented by House facing or Lo Shu)
     renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
-
-    // 8. Render Drag & Drop 9-Palaces Grid (Tab Nhà)
     renderDndGrid();
-
-    // 9. Render Audit Report
     renderDetailedReport(currentSpatialResult);
 
     if (shouldScroll && resultsSection) {
@@ -846,7 +860,6 @@ function renderActiveDrawing() {
     if (!currentGeometry || !viewportController) return;
 
     if (currentDrawingTab === 'arch') {
-        // Tab 1: Bản vẽ kiến trúc CAD đen trắng chuẩn 100% Ảnh 3 Scan2CAD
         const svgCode = cadRenderer.renderSvg(currentGeometry, {
             theme: currentThemeMode,
             facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
@@ -854,7 +867,6 @@ function renderActiveDrawing() {
         });
         viewportController.setSvgContent(svgCode);
     } else {
-        // Tab 2: La Kinh 24 Sơn 360° & Cửu Cung Phi Tinh chuẩn 100% Ảnh 2 HKPT
         if (!luoPanRenderer) {
             luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
         }
@@ -891,7 +903,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
         if (!pal) return '';
 
         const isFacingPal = pId === flyingStars.facingPalace;
-        const isSittingPal = pId === flyingStars.sittingPalace;
+        const isSittingPal = pId === sittingPalace;
 
         let palTag = PALACE_NAMES[pId] || pId;
         if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
