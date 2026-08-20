@@ -1,8 +1,8 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v4.0
-// Tự động xoay Cửu Cung theo Hướng Nhà, La Kinh 360°/24 Sơn/72 Long,
-// Đa Dạng Footprint (Rectangle, L-Shape, U-Shape, Stepped, Polygon)
+// Phong Thủy & Kiến Trúc Controller Script v4.5
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
+// Hỗ trợ: Accordion Thu Gọn, 2 Tab Đất/Nhà, La Kinh 24 Sơn/72 Long
+// Tự Động Xoay 9 Cung Theo Hướng Nhà (Cung Hướng Luôn Ở Ô Trên Cùng)
 // ============================================================
 
 import {
@@ -15,17 +15,17 @@ import {
     calculateFengShuiSpatial,
     renderNinePalacesOverlaySvg,
     SvgViewportController,
-    CompassSvgRenderer,
     getOrientedPalaceGrid,
     PALACE_NAMES,
     PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
 
-let currentMode = 'empty_land';
+let currentMode = 'empty_land'; // 'empty_land' | 'existing_house'
 let currentFloorIndex = 1;
 let currentDrawingTab = 'arch'; // 'arch' | 'fengshui'
 let currentThemeMode = 'white'; // 'white' | 'dark'
 let currentMatrixOrientMode = 'house'; // 'house' (Xoay theo hướng nhà) | 'loshu' (Lạc thư chuẩn)
+let currentDndOrientMode = 'house'; // 'house' | 'loshu'
 let isLandscapeMode = false; // false = Dọc | true = Ngang
 
 let currentGeometry = null;
@@ -35,7 +35,6 @@ let currentBatTrach = null;
 
 let cadRenderer = null;
 let viewportController = null;
-let compassRenderer = null;
 
 const layerState = {
     dimensions: true,
@@ -51,9 +50,10 @@ const dndPlacements = {
 
 function bootstrapApp() {
     initMenuDropdown();
+    initAccordions();
     initModeTabs();
     initDrawingTabs();
-    initCompassControls();
+    initFacingDegreeControls();
     initDragAndDropPalaces();
     initViewport();
     initToolbar();
@@ -69,7 +69,7 @@ if (document.readyState === 'loading') {
     bootstrapApp();
 }
 
-/* Menu Dropdown */
+/* 1. Menu Dropdown */
 function initMenuDropdown() {
     const menuBtn = document.getElementById('menu-btn');
     const dropdownMenu = document.getElementById('dropdown-menu');
@@ -87,11 +87,31 @@ function initMenuDropdown() {
     });
 }
 
-/* Mode Selection Tabs (Đất Trống vs Đã Có Nhà) */
+/* 2. Accordions (Thông Tin & Thiết Kế) */
+function initAccordions() {
+    const cardInfo = document.getElementById('accordionCardInfo');
+    const headerInfo = document.getElementById('accordionHeaderInfo');
+    const cardDesign = document.getElementById('accordionCardDesign');
+    const headerDesign = document.getElementById('accordionHeaderDesign');
+
+    if (headerInfo && cardInfo) {
+        headerInfo.addEventListener('click', () => {
+            cardInfo.classList.toggle('collapsed');
+        });
+    }
+
+    if (headerDesign && cardDesign) {
+        headerDesign.addEventListener('click', () => {
+            cardDesign.classList.toggle('collapsed');
+        });
+    }
+}
+
+/* 3. Mode Selection Tabs (Đất & Nhà) */
 function initModeTabs() {
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
-    const emptyLandPanel = document.getElementById('emptyLandRoomsConfig');
+    const cardDesign = document.getElementById('accordionCardDesign');
     const existingHousePanel = document.getElementById('existingRoomsSection');
 
     if (tabEmptyLand && tabExistingHouse) {
@@ -99,7 +119,7 @@ function initModeTabs() {
             currentMode = 'empty_land';
             tabEmptyLand.classList.add('active');
             tabExistingHouse.classList.remove('active');
-            if (emptyLandPanel) emptyLandPanel.style.display = 'block';
+            if (cardDesign) cardDesign.style.display = 'block';
             if (existingHousePanel) existingHousePanel.style.display = 'none';
         });
 
@@ -107,13 +127,14 @@ function initModeTabs() {
             currentMode = 'existing_house';
             tabExistingHouse.classList.add('active');
             tabEmptyLand.classList.remove('active');
-            if (emptyLandPanel) emptyLandPanel.style.display = 'none';
+            if (cardDesign) cardDesign.style.display = 'none';
             if (existingHousePanel) existingHousePanel.style.display = 'block';
+            renderDndGrid();
         });
     }
 }
 
-/* Drawing Tab Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung) */
+/* 4. Drawing Tab Selection (Kiến Trúc CAD vs Phong Thủy Cửu Cung) */
 function initDrawingTabs() {
     const btnTabArch = document.getElementById('tabDrawingArch');
     const btnTabFengShui = document.getElementById('tabDrawingFengShui');
@@ -135,36 +156,18 @@ function initDrawingTabs() {
     }
 }
 
-/* Compass 360° Interactive Dial (GPU Hardware Accelerated) */
-function initCompassControls() {
-    const dialContainer = document.getElementById('compassDialContainer');
-    const compassSvgStage = document.getElementById('compassSvgStage');
-    const txtCompassDegree = document.getElementById('txtCompassDegree');
-    const txtCompassMountain = document.getElementById('txtCompassMountain');
-    const mountainStatusBadge = document.getElementById('mountainStatusBadge');
+/* 5. Facing Degree Inputs & Quick Slider */
+function initFacingDegreeControls() {
     const slider = document.getElementById('inputFacingDegree');
     const number = document.getElementById('inputFacingNumber');
     const display = document.getElementById('mountainDisplay');
+    const mountainStatusBadge = document.getElementById('mountainStatusBadge');
 
-    if (!compassSvgStage) return;
-
-    compassRenderer = new CompassSvgRenderer({ size: 500 });
-    compassSvgStage.innerHTML = `
-        <svg viewBox="0 0 500 500" width="100%" height="100%" style="display:block;">
-            ${compassRenderer.renderStaticDialSvg()}
-        </svg>
-    `;
-
-    function updateCompass(deg, triggerCalculate = false) {
+    function updateFacing(deg, triggerCalculate = false) {
         let normalized = ((deg % 360) + 360) % 360;
         const match = findMountain(normalized);
         const opp = getOppositeMountain(normalized);
 
-        // Xoay la bàn thuần túy bằng GPU Transform
-        compassSvgStage.style.transform = `rotate(${-normalized}deg) translateZ(0)`;
-
-        if (txtCompassDegree) txtCompassDegree.textContent = `${normalized.toFixed(1)}°`;
-        if (txtCompassMountain) txtCompassMountain.textContent = `Hướng ${match.mountain.name}`;
         if (slider) slider.value = normalized;
         if (number) number.value = normalized;
 
@@ -185,156 +188,158 @@ function initCompassControls() {
     if (slider) {
         slider.addEventListener('input', (e) => {
             const deg = parseFloat(e.target.value) || 0;
-            updateCompass(deg, true);
+            updateFacing(deg, true);
         });
     }
 
     if (number) {
         number.addEventListener('input', (e) => {
             const deg = parseFloat(e.target.value) || 0;
-            updateCompass(deg, true);
+            updateFacing(deg, true);
         });
-    }
-
-    // Pointer rotation on Compass Dial
-    if (dialContainer) {
-        let isRotating = false;
-        let startAngle = 0;
-        let initialDeg = 0;
-
-        const getAngleFromCenter = (clientX, clientY) => {
-            const rect = dialContainer.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            const rad = Math.atan2(clientY - cy, clientX - cx);
-            let deg = (rad * 180) / Math.PI + 90;
-            return (deg + 360) % 360;
-        };
-
-        dialContainer.addEventListener('pointerdown', (e) => {
-            isRotating = true;
-            startAngle = getAngleFromCenter(e.clientX, e.clientY);
-            initialDeg = parseFloat(number?.value || slider?.value || 180);
-            dialContainer.setPointerCapture(e.pointerId);
-        });
-
-        dialContainer.addEventListener('pointermove', (e) => {
-            if (!isRotating) return;
-            const currentAngle = getAngleFromCenter(e.clientX, e.clientY);
-            const delta = currentAngle - startAngle;
-            let targetDeg = ((initialDeg - delta) % 360 + 360) % 360;
-            requestAnimationFrame(() => updateCompass(targetDeg, true));
-        });
-
-        const stopRotate = (e) => {
-            if (isRotating) {
-                isRotating = false;
-                try { dialContainer.releasePointerCapture(e.pointerId); } catch (_) {}
-            }
-        };
-
-        dialContainer.addEventListener('pointerup', stopRotate);
-        dialContainer.addEventListener('pointercancel', stopRotate);
     }
 }
 
-/* Drag and Drop 9-Palaces */
+/* 6. Drag and Drop 9-Palaces (TỰ ĐỘNG XOAY THEO HƯỚNG CỬA / HƯỚNG NHÀ) */
 function initDragAndDropPalaces() {
     const rack = document.getElementById('availableRoomsRack');
-    const grid = document.getElementById('dndPalacesGrid');
-    if (!rack || !grid) return;
+    const btnOrientHouse = document.getElementById('btnDndOrientHouse');
+    const btnOrientLoShu = document.getElementById('btnDndOrientLoShu');
 
-    let draggedRoomData = null;
-    const order = [4, 9, 2, 3, 5, 7, 8, 1, 6];
-
-    grid.innerHTML = order.map(pId => `
-        <div class="palace-drop-zone" data-palace-id="${pId}">
-            <span class="palace-zone-title">${PALACE_NAMES[pId] || pId}</span>
-            <div class="dropped-rooms-container"></div>
-        </div>
-    `).join('');
-
-    rack.querySelectorAll('.room-drag-chip').forEach(chip => {
-        chip.addEventListener('dragstart', (e) => {
-            draggedRoomData = {
-                id: chip.getAttribute('data-room-id'),
-                name: chip.getAttribute('data-room-name')
-            };
-            e.dataTransfer.setData('application/json', JSON.stringify(draggedRoomData));
+    if (btnOrientHouse && btnOrientLoShu) {
+        btnOrientHouse.addEventListener('click', () => {
+            currentDndOrientMode = 'house';
+            btnOrientHouse.classList.add('active');
+            btnOrientLoShu.classList.remove('active');
+            renderDndGrid();
         });
 
-        chip.addEventListener('click', () => {
-            const firstP = order.find(p => dndPlacements[p].length === 0) || 9;
-            addRoomToPalace(firstP, {
-                id: chip.getAttribute('data-room-id'),
-                name: chip.getAttribute('data-room-name')
+        btnOrientLoShu.addEventListener('click', () => {
+            currentDndOrientMode = 'loshu';
+            btnOrientLoShu.classList.add('active');
+            btnOrientHouse.classList.remove('active');
+            renderDndGrid();
+        });
+    }
+
+    if (rack) {
+        rack.querySelectorAll('.room-drag-chip').forEach(chip => {
+            chip.addEventListener('dragstart', (e) => {
+                const data = {
+                    id: chip.getAttribute('data-room-id'),
+                    name: chip.getAttribute('data-room-name')
+                };
+                e.dataTransfer.setData('application/json', JSON.stringify(data));
+            });
+
+            chip.addEventListener('click', () => {
+                const facingPalace = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
+                addRoomToPalace(facingPalace, {
+                    id: chip.getAttribute('data-room-id'),
+                    name: chip.getAttribute('data-room-name')
+                });
             });
         });
-    });
+    }
 
+    // Gán phòng mẫu ban đầu
+    dndPlacements[9] = [{ id: 'living', name: 'Phòng Khách' }];
+    dndPlacements[1] = [{ id: 'kitchen', name: 'Bếp Nấu' }];
+}
+
+function addRoomToPalace(palaceId, room) {
+    Object.keys(dndPlacements).forEach(p => {
+        dndPlacements[p] = dndPlacements[p].filter(r => r.id !== room.id);
+    });
+    dndPlacements[palaceId].push(room);
+    renderDndGrid();
+    handleCalculate(false);
+}
+
+function renderDndGrid() {
+    const grid = document.getElementById('dndPalacesGrid');
+    if (!grid) return;
+
+    const facingPalace = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
+    const sittingPalace = currentFlyingStars ? currentFlyingStars.sittingPalace : 1;
+
+    // Thứ tự 9 cung: Xoay theo Hướng Nhà (Cung Hướng nằm ở ô trên cùng chính giữa) hoặc Lạc Thư chuẩn
+    const order = currentDndOrientMode === 'house'
+        ? getOrientedPalaceGrid(facingPalace)
+        : [4, 9, 2, 3, 5, 7, 8, 1, 6];
+
+    grid.innerHTML = order.map(pId => {
+        const isFacing = pId === facingPalace;
+        const isSitting = pId === sittingPalace;
+
+        let badgeTitle = PALACE_NAMES[pId] || `Cung ${pId}`;
+        if (isFacing) badgeTitle = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
+        else if (isSitting) badgeTitle = `🔵 TỌA (${PALACE_SHORT[pId]})`;
+
+        const palData = currentFlyingStars && currentFlyingStars.palaces ? currentFlyingStars.palaces[pId] : null;
+        const starsBadge = palData ? `· Vận ${palData.vanStar}` : '';
+
+        const rooms = dndPlacements[pId] || [];
+        const roomTags = rooms.map(r => `
+            <div class="dropped-room-tag">
+                <span>${r.name}</span>
+                <button type="button" class="btn-remove-room" data-room-id="${r.id}" data-palace-id="${pId}">×</button>
+            </div>
+        `).join('');
+
+        const cellBorder = isFacing 
+            ? 'border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.08);' 
+            : (isSitting 
+                ? 'border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.08);' 
+                : 'border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.85);');
+
+        return `
+            <div class="palace-drop-zone ${isFacing ? 'facing-zone' : (isSitting ? 'sitting-zone' : '')}" data-palace-id="${pId}" style="${cellBorder} padding: 8px; border-radius: 8px; min-height: 95px; display: flex; flex-direction: column; justify-content: space-between;">
+                <span class="palace-zone-title" style="font-size: 0.76rem; font-weight: 800; color: ${isFacing ? '#f87171' : (isSitting ? '#38bdf8' : '#fbbf24')}; text-align: center; display: block; margin-bottom: 4px;">
+                    ${badgeTitle} ${starsBadge}
+                </span>
+                <div class="dropped-rooms-container" style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                    ${roomTags}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Attach dragover & drop listeners
     grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            zone.classList.add('drag-over');
+            zone.style.background = 'rgba(245, 158, 11, 0.2)';
         });
 
         zone.addEventListener('dragleave', () => {
-            zone.classList.remove('drag-over');
+            zone.style.background = '';
         });
 
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
-            zone.classList.remove('drag-over');
+            zone.style.background = '';
             const dataStr = e.dataTransfer.getData('application/json');
             if (!dataStr) return;
             const room = JSON.parse(dataStr);
             const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
             addRoomToPalace(pId, room);
         });
-    });
 
-    function addRoomToPalace(palaceId, room) {
-        Object.keys(dndPlacements).forEach(p => {
-            dndPlacements[p] = dndPlacements[p].filter(r => r.id !== room.id);
-        });
-        dndPlacements[palaceId].push(room);
-        renderDroppedRooms();
-        handleCalculate(false);
-    }
-
-    function renderDroppedRooms() {
-        grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
-            const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
-            const container = zone.querySelector('.dropped-rooms-container');
-            if (!container) return;
-
-            const rooms = dndPlacements[pId] || [];
-            container.innerHTML = rooms.map(r => `
-                <div class="dropped-room-tag">
-                    <span>${r.name}</span>
-                    <button type="button" class="btn-remove-room" data-room-id="${r.id}" data-palace-id="${pId}">×</button>
-                </div>
-            `).join('');
-
-            container.querySelectorAll('.btn-remove-room').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const rId = btn.getAttribute('data-room-id');
-                    const pal = btn.getAttribute('data-palace-id');
-                    dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
-                    renderDroppedRooms();
-                    handleCalculate(false);
-                });
+        zone.querySelectorAll('.btn-remove-room').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const rId = btn.getAttribute('data-room-id');
+                const pal = btn.getAttribute('data-palace-id');
+                dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
+                renderDndGrid();
+                handleCalculate(false);
             });
         });
-    }
-
-    dndPlacements[9].push({ id: 'living', name: 'Phòng Khách' });
-    dndPlacements[1].push({ id: 'dining', name: 'Bếp Ăn' });
-    renderDroppedRooms();
+    });
 }
 
-/* Viewport Shell Initialization */
+/* 7. Viewport Shell Initialization */
 function initViewport() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
@@ -342,7 +347,7 @@ function initViewport() {
     cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
 }
 
-/* Toolbar Buttons & Matrix Controls */
+/* 8. Toolbar Buttons & Matrix Controls */
 function initToolbar() {
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const txtThemeMode = document.getElementById('txtThemeMode');
@@ -473,7 +478,7 @@ function initToolbar() {
     }
 }
 
-/* Calculate & Form Input Listeners */
+/* 9. Calculate & Form Input Listeners */
 function initActionButtons() {
     const btnCalculate = document.getElementById('btnCalculate');
     if (btnCalculate) {
@@ -485,7 +490,8 @@ function initActionButtons() {
         'inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour',
         'inputOwnerYear', 'inputOwnerGender',
         'inputBedCount', 'inputWcCount', 'inputHasAltar',
-        'inputLivingRoom', 'inputKitchen', 'inputGarage', 'inputStairsType'
+        'inputLivingRoom', 'inputKitchen', 'inputGarage', 'inputStairsType',
+        'inputHasCommonRoom', 'inputHasLaundry', 'inputHasSkylight'
     ];
 
     liveInputs.forEach(id => {
@@ -495,14 +501,14 @@ function initActionButtons() {
             if (el.tagName === 'INPUT') {
                 el.addEventListener('input', () => {
                     clearTimeout(window._calcDebounce);
-                    window._calcDebounce = setTimeout(() => handleCalculate(false), 300);
+                    window._calcDebounce = setTimeout(() => handleCalculate(false), 250);
                 });
             }
         }
     });
 }
 
-/* Core Master Calculation Pipeline */
+/* 10. Core Master Calculation Pipeline */
 function handleCalculate(shouldScroll = false) {
     const resultsSection = document.getElementById('resultsSection');
     if (resultsSection) {
@@ -583,16 +589,19 @@ function handleCalculate(shouldScroll = false) {
     // 7. Render 9-Palace Matrix (Oriented by House facing or Lo Shu)
     renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
 
-    // 8. Render Audit Report
+    // 8. Render Drag & Drop 9-Palaces Grid (Tab Nhà)
+    renderDndGrid();
+
+    // 9. Render Audit Report
     renderDetailedReport(currentSpatialResult);
 
-    // 9. Smooth scroll to drawing if clicked
+    // 10. Smooth scroll to drawing if clicked
     if (shouldScroll && resultsSection) {
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
-/* Render Floor Navigator */
+/* 11. Render Floor Navigator */
 function renderFloorNavigator(totalFloors) {
     const nav = document.getElementById('floorNavigator');
     if (!nav) return;
@@ -618,7 +627,7 @@ function renderFloorNavigator(totalFloors) {
     });
 }
 
-/* Render Active Drawing (Arch vs Feng Shui Overlay) */
+/* 12. Render Active Drawing (Arch vs Feng Shui Overlay) */
 function renderActiveDrawing() {
     if (!currentGeometry || !viewportController) return;
 
@@ -649,7 +658,7 @@ function renderActiveDrawing() {
     viewportController.setSvgContent(baseSvg);
 }
 
-/* Render 9-Palace Xuan Kong Matrix Display (TỰ ĐỘNG XOAY THEO HƯỚNG NHÀ HOẶC LẠC THƯ) */
+/* 13. Render 9-Palace Xuan Kong Matrix Display */
 function renderFlyingStarsMatrix(flyingStars, batTrach) {
     const matrixContainer = document.getElementById('flyingStarsMatrix');
     const metaVan = document.getElementById('metaVan');
@@ -666,7 +675,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     if (!matrixContainer || !flyingStars.palaces) return;
 
-    // Xác định thứ tự 9 cung: Xoay theo hướng nhà (House) hoặc Lạc Thư chuẩn (Lo Shu)
+    // Thứ tự 9 cung: Xoay theo hướng nhà (House) hoặc Lạc Thư chuẩn (Lo Shu)
     const order = currentMatrixOrientMode === 'house'
         ? getOrientedPalaceGrid(flyingStars.facingPalace)
         : [4, 9, 2, 3, 5, 7, 8, 1, 6];
@@ -704,7 +713,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     }).join('');
 }
 
-/* Render Detailed Report */
+/* 14. Render Detailed Report */
 function renderDetailedReport(spatialResult) {
     const container = document.getElementById('detailedReportContainer');
     if (!container || !spatialResult || !spatialResult.spatialPalaces) return;
