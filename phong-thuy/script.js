@@ -1,9 +1,11 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v5.0
+// Phong Thủy & Kiến Trúc Controller Script v6.0
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
-// Hỗ trợ 2 Tab Bản Vẽ Độc Lập Chuẩn Xác 100%:
-// - Tab 1: Bản Vẽ Kiến Trúc CAD (Đen Trắng, Scan2CAD chuẩn ảnh 3)
-// - Tab 2: La Kinh 24 Sơn 360° & Cửu Cung Phi Tinh (chuẩn ảnh 2 HKPT)
+// Hỗ trợ:
+// 1. Kéo-thả không giới hạn số lượng phòng vào 9 cung
+// 2. Khung viền CAD tự động khớp kích thước thực W x D
+// 3. Interactive CAD Studio: Kéo di chuyển, co giãn 8 điểm neo, nút mini Xác Nhận/Làm Lại
+// 4. Hai Tab Bản Vẽ Độc Lập Chuẩn 100%: Scan2CAD (Ảnh 3) & La Kinh Cửu Cung (Ảnh 2)
 // ============================================================
 
 import {
@@ -22,12 +24,11 @@ import {
 } from './js/phong_thuy_bundle.js';
 
 let currentMode = 'empty_land'; // 'empty_land' | 'existing_house'
-let currentFloorIndex = 1;
 let currentDrawingTab = 'arch'; // 'arch' | 'fengshui'
 let currentThemeMode = 'white'; // 'white' | 'dark'
-let currentMatrixOrientMode = 'house'; // 'house' (Xoay theo hướng nhà) | 'loshu' (Lạc thư chuẩn)
+let currentMatrixOrientMode = 'house'; // 'house' | 'loshu'
 let currentDndOrientMode = 'house'; // 'house' | 'loshu'
-let isLandscapeMode = false; // false = Dọc | true = Ngang
+let isLandscapeMode = false;
 
 let currentGeometry = null;
 let currentSpatialResult = null;
@@ -37,6 +38,18 @@ let currentBatTrach = null;
 let cadRenderer = null;
 let luoPanRenderer = null;
 let viewportController = null;
+
+let selectedRoomId = null;
+let roomCounters = {
+    bed: 0,
+    wc: 0,
+    living: 0,
+    kitchen: 0,
+    altar: 0,
+    stairs: 0,
+    garage: 0,
+    laundry: 0
+};
 
 const layerState = {
     dimensions: true,
@@ -50,6 +63,20 @@ const dndPlacements = {
     1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
 };
 
+// Pointer Drag & Resize State for CAD Manipulation
+const pointerState = {
+    isInteracting: false,
+    mode: null, // 'move' | 'resize'
+    handle: null,
+    targetRoomId: null,
+    startClientX: 0,
+    startClientY: 0,
+    origX: 0,
+    origY: 0,
+    origW: 0,
+    origH: 0
+};
+
 function bootstrapApp() {
     initMenuDropdown();
     initAccordions();
@@ -60,6 +87,7 @@ function bootstrapApp() {
     initViewport();
     initToolbar();
     initActionButtons();
+    initCadInteractiveEngine();
 
     // Auto-calculate and render immediately on load
     handleCalculate(false);
@@ -123,6 +151,7 @@ function initModeTabs() {
             tabExistingHouse.classList.remove('active');
             if (cardDesign) cardDesign.style.display = 'block';
             if (existingHousePanel) existingHousePanel.style.display = 'none';
+            handleCalculate(false);
         });
 
         tabExistingHouse.addEventListener('click', () => {
@@ -202,7 +231,7 @@ function initFacingDegreeControls() {
     }
 }
 
-/* 6. Drag and Drop 9-Palaces (TỰ ĐỘNG XOAY THEO HƯỚNG CỬA / HƯỚNG NHÀ) */
+/* 6. Drag and Drop 9-Palaces (KHÔNG GIỚI HẠN SỐ LƯỢNG PHÒNG TRONG MỖI CUNG) */
 function initDragAndDropPalaces() {
     const rack = document.getElementById('availableRoomsRack');
     const btnOrientHouse = document.getElementById('btnDndOrientHouse');
@@ -227,34 +256,53 @@ function initDragAndDropPalaces() {
     if (rack) {
         rack.querySelectorAll('.room-drag-chip').forEach(chip => {
             chip.addEventListener('dragstart', (e) => {
-                const data = {
-                    id: chip.getAttribute('data-room-id'),
-                    name: chip.getAttribute('data-room-name')
-                };
-                e.dataTransfer.setData('application/json', JSON.stringify(data));
+                const type = chip.getAttribute('data-room-id');
+                const baseName = chip.getAttribute('data-room-name');
+                e.dataTransfer.setData('application/json', JSON.stringify({ type, baseName }));
             });
 
             chip.addEventListener('click', () => {
                 const facingPalace = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
-                addRoomToPalace(facingPalace, {
-                    id: chip.getAttribute('data-room-id'),
-                    name: chip.getAttribute('data-room-name')
-                });
+                const type = chip.getAttribute('data-room-id');
+                const baseName = chip.getAttribute('data-room-name');
+                addUnlimitedRoomToPalace(facingPalace, type, baseName);
             });
         });
     }
 
-    dndPlacements[9] = [{ id: 'living', name: 'Phòng Khách' }];
-    dndPlacements[1] = [{ id: 'kitchen', name: 'Bếp Nấu' }];
+    // Khởi tạo mẫu ban đầu không giới hạn
+    dndPlacements[9] = [{ id: 'r_living_1', type: 'living_room', name: 'Phòng Khách 1' }];
+    dndPlacements[1] = [{ id: 'r_kitchen_1', type: 'kitchen_dining', name: 'Bếp Nấu 1' }];
+    dndPlacements[8] = [{ id: 'r_bed_1', type: 'bed_master', name: 'Phòng Ngủ 1' }];
+    dndPlacements[2] = [{ id: 'r_wc_1', type: 'toilet', name: 'Vệ Sinh 1' }, { id: 'r_wc_2', type: 'toilet', name: 'Vệ Sinh 2' }];
 }
 
-function addRoomToPalace(palaceId, room) {
-    Object.keys(dndPlacements).forEach(p => {
-        dndPlacements[p] = dndPlacements[p].filter(r => r.id !== room.id);
+function addUnlimitedRoomToPalace(palaceId, type, baseName) {
+    roomCounters[type] = (roomCounters[type] || 0) + 1;
+    const roomIndex = roomCounters[type];
+    const uniqueId = `r_${type}_${Date.now()}_${roomIndex}`;
+    const displayName = `${baseName} ${roomIndex}`;
+
+    dndPlacements[palaceId].push({
+        id: uniqueId,
+        type: mapTypeToCadType(type),
+        name: displayName
     });
-    dndPlacements[palaceId].push(room);
+
     renderDndGrid();
     handleCalculate(false);
+}
+
+function mapTypeToCadType(type) {
+    if (type === 'living') return 'living_room';
+    if (type === 'kitchen') return 'kitchen_dining';
+    if (type === 'master_bed' || type === 'bed') return 'bed_master';
+    if (type === 'wc') return 'toilet';
+    if (type === 'stairs') return 'stairs';
+    if (type === 'garage') return 'garage';
+    if (type === 'altar') return 'altar';
+    if (type === 'laundry') return 'laundry';
+    return 'living_room';
 }
 
 function renderDndGrid() {
@@ -264,7 +312,6 @@ function renderDndGrid() {
     const facingPalace = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
     const sittingPalace = currentFlyingStars ? currentFlyingStars.sittingPalace : 1;
 
-    // Thứ tự 9 cung: Xoay theo Hướng Nhà (Cung Hướng nằm ở ô trên cùng chính giữa) hoặc Lạc Thư chuẩn
     const order = currentDndOrientMode === 'house'
         ? getOrientedPalaceGrid(facingPalace)
         : [4, 9, 2, 3, 5, 7, 8, 1, 6];
@@ -282,9 +329,9 @@ function renderDndGrid() {
 
         const rooms = dndPlacements[pId] || [];
         const roomTags = rooms.map(r => `
-            <div class="dropped-room-tag">
-                <span>${r.name}</span>
-                <button type="button" class="btn-remove-room" data-room-id="${r.id}" data-palace-id="${pId}">×</button>
+            <div class="dropped-room-tag" style="display: inline-flex; align-items: center; justify-content: space-between; background: rgba(2, 132, 199, 0.2); border: 1px solid #0284c7; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; margin: 2px 0;">
+                <span style="color: #fff; font-weight: 700;">${r.name}</span>
+                <button type="button" class="btn-remove-room" data-room-id="${r.id}" data-palace-id="${pId}" style="background: none; border: none; color: #ef4444; font-weight: bold; margin-left: 6px; cursor: pointer;">×</button>
             </div>
         `).join('');
 
@@ -295,11 +342,11 @@ function renderDndGrid() {
                 : 'border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(15, 23, 42, 0.85);');
 
         return `
-            <div class="palace-drop-zone ${isFacing ? 'facing-zone' : (isSitting ? 'sitting-zone' : '')}" data-palace-id="${pId}" style="${cellBorder} padding: 8px; border-radius: 8px; min-height: 95px; display: flex; flex-direction: column; justify-content: space-between;">
-                <span class="palace-zone-title" style="font-size: 0.76rem; font-weight: 800; color: ${isFacing ? '#f87171' : (isSitting ? '#38bdf8' : '#fbbf24')}; text-align: center; display: block; margin-bottom: 4px;">
+            <div class="palace-drop-zone ${isFacing ? 'facing-zone' : (isSitting ? 'sitting-zone' : '')}" data-palace-id="${pId}" style="${cellBorder} padding: 6px; border-radius: 8px; min-height: 95px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="font-size: 0.74rem; font-weight: 800; color: ${isFacing ? '#f87171' : (isSitting ? '#38bdf8' : '#fbbf24')}; text-align: center; margin-bottom: 4px;">
                     ${badgeTitle} ${starsBadge}
-                </span>
-                <div class="dropped-rooms-container" style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                </div>
+                <div class="dropped-rooms-container" style="flex: 1; display: flex; flex-direction: column; gap: 2px; max-height: 120px; overflow-y: auto;">
                     ${roomTags}
                 </div>
             </div>
@@ -321,9 +368,9 @@ function renderDndGrid() {
             zone.style.background = '';
             const dataStr = e.dataTransfer.getData('application/json');
             if (!dataStr) return;
-            const room = JSON.parse(dataStr);
+            const data = JSON.parse(dataStr);
             const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
-            addRoomToPalace(pId, room);
+            addUnlimitedRoomToPalace(pId, data.type, data.baseName);
         });
 
         zone.querySelectorAll('.btn-remove-room').forEach(btn => {
@@ -348,7 +395,158 @@ function initViewport() {
     luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
-/* 8. Toolbar Buttons & Matrix Controls */
+/* 8. Interactive CAD Manipulation Engine (Pointer Events, Move, Resize, Undo, Confirm) */
+function initCadInteractiveEngine() {
+    const stage = document.getElementById('svgStage');
+    if (!stage) return;
+
+    // Pointer Down: Chọn phòng hoặc nắm điểm neo co giãn
+    stage.addEventListener('pointerdown', (e) => {
+        const miniActionBtn = e.target.closest('.btn-cad-mini-action');
+        if (miniActionBtn) {
+            handleMiniActionClick(miniActionBtn);
+            return;
+        }
+
+        const resizeHandle = e.target.closest('.cad-resize-handle');
+        if (resizeHandle) {
+            e.stopPropagation();
+            const rId = resizeHandle.getAttribute('data-room-id');
+            const hId = resizeHandle.getAttribute('data-handle');
+            startCadPointerInteraction('resize', rId, hId, e.clientX, e.clientY);
+            return;
+        }
+
+        const roomEl = e.target.closest('.cad-room-interactive');
+        if (roomEl) {
+            e.stopPropagation();
+            const rId = roomEl.getAttribute('data-room-id');
+            selectedRoomId = rId;
+            cadRenderer.selectedRoomId = rId;
+            startCadPointerInteraction('move', rId, null, e.clientX, e.clientY);
+            renderActiveDrawing();
+            return;
+        }
+
+        // Bấm ra ngoài khoảng trống -> Bỏ chọn phòng
+        if (selectedRoomId) {
+            selectedRoomId = null;
+            cadRenderer.selectedRoomId = null;
+            renderActiveDrawing();
+        }
+    });
+
+    // Pointer Move: Kéo di chuyển hoặc co giãn kích thước thời gian thực
+    window.addEventListener('pointermove', (e) => {
+        if (!pointerState.isInteracting || !currentGeometry || !currentGeometry.rooms) return;
+
+        const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
+        if (!room) return;
+
+        // Tính tỉ lệ quy đổi pixel màn hình sang đơn vị milimet bản vẽ
+        const svgEl = stage.querySelector('svg');
+        const ctm = svgEl ? svgEl.getScreenCTM() : null;
+        const scale = ctm ? ctm.a : 0.2;
+        const dx = (e.clientX - pointerState.startClientX) / scale;
+        const dy = (e.clientY - pointerState.startClientY) / scale;
+
+        if (pointerState.mode === 'move') {
+            room.x = Math.round(Math.max(0, Math.min(currentGeometry.widthMm - room.w, pointerState.origX + dx)));
+            room.y = Math.round(Math.max(0, Math.min(currentGeometry.depthMm - room.h, pointerState.origY + dy)));
+        } else if (pointerState.mode === 'resize') {
+            const h = pointerState.handle;
+            const minSize = 1200; // kích thước tối thiểu 1.2m
+
+            if (h.includes('e')) {
+                room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
+            }
+            if (h.includes('s')) {
+                room.h = Math.max(minSize, Math.round(pointerState.origH + dy));
+            }
+            if (h.includes('w')) {
+                const newW = Math.max(minSize, Math.round(pointerState.origW - dx));
+                room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
+                room.w = newW;
+            }
+            if (h.includes('n')) {
+                const newH = Math.max(minSize, Math.round(pointerState.origH - dy));
+                room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
+                room.h = newH;
+            }
+        }
+
+        requestAnimationFrame(() => renderActiveDrawing());
+    });
+
+    // Pointer Up: Kết thúc thao tác kéo
+    window.addEventListener('pointerup', () => {
+        if (pointerState.isInteracting) {
+            pointerState.isInteracting = false;
+            pointerState.mode = null;
+            pointerState.handle = null;
+        }
+    });
+}
+
+function startCadPointerInteraction(mode, roomId, handle, clientX, clientY) {
+    if (!currentGeometry || !currentGeometry.rooms) return;
+    const room = currentGeometry.rooms.find(r => r.id === roomId);
+    if (!room) return;
+
+    pointerState.isInteracting = true;
+    pointerState.mode = mode;
+    pointerState.handle = handle;
+    pointerState.targetRoomId = roomId;
+    pointerState.startClientX = clientX;
+    pointerState.startClientY = clientY;
+    pointerState.origX = room.x;
+    pointerState.origY = room.y;
+    pointerState.origW = room.w;
+    pointerState.origH = room.h;
+}
+
+function handleMiniActionClick(btn) {
+    const action = btn.getAttribute('data-action');
+    const roomId = btn.getAttribute('data-room-id');
+    if (!currentGeometry || !currentGeometry.rooms) return;
+
+    const roomIndex = currentGeometry.rooms.findIndex(r => r.id === roomId);
+    if (roomIndex === -1) return;
+    const room = currentGeometry.rooms[roomIndex];
+
+    if (action === 'confirm') {
+        // Lưu lịch sử vị trí mới
+        room.history = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+        selectedRoomId = null;
+        cadRenderer.selectedRoomId = null;
+        renderActiveDrawing();
+    } else if (action === 'reset') {
+        // Hoàn tác về vị trí ban đầu
+        if (room.history) {
+            room.x = room.history.x;
+            room.y = room.history.y;
+            room.w = room.history.w;
+            room.h = room.history.h;
+        }
+        selectedRoomId = null;
+        cadRenderer.selectedRoomId = null;
+        renderActiveDrawing();
+    } else if (action === 'rotate') {
+        // Xoay 90°
+        const temp = room.w;
+        room.w = room.h;
+        room.h = temp;
+        renderActiveDrawing();
+    } else if (action === 'delete') {
+        // Xóa phòng
+        currentGeometry.rooms.splice(roomIndex, 1);
+        selectedRoomId = null;
+        cadRenderer.selectedRoomId = null;
+        renderActiveDrawing();
+    }
+}
+
+/* 9. Toolbar Buttons & Matrix Controls */
 function initToolbar() {
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const txtThemeMode = document.getElementById('txtThemeMode');
@@ -478,7 +676,7 @@ function initToolbar() {
     }
 }
 
-/* 9. Calculate & Form Input Listeners */
+/* 10. Form Actions & Input Listeners */
 function initActionButtons() {
     const btnCalculate = document.getElementById('btnCalculate');
     if (btnCalculate) {
@@ -508,7 +706,7 @@ function initActionButtons() {
     });
 }
 
-/* 10. Core Master Calculation Pipeline */
+/* 11. Core Master Calculation Pipeline (KHUNG KÍCH THƯỚC THỰC TẾ & TỰ DO THẢ PHÒNG) */
 function handleCalculate(shouldScroll = false) {
     const resultsSection = document.getElementById('resultsSection');
     if (resultsSection) {
@@ -536,13 +734,47 @@ function handleCalculate(shouldScroll = false) {
     const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
 
+    // Tổng hợp danh sách phòng tùy biến nếu ở Tab Nhà
+    let customRooms = null;
+    if (currentMode === 'existing_house') {
+        const W = Math.round(widthM * 1000);
+        const D = Math.round(lengthM * 1000);
+        customRooms = [];
+
+        // Chuyển đổi các phòng từ 9 cung sang tọa độ bản vẽ CAD
+        const orientedGrid = getOrientedPalaceGrid(findMountain(facingDegree).mountain.trigram);
+        const cellW = W / 3;
+        const cellH = D / 3;
+
+        orientedGrid.forEach((pId, idx) => {
+            const row = Math.floor(idx / 3);
+            const col = idx % 3;
+            const roomsInPalace = dndPlacements[pId] || [];
+
+            roomsInPalace.forEach((r, rIdx) => {
+                const subH = (cellH - 400) / Math.max(1, roomsInPalace.length);
+                customRooms.push({
+                    id: r.id,
+                    name: r.name.toUpperCase(),
+                    type: r.type,
+                    x: Math.round(col * cellW + 200),
+                    y: Math.round(row * cellH + 200 + rIdx * subH),
+                    w: Math.round(cellW - 400),
+                    h: Math.round(subH - 100),
+                    rot: 0
+                });
+            });
+        });
+    }
+
     // 1. Generate Parametric Floorplan Geometry
     currentGeometry = generateParametricFloorplan({
         shape,
         widthM,
         lengthM,
         floors,
-        facingDegree
+        facingDegree,
+        customRooms
     });
 
     // 2. Compute Flying Stars Chart
@@ -573,7 +805,7 @@ function handleCalculate(shouldScroll = false) {
     // 5. Render Floor Navigator
     renderFloorNavigator(currentGeometry.totalFloors);
 
-    // 6. Render Active Drawing (Bản Vẽ Kiến Trúc CAD hoặc La Kinh Cửu Cung)
+    // 6. Render Active Drawing (CAD Floorplan hoặc La Kinh Cửu Cung)
     renderActiveDrawing();
 
     // 7. Render 9-Palace Matrix (Oriented by House facing or Lo Shu)
@@ -590,14 +822,14 @@ function handleCalculate(shouldScroll = false) {
     }
 }
 
-/* 11. Render Floor Navigator */
+/* 12. Render Floor Navigator */
 function renderFloorNavigator(totalFloors) {
     const nav = document.getElementById('floorNavigator');
     if (!nav) return;
 
     let buttons = '';
     for (let f = 1; f <= totalFloors; f++) {
-        const isActive = f === currentFloorIndex;
+        const isActive = f === 1;
         const name = f === 1 ? 'TẦNG TRỆT' : `TẦNG ${f}`;
         buttons += `
             <button type="button" class="floor-btn ${isActive ? 'active' : ''}" data-floor="${f}">
@@ -607,16 +839,9 @@ function renderFloorNavigator(totalFloors) {
     }
 
     nav.innerHTML = buttons;
-    nav.querySelectorAll('.floor-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentFloorIndex = parseInt(btn.getAttribute('data-floor'), 10);
-            renderFloorNavigator(totalFloors);
-            renderActiveDrawing();
-        });
-    });
 }
 
-/* 12. Render Active Drawing (CAD Floorplan vs La Kinh 24 Sơn Cửu Cung) */
+/* 13. Render Active Drawing (CAD Floorplan vs La Kinh 24 Sơn Cửu Cung) */
 function renderActiveDrawing() {
     if (!currentGeometry || !viewportController) return;
 
@@ -624,7 +849,8 @@ function renderActiveDrawing() {
         // Tab 1: Bản vẽ kiến trúc CAD đen trắng chuẩn 100% Ảnh 3 Scan2CAD
         const svgCode = cadRenderer.renderSvg(currentGeometry, {
             theme: currentThemeMode,
-            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180
+            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
+            selectedRoomId: selectedRoomId
         });
         viewportController.setSvgContent(svgCode);
     } else {
@@ -639,7 +865,7 @@ function renderActiveDrawing() {
     }
 }
 
-/* 13. Render 9-Palace Xuan Kong Matrix Display */
+/* 14. Render 9-Palace Xuan Kong Matrix Display */
 function renderFlyingStarsMatrix(flyingStars, batTrach) {
     const matrixContainer = document.getElementById('flyingStarsMatrix');
     const metaVan = document.getElementById('metaVan');
@@ -649,8 +875,8 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     if (metaVan) metaVan.textContent = `Vận ${flyingStars.van} (${flyingStars.currentYear || 2026})`;
     if (metaToaHuong) metaToaHuong.textContent = `Tọa ${flyingStars.sittingMountain} Hướng ${flyingStars.facingMountain} (${flyingStars.chartType === 'chinh_huong' ? 'Hạ Quái' : 'Thế Quái'})`;
     if (metaGua && batTrach) {
-        const gName = batTrach.guaName || batTrach.name || 'Khảm (Thủy)';
-        const gGroup = batTrach.groupName || batTrach.trachGroup || 'Đông Tứ Mệnh';
+        const gName = batTrach.guaName || 'Khảm (Thủy)';
+        const gGroup = batTrach.groupName || 'Đông Tứ Mệnh';
         metaGua.textContent = `${gName} (${gGroup})`;
     }
 
@@ -665,7 +891,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
         if (!pal) return '';
 
         const isFacingPal = pId === flyingStars.facingPalace;
-        const isSittingPal = pId === sittingPalace;
+        const isSittingPal = pId === flyingStars.sittingPalace;
 
         let palTag = PALACE_NAMES[pId] || pId;
         if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
@@ -690,7 +916,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     }).join('');
 }
 
-/* 14. Render Detailed Report */
+/* 15. Render Detailed Report */
 function renderDetailedReport(spatialResult) {
     const container = document.getElementById('detailedReportContainer');
     if (!container || !spatialResult || !spatialResult.spatialPalaces) return;
