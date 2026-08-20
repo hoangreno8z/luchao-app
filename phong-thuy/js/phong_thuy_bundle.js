@@ -645,7 +645,7 @@ export class ArchitecturalCADRenderer {
             }
         }
 
-        // 2. VECTOR SYMBOLS (KHÔNG FILL MÀU, NÉT ĐEN CHUẨN CAD)
+        // 2. VECTOR SYMBOLS (NÉT KỸ THUẬT CHUẨN SCAN2CAD CHO CÁC CẤU TRÚC KIẾN TRÚC)
         const renderCar = (cx, cy, cw, ch) => `
             <g class="cad-symbol-car" transform="translate(${cx}, ${cy})">
                 <rect x="${cw * 0.1}" y="${ch * 0.05}" width="${cw * 0.8}" height="${ch * 0.9}" rx="${cw * 0.2}" fill="none" stroke="#000" stroke-width="8"/>
@@ -653,8 +653,6 @@ export class ArchitecturalCADRenderer {
                 <path d="M ${cw * 0.25} ${ch * 0.7} Q ${cw * 0.5} ${ch * 0.68} ${cw * 0.75} ${ch * 0.7} L ${cw * 0.8} ${ch * 0.82} Q ${cw * 0.5} ${ch * 0.85} ${cw * 0.2} ${ch * 0.82} Z" fill="none" stroke="#000" stroke-width="6"/>
                 <rect x="${cw * 0.05}" y="${ch * 0.15}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
                 <rect x="${cw * 0.87}" y="${ch * 0.15}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
-                <rect x="${cw * 0.05}" y="${ch * 0.73}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
-                <rect x="${cw * 0.87}" y="${ch * 0.73}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
             </g>
         `;
 
@@ -710,7 +708,105 @@ export class ArchitecturalCADRenderer {
             return st;
         };
 
-        // 3. RENDER CÁC PHÒNG NỘI THẤT TƯƠNG TÁC
+        const renderMainDoor = (mx, my, mw, mh) => `
+            <g class="cad-symbol-maindoor" transform="translate(${mx}, ${my})">
+                <rect x="0" y="0" width="${mw}" height="${mh}" fill="none" stroke="#000" stroke-width="8" stroke-dasharray="25,15"/>
+                <line x1="0" y1="${mh / 2}" x2="${mw * 0.45}" y2="0" stroke="#000" stroke-width="8"/>
+                <path d="M ${mw * 0.45} 0 A ${mw * 0.45} ${mw * 0.45} 0 0 1 0 ${mh / 2}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
+                <line x1="${mw}" y1="${mh / 2}" x2="${mw * 0.55}" y2="0" stroke="#000" stroke-width="8"/>
+                <path d="M ${mw * 0.55} 0 A ${mw * 0.45} ${mw * 0.45} 0 0 0 ${mw} ${mh / 2}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
+                <rect x="0" y="0" width="${Math.max(40, mw * 0.08)}" height="${mh}" fill="#000"/>
+                <rect x="${mw - Math.max(40, mw * 0.08)}" y="0" width="${Math.max(40, mw * 0.08)}" height="${mh}" fill="#000"/>
+            </g>
+        `;
+
+        const renderGate = (gx, gy, gw, gh) => `
+            <g class="cad-symbol-gate" transform="translate(${gx}, ${gy})">
+                <rect x="0" y="0" width="${gw * 0.15}" height="${gh}" fill="#000" stroke="#000" stroke-width="4"/>
+                <rect x="${gw * 0.85}" y="0" width="${gw * 0.15}" height="${gh}" fill="#000" stroke="#000" stroke-width="4"/>
+                <line x1="${gw * 0.15}" y1="${gh / 2}" x2="${gw * 0.85}" y2="${gh / 2}" stroke="#000" stroke-width="10" stroke-dasharray="30,20"/>
+                <rect x="${gw * 0.2}" y="${gh * 0.2}" width="${gw * 0.28}" height="${gh * 0.6}" fill="none" stroke="#000" stroke-width="6"/>
+                <rect x="${gw * 0.52}" y="${gh * 0.2}" width="${gw * 0.28}" height="${gh * 0.6}" fill="none" stroke="#000" stroke-width="6"/>
+            </g>
+        `;
+
+        const renderSideDoor = (sx, sy, sw, sh) => `
+            <g class="cad-symbol-sidedoor" transform="translate(${sx}, ${sy})">
+                <rect x="0" y="0" width="${sw}" height="${sh}" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="20,15"/>
+                <line x1="0" y1="${sh}" x2="${sw * 0.85}" y2="0" stroke="#000" stroke-width="8"/>
+                <path d="M ${sw * 0.85} 0 A ${sw * 0.85} ${sw * 0.85} 0 0 1 0 ${sh}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
+                <rect x="0" y="0" width="${Math.max(40, sw * 0.1)}" height="${sh}" fill="#000"/>
+            </g>
+        `;
+
+        const renderWindow = (wx, wy, ww, wh) => `
+            <g class="cad-symbol-window" transform="translate(${wx}, ${wy})">
+                <rect x="0" y="0" width="${ww}" height="${wh}" fill="none" stroke="#000" stroke-width="10"/>
+                <line x1="0" y1="${wh * 0.35}" x2="${ww}" y2="${wh * 0.35}" stroke="#000" stroke-width="4"/>
+                <line x1="0" y1="${wh * 0.65}" x2="${ww}" y2="${wh * 0.65}" stroke="#000" stroke-width="4"/>
+                <line x1="${ww / 2}" y1="0" x2="${ww / 2}" y2="${wh}" stroke="#000" stroke-width="6"/>
+            </g>
+        `;
+
+        const renderOffice = (ox, oy, ow, oh) => `
+            <g class="cad-symbol-office" transform="translate(${ox}, ${oy})">
+                <rect x="${ow * 0.15}" y="${oh * 0.15}" width="${ow * 0.7}" height="${oh * 0.4}" rx="10" fill="none" stroke="#000" stroke-width="8"/>
+                <rect x="${ow * 0.35}" y="${oh * 0.22}" width="${ow * 0.3}" height="${oh * 0.2}" rx="5" fill="none" stroke="#000" stroke-width="4"/>
+                <circle cx="${ow * 0.5}" cy="${oh * 0.75}" r="${Math.min(ow, oh) * 0.16}" fill="none" stroke="#000" stroke-width="6"/>
+                <path d="M ${ow * 0.38} ${oh * 0.75} Q ${ow * 0.5} ${oh * 0.65} ${ow * 0.62} ${oh * 0.75}" fill="none" stroke="#000" stroke-width="6"/>
+            </g>
+        `;
+
+        const renderGym = (gx, gy, gw, gh) => `
+            <g class="cad-symbol-gym" transform="translate(${gx}, ${gy})">
+                <rect x="${gw * 0.15}" y="${gh * 0.1}" width="${gw * 0.32}" height="${gh * 0.8}" rx="15" fill="none" stroke="#000" stroke-width="8"/>
+                <line x1="${gw * 0.15}" y1="${gh * 0.3}" x2="${gw * 0.47}" y2="${gh * 0.3}" stroke="#000" stroke-width="6"/>
+                <rect x="${gw * 0.6}" y="${gh * 0.25}" width="${gw * 0.25}" height="${gh * 0.5}" rx="8" fill="none" stroke="#000" stroke-width="6"/>
+                <line x1="${gw * 0.55}" y1="${gh * 0.5}" x2="${gw * 0.9}" y2="${gh * 0.5}" stroke="#000" stroke-width="8"/>
+                <circle cx="${gw * 0.55}" cy="${gh * 0.5}" r="25" fill="#000"/>
+                <circle cx="${gw * 0.9}" cy="${gh * 0.5}" r="25" fill="#000"/>
+            </g>
+        `;
+
+        const renderPool = (px, py, pw, ph) => `
+            <g class="cad-symbol-pool" transform="translate(${px}, ${py})">
+                <rect x="${pw * 0.06}" y="${ph * 0.06}" width="${pw * 0.88}" height="${ph * 0.88}" rx="25" fill="none" stroke="#0284c7" stroke-width="12"/>
+                <rect x="${pw * 0.12}" y="${ph * 0.12}" width="${pw * 0.76}" height="${ph * 0.76}" rx="15" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="30,15"/>
+                <path d="M ${pw * 0.2} ${ph * 0.4} Q ${pw * 0.35} ${ph * 0.35} ${pw * 0.5} ${ph * 0.4} T ${pw * 0.8} ${ph * 0.4}" fill="none" stroke="#0284c7" stroke-width="6"/>
+                <path d="M ${pw * 0.2} ${ph * 0.6} Q ${pw * 0.35} ${ph * 0.55} ${pw * 0.5} ${ph * 0.6} T ${pw * 0.8} ${ph * 0.6}" fill="none" stroke="#0284c7" stroke-width="6"/>
+                <rect x="${pw * 0.8}" y="${ph * 0.18}" width="60" height="120" rx="6" fill="#0284c7"/>
+            </g>
+        `;
+
+        const renderYard = (yx, yy, yw, yh) => `
+            <g class="cad-symbol-yard" transform="translate(${yx}, ${yy})">
+                <rect x="0" y="0" width="${yw}" height="${yh}" fill="none" stroke="#16a34a" stroke-width="6" stroke-dasharray="40,20"/>
+                <circle cx="${yw * 0.3}" cy="${yh * 0.35}" r="${Math.min(yw, yh) * 0.16}" fill="none" stroke="#16a34a" stroke-width="6"/>
+                <circle cx="${yw * 0.3}" cy="${yh * 0.35}" r="${Math.min(yw, yh) * 0.08}" fill="none" stroke="#16a34a" stroke-width="4"/>
+                <circle cx="${yw * 0.7}" cy="${yh * 0.65}" r="${Math.min(yw, yh) * 0.2}" fill="none" stroke="#16a34a" stroke-width="6"/>
+                <line x1="${yw * 0.1}" y1="${yh * 0.75}" x2="${yw * 0.45}" y2="${yh * 0.75}" stroke="#16a34a" stroke-width="4" stroke-dasharray="20,15"/>
+            </g>
+        `;
+
+        const renderAltar = (ax, ay, aw, ah) => `
+            <g class="cad-symbol-altar" transform="translate(${ax}, ${ay})">
+                <rect x="${aw * 0.1}" y="${ah * 0.15}" width="${aw * 0.8}" height="${ah * 0.7}" rx="10" fill="none" stroke="#b45309" stroke-width="10"/>
+                <rect x="${aw * 0.15}" y="${ah * 0.22}" width="${aw * 0.7}" height="${ah * 0.56}" fill="none" stroke="#b45309" stroke-width="4" stroke-dasharray="25,15"/>
+                <circle cx="${aw / 2}" cy="${ah / 2}" r="${Math.min(aw, ah) * 0.12}" fill="#b45309"/>
+                <circle cx="${aw * 0.25}" cy="${ah / 2}" r="30" fill="#b45309"/>
+                <circle cx="${aw * 0.75}" cy="${ah / 2}" r="30" fill="#b45309"/>
+            </g>
+        `;
+
+        const renderSkylight = (kx, ky, kw, kh) => `
+            <g class="cad-symbol-skylight" transform="translate(${kx}, ${ky})">
+                <rect x="0" y="0" width="${kw}" height="${kh}" fill="none" stroke="#0284c7" stroke-width="8" stroke-dasharray="30,20"/>
+                <line x1="0" y1="0" x2="${kw}" y2="${kh}" stroke="#0284c7" stroke-width="6" stroke-dasharray="25,15"/>
+                <line x1="${kw}" y1="0" x2="0" y2="${kh}" stroke="#0284c7" stroke-width="6" stroke-dasharray="25,15"/>
+            </g>
+        `;
+
+        // 3. RENDER CÁC PHÒNG NỘI THẤT TƯƠNG TÁC KÈM HITBOX CẢM ỨNG MOBILE SIÊU NHẠY
         let roomsSvg = '';
         if (geometry.rooms) {
             geometry.rooms.forEach(r => {
@@ -719,11 +815,21 @@ export class ArchitecturalCADRenderer {
 
                 let symbolSvg = '';
                 if (r.type === 'garage') symbolSvg = renderCar(r.x, r.y, r.w, r.h);
-                else if (r.type === 'bed_master' || r.type === 'bed_regular') symbolSvg = renderBed(r.x, r.y, r.w, r.h);
-                else if (r.type === 'living_room') symbolSvg = renderSofa(r.x, r.y, r.w, r.h);
-                else if (r.type === 'kitchen_dining') symbolSvg = renderDining(r.x, r.y, r.w, r.h);
-                else if (r.type === 'toilet') symbolSvg = renderWc(r.x, r.y, r.w, r.h);
+                else if (r.type === 'bed_master' || r.type === 'bed_regular' || r.type === 'bed') symbolSvg = renderBed(r.x, r.y, r.w, r.h);
+                else if (r.type === 'living_room' || r.type === 'living') symbolSvg = renderSofa(r.x, r.y, r.w, r.h);
+                else if (r.type === 'kitchen_dining' || r.type === 'kitchen') symbolSvg = renderDining(r.x, r.y, r.w, r.h);
+                else if (r.type === 'toilet' || r.type === 'wc') symbolSvg = renderWc(r.x, r.y, r.w, r.h);
                 else if (r.type === 'stairs') symbolSvg = renderStairs(r.x, r.y, r.w, r.h);
+                else if (r.type === 'main_door' || r.type === 'door_main') symbolSvg = renderMainDoor(r.x, r.y, r.w, r.h);
+                else if (r.type === 'gate') symbolSvg = renderGate(r.x, r.y, r.w, r.h);
+                else if (r.type === 'side_door' || r.type === 'door_side') symbolSvg = renderSideDoor(r.x, r.y, r.w, r.h);
+                else if (r.type === 'window') symbolSvg = renderWindow(r.x, r.y, r.w, r.h);
+                else if (r.type === 'office') symbolSvg = renderOffice(r.x, r.y, r.w, r.h);
+                else if (r.type === 'gym') symbolSvg = renderGym(r.x, r.y, r.w, r.h);
+                else if (r.type === 'pool') symbolSvg = renderPool(r.x, r.y, r.w, r.h);
+                else if (r.type === 'yard') symbolSvg = renderYard(r.x, r.y, r.w, r.h);
+                else if (r.type === 'altar') symbolSvg = renderAltar(r.x, r.y, r.w, r.h);
+                else if (r.type === 'skylight') symbolSvg = renderSkylight(r.x, r.y, r.w, r.h);
 
                 let handlesSvg = '';
                 if (isSel) {
@@ -741,7 +847,11 @@ export class ArchitecturalCADRenderer {
 
                     handlesSvg = `
                         ${handlePoints.map(hp => `
-                            <rect class="cad-resize-handle" data-handle="${hp.id}" data-room-id="${r.id}" x="${hp.cx - hs / 2}" y="${hp.cy - hs / 2}" width="${hs}" height="${hs}" fill="#0284c7" stroke="#ffffff" stroke-width="4" rx="6" style="cursor: ${hp.id}-resize;"/>
+                            <g class="cad-resize-handle-group" data-handle="${hp.id}" data-room-id="${r.id}">
+                                <!-- Vùng cảm ứng chạm mobile mở rộng > 50px -->
+                                <circle class="cad-resize-handle" data-handle="${hp.id}" data-room-id="${r.id}" cx="${hp.cx}" cy="${hp.cy}" r="220" fill="transparent" stroke="none" pointer-events="all" style="cursor: ${hp.id}-resize;"/>
+                                <rect x="${hp.cx - hs / 2}" y="${hp.cy - hs / 2}" width="${hs}" height="${hs}" fill="#0284c7" stroke="#ffffff" stroke-width="5" rx="6" pointer-events="none"/>
+                            </g>
                         `).join('')}
 
                         <g class="cad-mini-action-bar" transform="translate(${r.x + r.w / 2}, ${r.y - 120})">
@@ -768,7 +878,7 @@ export class ArchitecturalCADRenderer {
 
                 roomsSvg += `
                     <g class="cad-room-interactive ${isSel ? 'selected-room' : ''}" data-room-id="${r.id}" style="cursor: move;">
-                        <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${isSel ? 'rgba(2, 132, 199, 0.06)' : 'none'}" stroke="${isSel ? '#0284c7' : '#000000'}" stroke-width="${isSel ? 16 : 14}" stroke-dasharray="${isSel ? '30,15' : 'none'}"/>
+                        <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${isSel ? 'rgba(2, 132, 199, 0.08)' : 'none'}" stroke="${isSel ? '#0284c7' : '#000000'}" stroke-width="${isSel ? 18 : 14}" stroke-dasharray="${isSel ? '30,15' : 'none'}"/>
                         ${symbolSvg}
                         <rect x="${r.x + r.w / 2 - 320}" y="${r.y + r.h / 2 - 70}" width="640" height="140" rx="16" fill="rgba(255,255,255,0.92)" stroke="${isSel ? '#0284c7' : '#94a3b8'}" stroke-width="4"/>
                         <text x="${r.x + r.w / 2}" y="${r.y + r.h / 2 - 10}" text-anchor="middle" font-size="${Math.min(r.w * 0.12, 75)}" font-weight="900" fill="#000000" letter-spacing="2">${r.name}</text>
@@ -779,10 +889,27 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        // 4. POLYGON TƯỜNG NGOẠI THẤT & CÁC ĐIỂM NEO <circle> CHỈNH ĐỈNH
-        const polyPointsStr = pts.map(p => `${p.x},${p.y}`).join(' ');
+        // 4. POLYGON TƯỜNG NGOẠI THẤT & CÁC ĐIỂM NEO ĐỈNH CẢM ỨNG RỘNG
+        const selectedEdgeIdx = options.selectedEdgeIndex !== undefined ? options.selectedEdgeIndex : null;
+        let edgeLinesSvg = '';
+        for (let i = 0; i < pts.length; i++) {
+            const p1 = pts[i];
+            const p2 = pts[(i + 1) % pts.length];
+            const isEdgeSel = (selectedEdgeIdx === i);
+            edgeLinesSvg += `
+                <line class="cad-edge-line ${isEdgeSel ? 'selected-edge' : ''}" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isEdgeSel ? '#f59e0b' : '#000000'}" stroke-width="${isEdgeSel ? 65 : 45}" stroke-linecap="round"/>
+                <!-- Hitbox chạm cạnh trên điện thoại -->
+                <line class="cad-edge-hitbox" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="transparent" stroke-width="260" pointer-events="all" style="cursor: pointer;"/>
+            `;
+        }
+
         const vertexCircles = pts.map((p, idx) => `
-            <circle class="cad-vertex-handle" data-vertex-idx="${idx}" cx="${p.x}" cy="${p.y}" r="90" fill="#2563eb" stroke="#ffffff" stroke-width="14" style="cursor: crosshair;" title="Kéo để chỉnh sửa góc nhà"/>
+            <g class="cad-vertex-group" data-vertex-idx="${idx}">
+                <!-- Vùng cảm ứng chạm đỉnh siêu rộng > 50px trên mobile -->
+                <circle class="cad-vertex-handle" data-vertex-idx="${idx}" cx="${p.x}" cy="${p.y}" r="280" fill="transparent" stroke="none" pointer-events="all" style="cursor: crosshair;"/>
+                <circle cx="${p.x}" cy="${p.y}" r="90" fill="#2563eb" stroke="#ffffff" stroke-width="16" pointer-events="none"/>
+                <circle cx="${p.x}" cy="${p.y}" r="30" fill="#ffffff" pointer-events="none"/>
+            </g>
         `).join('');
 
         return {
@@ -793,7 +920,7 @@ export class ArchitecturalCADRenderer {
             houseMinY: minY,
             houseCenterX: (minX + maxX) / 2,
             houseCenterY: (minY + maxY) / 2,
-            wallsLayer: `<polygon points="${polyPointsStr}" fill="none" stroke="#000000" stroke-width="45" stroke-linejoin="miter"/>`,
+            wallsLayer: `<g id="layer-walls-polygon">${edgeLinesSvg}</g>`,
             vertexLayer: `<g id="layer-vertex-handles">${vertexCircles}</g>`,
             roomsLayer: `<g id="layer-rooms-container">${roomsSvg}</g>`,
             dimensionsLayer: `<g id="layer-dimensions">${dimsSvg}</g>`
@@ -1346,6 +1473,22 @@ export class SvgViewportController {
     fitToScreen() {
         this.currentVB = { ...this.baseVB };
         this.hasUserAdjustedView = false;
+        this.applyViewBox();
+    }
+
+    focusOnRect(x, y, w, h, pad = 1200) {
+        if (!this.svgElement) return;
+        const targetW = Math.max(3000, (w || 1000) + pad * 2);
+        const targetH = Math.max(3000, (h || 1000) + pad * 2);
+        const cx = (x || 0) + (w || 1000) / 2;
+        const cy = (y || 0) + (h || 1000) / 2;
+        this.currentVB = {
+            x: cx - targetW / 2,
+            y: cy - targetH / 2,
+            w: targetW,
+            h: targetH
+        };
+        this.hasUserAdjustedView = true;
         this.applyViewBox();
     }
 
