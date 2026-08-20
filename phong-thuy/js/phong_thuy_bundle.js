@@ -1551,3 +1551,1232 @@ export class SvgViewportController {
     }
 }
 
+// ------------------------------------------------------------
+// 10. CAD CORE ARCHITECTURE (ai_room_planner, Arcada, openPlan3D, CodeCAD)
+// ------------------------------------------------------------
+
+export function point(x, y) {
+    return { x: Number(x) || 0, y: Number(y) || 0 };
+}
+
+export function distance(p1, p2) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    return Math.hypot(dx, dy);
+}
+
+export function midpoint(p1, p2) {
+    return {
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2
+    };
+}
+
+export function vector(p1, p2) {
+    return { x: p2.x - p1.x, y: p2.y - p1.y };
+}
+
+export function vectorLength(v) {
+    return Math.hypot(v.x, v.y);
+}
+
+export function normalize(v) {
+    const len = Math.hypot(v.x, v.y);
+    if (len === 0) return { x: 0, y: 0 };
+    return { x: v.x / len, y: v.y / len };
+}
+
+export function normalVector(v) {
+    const n = normalize(v);
+    return { x: -n.y, y: n.x };
+}
+
+export function dotProduct(v1, v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+}
+
+export function crossProduct2D(v1, v2) {
+    return v1.x * v2.y - v1.y * v2.x;
+}
+
+export function angleBetweenPoints(p1, p2) {
+    const rad = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    let deg = rad * (180 / Math.PI);
+    if (deg < 0) deg += 360;
+    return deg;
+}
+
+export function rotatePoint(pt, center, deg) {
+    const rad = deg * (Math.PI / 180);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const dx = pt.x - center.x;
+    const dy = pt.y - center.y;
+    return {
+        x: center.x + (dx * cos - dy * sin),
+        y: center.y + (dx * sin + dy * cos)
+    };
+}
+
+export function getBoundingBox(points) {
+    if (!points || points.length === 0) {
+        return { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0, centerX: 0, centerY: 0 };
+    }
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        if (p.x < minX) minX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y > maxY) maxY = p.y;
+    }
+
+    const width = maxX - minX;
+    const height = maxY - minY;
+    return {
+        minX,
+        minY,
+        maxX,
+        maxY,
+        width,
+        height,
+        centerX: minX + width / 2,
+        centerY: minY + height / 2
+    };
+}
+
+export function polygonArea(points) {
+    if (!points || points.length < 3) return 0;
+    let area = 0;
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        area += points[i].x * points[j].y;
+        area -= points[j].x * points[i].y;
+    }
+    return Math.abs(area) / 2;
+}
+
+export function polygonCentroid(points) {
+    if (!points || points.length === 0) return { x: 0, y: 0 };
+    if (points.length < 3) {
+        return midpoint(points[0], points[points.length - 1]);
+    }
+    let cx = 0, cy = 0;
+    let signedArea = 0;
+    const n = points.length;
+
+    for (let i = 0; i < n; i++) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % n];
+        const a = p1.x * p2.y - p2.x * p1.y;
+        signedArea += a;
+        cx += (p1.x + p2.x) * a;
+        cy += (p1.y + p2.y) * a;
+    }
+
+    signedArea *= 0.5;
+    if (Math.abs(signedArea) < 1e-6) {
+        const bb = getBoundingBox(points);
+        return { x: bb.centerX, y: bb.centerY };
+    }
+
+    cx /= (6 * signedArea);
+    cy /= (6 * signedArea);
+    return { x: Math.round(cx), y: Math.round(cy) };
+}
+
+export function isPointInPolygon(pt, polygon) {
+    if (!polygon || polygon.length < 3) return false;
+    let inside = false;
+    const n = polygon.length;
+    for (let i = 0, j = n - 1; i < n; j = i++) {
+        const xi = polygon[i].x, yi = polygon[i].y;
+        const xj = polygon[j].x, yj = polygon[j].y;
+
+        const intersect = ((yi > pt.y) !== (yj > pt.y)) &&
+            (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
+
+// Snapping Engine
+export function snapToGrid(value, gridSize = 100) {
+    if (!gridSize || gridSize <= 0) return Math.round(value);
+    return Math.round(value / gridSize) * gridSize;
+}
+
+export function snapPointToGrid(pt, gridSize = 100) {
+    return {
+        x: snapToGrid(pt.x, gridSize),
+        y: snapToGrid(pt.y, gridSize)
+    };
+}
+
+export function snapAngle(deg, threshold = 6, snapAngles = [0, 45, 90, 135, 180, 225, 270, 315, 360]) {
+    let normalized = deg % 360;
+    if (normalized < 0) normalized += 360;
+
+    for (let target of snapAngles) {
+        let diff = Math.abs(normalized - target);
+        if (diff <= threshold || Math.abs(diff - 360) <= threshold) {
+            return target % 360;
+        }
+    }
+    return Math.round(normalized * 10) / 10;
+}
+
+export function snapPointToVertices(pt, vertices, threshold = 150) {
+    if (!vertices || vertices.length === 0) return { point: pt, snapped: false, target: null };
+    let bestDist = Infinity;
+    let bestPt = null;
+
+    for (let v of vertices) {
+        const d = Math.hypot(pt.x - v.x, pt.y - v.y);
+        if (d < threshold && d < bestDist) {
+            bestDist = d;
+            bestPt = { x: v.x, y: v.y, name: v.name || '' };
+        }
+    }
+
+    if (bestPt) {
+        return { point: bestPt, snapped: true, target: bestPt, dist: bestDist };
+    }
+    return { point: pt, snapped: false, target: null };
+}
+
+export function findSmartSnapping(targetBox, otherBoxes, threshold = 120) {
+    let snappedX = targetBox.x;
+    let snappedY = targetBox.y;
+    const guides = [];
+
+    const targetLeft = targetBox.x;
+    const targetRight = targetBox.x + targetBox.w;
+    const targetCenterX = targetBox.x + targetBox.w / 2;
+
+    const targetTop = targetBox.y;
+    const targetBottom = targetBox.y + targetBox.h;
+    const targetCenterY = targetBox.y + targetBox.h / 2;
+
+    let minDiffX = threshold;
+    let minDiffY = threshold;
+
+    for (let box of otherBoxes) {
+        if (!box || box.id === targetBox.id) continue;
+
+        const otherLeft = box.x;
+        const otherRight = box.x + box.w;
+        const otherCenterX = box.x + box.w / 2;
+
+        const otherTop = box.y;
+        const otherBottom = box.y + box.h;
+        const otherCenterY = box.y + box.h / 2;
+
+        const xChecks = [
+            { diff: otherLeft - targetLeft, newX: otherLeft, guideX: otherLeft },
+            { diff: otherRight - targetRight, newX: otherRight - targetBox.w, guideX: otherRight },
+            { diff: otherRight - targetLeft, newX: otherRight, guideX: otherRight },
+            { diff: otherLeft - targetRight, newX: otherLeft - targetBox.w, guideX: otherLeft },
+            { diff: otherCenterX - targetCenterX, newX: otherCenterX - targetBox.w / 2, guideX: otherCenterX }
+        ];
+
+        for (let check of xChecks) {
+            if (Math.abs(check.diff) < minDiffX) {
+                minDiffX = Math.abs(check.diff);
+                snappedX = check.newX;
+                guides.push({
+                    type: 'vertical',
+                    x: check.guideX,
+                    y1: Math.min(targetTop, otherTop) - 200,
+                    y2: Math.max(targetBottom, otherBottom) + 200
+                });
+            }
+        }
+
+        const yChecks = [
+            { diff: otherTop - targetTop, newY: otherTop, guideY: otherTop },
+            { diff: otherBottom - targetBottom, newY: otherBottom - targetBox.h, guideY: otherBottom },
+            { diff: otherBottom - targetTop, newY: otherBottom, guideY: otherBottom },
+            { diff: otherTop - targetBottom, newY: otherTop - targetBox.h, guideY: otherTop },
+            { diff: otherCenterY - targetCenterY, newY: otherCenterY - targetBox.h / 2, guideY: otherCenterY }
+        ];
+
+        for (let check of yChecks) {
+            if (Math.abs(check.diff) < minDiffY) {
+                minDiffY = Math.abs(check.diff);
+                snappedY = check.newY;
+                guides.push({
+                    type: 'horizontal',
+                    y: check.guideY,
+                    x1: Math.min(targetLeft, otherLeft) - 200,
+                    x2: Math.max(targetRight, otherRight) + 200
+                });
+            }
+        }
+    }
+
+    return {
+        x: Math.round(snappedX),
+        y: Math.round(snappedY),
+        guides: guides.slice(-4)
+    };
+}
+
+// History Manager
+export class HistoryManager {
+    constructor(maxSteps = 50) {
+        this.maxSteps = maxSteps;
+        this.undoStack = [];
+        this.redoStack = [];
+        this.currentState = null;
+    }
+
+    init(initialState) {
+        this.undoStack = [];
+        this.redoStack = [];
+        this.currentState = this._clone(initialState);
+    }
+
+    pushState(newState, label = '') {
+        if (!newState) return;
+        if (this.currentState) {
+            this.undoStack.push({
+                state: this._clone(this.currentState),
+                label: label || 'Action',
+                timestamp: Date.now()
+            });
+
+            if (this.undoStack.length > this.maxSteps) {
+                this.undoStack.shift();
+            }
+        }
+        this.currentState = this._clone(newState);
+        this.redoStack = [];
+    }
+
+    undo() {
+        if (!this.canUndo()) return null;
+        const previous = this.undoStack.pop();
+        this.redoStack.push({
+            state: this._clone(this.currentState),
+            timestamp: Date.now()
+        });
+        this.currentState = this._clone(previous.state);
+        return this.currentState;
+    }
+
+    redo() {
+        if (!this.canRedo()) return null;
+        const next = this.redoStack.pop();
+        this.undoStack.push({
+            state: this._clone(this.currentState),
+            timestamp: Date.now()
+        });
+        this.currentState = this._clone(next.state);
+        return this.currentState;
+    }
+
+    canUndo() {
+        return this.undoStack.length > 0;
+    }
+
+    canRedo() {
+        return this.redoStack.length > 0;
+    }
+
+    getCurrentState() {
+        return this.currentState ? this._clone(this.currentState) : null;
+    }
+
+    clear() {
+        this.undoStack = [];
+        this.redoStack = [];
+        this.currentState = null;
+    }
+
+    _clone(obj) {
+        if (typeof structuredClone === 'function') {
+            try {
+                return structuredClone(obj);
+            } catch (_) {}
+        }
+        return JSON.parse(JSON.stringify(obj));
+    }
+}
+
+// HouseModel Document
+export class HouseModel {
+    constructor(initData = {}) {
+        this.id = initData.id || `house_${Date.now()}`;
+        this.name = initData.name || 'Mặt Bằng Nhà Ở';
+        this.version = '8.0';
+        this.unit = 'mm';
+        this.totalFloors = initData.totalFloors || 1;
+        this.currentFloor = initData.currentFloor || 1;
+
+        this.footprintPoints = initData.footprintPoints || [
+            { x: 0, y: 0, name: 'A' },
+            { x: 5000, y: 0, name: 'B' },
+            { x: 5000, y: 16000, name: 'C' },
+            { x: 0, y: 16000, name: 'D' }
+        ];
+
+        this.walls = initData.walls || [];
+        this.rooms = initData.rooms || [];
+        this.openings = initData.openings || [];
+        this.stairs = initData.stairs || [];
+        this.furniture = initData.furniture || [];
+        this.dimensions = initData.dimensions || [];
+        this.metadata = initData.metadata || {
+            shape: 'RECTANGLE',
+            widthM: 5.0,
+            lengthM: 16.0,
+            facingDegree: 180,
+            buildYear: 2025,
+            ownerYear: 1990,
+            ownerGender: 'nam'
+        };
+    }
+
+    getBoundingBox() {
+        return getBoundingBox(this.footprintPoints);
+    }
+
+    getAreaM2() {
+        return (polygonArea(this.footprintPoints) / 1000000).toFixed(2);
+    }
+
+    getCenter() {
+        return polygonCentroid(this.footprintPoints);
+    }
+
+    addRoom(room) {
+        const id = room.id || `room_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        const newRoom = {
+            id,
+            name: room.name || 'Phòng Mới',
+            type: room.type || 'living_room',
+            x: Math.round(room.x || 0),
+            y: Math.round(room.y || 0),
+            w: Math.round(room.w || 3500),
+            h: Math.round(room.h || 3500),
+            rot: room.rot || 0,
+            palaceId: room.palaceId || null,
+            floor: room.floor || this.currentFloor
+        };
+        this.rooms.push(newRoom);
+        return newRoom;
+    }
+
+    updateRoom(id, props) {
+        const room = this.rooms.find(r => r.id === id);
+        if (!room) return null;
+        Object.assign(room, props);
+        return room;
+    }
+
+    removeRoom(id) {
+        const idx = this.rooms.findIndex(r => r.id === id);
+        if (idx !== -1) {
+            return this.rooms.splice(idx, 1)[0];
+        }
+        return null;
+    }
+
+    addOpening(opening) {
+        const id = opening.id || `op_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        const newOpening = {
+            id,
+            type: opening.type || 'door',
+            style: opening.style || 'swing_single',
+            name: opening.name || (opening.type === 'door' ? 'Cửa Đi' : 'Cửa Sổ'),
+            x: Math.round(opening.x || 0),
+            y: Math.round(opening.y || 0),
+            w: Math.round(opening.w || 900),
+            h: Math.round(opening.h || 200),
+            rot: opening.rot || 0,
+            wallId: opening.wallId || null
+        };
+        this.openings.push(newOpening);
+        return newOpening;
+    }
+
+    updateOpening(id, props) {
+        const op = this.openings.find(o => o.id === id);
+        if (!op) return null;
+        Object.assign(op, props);
+        return op;
+    }
+
+    removeOpening(id) {
+        const idx = this.openings.findIndex(o => o.id === id);
+        if (idx !== -1) {
+            return this.openings.splice(idx, 1)[0];
+        }
+        return null;
+    }
+
+    addStair(stair) {
+        const id = stair.id || `stair_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        const newStair = {
+            id,
+            type: stair.type || 'straight',
+            name: stair.name || 'Cầu Thang',
+            x: Math.round(stair.x || 0),
+            y: Math.round(stair.y || 0),
+            w: Math.round(stair.w || 1000),
+            h: Math.round(stair.h || 3000),
+            rot: stair.rot || 0,
+            steps: stair.steps || 21,
+            direction: stair.direction || 'up'
+        };
+        this.stairs.push(newStair);
+        return newStair;
+    }
+
+    updateStair(id, props) {
+        const st = this.stairs.find(s => s.id === id);
+        if (!st) return null;
+        Object.assign(st, props);
+        return st;
+    }
+
+    removeStair(id) {
+        const idx = this.stairs.findIndex(s => s.id === id);
+        if (idx !== -1) {
+            return this.stairs.splice(idx, 1)[0];
+        }
+        return null;
+    }
+
+    updateFootprintVertex(index, x, y) {
+        if (index >= 0 && index < this.footprintPoints.length) {
+            this.footprintPoints[index].x = Math.round(x);
+            this.footprintPoints[index].y = Math.round(y);
+            return true;
+        }
+        return false;
+    }
+
+    setFootprintPoints(points) {
+        if (Array.isArray(points) && points.length >= 3) {
+            this.footprintPoints = points.map((p, idx) => ({
+                x: Math.round(p.x),
+                y: Math.round(p.y),
+                name: p.name || String.fromCharCode(65 + (idx % 26))
+            }));
+        }
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            version: this.version,
+            unit: this.unit,
+            totalFloors: this.totalFloors,
+            currentFloor: this.currentFloor,
+            footprintPoints: this.footprintPoints,
+            walls: this.walls,
+            rooms: this.rooms,
+            openings: this.openings,
+            stairs: this.stairs,
+            furniture: this.furniture,
+            dimensions: this.dimensions,
+            metadata: this.metadata
+        };
+    }
+
+    static fromJSON(json) {
+        return new HouseModel(typeof json === 'string' ? JSON.parse(json) : json);
+    }
+}
+
+// Vector Symbols
+export function renderWallBlock(p1, p2, thickness = 220, theme = 'white') {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.hypot(dx, dy);
+    if (len === 0) return '';
+
+    const nx = -dy / len;
+    const ny = dx / len;
+    const halfT = thickness / 2;
+
+    const c1 = { x: p1.x + nx * halfT, y: p1.y + ny * halfT };
+    const c2 = { x: p2.x + nx * halfT, y: p2.y + ny * halfT };
+    const c3 = { x: p2.x - nx * halfT, y: p2.y - ny * halfT };
+    const c4 = { x: p1.x - nx * halfT, y: p1.y - ny * halfT };
+
+    const strokeColor = theme === 'dark' ? '#f1f5f9' : '#0f172a';
+    const fillColor = theme === 'dark' ? 'rgba(51, 65, 85, 0.6)' : 'rgba(226, 232, 240, 0.7)';
+
+    return `
+        <g class="cad-wall-block">
+            <polygon points="${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y} ${c4.x},${c4.y}" 
+                fill="${fillColor}" stroke="${strokeColor}" stroke-width="2.5" />
+            <line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${strokeColor}" stroke-width="0.8" stroke-dasharray="10 5" opacity="0.4" />
+        </g>
+    `;
+}
+
+export function renderDoorBlock(x, y, w = 900, h = 200, rot = 0, style = 'swing_single', theme = 'white') {
+    const stroke = theme === 'dark' ? '#38bdf8' : '#0284c7';
+    const frameFill = theme === 'dark' ? '#1e293b' : '#f8fafc';
+    const panelFill = theme === 'dark' ? '#0284c7' : '#0369a1';
+
+    let content = '';
+
+    if (style === 'swing_double') {
+        const halfW = w / 2;
+        content = `
+            <rect x="0" y="0" width="50" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="${w - 50}" y="0" width="50" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="50" y="0" width="${halfW - 50}" height="35" fill="${panelFill}" rx="3" />
+            <path d="M 50 0 A ${halfW - 50} ${halfW - 50} 0 0 1 50 ${halfW - 50}" fill="none" stroke="${stroke}" stroke-width="1.2" stroke-dasharray="6 4" />
+            <rect x="${halfW}" y="0" width="${halfW - 50}" height="35" fill="${panelFill}" rx="3" />
+            <path d="M ${w - 50} 0 A ${halfW - 50} ${halfW - 50} 0 0 0 ${w - 50} ${halfW - 50}" fill="none" stroke="${stroke}" stroke-width="1.2" stroke-dasharray="6 4" />
+        `;
+    } else if (style === 'sliding') {
+        const halfW = w / 2;
+        content = `
+            <rect x="0" y="0" width="${w}" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <line x1="10" y1="${h / 2}" x2="${w - 10}" y2="${h / 2}" stroke="${stroke}" stroke-width="1" stroke-dasharray="4 2" />
+            <rect x="10" y="20" width="${halfW + 20}" height="40" fill="${panelFill}" rx="2" stroke="${stroke}" stroke-width="1" />
+            <rect x="${halfW - 30}" y="${h - 60}" width="${halfW + 20}" height="40" fill="${panelFill}" rx="2" stroke="${stroke}" stroke-width="1" />
+        `;
+    } else {
+        const doorLen = w - 80;
+        content = `
+            <rect x="0" y="0" width="40" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="${w - 40}" y="0" width="40" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="40" y="0" width="30" height="${doorLen}" fill="${panelFill}" rx="3" stroke="${stroke}" stroke-width="1" />
+            <circle cx="55" cy="${doorLen - 60}" r="8" fill="#fbbf24" stroke="#000" stroke-width="1" />
+            <path d="M 40 0 A ${doorLen} ${doorLen} 0 0 1 ${40 + doorLen} ${doorLen}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="6 4" />
+        `;
+    }
+
+    return `
+        <g class="cad-door-block" transform="translate(${x}, ${y}) rotate(${rot})">
+            ${content}
+        </g>
+    `;
+}
+
+export function renderWindowBlock(x, y, w = 1200, h = 200, rot = 0, style = 'casement_2', theme = 'white') {
+    const stroke = theme === 'dark' ? '#38bdf8' : '#0284c7';
+    const glassFill = theme === 'dark' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(2, 132, 199, 0.15)';
+    const frameFill = theme === 'dark' ? '#1e293b' : '#f8fafc';
+
+    return `
+        <g class="cad-window-block" transform="translate(${x}, ${y}) rotate(${rot})">
+            <rect x="0" y="0" width="${w}" height="${h}" fill="${frameFill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="20" y="30" width="${w - 40}" height="${h - 60}" fill="${glassFill}" stroke="${stroke}" stroke-width="1" />
+            <line x1="${w / 2}" y1="0" x2="${w / 2}" y2="${h}" stroke="${stroke}" stroke-width="2" />
+            <line x1="20" y1="${h / 2 - 15}" x2="${w - 20}" y2="${h / 2 - 15}" stroke="${stroke}" stroke-width="0.8" opacity="0.6" />
+            <line x1="20" y1="${h / 2 + 15}" x2="${w - 20}" y2="${h / 2 + 15}" stroke="${stroke}" stroke-width="0.8" opacity="0.6" />
+        </g>
+    `;
+}
+
+export function renderStairBlock(x, y, w = 1000, h = 3000, rot = 0, type = 'straight', steps = 21, theme = 'white') {
+    const stroke = theme === 'dark' ? '#cbd5e1' : '#1e293b';
+    const fill = theme === 'dark' ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.6)';
+    const accent = '#ef4444';
+
+    let stepsSvg = '';
+
+    if (type === 'u_shaped') {
+        const halfW = (w - 150) / 2;
+        const landingH = Math.round(h * 0.35);
+        const flightH = h - landingH;
+        const flightSteps = Math.floor(steps / 2);
+        const stepH = flightH / flightSteps;
+
+        let steps1 = '';
+        for (let i = 0; i < flightSteps; i++) {
+            const sy = landingH + i * stepH;
+            steps1 += `<line x1="0" y1="${sy}" x2="${halfW}" y2="${sy}" stroke="${stroke}" stroke-width="1.2" />`;
+        }
+
+        let steps2 = '';
+        for (let i = 0; i < flightSteps; i++) {
+            const sy = landingH + i * stepH;
+            steps2 += `<line x1="${w - halfW}" y1="${sy}" x2="${w}" y2="${sy}" stroke="${stroke}" stroke-width="1.2" />`;
+        }
+
+        stepsSvg = `
+            <rect x="0" y="${landingH}" width="${halfW}" height="${flightH}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            ${steps1}
+            <rect x="${w - halfW}" y="${landingH}" width="${halfW}" height="${flightH}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            ${steps2}
+            <rect x="0" y="0" width="${w}" height="${landingH}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            <text x="${w / 2}" y="${landingH / 2 + 10}" fill="${stroke}" font-size="70" font-weight="bold" text-anchor="middle">CHIẾU NGHỈ</text>
+            <rect x="${halfW}" y="${landingH}" width="150" height="${flightH}" fill="none" stroke="${stroke}" stroke-width="1" stroke-dasharray="4 4" />
+            <line x1="${halfW / 2}" y1="${h - 100}" x2="${halfW / 2}" y2="${landingH + 100}" stroke="${accent}" stroke-width="3" />
+            <polygon points="${halfW / 2},${landingH + 50} ${halfW / 2 - 20},${landingH + 120} ${halfW / 2 + 20},${landingH + 120}" fill="${accent}" />
+            <circle cx="${halfW / 2}" cy="${h - 100}" r="16" fill="${accent}" />
+        `;
+    } else if (type === 'l_shaped') {
+        const landingSize = Math.min(w, h * 0.4);
+        const flightH = h - landingSize;
+        const flightSteps = Math.max(1, steps - 3);
+        const stepH = flightH / flightSteps;
+
+        let stepsLines = '';
+        for (let i = 0; i < flightSteps; i++) {
+            const sy = landingSize + i * stepH;
+            stepsLines += `<line x1="0" y1="${sy}" x2="${w}" y2="${sy}" stroke="${stroke}" stroke-width="1.2" />`;
+        }
+
+        stepsSvg = `
+            <rect x="0" y="0" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="0" y="0" width="${w}" height="${landingSize}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            <line x1="0" y1="0" x2="${w}" y2="${landingSize}" stroke="${stroke}" stroke-width="1" stroke-dasharray="5 5" />
+            ${stepsLines}
+            <line x1="${w / 2}" y1="${h - 100}" x2="${w / 2}" y2="${landingSize + 100}" stroke="${accent}" stroke-width="3" />
+            <polygon points="${w / 2},${landingSize + 50} ${w / 2 - 20},${landingSize + 120} ${w / 2 + 20},${landingSize + 120}" fill="${accent}" />
+            <circle cx="${w / 2}" cy="${h - 100}" r="16" fill="${accent}" />
+        `;
+    } else {
+        const stepH = h / Math.max(1, steps);
+        let stepsLines = '';
+        for (let i = 0; i < steps; i++) {
+            const sy = i * stepH;
+            stepsLines += `<line x1="0" y1="${sy}" x2="${w}" y2="${sy}" stroke="${stroke}" stroke-width="1.2" />`;
+        }
+
+        stepsSvg = `
+            <rect x="0" y="0" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            ${stepsLines}
+            <line x1="${w / 2}" y1="${h - 150}" x2="${w / 2}" y2="150" stroke="${accent}" stroke-width="3" />
+            <polygon points="${w / 2},80 ${w / 2 - 25},180 ${w / 2 + 25},180" fill="${accent}" />
+            <circle cx="${w / 2}" cy="${h - 150}" r="18" fill="${accent}" />
+            <text x="${w / 2}" y="${h / 2}" fill="${stroke}" font-size="80" font-weight="bold" text-anchor="middle" transform="rotate(-90 ${w / 2} ${h / 2})">UP (${steps} BẬC)</text>
+        `;
+    }
+
+    return `
+        <g class="cad-stair-block" transform="translate(${x}, ${y}) rotate(${rot})">
+            ${stepsSvg}
+        </g>
+    `;
+}
+
+export function renderFurnitureBlock(type, x, y, w, h, rot = 0, theme = 'white') {
+    const stroke = theme === 'dark' ? '#94a3b8' : '#334155';
+    const fill = theme === 'dark' ? 'rgba(30, 41, 59, 0.4)' : 'rgba(248, 250, 252, 0.6)';
+
+    let content = '';
+
+    if (type === 'bed_master' || type === 'bed' || type === 'bedroom') {
+        const bedW = Math.min(w * 0.75, 1800);
+        const bedH = Math.min(h * 0.8, 2000);
+        const bx = (w - bedW) / 2;
+        const by = (h - bedH) / 2;
+        const pillowW = bedW * 0.38;
+        const pillowH = bedH * 0.22;
+        const nightstandSize = Math.min(bx * 0.7, 450);
+
+        content = `
+            <rect x="${bx}" y="${by}" width="${bedW}" height="${bedH}" rx="16" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+            <path d="M ${bx} ${by + bedH * 0.35} L ${bx + bedW} ${by + bedH * 0.35} L ${bx + bedW} ${by + bedH} L ${bx} ${by + bedH} Z" fill="none" stroke="${stroke}" stroke-width="1.2" stroke-dasharray="6 4" />
+            <rect x="${bx + 30}" y="${by + 30}" width="${pillowW}" height="${pillowH}" rx="8" fill="none" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="${bx + bedW - pillowW - 30}" y="${by + 30}" width="${pillowW}" height="${pillowH}" rx="8" fill="none" stroke="${stroke}" stroke-width="1.5" />
+            ${bx > 100 ? `
+                <rect x="${bx - nightstandSize - 20}" y="${by}" width="${nightstandSize}" height="${nightstandSize}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="${bx - nightstandSize / 2 - 20}" cy="${by + nightstandSize / 2}" r="${nightstandSize * 0.25}" fill="#fbbf24" opacity="0.6" />
+                <rect x="${bx + bedW + 20}" y="${by}" width="${nightstandSize}" height="${nightstandSize}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="${bx + bedW + nightstandSize / 2 + 20}" cy="${by + nightstandSize / 2}" r="${nightstandSize * 0.25}" fill="#fbbf24" opacity="0.6" />
+            ` : ''}
+        `;
+    } else if (type === 'toilet' || type === 'wc' || type === 'bathroom') {
+        const toiletW = Math.min(w * 0.4, 450);
+        const toiletH = Math.min(h * 0.45, 700);
+        const tx = 60;
+        const ty = 60;
+        const showerW = Math.min(w * 0.45, 900);
+        const showerH = Math.min(h * 0.45, 900);
+
+        content = `
+            <g transform="translate(${tx}, ${ty})">
+                <rect x="0" y="0" width="${toiletW}" height="${toiletH * 0.35}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.8" />
+                <ellipse cx="${toiletW / 2}" cy="${toiletH * 0.65}" rx="${toiletW * 0.45}" ry="${toiletH * 0.35}" fill="${fill}" stroke="${stroke}" stroke-width="1.8" />
+                <circle cx="${toiletW * 0.8}" cy="${toiletH * 0.18}" r="8" fill="${stroke}" />
+            </g>
+            <g transform="translate(${w - showerW - 40}, ${40})">
+                <rect x="0" y="0" width="${showerW}" height="${showerH}" rx="8" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="6 4" />
+                <circle cx="${showerW / 2}" cy="${showerH / 2}" r="30" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="${showerW / 2}" cy="${showerH / 2}" r="8" fill="#38bdf8" />
+                <line x1="0" y1="0" x2="${showerW}" y2="${showerH}" stroke="${stroke}" stroke-width="0.8" stroke-dasharray="3 3" />
+                <line x1="${showerW}" y1="0" x2="0" y2="${showerH}" stroke="${stroke}" stroke-width="0.8" stroke-dasharray="3 3" />
+            </g>
+            <g transform="translate(${tx}, ${h - 450})">
+                <rect x="0" y="0" width="${Math.min(w * 0.5, 600)}" height="350" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.8" />
+                <ellipse cx="${Math.min(w * 0.5, 600) / 2}" cy="175" rx="${Math.min(w * 0.4, 220)}" ry="120" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="${Math.min(w * 0.5, 600) / 2}" cy="90" r="10" fill="#38bdf8" />
+            </g>
+        `;
+    } else if (type === 'kitchen_dining' || type === 'kitchen') {
+        const counterH = Math.min(h * 0.25, 650);
+        content = `
+            <rect x="0" y="0" width="${w}" height="${counterH}" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+            <g transform="translate(60, 40)">
+                <rect x="0" y="0" width="700" height="${counterH - 80}" rx="8" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="160" cy="${(counterH - 80) / 2}" r="65" fill="none" stroke="${stroke}" stroke-width="1.8" />
+                <circle cx="160" cy="${(counterH - 80) / 2}" r="25" fill="#ef4444" />
+                <circle cx="380" cy="${(counterH - 80) / 2}" r="80" fill="none" stroke="${stroke}" stroke-width="1.8" />
+                <circle cx="380" cy="${(counterH - 80) / 2}" r="30" fill="#ef4444" />
+                <circle cx="580" cy="${(counterH - 80) / 2}" r="50" fill="none" stroke="${stroke}" stroke-width="1.8" />
+                <circle cx="580" cy="${(counterH - 80) / 2}" r="20" fill="#ef4444" />
+            </g>
+            <g transform="translate(${w - 850}, 40)">
+                <rect x="0" y="0" width="750" height="${counterH - 80}" rx="8" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="30" y="20" width="320" height="${counterH - 120}" rx="6" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="400" y="20" width="320" height="${counterH - 120}" rx="6" fill="none" stroke="${stroke}" stroke-width="1.5" />
+                <circle cx="375" cy="40" r="14" fill="#38bdf8" />
+            </g>
+            <g transform="translate(${(w - 1400) / 2}, ${counterH + (h - counterH - 800) / 2})">
+                <rect x="0" y="100" width="1400" height="600" rx="20" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+                <rect x="150" y="0" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="560" y="0" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="970" y="0" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="150" y="720" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="560" y="720" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="970" y="720" width="280" height="80" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+            </g>
+        `;
+    } else if (type === 'living_room' || type === 'living') {
+        const sofaW = Math.min(w * 0.7, 2400);
+        const sofaH = Math.min(h * 0.6, 2000);
+        const sx = 80;
+        const sy = 80;
+
+        content = `
+            <g transform="translate(${sx}, ${sy})">
+                <path d="M 0 0 L ${sofaW} 0 L ${sofaW} 300 L 300 300 L 300 ${sofaH} L 0 ${sofaH} Z" fill="${fill}" stroke="${stroke}" stroke-width="2" />
+                <rect x="320" y="320" width="${sofaW - 340}" height="${sofaH - 340}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+                <rect x="550" y="550" width="${sofaW * 0.45}" height="${sofaH * 0.35}" rx="16" fill="${fill}" stroke="${stroke}" stroke-width="1.8" />
+            </g>
+            <g transform="translate(${w - 300}, 80)">
+                <rect x="0" y="0" width="220" height="${Math.min(h - 160, 2000)}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.8" />
+                <rect x="80" y="100" width="40" height="${Math.min(h - 360, 1600)}" rx="4" fill="${stroke}" />
+                <text x="110" y="${Math.min(h - 160, 2000) / 2}" fill="#38bdf8" font-size="65" font-weight="bold" text-anchor="middle" transform="rotate(-90 110 ${Math.min(h - 160, 2000) / 2})">SMART TV</text>
+            </g>
+        `;
+    } else if (type === 'altar') {
+        const altarW = Math.min(w * 0.75, 1970);
+        const altarH = Math.min(h * 0.4, 880);
+        const ax = (w - altarW) / 2;
+        const ay = 60;
+
+        content = `
+            <g transform="translate(${ax}, ${ay})">
+                <rect x="0" y="0" width="${altarW}" height="${altarH}" rx="12" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="2.5" />
+                <circle cx="${altarW / 2}" cy="${altarH / 2}" r="75" fill="#f59e0b" stroke="#000" stroke-width="1.5" />
+                <circle cx="${altarW / 2}" cy="${altarH / 2}" r="30" fill="#ef4444" />
+                <circle cx="200" cy="${altarH / 2}" r="50" fill="#fbbf24" stroke="#000" stroke-width="1.2" />
+                <circle cx="${altarW - 200}" cy="${altarH / 2}" r="50" fill="#fbbf24" stroke="#000" stroke-width="1.2" />
+                <ellipse cx="${altarW / 2}" cy="${altarH * 0.8}" rx="100" ry="40" fill="#22c55e" opacity="0.7" />
+                <text x="${altarW / 2}" y="${altarH * 0.3}" fill="#f59e0b" font-size="65" font-weight="900" text-anchor="middle">ÁNG THỜ TÔN NGHIÊM</text>
+            </g>
+        `;
+    } else if (type === 'garage') {
+        const carW = Math.min(w * 0.7, 1850);
+        const carH = Math.min(h * 0.85, 4600);
+        const cx = (w - carW) / 2;
+        const cy = (h - carH) / 2;
+
+        content = `
+            <rect x="${cx - 40}" y="${cy - 40}" width="${carW + 80}" height="${carH + 80}" fill="none" stroke="#eab308" stroke-width="2" stroke-dasharray="10 10" />
+            <rect x="${cx}" y="${cy}" width="${carW}" height="${carH}" rx="180" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />
+            <path d="M ${cx + 100} ${cy + carH * 0.25} Q ${cx + carW / 2} ${cy + carH * 0.2} ${cx + carW - 100} ${cy + carH * 0.25} L ${cx + carW - 140} ${cy + carH * 0.35} L ${cx + 140} ${cy + carH * 0.35} Z" fill="rgba(56, 189, 248, 0.4)" stroke="${stroke}" stroke-width="1.5" />
+            <rect x="${cx + 140}" y="${cy + carH * 0.35}" width="${carW - 280}" height="${carH * 0.38}" rx="20" fill="none" stroke="${stroke}" stroke-width="1.2" />
+            <path d="M ${cx + 140} ${cy + carH * 0.73} L ${cx + carW - 140} ${cy + carH * 0.73} L ${cx + carW - 100} ${cy + carH * 0.8} Q ${cx + carW / 2} ${cy + carH * 0.83} ${cx + 100} ${cy + carH * 0.8} Z" fill="rgba(56, 189, 248, 0.4)" stroke="${stroke}" stroke-width="1.5" />
+            <ellipse cx="${cx - 25}" cy="${cy + carH * 0.26}" rx="30" ry="15" fill="${stroke}" />
+            <ellipse cx="${cx + carW + 25}" cy="${cy + carH * 0.26}" rx="30" ry="15" fill="${stroke}" />
+        `;
+    } else if (type === 'skylight') {
+        content = `
+            <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="${stroke}" stroke-width="2" stroke-dasharray="8 6" />
+            <line x1="0" y1="0" x2="${w}" y2="${h}" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="6 4" />
+            <line x1="${w}" y1="0" x2="0" y2="${h}" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="6 4" />
+            <text x="${w / 2}" y="${h / 2 + 25}" fill="#38bdf8" font-size="80" font-weight="bold" text-anchor="middle">GIẾNG TRỜI</text>
+        `;
+    }
+
+    return `
+        <g class="cad-furniture-symbol" transform="translate(${x}, ${y}) rotate(${rot})">
+            ${content}
+        </g>
+    `;
+}
+
+// SvgCadRenderer
+export class SvgCadRenderer {
+    constructor(options = {}) {
+        this.theme = options.theme || 'white';
+        this.showDimensions = options.showDimensions !== false;
+        this.showFurniture = options.showFurniture !== false;
+        this.showAxes = options.showAxes !== false;
+    }
+
+    render(model, interactionState = {}) {
+        if (!model) return '';
+
+        const theme = interactionState.theme || this.theme;
+        const selectedRoomId = interactionState.selectedRoomId || null;
+        const selectedEdgeIndex = interactionState.selectedEdgeIndex !== undefined ? interactionState.selectedEdgeIndex : null;
+        const activeGuides = interactionState.activeGuides || [];
+
+        const isDark = theme === 'dark';
+        const bgColor = isDark ? '#090d16' : '#ffffff';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)';
+        const textColor = isDark ? '#f8fafc' : '#0f172a';
+        const dimColor = isDark ? '#94a3b8' : '#334155';
+        const wallStroke = isDark ? '#f8fafc' : '#000000';
+
+        const pts = model.footprintPoints || [];
+        const bb = model.getBoundingBox();
+
+        const padX = 1200;
+        const padY = 1200;
+        const vbX = Math.round(bb.minX - padX);
+        const vbY = Math.round(bb.minY - padY);
+        const vbW = Math.round(bb.width + padX * 2);
+        const vbH = Math.round(bb.height + padY * 2);
+
+        let gridSvg = '';
+        if (this.showAxes) {
+            gridSvg = `
+                <g class="cad-layer-grid">
+                    <defs>
+                        <pattern id="cadGridPattern" width="1000" height="1000" patternUnits="userSpaceOnUse">
+                            <rect width="1000" height="1000" fill="none" stroke="${gridColor}" stroke-width="1" />
+                            <circle cx="0" cy="0" r="4" fill="${gridColor}" />
+                        </pattern>
+                    </defs>
+                    <rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="url(#cadGridPattern)" />
+                </g>
+            `;
+        }
+
+        let footprintSvg = '';
+        if (pts.length >= 3) {
+            const ptsStr = pts.map(p => `${p.x},${p.y}`).join(' ');
+            footprintSvg = `
+                <g class="cad-layer-footprint">
+                    <polygon points="${ptsStr}" fill="${isDark ? 'rgba(30, 41, 59, 0.3)' : 'rgba(248, 250, 252, 0.8)'}" stroke="${wallStroke}" stroke-width="6" stroke-linejoin="round" />
+                    ${pts.map((p1, idx) => {
+                        const p2 = pts[(idx + 1) % pts.length];
+                        const isEdgeSel = selectedEdgeIndex === idx;
+                        return `
+                            <line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" 
+                                stroke="${isEdgeSel ? '#ef4444' : 'transparent'}" 
+                                stroke-width="${isEdgeSel ? 8 : 40}" 
+                                stroke-linecap="round"
+                                class="cad-edge-hitbox" 
+                                data-edge-idx="${idx}" 
+                                style="cursor: pointer;" />
+                        `;
+                    }).join('')}
+                    ${pts.map((p, idx) => `
+                        <g class="cad-vertex-handle" data-vertex-idx="${idx}" style="cursor: grab;">
+                            <circle cx="${p.x}" cy="${p.y}" r="45" fill="#f59e0b" stroke="#ffffff" stroke-width="6" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.5))" />
+                            <circle cx="${p.x}" cy="${p.y}" r="15" fill="#000000" />
+                            <text x="${p.x}" y="${p.y - 65}" fill="#f59e0b" font-size="120" font-weight="900" text-anchor="middle">${p.name || ''}</text>
+                        </g>
+                    `).join('')}
+                </g>
+            `;
+        }
+
+        let wallsSvg = '';
+        if (model.walls && model.walls.length > 0) {
+            wallsSvg = `
+                <g class="cad-layer-walls">
+                    ${model.walls.map(w => renderWallBlock(w.p1, w.p2, w.thickness || 220, theme)).join('')}
+                </g>
+            `;
+        }
+
+        let roomsSvg = '';
+        let interactionOverlaySvg = '';
+
+        if (model.rooms && model.rooms.length > 0) {
+            roomsSvg = `
+                <g class="cad-layer-rooms">
+                    ${model.rooms.map(room => {
+                        const isSel = selectedRoomId === room.id;
+                        const area = ((room.w * room.h) / 1000000).toFixed(1);
+                        const fillColor = isSel 
+                            ? (isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(2, 132, 199, 0.12)')
+                            : (isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.85)');
+
+                        const strokeCol = isSel ? '#0284c7' : (isDark ? '#475569' : '#94a3b8');
+                        const strokeW = isSel ? 3.5 : 1.8;
+
+                        return `
+                            <g class="cad-room-group" data-room-id="${room.id}" transform="translate(${room.x}, ${room.y}) rotate(${room.rot || 0})">
+                                <rect x="0" y="0" width="${room.w}" height="${room.h}" 
+                                    fill="${fillColor}" stroke="${strokeCol}" stroke-width="${strokeW}" rx="4" />
+                                
+                                ${this.showFurniture ? renderFurnitureBlock(room.type, 0, 0, room.w, room.h, 0, theme) : ''}
+
+                                <g class="cad-room-label" style="pointer-events: none;">
+                                    <rect x="${room.w / 2 - 250}" y="${room.h / 2 - 60}" width="500" height="120" rx="20" 
+                                        fill="${isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.92)'}" 
+                                        stroke="${strokeCol}" stroke-width="1.5" />
+                                    <text x="${room.w / 2}" y="${room.h / 2 - 5}" fill="${textColor}" font-size="80" font-weight="bold" text-anchor="middle">${room.name}</text>
+                                    <text x="${room.w / 2}" y="${room.h / 2 + 40}" fill="#0284c7" font-size="60" font-weight="900" text-anchor="middle">${room.w} × ${room.h} (${area} m²)</text>
+                                </g>
+
+                                <rect x="0" y="0" width="${room.w}" height="${room.h}" 
+                                    fill="transparent" class="cad-room-hitbox" data-room-id="${room.id}" style="cursor: move;" />
+                            </g>
+                        `;
+                    }).join('')}
+                </g>
+            `;
+
+            if (selectedRoomId) {
+                const selRoom = model.rooms.find(r => r.id === selectedRoomId);
+                if (selRoom) {
+                    const rw = selRoom.w;
+                    const rh = selRoom.h;
+                    const pinDist = 260;
+
+                    interactionOverlaySvg = `
+                        <g class="cad-layer-selection" transform="translate(${selRoom.x}, ${selRoom.y}) rotate(${selRoom.rot || 0})">
+                            <rect x="-8" y="-8" width="${rw + 16}" height="${rh + 16}" 
+                                fill="none" stroke="#0284c7" stroke-width="3" stroke-dasharray="10 6" />
+                            
+                            <line x1="${rw / 2}" y1="0" x2="${rw / 2}" y2="-${pinDist}" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="4 4" />
+                            <circle cx="${rw / 2}" cy="-${pinDist}" r="38" fill="#0284c7" stroke="#ffffff" stroke-width="4" 
+                                class="cad-rotation-handle" data-room-id="${selRoom.id}" style="cursor: grab;" />
+                            <text x="${rw / 2}" y="-${pinDist + 50}" fill="#0284c7" font-size="65" font-weight="bold" text-anchor="middle">XOAY</text>
+
+                            <rect x="-24" y="-24" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="nw" data-room-id="${selRoom.id}" style="cursor: nwse-resize;" />
+                            <rect x="${rw / 2 - 24}" y="-24" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="n" data-room-id="${selRoom.id}" style="cursor: ns-resize;" />
+                            <rect x="${rw - 24}" y="-24" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="ne" data-room-id="${selRoom.id}" style="cursor: nesw-resize;" />
+                            <rect x="${rw - 24}" y="${rh / 2 - 24}" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="e" data-room-id="${selRoom.id}" style="cursor: ew-resize;" />
+                            <rect x="${rw - 24}" y="${rh - 24}" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="se" data-room-id="${selRoom.id}" style="cursor: nwse-resize;" />
+                            <rect x="${rw / 2 - 24}" y="${rh - 24}" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="s" data-room-id="${selRoom.id}" style="cursor: ns-resize;" />
+                            <rect x="-24" y="${rh - 24}" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="sw" data-room-id="${selRoom.id}" style="cursor: nesw-resize;" />
+                            <rect x="-24" y="${rh / 2 - 24}" width="48" height="48" fill="#ffffff" stroke="#0284c7" stroke-width="4" 
+                                class="cad-resize-handle" data-handle="w" data-room-id="${selRoom.id}" style="cursor: ew-resize;" />
+
+                            <g class="cad-mini-action-bar" transform="translate(${rw / 2 - 220}, -130)">
+                                <rect x="0" y="0" width="440" height="70" rx="35" fill="rgba(15, 23, 42, 0.95)" stroke="#38bdf8" stroke-width="2" />
+                                <g class="btn-cad-mini-action" data-action="confirm" data-room-id="${selRoom.id}" style="cursor: pointer;">
+                                    <circle cx="45" cy="35" r="24" fill="#22c55e" />
+                                    <text x="45" y="44" fill="#ffffff" font-size="28" font-weight="bold" text-anchor="middle">✓</text>
+                                </g>
+                                <g class="btn-cad-mini-action" data-action="rotate" data-room-id="${selRoom.id}" style="cursor: pointer;">
+                                    <circle cx="120" cy="35" r="24" fill="#0284c7" />
+                                    <text x="120" y="44" fill="#ffffff" font-size="28" font-weight="bold" text-anchor="middle">↻</text>
+                                </g>
+                                <g class="btn-cad-mini-action" data-action="size_plus" data-room-id="${selRoom.id}" style="cursor: pointer;">
+                                    <circle cx="200" cy="35" r="24" fill="#3b82f6" />
+                                    <text x="200" y="44" fill="#ffffff" font-size="30" font-weight="bold" text-anchor="middle">+</text>
+                                </g>
+                                <g class="btn-cad-mini-action" data-action="size_minus" data-room-id="${selRoom.id}" style="cursor: pointer;">
+                                    <circle cx="280" cy="35" r="24" fill="#3b82f6" />
+                                    <text x="280" y="43" fill="#ffffff" font-size="34" font-weight="bold" text-anchor="middle">−</text>
+                                </g>
+                                <g class="btn-cad-mini-action" data-action="delete" data-room-id="${selRoom.id}" style="cursor: pointer;">
+                                    <circle cx="360" cy="35" r="24" fill="#ef4444" />
+                                    <text x="360" y="44" fill="#ffffff" font-size="24" text-anchor="middle">🗑</text>
+                                </g>
+                            </g>
+                        </g>
+                    `;
+                }
+            }
+        }
+
+        let openingsSvg = '';
+        if (model.openings && model.openings.length > 0) {
+            openingsSvg = `
+                <g class="cad-layer-openings">
+                    ${model.openings.map(op => {
+                        if (op.type === 'window') {
+                            return renderWindowBlock(op.x, op.y, op.w, op.h, op.rot, op.style, theme);
+                        }
+                        return renderDoorBlock(op.x, op.y, op.w, op.h, op.rot, op.style, theme);
+                    }).join('')}
+                </g>
+            `;
+        }
+
+        let stairsSvg = '';
+        if (model.stairs && model.stairs.length > 0) {
+            stairsSvg = `
+                <g class="cad-layer-stairs">
+                    ${model.stairs.map(st => renderStairBlock(st.x, st.y, st.w, st.h, st.rot, st.type, st.steps, theme)).join('')}
+                </g>
+            `;
+        }
+
+        let dimensionsSvg = '';
+        if (this.showDimensions && pts.length >= 2) {
+            dimensionsSvg = `
+                <g class="cad-layer-dimensions">
+                    ${pts.map((p1, idx) => {
+                        const p2 = pts[(idx + 1) % pts.length];
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const len = Math.round(Math.hypot(dx, dy));
+                        if (len === 0) return '';
+
+                        const nx = -dy / len;
+                        const ny = dx / len;
+                        const offset = 450;
+
+                        const d1 = { x: p1.x + nx * offset, y: p1.y + ny * offset };
+                        const d2 = { x: p2.x + nx * offset, y: p2.y + ny * offset };
+                        const mid = { x: (d1.x + d2.x) / 2, y: (d1.y + d2.y) / 2 };
+
+                        let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                        if (angle > 90 || angle < -90) angle += 180;
+
+                        return `
+                            <line x1="${p1.x}" y1="${p1.y}" x2="${p1.x + nx * (offset + 100)}" y2="${p1.y + ny * (offset + 100)}" stroke="${dimColor}" stroke-width="1.2" opacity="0.7" />
+                            <line x1="${p2.x}" y1="${p2.y}" x2="${p2.x + nx * (offset + 100)}" y2="${p2.y + ny * (offset + 100)}" stroke="${dimColor}" stroke-width="1.2" opacity="0.7" />
+                            <line x1="${d1.x}" y1="${d1.y}" x2="${d2.x}" y2="${d2.y}" stroke="${dimColor}" stroke-width="1.8" />
+                            <line x1="${d1.x - 30}" y1="${d1.y - 30}" x2="${d1.x + 30}" y2="${d1.y + 30}" stroke="${dimColor}" stroke-width="2.5" />
+                            <line x1="${d2.x - 30}" y1="${d2.y - 30}" x2="${d2.x + 30}" y2="${d2.y + 30}" stroke="${dimColor}" stroke-width="2.5" />
+                            <g transform="translate(${mid.x}, ${mid.y}) rotate(${angle})">
+                                <rect x="-140" y="-45" width="280" height="90" rx="12" fill="${bgColor}" />
+                                <text x="0" y="10" fill="${dimColor}" font-size="75" font-weight="900" text-anchor="middle">${len}</text>
+                            </g>
+                        `;
+                    }).join('')}
+                </g>
+            `;
+        }
+
+        let guidesSvg = '';
+        if (activeGuides && activeGuides.length > 0) {
+            guidesSvg = `
+                <g class="cad-layer-guides">
+                    ${activeGuides.map(g => {
+                        if (g.type === 'vertical') {
+                            return `<line x1="${g.x}" y1="${g.y1}" x2="${g.x}" y2="${g.y2}" stroke="#eab308" stroke-width="2" stroke-dasharray="12 6" />`;
+                        }
+                        return `<line x1="${g.x1}" y1="${g.y}" x2="${g.x2}" y2="${g.y}" stroke="#eab308" stroke-width="2" stroke-dasharray="12 6" />`;
+                    }).join('')}
+                </g>
+            `;
+        }
+
+        return `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="${vbX} ${vbY} ${vbW} ${vbH}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+                <rect x="${vbX}" y="${vbY}" width="${vbW}" height="${vbH}" fill="${bgColor}" />
+                ${gridSvg}
+                ${footprintSvg}
+                ${wallsSvg}
+                ${roomsSvg}
+                ${openingsSvg}
+                ${stairsSvg}
+                ${dimensionsSvg}
+                ${guidesSvg}
+                ${interactionOverlaySvg}
+            </svg>
+        `;
+    }
+}
+
+// CadCommandBus
+export class CadCommandBus {
+    constructor(model, history) {
+        this.model = model || new HouseModel();
+        this.history = history;
+        if (this.history) {
+            this.history.init(this.model.toJSON());
+        }
+    }
+
+    dispatch(action) {
+        if (!action || !action.type) return false;
+
+        switch (action.type) {
+            case 'ADD_ROOM': {
+                const r = this.model.addRoom(action.payload);
+                this._record(`Thêm phòng: ${r.name}`);
+                return r;
+            }
+            case 'UPDATE_ROOM': {
+                const r = this.model.updateRoom(action.payload.id, action.payload);
+                this._record(`Cập nhật phòng: ${r?.name || action.payload.id}`);
+                return r;
+            }
+            case 'REMOVE_ROOM': {
+                const r = this.model.removeRoom(action.payload.id);
+                this._record(`Xóa phòng: ${r?.name || action.payload.id}`);
+                return r;
+            }
+            case 'ADD_OPENING': {
+                const op = this.model.addOpening(action.payload);
+                this._record(`Thêm cửa: ${op.name}`);
+                return op;
+            }
+            case 'ADD_STAIR': {
+                const st = this.model.addStair(action.payload);
+                this._record(`Thêm cầu thang: ${st.name}`);
+                return st;
+            }
+            case 'SET_FOOTPRINT': {
+                this.model.setFootprintPoints(action.payload.points);
+                this._record('Đổi hình dáng thửa đất');
+                return true;
+            }
+            case 'UPDATE_VERTEX': {
+                const ok = this.model.updateFootprintVertex(action.payload.index, action.payload.x, action.payload.y);
+                this._record('Kéo đỉnh thửa đất');
+                return ok;
+            }
+            default:
+                console.warn('Unknown CAD Action:', action.type);
+                return false;
+        }
+    }
+
+    _record(label) {
+        if (this.history) {
+            this.history.pushState(this.model.toJSON(), label);
+        }
+    }
+
+    undo() {
+        if (!this.history || !this.history.canUndo()) return null;
+        const prevJson = this.history.undo();
+        if (prevJson) {
+            this.model = HouseModel.fromJSON(prevJson);
+            return this.model;
+        }
+        return null;
+    }
+
+    redo() {
+        if (!this.history || !this.history.canRedo()) return null;
+        const nextJson = this.history.redo();
+        if (nextJson) {
+            this.model = HouseModel.fromJSON(nextJson);
+            return this.model;
+        }
+        return null;
+    }
+}
+
+
