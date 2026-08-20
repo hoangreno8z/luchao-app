@@ -738,6 +738,61 @@ function initToolbar() {
             viewportController.exportPng('Ban_Ve_Phong_Thuy_CAD.png');
         });
     }
+
+    // Fullscreen Mode Controller
+    const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
+    const iconFsOpen = document.getElementById('iconFullscreenOpen');
+    const iconFsExit = document.getElementById('iconFullscreenExit');
+    const txtFs = document.getElementById('txtFullscreen');
+    const canvasWrapper = document.querySelector('.canvas-viewport-wrapper');
+
+    function toggleFullscreen() {
+        if (!canvasWrapper) return;
+        const isFs = canvasWrapper.classList.toggle('is-fullscreen');
+
+        if (btnToggleFullscreen) {
+            btnToggleFullscreen.classList.toggle('active', isFs);
+        }
+        if (iconFsOpen) iconFsOpen.style.display = isFs ? 'none' : 'inline-block';
+        if (iconFsExit) iconFsExit.style.display = isFs ? 'inline-block' : 'none';
+        if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
+
+        if (viewportController) {
+            setTimeout(() => {
+                viewportController.fitToScreen();
+            }, 100);
+        }
+
+        if (isFs) {
+            if (canvasWrapper.requestFullscreen) {
+                canvasWrapper.requestFullscreen().catch(() => {});
+            } else if (canvasWrapper.webkitRequestFullscreen) {
+                canvasWrapper.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    if (btnToggleFullscreen) {
+        btnToggleFullscreen.addEventListener('click', toggleFullscreen);
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && canvasWrapper && canvasWrapper.classList.contains('is-fullscreen')) {
+            toggleFullscreen();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && canvasWrapper && canvasWrapper.classList.contains('is-fullscreen')) {
+            toggleFullscreen();
+        }
+    });
 }
 
 /* 10. Form Actions & Input Listeners */

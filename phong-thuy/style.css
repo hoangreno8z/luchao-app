@@ -563,6 +563,43 @@ body {
     transition: box-shadow 0.2s ease;
 }
 
+/* Fullscreen CAD Workspace Mode */
+.canvas-viewport-wrapper.is-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 99999 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: #020617 !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: none !important;
+}
+
+.canvas-viewport-wrapper.is-fullscreen .cad-toolbar {
+    margin-bottom: 12px;
+}
+
+.canvas-viewport-wrapper.is-fullscreen .svg-viewport-shell {
+    flex: 1;
+    height: 100% !important;
+    max-height: calc(100vh - 120px) !important;
+    background: #010409 !important;
+}
+
+.canvas-viewport-wrapper.is-fullscreen .svg-stage svg {
+    height: 96% !important;
+    max-height: 96% !important;
+    max-width: 96% !important;
+}
+
 /* Interactive 360° Compass Dial Styles (GPU 60FPS) */
 .compass-interactive-wrapper {
     display: flex;
