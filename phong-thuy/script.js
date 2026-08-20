@@ -1,8 +1,9 @@
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v4.5
+// Phong Thủy & Kiến Trúc Controller Script v5.0
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng
-// Hỗ trợ: Accordion Thu Gọn, 2 Tab Đất/Nhà, La Kinh 24 Sơn/72 Long
-// Tự Động Xoay 9 Cung Theo Hướng Nhà (Cung Hướng Luôn Ở Ô Trên Cùng)
+// Hỗ trợ 2 Tab Bản Vẽ Độc Lập Chuẩn Xác 100%:
+// - Tab 1: Bản Vẽ Kiến Trúc CAD (Đen Trắng, Scan2CAD chuẩn ảnh 3)
+// - Tab 2: La Kinh 24 Sơn 360° & Cửu Cung Phi Tinh (chuẩn ảnh 2 HKPT)
 // ============================================================
 
 import {
@@ -12,8 +13,8 @@ import {
     calculateGua,
     generateParametricFloorplan,
     ArchitecturalCADRenderer,
+    LuoPanAndFlyingStarsSvgRenderer,
     calculateFengShuiSpatial,
-    renderNinePalacesOverlaySvg,
     SvgViewportController,
     getOrientedPalaceGrid,
     PALACE_NAMES,
@@ -34,6 +35,7 @@ let currentFlyingStars = null;
 let currentBatTrach = null;
 
 let cadRenderer = null;
+let luoPanRenderer = null;
 let viewportController = null;
 
 const layerState = {
@@ -242,7 +244,6 @@ function initDragAndDropPalaces() {
         });
     }
 
-    // Gán phòng mẫu ban đầu
     dndPlacements[9] = [{ id: 'living', name: 'Phòng Khách' }];
     dndPlacements[1] = [{ id: 'kitchen', name: 'Bếp Nấu' }];
 }
@@ -305,7 +306,6 @@ function renderDndGrid() {
         `;
     }).join('');
 
-    // Attach dragover & drop listeners
     grid.querySelectorAll('.palace-drop-zone').forEach(zone => {
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -345,6 +345,7 @@ function initViewport() {
     if (!stage) return;
     viewportController = new SvgViewportController(stage);
     cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
+    luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
 /* 8. Toolbar Buttons & Matrix Controls */
@@ -432,7 +433,6 @@ function initToolbar() {
         });
     }
 
-    // Matrix Orientation Toggles
     if (btnMatrixOrientHouse && btnMatrixOrientLoShu) {
         btnMatrixOrientHouse.addEventListener('click', () => {
             currentMatrixOrientMode = 'house';
@@ -465,14 +465,14 @@ function initToolbar() {
 
     if (btnExportSvg && viewportController) {
         btnExportSvg.addEventListener('click', () => {
-            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.svg' : 'Ban_Ve_Cuu_Cung.svg';
+            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.svg' : 'Ban_Ve_La_Kinh_Cuu_Cung.svg';
             viewportController.exportSvg(fileName);
         });
     }
 
     if (btnExportPng && viewportController) {
         btnExportPng.addEventListener('click', () => {
-            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.png' : 'Ban_Ve_Cuu_Cung.png';
+            const fileName = currentDrawingTab === 'arch' ? 'Ban_Ve_Kien_Truc.png' : 'Ban_Ve_La_Kinh_Cuu_Cung.png';
             viewportController.exportPng(fileName);
         });
     }
@@ -519,7 +519,6 @@ function handleCalculate(shouldScroll = false) {
     let widthM = parseFloat(document.getElementById('inputWidth')?.value) || 5.0;
     let lengthM = parseFloat(document.getElementById('inputLength')?.value) || 16.0;
 
-    // Swap if landscape mode
     if (isLandscapeMode && widthM < lengthM) {
         const temp = widthM;
         widthM = lengthM;
@@ -531,24 +530,19 @@ function handleCalculate(shouldScroll = false) {
     const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
     const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
     const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
-    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 19;
-    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 7;
+    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 20;
+    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 6;
 
     const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
 
-    const bedrooms = parseInt(document.getElementById('inputBedCount')?.value, 10) || 3;
-    const toilets = parseInt(document.getElementById('inputWcCount')?.value, 10) || 2;
-    const hasAltar = document.getElementById('inputHasAltar')?.value || '1';
-
-    // 1. Generate Parametric Floorplan Geometry with Shape
+    // 1. Generate Parametric Floorplan Geometry
     currentGeometry = generateParametricFloorplan({
         shape,
         widthM,
         lengthM,
         floors,
-        facingDegree,
-        roomCounts: { bedrooms, toilets, hasAltar }
+        facingDegree
     });
 
     // 2. Compute Flying Stars Chart
@@ -561,15 +555,11 @@ function handleCalculate(shouldScroll = false) {
         currentHour
     });
 
-    // 3. Compute Owner Gua (Bát Trạch Phối Mệnh)
+    // 3. Compute Owner Gua
     currentBatTrach = calculateGua(ownerYear, ownerGender);
 
     // 4. Compute 9-Palace Spatial Assignment
-    const floorGeo = (currentGeometry.plansByFloor && currentGeometry.plansByFloor[currentFloorIndex - 1]) 
-        ? currentGeometry.plansByFloor[currentFloorIndex - 1] 
-        : currentGeometry;
-
-    currentSpatialResult = calculateFengShuiSpatial(floorGeo, {
+    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
         facingDegree,
         buildYear,
         currentYear,
@@ -583,7 +573,7 @@ function handleCalculate(shouldScroll = false) {
     // 5. Render Floor Navigator
     renderFloorNavigator(currentGeometry.totalFloors);
 
-    // 6. Render Active Drawing (CAD or Feng Shui Overlay)
+    // 6. Render Active Drawing (Bản Vẽ Kiến Trúc CAD hoặc La Kinh Cửu Cung)
     renderActiveDrawing();
 
     // 7. Render 9-Palace Matrix (Oriented by House facing or Lo Shu)
@@ -595,7 +585,6 @@ function handleCalculate(shouldScroll = false) {
     // 9. Render Audit Report
     renderDetailedReport(currentSpatialResult);
 
-    // 10. Smooth scroll to drawing if clicked
     if (shouldScroll && resultsSection) {
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -627,35 +616,27 @@ function renderFloorNavigator(totalFloors) {
     });
 }
 
-/* 12. Render Active Drawing (Arch vs Feng Shui Overlay) */
+/* 12. Render Active Drawing (CAD Floorplan vs La Kinh 24 Sơn Cửu Cung) */
 function renderActiveDrawing() {
     if (!currentGeometry || !viewportController) return;
 
-    const floorGeometry = (currentGeometry.plansByFloor && currentGeometry.plansByFloor[currentFloorIndex - 1]) 
-        ? currentGeometry.plansByFloor[currentFloorIndex - 1] 
-        : currentGeometry;
-
-    // Render Bản vẽ 1 (Kiến trúc CAD)
-    let baseSvg = cadRenderer.renderSvg(floorGeometry, {
-        theme: currentThemeMode,
-        facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180
-    });
-
-    if (currentDrawingTab === 'fengshui') {
-        const buildYear = currentFlyingStars ? (currentFlyingStars.buildYear || 2025) : 2025;
-        const spatial = calculateFengShuiSpatial(floorGeometry, {
-            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180,
-            buildYear: buildYear,
-            currentYear: currentFlyingStars ? currentFlyingStars.currentYear : 2026,
-            currentMonth: currentFlyingStars ? currentFlyingStars.currentMonth : 8,
-            currentDay: currentFlyingStars ? currentFlyingStars.currentDay : 19,
-            currentHour: currentFlyingStars ? currentFlyingStars.currentHour : 7
+    if (currentDrawingTab === 'arch') {
+        // Tab 1: Bản vẽ kiến trúc CAD đen trắng chuẩn 100% Ảnh 3 Scan2CAD
+        const svgCode = cadRenderer.renderSvg(currentGeometry, {
+            theme: currentThemeMode,
+            facingDegree: currentFlyingStars ? currentFlyingStars.facingDegree : 180
         });
-        const overlaySvg = renderNinePalacesOverlaySvg(spatial, currentThemeMode === 'white');
-        baseSvg = baseSvg.replace('</svg>', `${overlaySvg}</svg>`);
+        viewportController.setSvgContent(svgCode);
+    } else {
+        // Tab 2: La Kinh 24 Sơn 360° & Cửu Cung Phi Tinh chuẩn 100% Ảnh 2 HKPT
+        if (!luoPanRenderer) {
+            luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
+        }
+        const svgCode = luoPanRenderer.renderSvg(currentFlyingStars, {
+            theme: currentThemeMode
+        });
+        viewportController.setSvgContent(svgCode);
     }
-
-    viewportController.setSvgContent(baseSvg);
 }
 
 /* 13. Render 9-Palace Xuan Kong Matrix Display */
@@ -675,7 +656,6 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     if (!matrixContainer || !flyingStars.palaces) return;
 
-    // Thứ tự 9 cung: Xoay theo hướng nhà (House) hoặc Lạc Thư chuẩn (Lo Shu)
     const order = currentMatrixOrientMode === 'house'
         ? getOrientedPalaceGrid(flyingStars.facingPalace)
         : [4, 9, 2, 3, 5, 7, 8, 1, 6];
@@ -685,7 +665,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
         if (!pal) return '';
 
         const isFacingPal = pId === flyingStars.facingPalace;
-        const isSittingPal = pId === flyingStars.sittingPalace;
+        const isSittingPal = pId === sittingPalace;
 
         let palTag = PALACE_NAMES[pId] || pId;
         if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
@@ -693,20 +673,17 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
         return `
             <div class="palace-cell ${isFacingPal ? 'facing-cell' : (isSittingPal ? 'sitting-cell' : '')}" style="${isFacingPal ? 'border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.08);' : (isSittingPal ? 'border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.08);' : '')}">
-                <!-- Hàng 4 Sao Thời Gian -->
                 <div class="time-stars-row" style="display: flex; justify-content: center; gap: 4px; margin-bottom: 5px;">
                     <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#22c55e; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Niên Tinh (Năm)">${pal.nienStar}</span>
                     <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#ef4444; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nguyệt Tinh (Tháng)">${pal.nguyetStar}</span>
                     <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:900; text-align:center;" title="Nhật Tinh (Ngày)">${pal.nhatStar}</span>
                     <span style="display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:900; text-align:center;" title="Thời Tinh (Giờ)">${pal.thoiStar}</span>
                 </div>
-                <!-- Bộ 3 Sao Huyền Không -->
                 <div class="palace-stars-trio" style="display: flex; justify-content: space-around; align-items: center; margin: 4px 0;">
                     <span class="star-badge-son" style="color: #38bdf8; font-weight: 900; font-size: 1.15rem;" title="Sơn Tinh (Trái)">${pal.sonStar}</span>
                     <span class="star-badge-van" style="font-size: 1.5rem; font-weight: 900; color: #ffffff;" title="Vận Tinh (Giữa)">${pal.vanStar}</span>
                     <span class="star-badge-huong" style="color: #f87171; font-weight: 900; font-size: 1.15rem;" title="Hướng Tinh (Phải)">${pal.huongStar}</span>
                 </div>
-                <!-- Tên Cung & Phương Vị -->
                 <span class="palace-name-badge" style="font-size: 0.72rem; font-weight: 800; color: ${isFacingPal ? '#f87171' : (isSittingPal ? '#38bdf8' : '#fbbf24')};">${palTag}</span>
             </div>
         `;
@@ -725,17 +702,17 @@ function renderDetailedReport(spatialResult) {
         return `
             <div class="report-card">
                 <div class="report-card-header">
-                    <span class="report-palace-title">${p.palaceName || p.name} (${p.short || p.trigram})</span>
-                    <span class="audit-badge ${isGood ? 'good' : 'bad'}">${p.grade || 'BÌNH HÒA'}</span>
+                    <span class="report-palace-title">${p.palaceName} (${p.directionName})</span>
+                    <span class="audit-badge ${isGood ? 'good' : 'bad'}">${p.grade}</span>
                 </div>
                 <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
                     <strong>Bộ Sao:</strong> Sơn ${p.sonStar} (Trái) · Hướng ${p.huongStar} (Phải) · Vận ${p.vanStar} (Giữa) · Niên ${p.nienStar}
                 </div>
                 <div style="font-size: 0.82rem; color: #fbbf24; line-height: 1.4;">
-                    ${p.analysis || 'Phương vị ổn định, tiếp nhận sinh khí tự nhiên.'}
+                    ${p.analysis}
                 </div>
                 <div style="font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">
-                    <strong>Đề xuất bố trí:</strong> ${p.remedy || 'Bố trí công năng phù hợp với tọa hướng công trình.'}
+                    <strong>Đề xuất bố trí:</strong> ${p.remedy}
                 </div>
             </div>
         `;
