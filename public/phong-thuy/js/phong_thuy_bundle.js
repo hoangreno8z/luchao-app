@@ -645,191 +645,201 @@ export class ArchitecturalCADRenderer {
             }
         }
 
-        // 2. VECTOR SYMBOLS (NÉT KỸ THUẬT CHUẨN SCAN2CAD CHO CÁC CẤU TRÚC KIẾN TRÚC)
-        const renderCar = (cx, cy, cw, ch) => `
-            <g class="cad-symbol-car" transform="translate(${cx}, ${cy})">
-                <rect x="${cw * 0.1}" y="${ch * 0.05}" width="${cw * 0.8}" height="${ch * 0.9}" rx="${cw * 0.2}" fill="none" stroke="#000" stroke-width="8"/>
-                <path d="M ${cw * 0.2} ${ch * 0.25} Q ${cw * 0.5} ${ch * 0.2} ${cw * 0.8} ${ch * 0.25} L ${cw * 0.75} ${ch * 0.4} Q ${cw * 0.5} ${ch * 0.38} ${cw * 0.25} ${ch * 0.4} Z" fill="none" stroke="#000" stroke-width="6"/>
-                <path d="M ${cw * 0.25} ${ch * 0.7} Q ${cw * 0.5} ${ch * 0.68} ${cw * 0.75} ${ch * 0.7} L ${cw * 0.8} ${ch * 0.82} Q ${cw * 0.5} ${ch * 0.85} ${cw * 0.2} ${ch * 0.82} Z" fill="none" stroke="#000" stroke-width="6"/>
-                <rect x="${cw * 0.05}" y="${ch * 0.15}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
-                <rect x="${cw * 0.87}" y="${ch * 0.15}" width="${cw * 0.08}" height="${ch * 0.12}" rx="4" fill="#000"/>
-            </g>
-        `;
+        // 2. VECTOR ARCHITECTURAL BLOCKS (CHUẨN KIẾN TRÚC SƯ KTS)
+        const renderBedBlock = (x, y, w, h, name = 'PHÒNG NGỦ') => {
+            const scale = Math.min(1, Math.min((w * 0.75) / 1800, (h * 0.75) / 2000));
+            const bedW = 1800 * scale;
+            const bedH = 2000 * scale;
+            const bx = x + (w - bedW) / 2;
+            const by = y + (h - bedH) / 2;
+            const pillowW = 600 * scale;
+            const pillowH = 300 * scale;
+            const pillowRx = 50 * scale;
+            const strokeW = Math.max(6, 15 * scale);
+            const strokeThin = Math.max(4, 10 * scale);
+            const lineChuyenY = 800 * scale;
 
-        const renderBed = (bx, by, bw, bh) => `
-            <g class="cad-symbol-bed" transform="translate(${bx}, ${by})">
-                <rect x="${bw * 0.1}" y="${bh * 0.1}" width="${bw * 0.8}" height="${bh * 0.8}" fill="none" stroke="#000" stroke-width="8"/>
-                <rect x="${bw * 0.1}" y="${bh * 0.1}" width="${bw * 0.8}" height="${bh * 0.1}" fill="#333"/>
-                <rect x="${bw * 0.18}" y="${bh * 0.24}" width="${bw * 0.28}" height="${bh * 0.18}" rx="10" fill="none" stroke="#000" stroke-width="5"/>
-                <rect x="${bw * 0.54}" y="${bh * 0.24}" width="${bw * 0.28}" height="${bh * 0.18}" rx="10" fill="none" stroke="#000" stroke-width="5"/>
-                <line x1="${bw * 0.1}" y1="${bh * 0.52}" x2="${bw * 0.9}" y2="${bh * 0.52}" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
+            return `
+                <g class="arch-block-bed">
+                    <g transform="translate(${bx}, ${by})">
+                        <rect width="${bedW}" height="${bedH}" fill="#ffffff" stroke="#333333" stroke-width="${strokeW}" rx="${20 * scale}"/>
+                        <rect x="${200 * scale}" y="${200 * scale}" width="${pillowW}" height="${pillowH}" rx="${pillowRx}" fill="#f8fafc" stroke="#333333" stroke-width="${strokeThin}"/>
+                        <rect x="${1000 * scale}" y="${200 * scale}" width="${pillowW}" height="${pillowH}" rx="${pillowRx}" fill="#f8fafc" stroke="#333333" stroke-width="${strokeThin}"/>
+                        <line x1="0" y1="${lineChuyenY}" x2="${bedW}" y2="${lineChuyenY}" stroke="#333333" stroke-width="${strokeThin}"/>
+                    </g>
+                    <text x="${x + w / 2}" y="${by + bedH + Math.min(180, (h - bedH) / 2 + 110)}" text-anchor="middle" font-size="${Math.min(w * 0.08, 130)}" font-weight="900" fill="#333333" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
 
-        const renderSofa = (sx, sy, sw, sh) => `
-            <g class="cad-symbol-sofa" transform="translate(${sx}, ${sy})">
-                <rect x="${sw * 0.08}" y="${sh * 0.08}" width="${sw * 0.84}" height="${sh * 0.32}" rx="15" fill="none" stroke="#000" stroke-width="8"/>
-                <rect x="${sw * 0.18}" y="${sh * 0.48}" width="${sw * 0.64}" height="${sh * 0.38}" rx="20" fill="none" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
+        const renderWCBlock = (x, y, w, h, name = 'WC') => {
+            const scale = Math.min(1, Math.min((w * 0.65) / 1200, (h * 0.65) / 1200));
+            const strokeW = Math.max(6, 15 * scale);
+            const toiletX = x + Math.max(80, 180 * scale);
+            const toiletY = y + Math.max(80, 180 * scale);
+            const tankW = 500 * scale;
+            const tankH = 250 * scale;
+            const bowlRx = 200 * scale;
+            const bowlRy = 250 * scale;
+            const lavaboW = 450 * scale;
+            const lavaboH = 350 * scale;
 
-        const renderDining = (dx, dy, dw, dh) => `
-            <g class="cad-symbol-dining" transform="translate(${dx}, ${dy})">
-                <rect x="${dw * 0.15}" y="${dh * 0.25}" width="${dw * 0.7}" height="${dh * 0.5}" rx="30" fill="none" stroke="#000" stroke-width="8"/>
-                <circle cx="${dw * 0.3}" cy="${dh * 0.12}" r="${Math.min(dw, dh) * 0.08}" fill="none" stroke="#000" stroke-width="4"/>
-                <circle cx="${dw * 0.7}" cy="${dh * 0.12}" r="${Math.min(dw, dh) * 0.08}" fill="none" stroke="#000" stroke-width="4"/>
-                <circle cx="${dw * 0.3}" cy="${dh * 0.88}" r="${Math.min(dw, dh) * 0.08}" fill="none" stroke="#000" stroke-width="4"/>
-                <circle cx="${dw * 0.7}" cy="${dh * 0.88}" r="${Math.min(dw, dh) * 0.08}" fill="none" stroke="#000" stroke-width="4"/>
-            </g>
-        `;
+            return `
+                <g class="arch-block-wc">
+                    <g transform="translate(${toiletX}, ${toiletY})">
+                        <rect width="${tankW}" height="${tankH}" fill="#ffffff" stroke="#333333" stroke-width="${strokeW}" rx="${10 * scale}"/>
+                        <ellipse cx="${tankW / 2}" cy="${tankH + bowlRy - 40 * scale}" rx="${bowlRx}" ry="${bowlRy}" fill="#ffffff" stroke="#333333" stroke-width="${strokeW}"/>
+                    </g>
+                    <g transform="translate(${x + w - lavaboW - 120 * scale}, ${y + 120 * scale})">
+                        <rect width="${lavaboW}" height="${lavaboH}" fill="#ffffff" stroke="#333333" stroke-width="${strokeW}" rx="${15 * scale}"/>
+                        <ellipse cx="${lavaboW / 2}" cy="${lavaboH / 2}" rx="${lavaboW * 0.35}" ry="${lavaboH * 0.3}" fill="none" stroke="#0284c7" stroke-width="${Math.max(4, 8 * scale)}"/>
+                    </g>
+                    <text x="${x + w / 2}" y="${y + h - 70}" text-anchor="middle" font-size="${Math.min(w * 0.1, 120)}" font-weight="900" fill="#333333" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
 
-        const renderWc = (wx, wy, ww, wh) => `
-            <g class="cad-symbol-wc" transform="translate(${wx}, ${wy})">
-                <rect x="${ww * 0.1}" y="${wh * 0.1}" width="${ww * 0.35}" height="${wh * 0.2}" rx="10" fill="none" stroke="#000" stroke-width="6"/>
-                <ellipse cx="${ww * 0.275}" cy="${wh * 0.45}" rx="${ww * 0.16}" ry="${wh * 0.22}" fill="none" stroke="#000" stroke-width="6"/>
-                <rect x="${ww * 0.6}" y="${wh * 0.1}" width="${ww * 0.3}" height="${wh * 0.5}" rx="15" fill="none" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
+        const renderKitchenBlock = (x, y, w, h, name = 'BẾP & ĂN') => {
+            const counterH = Math.min(600, h * 0.32);
+            const rBurner = Math.min(140, counterH * 0.24);
+            const sinkW = Math.min(800, w * 0.35);
+            const sinkH = counterH * 0.7;
 
-        const renderStairs = (sx, sy, sw, sh) => {
-            let st = `<g class="cad-symbol-stairs" transform="translate(${sx}, ${sy})">
-                <rect x="0" y="0" width="${sw}" height="${sh}" fill="none" stroke="#000" stroke-width="8"/>`;
-            const steps = 10;
+            return `
+                <g class="arch-block-kitchen">
+                    <rect x="${x}" y="${y}" width="${w}" height="${counterH}" fill="#e2e8f0" stroke="#333333" stroke-width="10"/>
+                    <circle cx="${x + w / 3}" cy="${y + counterH / 2}" r="${rBurner}" fill="#ffffff" stroke="#333333" stroke-width="14"/>
+                    <circle cx="${x + w / 3 + rBurner * 2.3}" cy="${y + counterH / 2}" r="${rBurner}" fill="#ffffff" stroke="#333333" stroke-width="14"/>
+                    <rect x="${x + w * 0.65}" y="${y + (counterH - sinkH) / 2}" width="${sinkW}" height="${sinkH}" rx="30" fill="#ffffff" stroke="#333333" stroke-width="12"/>
+                    <line x1="${x + w * 0.65 + sinkW / 2}" y1="${y + (counterH - sinkH) / 2}" x2="${x + w * 0.65 + sinkW / 2}" y2="${y + (counterH + sinkH) / 2}" stroke="#333333" stroke-width="10"/>
+                    ${h > 3500 ? `
+                        <rect x="${x + (w - Math.min(1800, w * 0.6)) / 2}" y="${y + counterH + (h - counterH - 1000) / 2}" width="${Math.min(1800, w * 0.6)}" height="${Math.min(800, h * 0.22)}" rx="15" fill="#f8fafc" stroke="#333333" stroke-width="8"/>
+                    ` : ''}
+                    <text x="${x + w / 2}" y="${y + h - 70}" text-anchor="middle" font-size="${Math.min(w * 0.08, 120)}" font-weight="900" fill="#333333" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
+
+        const renderDoorBlock = (x, y, w, h, name = 'CỬA') => {
+            const doorW = Math.min(w, Math.max(800, h));
+            return `
+                <g class="arch-block-door" transform="translate(${x}, ${y})">
+                    <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#333333" stroke-width="8" stroke-dasharray="25,15"/>
+                    <line x1="0" y1="${h / 2}" x2="${doorW * 0.85}" y2="${h / 2 - doorW * 0.85}" stroke="#333333" stroke-width="16"/>
+                    <path d="M 0 ${h / 2} A ${doorW * 0.85} ${doorW * 0.85} 0 0 1 ${doorW * 0.85} ${h / 2 - doorW * 0.85}" fill="none" stroke="#94a3b8" stroke-width="10" stroke-dasharray="20,20"/>
+                    <rect x="0" y="0" width="${Math.max(40, w * 0.08)}" height="${h}" fill="#333333"/>
+                    <text x="${w / 2}" y="${h / 2 + 100}" text-anchor="middle" font-size="70" font-weight="800" fill="#333333">${name}</text>
+                </g>
+            `;
+        };
+
+        const renderLivingBlock = (x, y, w, h, name = 'PHÒNG KHÁCH') => {
+            const sofaW = Math.min(w * 0.8, 2800);
+            const sofaH = Math.min(h * 0.35, 1000);
+            const sofaX = x + (w - sofaW) / 2;
+            const sofaY = y + 180;
+            const tableW = sofaW * 0.55;
+            const tableH = Math.min(550, h * 0.2);
+            const tableX = x + (w - tableW) / 2;
+            const tableY = sofaY + sofaH + 220;
+
+            return `
+                <g class="arch-block-living">
+                    <rect x="${sofaX}" y="${sofaY}" width="${sofaW}" height="${sofaH}" rx="20" fill="#f8fafc" stroke="#333333" stroke-width="12"/>
+                    <rect x="${sofaX}" y="${sofaY}" width="${sofaW}" height="${sofaH * 0.28}" fill="#e2e8f0" stroke="#333333" stroke-width="8"/>
+                    <rect x="${sofaX}" y="${sofaY}" width="${sofaW * 0.12}" height="${sofaH}" fill="#e2e8f0" stroke="#333333" stroke-width="8"/>
+                    <rect x="${sofaX + sofaW * 0.88}" y="${sofaY}" width="${sofaW * 0.12}" height="${sofaH}" fill="#e2e8f0" stroke="#333333" stroke-width="8"/>
+                    <rect x="${tableX}" y="${tableY}" width="${tableW}" height="${tableH}" rx="12" fill="#ffffff" stroke="#333333" stroke-width="10"/>
+                    <line x1="${tableX + 40}" y1="${tableY + tableH / 2}" x2="${tableX + tableW - 40}" y2="${tableY + tableH / 2}" stroke="#94a3b8" stroke-width="6" stroke-dasharray="20,15"/>
+                    <text x="${x + w / 2}" y="${y + h - 70}" text-anchor="middle" font-size="${Math.min(w * 0.08, 120)}" font-weight="900" fill="#333333" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
+
+        const renderStairsBlock = (x, y, w, h, name = 'CẦU THANG') => {
+            const steps = 14;
+            let st = `<g class="arch-block-stairs">
+                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#333333" stroke-width="10"/>`;
             for (let i = 1; i < steps; i++) {
-                const y = (sh / steps) * i;
-                st += `<line x1="0" y1="${y}" x2="${sw}" y2="${y}" stroke="#000" stroke-width="4"/>`;
+                const sy = y + (h / steps) * i;
+                st += `<line x1="${x}" y1="${sy}" x2="${x + w}" y2="${sy}" stroke="#333333" stroke-width="5"/>`;
             }
+            const arrowX = x + w / 2;
             st += `
-                <line x1="${sw / 2}" y1="${sh * 0.85}" x2="${sw / 2}" y2="${sh * 0.18}" stroke="#000" stroke-width="8" stroke-linecap="round"/>
-                <polygon points="${sw / 2},${sh * 0.08} ${sw / 2 - 40},${sh * 0.2} ${sw / 2 + 40},${sh * 0.2}" fill="#000"/>
-                <circle cx="${sw / 2}" cy="${sh * 0.85}" r="25" fill="#000"/>
-                <text x="${sw / 2}" y="${sh * 0.55}" text-anchor="middle" font-size="${Math.min(sw * 0.25, 90)}" font-family="'Courier New', monospace" font-weight="bold" fill="#000">UP</text>
+                <line x1="${arrowX}" y1="${y + h * 0.85}" x2="${arrowX}" y2="${y + h * 0.18}" stroke="#0284c7" stroke-width="12" stroke-linecap="round"/>
+                <polygon points="${arrowX},${y + h * 0.08} ${arrowX - 45},${y + h * 0.22} ${arrowX + 45},${y + h * 0.22}" fill="#0284c7"/>
+                <circle cx="${arrowX}" cy="${y + h * 0.85}" r="30" fill="#0284c7"/>
+                <text x="${x + w / 2}" y="${y + h * 0.55}" text-anchor="middle" font-size="${Math.min(w * 0.18, 90)}" font-weight="900" fill="#0284c7">UP (21 BẬC)</text>
             </g>`;
             return st;
         };
 
-        const renderMainDoor = (mx, my, mw, mh) => `
-            <g class="cad-symbol-maindoor" transform="translate(${mx}, ${my})">
-                <rect x="0" y="0" width="${mw}" height="${mh}" fill="none" stroke="#000" stroke-width="8" stroke-dasharray="25,15"/>
-                <line x1="0" y1="${mh / 2}" x2="${mw * 0.45}" y2="0" stroke="#000" stroke-width="8"/>
-                <path d="M ${mw * 0.45} 0 A ${mw * 0.45} ${mw * 0.45} 0 0 1 0 ${mh / 2}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
-                <line x1="${mw}" y1="${mh / 2}" x2="${mw * 0.55}" y2="0" stroke="#000" stroke-width="8"/>
-                <path d="M ${mw * 0.55} 0 A ${mw * 0.45} ${mw * 0.45} 0 0 0 ${mw} ${mh / 2}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
-                <rect x="0" y="0" width="${Math.max(40, mw * 0.08)}" height="${mh}" fill="#000"/>
-                <rect x="${mw - Math.max(40, mw * 0.08)}" y="0" width="${Math.max(40, mw * 0.08)}" height="${mh}" fill="#000"/>
-            </g>
-        `;
+        const renderGarageBlock = (x, y, w, h, name = 'GARA XE') => {
+            const carW = Math.min(w * 0.75, 2000);
+            const carH = Math.min(h * 0.8, 4500);
+            const cx = x + (w - carW) / 2;
+            const cy = y + (h - carH) / 2;
 
-        const renderGate = (gx, gy, gw, gh) => `
-            <g class="cad-symbol-gate" transform="translate(${gx}, ${gy})">
-                <rect x="0" y="0" width="${gw * 0.15}" height="${gh}" fill="#000" stroke="#000" stroke-width="4"/>
-                <rect x="${gw * 0.85}" y="0" width="${gw * 0.15}" height="${gh}" fill="#000" stroke="#000" stroke-width="4"/>
-                <line x1="${gw * 0.15}" y1="${gh / 2}" x2="${gw * 0.85}" y2="${gh / 2}" stroke="#000" stroke-width="10" stroke-dasharray="30,20"/>
-                <rect x="${gw * 0.2}" y="${gh * 0.2}" width="${gw * 0.28}" height="${gh * 0.6}" fill="none" stroke="#000" stroke-width="6"/>
-                <rect x="${gw * 0.52}" y="${gh * 0.2}" width="${gw * 0.28}" height="${gh * 0.6}" fill="none" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
+            return `
+                <g class="arch-block-garage">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#333333" stroke-width="8" stroke-dasharray="30,15"/>
+                    <rect x="${cx}" y="${cy}" width="${carW}" height="${carH}" rx="${carW * 0.18}" fill="#ffffff" stroke="#333333" stroke-width="12"/>
+                    <path d="M ${cx + carW * 0.15} ${cy + carH * 0.25} Q ${cx + carW / 2} ${cy + carH * 0.18} ${cx + carW * 0.85} ${cy + carH * 0.25} L ${cx + carW * 0.8} ${cy + carH * 0.4} Q ${cx + carW / 2} ${cy + carH * 0.38} ${cx + carW * 0.2} ${cy + carH * 0.4} Z" fill="#e2e8f0" stroke="#333333" stroke-width="8"/>
+                    <path d="M ${cx + carW * 0.2} ${cy + carH * 0.72} Q ${cx + carW / 2} ${cy + carH * 0.7} ${cx + carW * 0.8} ${cy + carH * 0.72} L ${cx + carW * 0.85} ${cy + carH * 0.84} Q ${cx + carW / 2} ${cy + carH * 0.86} ${cx + carW * 0.15} ${cy + carH * 0.84} Z" fill="#e2e8f0" stroke="#333333" stroke-width="8"/>
+                    <rect x="${cx - 50}" y="${cy + carH * 0.22}" width="50" height="100" rx="15" fill="#333333"/>
+                    <rect x="${cx + carW}" y="${cy + carH * 0.22}" width="50" height="100" rx="15" fill="#333333"/>
+                    <text x="${x + w / 2}" y="${y + h - 70}" text-anchor="middle" font-size="${Math.min(w * 0.08, 120)}" font-weight="900" fill="#333333" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
 
-        const renderSideDoor = (sx, sy, sw, sh) => `
-            <g class="cad-symbol-sidedoor" transform="translate(${sx}, ${sy})">
-                <rect x="0" y="0" width="${sw}" height="${sh}" fill="none" stroke="#000" stroke-width="6" stroke-dasharray="20,15"/>
-                <line x1="0" y1="${sh}" x2="${sw * 0.85}" y2="0" stroke="#000" stroke-width="8"/>
-                <path d="M ${sw * 0.85} 0 A ${sw * 0.85} ${sw * 0.85} 0 0 1 0 ${sh}" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="15,10"/>
-                <rect x="0" y="0" width="${Math.max(40, sw * 0.1)}" height="${sh}" fill="#000"/>
-            </g>
-        `;
+        const renderAltarBlock = (x, y, w, h, name = 'PHÒNG THỜ') => {
+            const altarW = Math.min(w * 0.75, 2400);
+            const altarH = Math.min(h * 0.35, 1000);
+            const ax = x + (w - altarW) / 2;
+            const ay = y + 150;
 
-        const renderWindow = (wx, wy, ww, wh) => `
-            <g class="cad-symbol-window" transform="translate(${wx}, ${wy})">
-                <rect x="0" y="0" width="${ww}" height="${wh}" fill="none" stroke="#000" stroke-width="10"/>
-                <line x1="0" y1="${wh * 0.35}" x2="${ww}" y2="${wh * 0.35}" stroke="#000" stroke-width="4"/>
-                <line x1="0" y1="${wh * 0.65}" x2="${ww}" y2="${wh * 0.65}" stroke="#000" stroke-width="4"/>
-                <line x1="${ww / 2}" y1="0" x2="${ww / 2}" y2="${wh}" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
+            return `
+                <g class="arch-block-altar">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#b45309" stroke-width="8"/>
+                    <rect x="${ax}" y="${ay}" width="${altarW}" height="${altarH}" rx="12" fill="#fef3c7" stroke="#b45309" stroke-width="12"/>
+                    <rect x="${ax + 40}" y="${ay + 40}" width="${altarW - 80}" height="${altarH - 80}" fill="none" stroke="#b45309" stroke-width="5" stroke-dasharray="25,15"/>
+                    <circle cx="${ax + altarW / 2}" cy="${ay + altarH / 2}" r="80" fill="#b45309"/>
+                    <circle cx="${ax + altarW * 0.25}" cy="${ay + altarH / 2}" r="45" fill="#b45309"/>
+                    <circle cx="${ax + altarW * 0.75}" cy="${ay + altarH / 2}" r="45" fill="#b45309"/>
+                    <text x="${x + w / 2}" y="${y + h - 70}" text-anchor="middle" font-size="${Math.min(w * 0.08, 120)}" font-weight="900" fill="#b45309" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
 
-        const renderOffice = (ox, oy, ow, oh) => `
-            <g class="cad-symbol-office" transform="translate(${ox}, ${oy})">
-                <rect x="${ow * 0.15}" y="${oh * 0.15}" width="${ow * 0.7}" height="${oh * 0.4}" rx="10" fill="none" stroke="#000" stroke-width="8"/>
-                <rect x="${ow * 0.35}" y="${oh * 0.22}" width="${ow * 0.3}" height="${oh * 0.2}" rx="5" fill="none" stroke="#000" stroke-width="4"/>
-                <circle cx="${ow * 0.5}" cy="${oh * 0.75}" r="${Math.min(ow, oh) * 0.16}" fill="none" stroke="#000" stroke-width="6"/>
-                <path d="M ${ow * 0.38} ${oh * 0.75} Q ${ow * 0.5} ${oh * 0.65} ${ow * 0.62} ${oh * 0.75}" fill="none" stroke="#000" stroke-width="6"/>
-            </g>
-        `;
-
-        const renderGym = (gx, gy, gw, gh) => `
-            <g class="cad-symbol-gym" transform="translate(${gx}, ${gy})">
-                <rect x="${gw * 0.15}" y="${gh * 0.1}" width="${gw * 0.32}" height="${gh * 0.8}" rx="15" fill="none" stroke="#000" stroke-width="8"/>
-                <line x1="${gw * 0.15}" y1="${gh * 0.3}" x2="${gw * 0.47}" y2="${gh * 0.3}" stroke="#000" stroke-width="6"/>
-                <rect x="${gw * 0.6}" y="${gh * 0.25}" width="${gw * 0.25}" height="${gh * 0.5}" rx="8" fill="none" stroke="#000" stroke-width="6"/>
-                <line x1="${gw * 0.55}" y1="${gh * 0.5}" x2="${gw * 0.9}" y2="${gh * 0.5}" stroke="#000" stroke-width="8"/>
-                <circle cx="${gw * 0.55}" cy="${gh * 0.5}" r="25" fill="#000"/>
-                <circle cx="${gw * 0.9}" cy="${gh * 0.5}" r="25" fill="#000"/>
-            </g>
-        `;
-
-        const renderPool = (px, py, pw, ph) => `
-            <g class="cad-symbol-pool" transform="translate(${px}, ${py})">
-                <rect x="${pw * 0.06}" y="${ph * 0.06}" width="${pw * 0.88}" height="${ph * 0.88}" rx="25" fill="none" stroke="#0284c7" stroke-width="12"/>
-                <rect x="${pw * 0.12}" y="${ph * 0.12}" width="${pw * 0.76}" height="${ph * 0.76}" rx="15" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="30,15"/>
-                <path d="M ${pw * 0.2} ${ph * 0.4} Q ${pw * 0.35} ${ph * 0.35} ${pw * 0.5} ${ph * 0.4} T ${pw * 0.8} ${ph * 0.4}" fill="none" stroke="#0284c7" stroke-width="6"/>
-                <path d="M ${pw * 0.2} ${ph * 0.6} Q ${pw * 0.35} ${ph * 0.55} ${pw * 0.5} ${ph * 0.6} T ${pw * 0.8} ${ph * 0.6}" fill="none" stroke="#0284c7" stroke-width="6"/>
-                <rect x="${pw * 0.8}" y="${ph * 0.18}" width="60" height="120" rx="6" fill="#0284c7"/>
-            </g>
-        `;
-
-        const renderYard = (yx, yy, yw, yh) => `
-            <g class="cad-symbol-yard" transform="translate(${yx}, ${yy})">
-                <rect x="0" y="0" width="${yw}" height="${yh}" fill="none" stroke="#16a34a" stroke-width="6" stroke-dasharray="40,20"/>
-                <circle cx="${yw * 0.3}" cy="${yh * 0.35}" r="${Math.min(yw, yh) * 0.16}" fill="none" stroke="#16a34a" stroke-width="6"/>
-                <circle cx="${yw * 0.3}" cy="${yh * 0.35}" r="${Math.min(yw, yh) * 0.08}" fill="none" stroke="#16a34a" stroke-width="4"/>
-                <circle cx="${yw * 0.7}" cy="${yh * 0.65}" r="${Math.min(yw, yh) * 0.2}" fill="none" stroke="#16a34a" stroke-width="6"/>
-                <line x1="${yw * 0.1}" y1="${yh * 0.75}" x2="${yw * 0.45}" y2="${yh * 0.75}" stroke="#16a34a" stroke-width="4" stroke-dasharray="20,15"/>
-            </g>
-        `;
-
-        const renderAltar = (ax, ay, aw, ah) => `
-            <g class="cad-symbol-altar" transform="translate(${ax}, ${ay})">
-                <rect x="${aw * 0.1}" y="${ah * 0.15}" width="${aw * 0.8}" height="${ah * 0.7}" rx="10" fill="none" stroke="#b45309" stroke-width="10"/>
-                <rect x="${aw * 0.15}" y="${ah * 0.22}" width="${aw * 0.7}" height="${ah * 0.56}" fill="none" stroke="#b45309" stroke-width="4" stroke-dasharray="25,15"/>
-                <circle cx="${aw / 2}" cy="${ah / 2}" r="${Math.min(aw, ah) * 0.12}" fill="#b45309"/>
-                <circle cx="${aw * 0.25}" cy="${ah / 2}" r="30" fill="#b45309"/>
-                <circle cx="${aw * 0.75}" cy="${ah / 2}" r="30" fill="#b45309"/>
-            </g>
-        `;
-
-        const renderSkylight = (kx, ky, kw, kh) => `
-            <g class="cad-symbol-skylight" transform="translate(${kx}, ${ky})">
-                <rect x="0" y="0" width="${kw}" height="${kh}" fill="none" stroke="#0284c7" stroke-width="8" stroke-dasharray="30,20"/>
-                <line x1="0" y1="0" x2="${kw}" y2="${kh}" stroke="#0284c7" stroke-width="6" stroke-dasharray="25,15"/>
-                <line x1="${kw}" y1="0" x2="0" y2="${kh}" stroke="#0284c7" stroke-width="6" stroke-dasharray="25,15"/>
-            </g>
-        `;
+        const renderSkylightBlock = (x, y, w, h, name = 'GIẾNG TRỜI') => {
+            return `
+                <g class="arch-block-skylight">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f0f9ff" stroke="#0284c7" stroke-width="10" stroke-dasharray="30,20"/>
+                    <line x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}" stroke="#0284c7" stroke-width="8" stroke-dasharray="25,15"/>
+                    <line x1="${x + w}" y1="${y}" x2="${x}" y2="${y + h}" stroke="#0284c7" stroke-width="8" stroke-dasharray="25,15"/>
+                    <text x="${x + w / 2}" y="${y + h / 2 + 25}" text-anchor="middle" font-size="${Math.min(w * 0.08, 120)}" font-weight="900" fill="#0284c7" letter-spacing="1.5">${name}</text>
+                </g>
+            `;
+        };
 
         // 3. RENDER CÁC PHÒNG NỘI THẤT TƯƠNG TÁC KÈM HITBOX CẢM ỨNG MOBILE SIÊU NHẠY
         let roomsSvg = '';
         if (geometry.rooms) {
             geometry.rooms.forEach(r => {
                 const isSel = (r.id === selectedId);
-                const area = ((r.w * r.h) / 1000000).toFixed(1);
 
                 let symbolSvg = '';
-                if (r.type === 'garage') symbolSvg = renderCar(r.x, r.y, r.w, r.h);
-                else if (r.type === 'bed_master' || r.type === 'bed_regular' || r.type === 'bed') symbolSvg = renderBed(r.x, r.y, r.w, r.h);
-                else if (r.type === 'living_room' || r.type === 'living') symbolSvg = renderSofa(r.x, r.y, r.w, r.h);
-                else if (r.type === 'kitchen_dining' || r.type === 'kitchen') symbolSvg = renderDining(r.x, r.y, r.w, r.h);
-                else if (r.type === 'toilet' || r.type === 'wc') symbolSvg = renderWc(r.x, r.y, r.w, r.h);
-                else if (r.type === 'stairs') symbolSvg = renderStairs(r.x, r.y, r.w, r.h);
-                else if (r.type === 'main_door' || r.type === 'door_main') symbolSvg = renderMainDoor(r.x, r.y, r.w, r.h);
-                else if (r.type === 'gate') symbolSvg = renderGate(r.x, r.y, r.w, r.h);
-                else if (r.type === 'side_door' || r.type === 'door_side') symbolSvg = renderSideDoor(r.x, r.y, r.w, r.h);
-                else if (r.type === 'window') symbolSvg = renderWindow(r.x, r.y, r.w, r.h);
-                else if (r.type === 'office') symbolSvg = renderOffice(r.x, r.y, r.w, r.h);
-                else if (r.type === 'gym') symbolSvg = renderGym(r.x, r.y, r.w, r.h);
-                else if (r.type === 'pool') symbolSvg = renderPool(r.x, r.y, r.w, r.h);
-                else if (r.type === 'yard') symbolSvg = renderYard(r.x, r.y, r.w, r.h);
-                else if (r.type === 'altar') symbolSvg = renderAltar(r.x, r.y, r.w, r.h);
-                else if (r.type === 'skylight') symbolSvg = renderSkylight(r.x, r.y, r.w, r.h);
+                if (r.type === 'garage' || r.type === 'car') symbolSvg = renderGarageBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'bed_master' || r.type === 'bed_regular' || r.type === 'bed') symbolSvg = renderBedBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'living_room' || r.type === 'living' || r.type === 'office' || r.type === 'common_room' || r.type === 'gym') symbolSvg = renderLivingBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'kitchen_dining' || r.type === 'kitchen') symbolSvg = renderKitchenBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'toilet' || r.type === 'wc') symbolSvg = renderWCBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'stairs') symbolSvg = renderStairsBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'main_door' || r.type === 'door_main' || r.type === 'door' || r.type === 'side_door' || r.type === 'door_side' || r.type === 'gate' || r.type === 'window') symbolSvg = renderDoorBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'altar') symbolSvg = renderAltarBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'skylight' || r.type === 'yard' || r.type === 'pool') symbolSvg = renderSkylightBlock(r.x, r.y, r.w, r.h, r.name);
+                else symbolSvg = renderLivingBlock(r.x, r.y, r.w, r.h, r.name);
 
                 let handlesSvg = '';
                 if (isSel) {
@@ -848,41 +858,44 @@ export class ArchitecturalCADRenderer {
                     handlesSvg = `
                         ${handlePoints.map(hp => `
                             <g class="cad-resize-handle-group" data-handle="${hp.id}" data-room-id="${r.id}">
-                                <!-- Vùng cảm ứng chạm mobile mở rộng > 50px -->
-                                <circle class="cad-resize-handle" data-handle="${hp.id}" data-room-id="${r.id}" cx="${hp.cx}" cy="${hp.cy}" r="220" fill="transparent" stroke="none" pointer-events="all" style="cursor: ${hp.id}-resize;"/>
-                                <rect x="${hp.cx - hs / 2}" y="${hp.cy - hs / 2}" width="${hs}" height="${hs}" fill="#0284c7" stroke="#ffffff" stroke-width="5" rx="6" pointer-events="none"/>
+                                <!-- VÙNG CHẠM KHỔNG LỒ (Trong suốt) để ngón tay bắt dính -->
+                                <circle class="cad-resize-handle" data-handle="${hp.id}" data-room-id="${r.id}" cx="${hp.cx}" cy="${hp.cy}" r="380" fill="transparent" stroke="none" pointer-events="all" style="cursor: ${hp.id}-resize; touch-action: none;"/>
+                                <rect x="${hp.cx - hs / 2}" y="${hp.cy - hs / 2}" width="${hs}" height="${hs}" fill="#0284c7" stroke="#ffffff" stroke-width="12" rx="8" pointer-events="none"/>
                             </g>
                         `).join('')}
 
-                        <g class="cad-mini-action-bar" transform="translate(${r.x + r.w / 2}, ${r.y - 120})">
-                            <rect x="-240" y="-50" width="480" height="90" rx="16" fill="#0f172a" stroke="#f59e0b" stroke-width="4"/>
+                        <g class="cad-mini-action-bar" transform="translate(${r.x + r.w / 2}, ${r.y - 140})">
+                            <rect x="-260" y="-55" width="520" height="96" rx="18" fill="#0f172a" stroke="#f59e0b" stroke-width="4"/>
                             <g class="btn-cad-mini-action" data-action="confirm" data-room-id="${r.id}" style="cursor: pointer;">
-                                <rect x="-220" y="-38" width="130" height="66" rx="10" fill="#16a34a"/>
-                                <text x="-155" y="4" text-anchor="middle" font-size="34" font-weight="900" fill="#ffffff">✓ Lưu</text>
-                            </g>
-                            <g class="btn-cad-mini-action" data-action="reset" data-room-id="${r.id}" style="cursor: pointer;">
-                                <rect x="-75" y="-38" width="130" height="66" rx="10" fill="#ea580c"/>
-                                <text x="-10" y="4" text-anchor="middle" font-size="34" font-weight="900" fill="#ffffff">↺ Hoàn</text>
+                                <rect x="-240" y="-42" width="130" height="70" rx="10" fill="#16a34a"/>
+                                <text x="-175" y="4" text-anchor="middle" font-size="34" font-weight="900" fill="#ffffff">✓ Xong</text>
                             </g>
                             <g class="btn-cad-mini-action" data-action="rotate" data-room-id="${r.id}" style="cursor: pointer;">
-                                <rect x="70" y="-38" width="80" height="66" rx="10" fill="#0284c7"/>
-                                <text x="110" y="6" text-anchor="middle" font-size="40" font-weight="900" fill="#ffffff">↻</text>
+                                <rect x="-95" y="-42" width="90" height="70" rx="10" fill="#0284c7"/>
+                                <text x="-50" y="6" text-anchor="middle" font-size="40" font-weight="900" fill="#ffffff">↻</text>
+                            </g>
+                            <g class="btn-cad-mini-action" data-action="size_plus" data-room-id="${r.id}" style="cursor: pointer;">
+                                <rect x="10" y="-42" width="70" height="70" rx="10" fill="#334155"/>
+                                <text x="45" y="5" text-anchor="middle" font-size="40" font-weight="900" fill="#ffffff">+</text>
+                            </g>
+                            <g class="btn-cad-mini-action" data-action="size_minus" data-room-id="${r.id}" style="cursor: pointer;">
+                                <rect x="95" y="-42" width="70" height="70" rx="10" fill="#334155"/>
+                                <text x="130" y="5" text-anchor="middle" font-size="40" font-weight="900" fill="#ffffff">−</text>
                             </g>
                             <g class="btn-cad-mini-action" data-action="delete" data-room-id="${r.id}" style="cursor: pointer;">
-                                <rect x="160" y="-38" width="65" height="66" rx="10" fill="#dc2626"/>
-                                <text x="192" y="5" text-anchor="middle" font-size="36" font-weight="900" fill="#ffffff">×</text>
+                                <rect x="180" y="-42" width="65" height="70" rx="10" fill="#dc2626"/>
+                                <text x="212" y="5" text-anchor="middle" font-size="36" font-weight="900" fill="#ffffff">×</text>
                             </g>
                         </g>
                     `;
                 }
 
                 roomsSvg += `
-                    <g class="cad-room-interactive ${isSel ? 'selected-room' : ''}" data-room-id="${r.id}" style="cursor: move;">
-                        <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${isSel ? 'rgba(2, 132, 199, 0.08)' : 'none'}" stroke="${isSel ? '#0284c7' : '#000000'}" stroke-width="${isSel ? 18 : 14}" stroke-dasharray="${isSel ? '30,15' : 'none'}"/>
+                    <g class="cad-room-interactive ${isSel ? 'selected-room' : ''}" data-room-id="${r.id}" style="cursor: move; touch-action: none;">
+                        <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${isSel ? 'rgba(2, 132, 199, 0.06)' : '#ffffff'}" stroke="${isSel ? '#0284c7' : '#333333'}" stroke-width="${isSel ? 22 : 12}" stroke-dasharray="${isSel ? '35,18' : 'none'}"/>
                         ${symbolSvg}
-                        <rect x="${r.x + r.w / 2 - 320}" y="${r.y + r.h / 2 - 70}" width="640" height="140" rx="16" fill="rgba(255,255,255,0.92)" stroke="${isSel ? '#0284c7' : '#94a3b8'}" stroke-width="4"/>
-                        <text x="${r.x + r.w / 2}" y="${r.y + r.h / 2 - 10}" text-anchor="middle" font-size="${Math.min(r.w * 0.12, 75)}" font-weight="900" fill="#000000" letter-spacing="2">${r.name}</text>
-                        <text x="${r.x + r.w / 2}" y="${r.y + r.h / 2 + 45}" text-anchor="middle" font-size="${Math.min(r.w * 0.09, 55)}" font-weight="bold" fill="#0284c7">${area} m² (${r.w}x${r.h})</text>
+                        <!-- VÙNG CHẠM PHÒNG SIÊU NHẠY -->
+                        <rect class="cad-room-hitbox" data-room-id="${r.id}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="transparent" pointer-events="all" style="cursor: move; touch-action: none;"/>
                         ${handlesSvg}
                     </g>
                 `;
@@ -897,18 +910,20 @@ export class ArchitecturalCADRenderer {
             const p2 = pts[(i + 1) % pts.length];
             const isEdgeSel = (selectedEdgeIdx === i);
             edgeLinesSvg += `
-                <line class="cad-edge-line ${isEdgeSel ? 'selected-edge' : ''}" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isEdgeSel ? '#f59e0b' : '#000000'}" stroke-width="${isEdgeSel ? 65 : 45}" stroke-linecap="round"/>
-                <!-- Hitbox chạm cạnh trên điện thoại -->
-                <line class="cad-edge-hitbox" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="transparent" stroke-width="260" pointer-events="all" style="cursor: pointer;"/>
+                <g class="cad-edge-group" data-edge-idx="${i}">
+                    <!-- VÙNG CHẠM CẠNH KHỔNG LỒ -->
+                    <line class="cad-edge-hitbox" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="transparent" stroke-width="350" stroke-linecap="round" pointer-events="all" style="cursor: pointer; touch-action: none;"/>
+                    <line class="cad-edge-line ${isEdgeSel ? 'selected-edge' : ''}" data-edge-idx="${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${isEdgeSel ? '#f59e0b' : '#000000'}" stroke-width="${isEdgeSel ? 65 : 45}" stroke-linecap="round" pointer-events="none"/>
+                </g>
             `;
         }
 
         const vertexCircles = pts.map((p, idx) => `
             <g class="cad-vertex-group" data-vertex-idx="${idx}">
-                <!-- Vùng cảm ứng chạm đỉnh siêu rộng > 50px trên mobile -->
-                <circle class="cad-vertex-handle" data-vertex-idx="${idx}" cx="${p.x}" cy="${p.y}" r="280" fill="transparent" stroke="none" pointer-events="all" style="cursor: crosshair;"/>
-                <circle cx="${p.x}" cy="${p.y}" r="90" fill="#2563eb" stroke="#ffffff" stroke-width="16" pointer-events="none"/>
-                <circle cx="${p.x}" cy="${p.y}" r="30" fill="#ffffff" pointer-events="none"/>
+                <!-- VÙNG CHẠM KHỔNG LỒ (Trong suốt) để ngón tay bắt dính -->
+                <circle class="cad-vertex-handle" data-vertex-idx="${idx}" cx="${p.x}" cy="${p.y}" r="400" fill="transparent" stroke="none" pointer-events="all" style="cursor: crosshair; touch-action: none;"/>
+                <circle cx="${p.x}" cy="${p.y}" r="80" fill="#2563eb" stroke="#ffffff" stroke-width="16" pointer-events="none"/>
+                <circle cx="${p.x}" cy="${p.y}" r="25" fill="#ffffff" pointer-events="none"/>
             </g>
         `).join('');
 
@@ -931,7 +946,7 @@ export class ArchitecturalCADRenderer {
         const layers = this.renderLayers(geometry, options);
         const vb = layers.viewBox;
         return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none; -webkit-user-select: none; touch-action: none;">
     ${layers.wallsLayer}
     ${layers.vertexLayer}
     ${layers.roomsLayer}
@@ -1275,7 +1290,7 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     const showNinePalaces = layerVisibility.ninePalaces !== false;
 
     return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: auto; height: 100%; max-width: 100%; max-height: 100%; aspect-ratio: ${vb.w} / ${vb.h}; background: ${themeBg}; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: auto; height: 100%; max-width: 100%; max-height: 100%; aspect-ratio: ${vb.w} / ${vb.h}; background: ${themeBg}; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none; -webkit-user-select: none; touch-action: none;">
     <!-- LỚP 1: BẢN VẼ KIẾN TRÚC CAD (Tường & Neo) -->
     <g id="layer-cad-architecture">
         ${cadLayers.wallsLayer}

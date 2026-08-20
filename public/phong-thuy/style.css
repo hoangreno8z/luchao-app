@@ -518,23 +518,159 @@ body {
     preserveAspectRatio: xMidYMid meet;
 }
 
-/* FLOATING GLASSMORPHISM TOOLBAR (Mờ, Nổi đè mép phải bản vẽ) */
+/* FLOATING GLASSMORPHISM TOOLBAR (Mờ, Nổi đè, Di chuyển tự do, Chọn phòng trực quan) */
 .cad-floating-toolbar {
     position: absolute;
     right: 12px;
     top: 12px;
     z-index: 50;
+    width: 210px;
+    max-width: calc(100% - 24px);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 12px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+    transition: transform 0.05s ease;
+    user-select: none;
+}
+
+.hud-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: grab;
+    touch-action: none;
+}
+.hud-header:active {
+    cursor: grabbing;
+}
+.hud-header-title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: 0.5px;
+}
+.hud-window-controls {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.hud-win-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #94a3b8;
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+.hud-win-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.hud-top-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.hud-rooms-section {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 6px;
+}
+.hud-section-label {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+.hud-room-chips-list {
     display: flex;
     flex-direction: column;
+    gap: 3px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+.hud-room-chip-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+}
+.hud-room-chip-btn:hover {
+    background: rgba(2, 132, 199, 0.25);
+    border-color: #38bdf8;
+    color: #ffffff;
+}
+.hud-room-chip-btn.active {
+    background: rgba(2, 132, 199, 0.4);
+    border-color: #0284c7;
+    color: #38bdf8;
+    font-weight: 800;
+}
+.hud-room-chip-btn .chip-dim {
+    font-size: 0.62rem;
+    color: #94a3b8;
+    font-family: monospace;
+}
+
+.hud-bottom-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hud-collapsed-pill {
+    display: flex;
+    align-items: center;
     gap: 5px;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 10px;
-    padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-    pointer-events: auto;
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #f59e0b;
+    border-radius: 20px;
+    color: #fbbf24;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+}
+.hud-collapsed-pill:hover {
+    background: rgba(245, 158, 11, 0.25);
+    color: #ffffff;
 }
 
 .hud-floating-btn {
@@ -553,6 +689,7 @@ body {
     transition: all 0.15s ease;
     white-space: nowrap;
     user-select: none;
+    width: 100%;
 }
 .hud-floating-btn:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -578,15 +715,6 @@ body {
 .hud-floating-btn.fs-btn:hover {
     background: rgba(6, 182, 212, 0.25);
     color: #ffffff;
-}
-.hud-floating-btn.icon-only {
-    padding: 6px 8px;
-}
-
-.hud-btn-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
 }
 .hud-divider {
     height: 1px;

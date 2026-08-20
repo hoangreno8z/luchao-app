@@ -412,36 +412,130 @@ function initViewport() {
     luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
+function startCadVertexInteraction(vertexIdx, clientX, clientY) {
+    if (!currentGeometry || !currentGeometry.footprintPoints) return;
+    const pt = currentGeometry.footprintPoints[vertexIdx];
+    if (!pt) return;
+    pointerState.isInteracting = true;
+    pointerState.mode = 'vertex';
+    pointerState.targetVertexIdx = vertexIdx;
+    pointerState.startClientX = clientX;
+    pointerState.startClientY = clientY;
+    pointerState.origX = pt.x;
+    pointerState.origY = pt.y;
+}
+
+function startCadPointerInteraction(mode, roomId, handleId, clientX, clientY) {
+    const room = currentGeometry?.rooms?.find(r => r.id === roomId);
+    if (!room) return;
+    pointerState.isInteracting = true;
+    pointerState.mode = mode; // 'move' | 'resize'
+    pointerState.targetRoomId = roomId;
+    pointerState.handle = handleId;
+    pointerState.startClientX = clientX;
+    pointerState.startClientY = clientY;
+    pointerState.origX = room.x;
+    pointerState.origY = room.y;
+    pointerState.origW = room.w;
+    pointerState.origH = room.h;
+}
+
 function initCadInteractiveEngine() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
 
     stage.addEventListener('pointerdown', (e) => {
+        // 1. Mini Action Bar
+        const miniActionBtn = e.target.closest('.btn-cad-mini-action');
+        if (miniActionBtn) {
+            e.stopPropagation();
+            const action = miniActionBtn.getAttribute('data-action');
+            const rId = miniActionBtn.getAttribute('data-room-id');
+            const room = currentGeometry?.rooms?.find(r => r.id === rId);
+            if (!room) return;
+
+            if (action === 'confirm') {
+                selectedRoomId = null;
+                renderActiveDrawing();
+                renderSmartPopup();
+                renderPopovers();
+            } else if (action === 'rotate') {
+                const temp = room.w;
+                room.w = room.h;
+                room.h = temp;
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
+                renderActiveDrawing();
+                renderSmartPopup();
+                renderPopovers();
+            } else if (action === 'size_plus') {
+                room.w = Math.round(room.w * 1.12);
+                room.h = Math.round(room.h * 1.12);
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
+                renderActiveDrawing();
+                renderSmartPopup();
+                renderPopovers();
+            } else if (action === 'size_minus') {
+                room.w = Math.max(500, Math.round(room.w * 0.88));
+                room.h = Math.max(500, Math.round(room.h * 0.88));
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: 0 };
+                renderActiveDrawing();
+                renderSmartPopup();
+                renderPopovers();
+            } else if (action === 'delete') {
+                delete roomPositionCache[rId];
+                currentGeometry.rooms = currentGeometry.rooms.filter(r => r.id !== rId);
+                selectedRoomId = null;
+                renderActiveDrawing();
+                renderSmartPopup();
+                renderPopovers();
+            }
+            return;
+        }
+
+        // 2. Resize Handles
+        const resizeHandle = e.target.closest('.cad-resize-handle');
+        if (resizeHandle) {
+            e.stopPropagation();
+            const handleId = resizeHandle.getAttribute('data-handle');
+            const rId = resizeHandle.getAttribute('data-room-id');
+            startCadPointerInteraction('resize', rId, handleId, e.clientX, e.clientY);
+            return;
+        }
+
+        // 3. Vertex Handle
         const vertexHandle = e.target.closest('.cad-vertex-handle');
         if (vertexHandle) {
             e.stopPropagation();
             startCadVertexInteraction(parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10), e.clientX, e.clientY);
             return;
         }
-        const roomEl = e.target.closest('.cad-room-interactive');
+
+        // 4. Room Hitbox
+        const roomEl = e.target.closest('.cad-room-interactive') || e.target.closest('.cad-room-hitbox');
         if (roomEl) {
             e.stopPropagation();
-            selectRoom(roomEl.getAttribute('data-room-id'));
-            startCadPointerInteraction('move', roomEl.getAttribute('data-room-id'), null, e.clientX, e.clientY);
+            const rId = roomEl.getAttribute('data-room-id');
+            selectRoom(rId);
+            startCadPointerInteraction('move', rId, null, e.clientX, e.clientY);
             return;
         }
+
+        // 5. Edge Hitbox
         const edgeEl = e.target.closest('.cad-edge-hitbox');
         if (edgeEl) {
             e.stopPropagation();
             selectEdge(parseInt(edgeEl.getAttribute('data-edge-idx'), 10));
             return;
         }
+
+        // Click out
         if (selectedRoomId || selectedEdgeIndex !== null) {
             selectedRoomId = null;
             selectedEdgeIndex = null;
             if (cadRenderer) cadRenderer.selectedRoomId = null;
             renderActiveDrawing();
             renderSmartPopup();
+            renderPopovers();
         }
     });
 
@@ -455,17 +549,41 @@ function initCadInteractiveEngine() {
 
         if (pointerState.mode === 'vertex') {
             const pt = currentGeometry.footprintPoints[pointerState.targetVertexIdx];
-            pt.x = Math.round(pointerState.origX + dx);
-            pt.y = Math.round(pointerState.origY + dy);
-            requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
+            if (pt) {
+                pt.x = Math.round(pointerState.origX + dx);
+                pt.y = Math.round(pointerState.origY + dy);
+                requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
+            }
             return;
         }
 
         const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
         if (!room) return;
+
         if (pointerState.mode === 'move') {
             room.x = Math.round(Math.max(0, Math.min((currentGeometry.widthMm || 10000) - room.w, pointerState.origX + dx)));
             room.y = Math.round(Math.max(0, Math.min((currentGeometry.depthMm || 20000) - room.h, pointerState.origY + dy)));
+            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+        } else if (pointerState.mode === 'resize') {
+            const h = pointerState.handle;
+            const minSize = 400;
+
+            if (h === 'e' || h === 'se' || h === 'ne') {
+                room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
+            }
+            if (h === 's' || h === 'se' || h === 'sw') {
+                room.h = Math.max(minSize, Math.round(pointerState.origH + dy));
+            }
+            if (h === 'w' || h === 'nw' || h === 'sw') {
+                const newW = Math.max(minSize, Math.round(pointerState.origW - dx));
+                room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
+                room.w = newW;
+            }
+            if (h === 'n' || h === 'nw' || h === 'ne') {
+                const newH = Math.max(minSize, Math.round(pointerState.origH - dy));
+                room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
+                room.h = newH;
+            }
             roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
         }
         requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
@@ -475,6 +593,7 @@ function initCadInteractiveEngine() {
         if (pointerState.isInteracting) {
             pointerState.isInteracting = false;
             renderSmartPopup();
+            renderPopovers();
         }
     });
 }
@@ -486,6 +605,7 @@ function selectEdge(edgeIdx, shouldFocus = true) {
     closeAllPopovers();
     renderActiveDrawing();
     renderSmartPopup();
+    renderPopovers();
 }
 
 function selectRoom(roomId, shouldFocus = true) {
@@ -495,6 +615,7 @@ function selectRoom(roomId, shouldFocus = true) {
     closeAllPopovers();
     renderActiveDrawing();
     renderSmartPopup();
+    renderPopovers();
 }
 
 function closeAllPopovers() {
@@ -524,7 +645,7 @@ function renderSmartPopup() {
                 renderActiveDrawing(); renderSmartPopup(); renderPopovers();
             }
         });
-        document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); });
+        document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
         return;
     }
 
@@ -538,7 +659,7 @@ function renderSmartPopup() {
                 room.h = parseInt(document.getElementById('popupInputRoomH').value);
                 selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers();
             });
-            document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); });
+            document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
             return;
         }
     }
@@ -547,9 +668,10 @@ function renderSmartPopup() {
 
 function renderPopovers() {
     const edgesList = document.getElementById('popoverEdgesList');
-    const roomsList = document.getElementById('popoverRoomsList');
+    const hudRoomChipsList = document.getElementById('hudRoomChipsList');
     if (!currentGeometry) return;
 
+    // 1. Cạnh thửa đất
     if (edgesList) {
         const pts = currentGeometry.footprintPoints || [];
         if (pts.length < 2) {
@@ -560,15 +682,16 @@ function renderPopovers() {
                 const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
                 const isSel = selectedEdgeIndex === idx;
                 return `
-                    <div class="popover-item ${isSel ? 'active' : ''}" data-edge-idx="${idx}">
-                        <span>📏 Cạnh ${idx + 1} (${p1.name || ''} ➔ ${p2.name || ''})</span>
-                        <span class="item-badge">${len} mm</span>
+                    <div class="popover-item-row ${isSel ? 'active' : ''}" data-edge-idx="${idx}">
+                        <span>📏 Cạnh ${idx + 1}</span>
+                        <span class="chip-dim">${len} mm</span>
                     </div>
                 `;
             }).join('');
 
-            edgesList.querySelectorAll('.popover-item').forEach(item => {
-                item.addEventListener('click', () => {
+            edgesList.querySelectorAll('.popover-item-row').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const idx = parseInt(item.getAttribute('data-edge-idx'), 10);
                     selectEdge(idx, true);
                 });
@@ -576,24 +699,27 @@ function renderPopovers() {
         }
     }
 
-    if (roomsList) {
+    // 2. Danh Sách Nút Phòng Độc Lập Nằm Ngay Trong Toolbar
+    if (hudRoomChipsList) {
         const rooms = currentGeometry.rooms || [];
         if (rooms.length === 0) {
-            roomsList.innerHTML = '<span style="font-size:0.75rem; color:#94a3b8; padding: 4px;">Chưa có phòng nào</span>';
+            hudRoomChipsList.innerHTML = '<span style="font-size:0.65rem; color:#94a3b8; padding: 2px;">Chưa có phòng</span>';
         } else {
-            roomsList.innerHTML = rooms.map(r => {
+            hudRoomChipsList.innerHTML = rooms.map(r => {
                 const isSel = selectedRoomId === r.id;
+                const area = ((r.w * r.h) / 1000000).toFixed(1);
                 return `
-                    <div class="popover-item ${isSel ? 'active' : ''}" data-room-id="${r.id}">
+                    <button type="button" class="hud-room-chip-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}">
                         <span>${r.name}</span>
-                        <span class="item-badge">${r.w} × ${r.h}</span>
-                    </div>
+                        <span class="chip-dim">${area}m²</span>
+                    </button>
                 `;
             }).join('');
 
-            roomsList.querySelectorAll('.popover-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const rId = item.getAttribute('data-room-id');
+            hudRoomChipsList.querySelectorAll('.hud-room-chip-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rId = btn.getAttribute('data-room-id');
                     selectRoom(rId, true);
                 });
             });
@@ -602,6 +728,13 @@ function renderPopovers() {
 }
 
 function initFloatingToolbar() {
+    const toolbar = document.getElementById('cadFloatingToolbar');
+    const dragHeader = document.getElementById('hudDragHeader');
+    const btnMinimize = document.getElementById('btnMinimizeToolbar');
+    const btnMaximize = document.getElementById('btnMaximizeToolbar');
+    const hudBody = document.getElementById('hudBody');
+    const btnRestoreToolbar = document.getElementById('btnRestoreToolbar');
+
     const btnTriggerAdd = document.getElementById('btnTriggerAdd');
     const popoverMenuAdd = document.getElementById('popoverMenuAdd');
     const btnClosePopoverAdd = document.getElementById('btnClosePopoverAdd');
@@ -610,17 +743,80 @@ function initFloatingToolbar() {
     const popoverMenuEdges = document.getElementById('popoverMenuEdges');
     const btnClosePopoverEdges = document.getElementById('btnClosePopoverEdges');
 
-    const btnTriggerRooms = document.getElementById('btnTriggerRooms');
-    const popoverMenuRooms = document.getElementById('popoverMenuRooms');
-    const btnClosePopoverRooms = document.getElementById('btnClosePopoverRooms');
-
     const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
-    const btnZoomFit = document.getElementById('btnZoomFit');
-    const btnZoomIn = document.getElementById('btnZoomIn');
-    const btnZoomOut = document.getElementById('btnZoomOut');
-    const btnToggleTheme = document.getElementById('btnToggleTheme');
-    const txtThemeMode = document.getElementById('txtThemeMode');
     const btnExportPng = document.getElementById('btnExportPng');
+
+    // Draggable Movable Toolbar Logic
+    if (toolbar && dragHeader) {
+        let isDraggingToolbar = false;
+        let dragStartX = 0, dragStartY = 0;
+        let tbStartX = 0, tbStartY = 0;
+
+        dragHeader.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('.hud-win-btn')) return;
+            isDraggingToolbar = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            const rect = toolbar.getBoundingClientRect();
+            const parentRect = toolbar.parentElement.getBoundingClientRect();
+            tbStartX = rect.left - parentRect.left;
+            tbStartY = rect.top - parentRect.top;
+            toolbar.style.right = 'auto';
+            toolbar.style.left = `${tbStartX}px`;
+            toolbar.style.top = `${tbStartY}px`;
+            dragHeader.setPointerCapture(e.pointerId);
+        });
+
+        dragHeader.addEventListener('pointermove', (e) => {
+            if (!isDraggingToolbar) return;
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            toolbar.style.left = `${Math.max(0, tbStartX + dx)}px`;
+            toolbar.style.top = `${Math.max(0, tbStartY + dy)}px`;
+        });
+
+        const stopDragTb = (e) => {
+            if (isDraggingToolbar) {
+                isDraggingToolbar = false;
+                try { dragHeader.releasePointerCapture(e.pointerId); } catch (_) {}
+            }
+        };
+        dragHeader.addEventListener('pointerup', stopDragTb);
+        dragHeader.addEventListener('pointercancel', stopDragTb);
+
+        btnMinimize?.addEventListener('click', () => {
+            if (hudBody) hudBody.style.display = 'none';
+            if (dragHeader) dragHeader.style.display = 'none';
+            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'flex';
+            toolbar.style.padding = '0';
+            toolbar.style.background = 'transparent';
+            toolbar.style.border = 'none';
+            toolbar.style.boxShadow = 'none';
+        });
+
+        btnRestoreToolbar?.addEventListener('click', () => {
+            if (hudBody) hudBody.style.display = 'block';
+            if (dragHeader) dragHeader.style.display = 'flex';
+            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
+            toolbar.style.padding = '8px';
+            toolbar.style.background = 'rgba(15, 23, 42, 0.85)';
+            toolbar.style.border = '1px solid rgba(255, 255, 255, 0.18)';
+            toolbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
+        });
+
+        btnMaximize?.addEventListener('click', () => {
+            toolbar.style.left = 'auto';
+            toolbar.style.right = '12px';
+            toolbar.style.top = '12px';
+            if (hudBody) hudBody.style.display = 'block';
+            if (dragHeader) dragHeader.style.display = 'flex';
+            if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
+            toolbar.style.padding = '8px';
+            toolbar.style.background = 'rgba(15, 23, 42, 0.85)';
+            toolbar.style.border = '1px solid rgba(255, 255, 255, 0.18)';
+            toolbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
+        });
+    }
 
     btnTriggerAdd?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -643,18 +839,6 @@ function initFloatingToolbar() {
     btnClosePopoverEdges?.addEventListener('click', (e) => {
         e.stopPropagation();
         popoverMenuEdges.style.display = 'none';
-    });
-
-    btnTriggerRooms?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = popoverMenuRooms.style.display === 'flex';
-        closeAllPopovers();
-        renderPopovers();
-        popoverMenuRooms.style.display = isOpen ? 'none' : 'flex';
-    });
-    btnClosePopoverRooms?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        popoverMenuRooms.style.display = 'none';
     });
 
     document.querySelectorAll('.hud-comp-chip').forEach(btn => {
@@ -725,30 +909,6 @@ function initFloatingToolbar() {
         setTimeout(() => {
             if (viewportController) viewportController.fitToScreen();
         }, 150);
-    });
-
-    btnZoomFit?.addEventListener('click', () => {
-        if (viewportController) viewportController.fitToScreen();
-    });
-
-    btnZoomIn?.addEventListener('click', () => {
-        if (viewportController) viewportController.zoomIn();
-    });
-
-    btnZoomOut?.addEventListener('click', () => {
-        if (viewportController) viewportController.zoomOut();
-    });
-
-    btnToggleTheme?.addEventListener('click', () => {
-        currentThemeMode = currentThemeMode === 'white' ? 'dark' : 'white';
-        const workspace = document.getElementById('cad-workspace');
-        if (workspace) {
-            workspace.classList.toggle('dark-mode', currentThemeMode === 'dark');
-        }
-        if (txtThemeMode) {
-            txtThemeMode.textContent = currentThemeMode === 'white' ? 'Trắng' : 'Tối';
-        }
-        renderActiveDrawing();
     });
 
     btnExportPng?.addEventListener('click', () => {
