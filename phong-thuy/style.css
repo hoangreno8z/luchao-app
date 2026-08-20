@@ -518,34 +518,38 @@ body {
     preserveAspectRatio: xMidYMid meet;
 }
 
-/* FLOATING GLASSMORPHISM TOOLBAR (Mờ, Nổi đè, Di chuyển tự do, Chọn phòng trực quan) */
+/* FLOATING GLASSMORPHISM TOOLBAR (Siêu mờ trong suốt, Tinh gọn, Không che khuất bản vẽ) */
 .cad-floating-toolbar {
     position: absolute;
     right: 12px;
     top: 12px;
     z-index: 50;
-    width: 210px;
+    width: 165px;
     max-width: calc(100% - 24px);
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-radius: 12px;
-    padding: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 10px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     pointer-events: auto;
-    transition: transform 0.05s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
     user-select: none;
+}
+.cad-floating-toolbar:hover {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(245, 158, 11, 0.35);
 }
 
 .hud-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    margin-bottom: 6px;
+    padding: 3px 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    margin-bottom: 5px;
     cursor: grab;
     touch-action: none;
 }
@@ -556,7 +560,7 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 800;
     color: #fbbf24;
     letter-spacing: 0.5px;
@@ -567,13 +571,13 @@ body {
     gap: 3px;
 }
 .hud-win-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border: none;
     color: #94a3b8;
     border-radius: 4px;
-    width: 20px;
-    height: 20px;
-    font-size: 0.78rem;
+    width: 18px;
+    height: 18px;
+    font-size: 0.72rem;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -582,36 +586,37 @@ body {
     transition: all 0.15s ease;
 }
 .hud-win-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.2);
     color: #ffffff;
 }
 
-.hud-top-actions {
+/* Lưới 4 nút chức năng 2x2 bằng kích thước nhau */
+.hud-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .hud-rooms-section {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    padding: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 4px;
     border: 1px solid rgba(255, 255, 255, 0.06);
-    margin-bottom: 6px;
+    margin-bottom: 2px;
 }
 .hud-section-label {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     font-weight: 800;
     color: #94a3b8;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     letter-spacing: 0.5px;
 }
 .hud-room-chips-list {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    max-height: 160px;
+    gap: 2px;
+    max-height: 130px;
     overflow-y: auto;
 }
 .hud-room-chip-btn {
@@ -619,53 +624,48 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 5px 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 5px;
     color: #e2e8f0;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     cursor: pointer;
     text-align: left;
     transition: all 0.15s ease;
 }
 .hud-room-chip-btn:hover {
-    background: rgba(2, 132, 199, 0.25);
+    background: rgba(2, 132, 199, 0.2);
     border-color: #38bdf8;
     color: #ffffff;
 }
 .hud-room-chip-btn.active {
-    background: rgba(2, 132, 199, 0.4);
+    background: rgba(2, 132, 199, 0.35);
     border-color: #0284c7;
     color: #38bdf8;
     font-weight: 800;
 }
 .hud-room-chip-btn .chip-dim {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     color: #94a3b8;
     font-family: monospace;
-}
-
-.hud-bottom-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
 }
 
 .hud-collapsed-pill {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
-    background: rgba(15, 23, 42, 0.95);
+    gap: 4px;
+    padding: 5px 10px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(8px);
     border: 1px solid #f59e0b;
-    border-radius: 20px;
+    border-radius: 18px;
     color: #fbbf24;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     transition: all 0.2s ease;
 }
 .hud-collapsed-pill:hover {
@@ -677,13 +677,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    gap: 3px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: #f8fafc;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.72rem;
+    padding: 5px 6px;
+    border-radius: 5px;
+    font-size: 0.68rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -692,34 +692,29 @@ body {
     width: 100%;
 }
 .hud-floating-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
     color: #ffffff;
     transform: translateY(-1px);
 }
 .hud-floating-btn.active {
-    background: rgba(245, 158, 11, 0.35);
+    background: rgba(245, 158, 11, 0.25);
     border-color: var(--gold-primary);
     color: #fef08a;
 }
 .hud-floating-btn.highlight {
-    background: rgba(245, 158, 11, 0.3);
-    border-color: rgba(245, 158, 11, 0.7);
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.5);
     color: #fef08a;
 }
 .hud-floating-btn.fs-btn {
     color: #67e8f9;
-    border-color: rgba(6, 182, 212, 0.5);
-    background: rgba(6, 182, 212, 0.12);
+    border-color: rgba(6, 182, 212, 0.35);
+    background: rgba(6, 182, 212, 0.1);
 }
 .hud-floating-btn.fs-btn:hover {
-    background: rgba(6, 182, 212, 0.25);
+    background: rgba(6, 182, 212, 0.2);
     color: #ffffff;
-}
-.hud-divider {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.12);
-    margin: 2px 0;
 }
 
 /* POPOVER MENUS */

@@ -798,10 +798,10 @@ function initFloatingToolbar() {
             if (hudBody) hudBody.style.display = 'block';
             if (dragHeader) dragHeader.style.display = 'flex';
             if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
-            toolbar.style.padding = '8px';
-            toolbar.style.background = 'rgba(15, 23, 42, 0.85)';
-            toolbar.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-            toolbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
+            toolbar.style.padding = '';
+            toolbar.style.background = '';
+            toolbar.style.border = '';
+            toolbar.style.boxShadow = '';
         });
 
         btnMaximize?.addEventListener('click', () => {
@@ -811,10 +811,10 @@ function initFloatingToolbar() {
             if (hudBody) hudBody.style.display = 'block';
             if (dragHeader) dragHeader.style.display = 'flex';
             if (btnRestoreToolbar) btnRestoreToolbar.style.display = 'none';
-            toolbar.style.padding = '8px';
-            toolbar.style.background = 'rgba(15, 23, 42, 0.85)';
-            toolbar.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-            toolbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.6)';
+            toolbar.style.padding = '';
+            toolbar.style.background = '';
+            toolbar.style.border = '';
+            toolbar.style.boxShadow = '';
         });
     }
 
