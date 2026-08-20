@@ -391,164 +391,117 @@ function renderDndGrid() {
             addUnlimitedRoomToPalace(pId, data.type, data.baseName);
         });
 
-        zone.querySelectorAll('.btn-remove-room').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const rId = btn.getAttribute('data-room-id');
-                const pal = btn.getAttribute('data-palace-id');
-                delete roomPositionCache[rId];
-                dndPlacements[pal] = dndPlacements[pal].filter(r => r.id !== rId);
-                renderDndGrid();
-                handleCalculate(false);
-            });
+            zone.classList.remove('dragover');
+            try {
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const palaceId = parseInt(zone.getAttribute('data-palace-id'), 10);
+                if (palaceId && data.type) addRoomToPalace(palaceId, data.type, data.name);
+            } catch (err) { console.error(err); }
         });
     });
 }
 
-/* 7. Viewport Shell Initialization */
+function addRoomToPalace(palaceId, type, baseName) {
+    if (!roomCounters[type]) roomCounters[type] = 0;
+    roomCounters[type]++;
+    const name = `${baseName} ${roomCounters[type]}`;
+    const id = `room_${type}_${Date.now()}`;
+    if (!dndPlacements[palaceId]) dndPlacements[palaceId] = [];
+    dndPlacements[palaceId].push({ id, type, name, palaceId });
+    renderDndGrid();
+    handleCalculate(false);
+}
+
+function removeRoomFromPalace(palaceId, roomId) {
+    if (!dndPlacements[palaceId]) return;
+    dndPlacements[palaceId] = dndPlacements[palaceId].filter(r => r.id !== roomId);
+    delete roomPositionCache[roomId];
+    renderDndGrid();
+    handleCalculate(false);
+}
+
+function renderDndGrid() {
+    const dropZones = document.querySelectorAll('.dnd-drop-zone');
+    dropZones.forEach(zone => {
+        const pId = parseInt(zone.getAttribute('data-palace-id'), 10);
+        const rooms = dndPlacements[pId] || [];
+        const content = zone.querySelector('.dnd-zone-content');
+        if (!content) return;
+        content.innerHTML = rooms.length === 0 ? `<span class="dnd-empty-placeholder">Thả phòng vào đây</span>` :
+            rooms.map(r => `<div class="dnd-room-badge" data-room-id="${r.id}"><span>${r.name}</span><button type="button" class="btn-remove-room" onclick="removeRoomFromPalace(${pId}, '${r.id}')">×</button></div>`).join('');
+    });
+}
+
 function initViewport() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
     viewportController = new SvgViewportController(stage);
     cadRenderer = new ArchitecturalCADRenderer({ theme: currentThemeMode });
-    luoPanRenderer = new LuoPanAndFlyingStarsSvgRenderer({ size: 800 });
 }
 
-/* 8. Interactive CAD Manipulation Engine (Pointer Events, Move, Resize, Vertex Dragging, Edge Selection) */
 function initCadInteractiveEngine() {
     const stage = document.getElementById('svgStage');
     if (!stage) return;
 
     stage.addEventListener('pointerdown', (e) => {
-        const miniActionBtn = e.target.closest('.btn-cad-mini-action');
-        if (miniActionBtn) {
-            handleMiniActionClick(miniActionBtn);
-            return;
-        }
-
-        // 1. Kéo điểm neo đỉnh của Polygon (Vertex Handles)
         const vertexHandle = e.target.closest('.cad-vertex-handle');
         if (vertexHandle) {
             e.stopPropagation();
-            const vIdx = parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10);
-            startCadVertexInteraction(vIdx, e.clientX, e.clientY);
+            startCadVertexInteraction(parseInt(vertexHandle.getAttribute('data-vertex-idx'), 10), e.clientX, e.clientY);
             return;
         }
-
-        // 2. Kéo điểm neo co giãn phòng (Resize Handles)
-        const resizeHandle = e.target.closest('.cad-resize-handle');
-        if (resizeHandle) {
-            e.stopPropagation();
-            const rId = resizeHandle.getAttribute('data-room-id');
-            const hId = resizeHandle.getAttribute('data-handle');
-            startCadPointerInteraction('resize', rId, hId, e.clientX, e.clientY);
-            return;
-        }
-
-        // 3. Chọn hoặc Kéo di chuyển thân phòng (Room Move)
         const roomEl = e.target.closest('.cad-room-interactive');
         if (roomEl) {
             e.stopPropagation();
-            const rId = roomEl.getAttribute('data-room-id');
-            selectRoom(rId, false);
-            startCadPointerInteraction('move', rId, null, e.clientX, e.clientY);
+            selectRoom(roomEl.getAttribute('data-room-id'));
+            startCadPointerInteraction('move', roomEl.getAttribute('data-room-id'), null, e.clientX, e.clientY);
             return;
         }
-
-        // 4. Chọn cạnh của Khung Đất / Tường nhà (Edge Selection)
-        const edgeEl = e.target.closest('.cad-edge-hitbox') || e.target.closest('.cad-edge-line') || e.target.closest('.cad-dimension-edge');
+        const edgeEl = e.target.closest('.cad-edge-hitbox');
         if (edgeEl) {
             e.stopPropagation();
-            const eIdx = parseInt(edgeEl.getAttribute('data-edge-idx'), 10);
-            if (!isNaN(eIdx)) {
-                selectEdge(eIdx);
-                return;
-            }
+            selectEdge(parseInt(edgeEl.getAttribute('data-edge-idx'), 10));
+            return;
         }
-
-        // Bấm ra ngoài khoảng trống -> Bỏ chọn phòng & cạnh
         if (selectedRoomId || selectedEdgeIndex !== null) {
             selectedRoomId = null;
             selectedEdgeIndex = null;
             if (cadRenderer) cadRenderer.selectedRoomId = null;
             renderActiveDrawing();
-            renderFloatingHud();
+            renderSmartPopup();
         }
     });
 
     window.addEventListener('pointermove', (e) => {
         if (!pointerState.isInteracting || !currentGeometry) return;
-
         const svgEl = stage.querySelector('svg');
         const ctm = svgEl ? svgEl.getScreenCTM() : null;
         const scale = ctm ? ctm.a : 1.0;
         const dx = (e.clientX - pointerState.startClientX) / scale;
         const dy = (e.clientY - pointerState.startClientY) / scale;
 
-        // Kéo đỉnh polygon
         if (pointerState.mode === 'vertex') {
-            if (currentGeometry.footprintPoints && currentGeometry.footprintPoints[pointerState.targetVertexIdx]) {
-                const pt = currentGeometry.footprintPoints[pointerState.targetVertexIdx];
-                pt.x = Math.round(pointerState.origX + dx);
-                pt.y = Math.round(pointerState.origY + dy);
-                requestAnimationFrame(() => {
-                    renderActiveDrawing();
-                    renderFloatingHud();
-                });
-            }
+            const pt = currentGeometry.footprintPoints[pointerState.targetVertexIdx];
+            pt.x = Math.round(pointerState.origX + dx);
+            pt.y = Math.round(pointerState.origY + dy);
+            requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
             return;
         }
 
-        // Kéo hoặc co giãn phòng
-        if (!currentGeometry.rooms) return;
-        const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
+        const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
         if (!room) return;
-
         if (pointerState.mode === 'move') {
             room.x = Math.round(Math.max(0, Math.min((currentGeometry.widthMm || 10000) - room.w, pointerState.origX + dx)));
             room.y = Math.round(Math.max(0, Math.min((currentGeometry.depthMm || 20000) - room.h, pointerState.origY + dy)));
             roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-        } else if (pointerState.mode === 'resize') {
-            const h = pointerState.handle;
-            const minSize = 400;
-
-            if (h.includes('e')) {
-                room.w = Math.max(minSize, Math.round(pointerState.origW + dx));
-            }
-            if (h.includes('s')) {
-                room.h = Math.max(minSize, Math.round(pointerState.origH + dy));
-            }
-            if (h.includes('w')) {
-                const newW = Math.max(minSize, Math.round(pointerState.origW - dx));
-                room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
-                room.w = newW;
-            }
-            if (h.includes('n')) {
-                const newH = Math.max(minSize, Math.round(pointerState.origH - dy));
-                room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
-                room.h = newH;
-            }
-            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
         }
-
-        requestAnimationFrame(() => {
-            renderActiveDrawing();
-            renderFloatingHud();
-        });
+        requestAnimationFrame(() => { renderActiveDrawing(); renderSmartPopup(); });
     });
 
     window.addEventListener('pointerup', () => {
         if (pointerState.isInteracting) {
-            if (pointerState.targetRoomId && currentGeometry && currentGeometry.rooms) {
-                const room = currentGeometry.rooms.find(r => r.id === pointerState.targetRoomId);
-                if (room) {
-                    roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-                }
-            }
             pointerState.isInteracting = false;
-            pointerState.mode = null;
-            pointerState.handle = null;
-            renderFloatingHud();
+            renderSmartPopup();
         }
     });
 }
@@ -557,575 +510,89 @@ function selectEdge(edgeIdx, shouldFocus = true) {
     selectedEdgeIndex = edgeIdx;
     selectedRoomId = null;
     if (cadRenderer) cadRenderer.selectedRoomId = null;
-
-    const pts = currentGeometry?.footprintPoints || [];
-    if (shouldFocus && pts.length > edgeIdx && viewportController) {
-        const p1 = pts[edgeIdx];
-        const p2 = pts[(edgeIdx + 1) % pts.length];
-        const minX = Math.min(p1.x, p2.x);
-        const minY = Math.min(p1.y, p2.y);
-        const w = Math.max(800, Math.abs(p2.x - p1.x));
-        const h = Math.max(800, Math.abs(p2.y - p1.y));
-        viewportController.focusOnRect(minX, minY, w, h, 1400);
-    }
-
-    switchHudTab('paneHudEdges');
+    closeAllPopovers();
     renderActiveDrawing();
-    renderFloatingHud();
+    renderSmartPopup();
 }
 
 function selectRoom(roomId, shouldFocus = true) {
     selectedRoomId = roomId;
     selectedEdgeIndex = null;
     if (cadRenderer) cadRenderer.selectedRoomId = roomId;
-
-    const room = currentGeometry?.rooms?.find(r => r.id === roomId);
-    if (shouldFocus && room && viewportController) {
-        viewportController.focusOnRect(room.x, room.y, room.w, room.h, 1200);
-    }
-
-    switchHudTab('paneHudRooms');
+    closeAllPopovers();
     renderActiveDrawing();
-    renderFloatingHud();
+    renderSmartPopup();
 }
 
-function switchHudTab(paneId) {
-    document.querySelectorAll('.hud-tab-pane').forEach(p => p.classList.toggle('active', p.id === paneId));
-    document.querySelectorAll('.hud-tab-btn').forEach(btn => {
-        if (paneId === 'paneHudEdges') btn.classList.toggle('active', btn.id === 'tabHudEdges');
-        if (paneId === 'paneHudRooms') btn.classList.toggle('active', btn.id === 'tabHudRooms');
-        if (paneId === 'paneHudAdd') btn.classList.toggle('active', btn.id === 'tabHudAdd');
-    });
+function closeAllPopovers() {
+    document.querySelectorAll('.hud-popover-menu').forEach(m => m.style.display = 'none');
 }
 
-function renderFloatingHud() {
-    if (!currentGeometry) return;
+function renderSmartPopup() {
+    const popup = document.getElementById('cadSmartPopup');
+    if (!popup || !currentGeometry) return;
     const pts = currentGeometry.footprintPoints || [];
-    const edgesListEl = document.getElementById('hudEdgesList');
-    const edgeEditorEl = document.getElementById('hudEdgeEditor');
-    const inputEdgeLength = document.getElementById('inputEdgeLength');
-    const txtHudEdgeTitle = document.getElementById('txtHudEdgeTitle');
 
-    // 1. Render Danh Sách Cạnh Khung Đất
-    if (edgesListEl) {
-        edgesListEl.innerHTML = pts.map((p1, i) => {
-            const p2 = pts[(i + 1) % pts.length];
-            const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
-            const isSel = (selectedEdgeIndex === i);
-            return `
-                <div class="hud-item-row ${isSel ? 'active' : ''}" data-edge-idx="${i}">
-                    <span>📏 Cạnh ${i + 1} (P${i + 1}→P${(i + 1) % pts.length + 1})</span>
-                    <span class="hud-item-val">${len} mm</span>
-                </div>
-            `;
-        }).join('');
+    if (selectedEdgeIndex !== null && pts.length > selectedEdgeIndex) {
+        const p1 = pts[selectedEdgeIndex];
+        const p2 = pts[(selectedEdgeIndex + 1) % pts.length];
+        const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
+        popup.style.display = 'flex';
+        popup.innerHTML = `<span class="popup-label">📏 Cạnh ${selectedEdgeIndex + 1}:</span><div class="popup-input-group"><input type="number" id="popupInputEdgeL" value="${len}" min="200"></div><button type="button" class="popup-btn save" id="btnPopupSaveEdge">✓</button><button type="button" class="popup-btn cancel" id="btnPopupCancelEdge">✕</button>`;
 
-        edgesListEl.querySelectorAll('.hud-item-row').forEach(row => {
-            row.addEventListener('click', () => {
-                const eIdx = parseInt(row.getAttribute('data-edge-idx'), 10);
-                selectEdge(eIdx);
-            });
+        document.getElementById('btnPopupSaveEdge')?.addEventListener('click', () => {
+            const newL = parseFloat(document.getElementById('popupInputEdgeL')?.value);
+            const dx = p2.x - p1.x; const dy = p2.y - p1.y;
+            const curL = Math.hypot(dx, dy);
+            if (newL > 100 && curL > 0) {
+                p2.x = Math.round(p1.x + (dx / curL) * newL);
+                p2.y = Math.round(p1.y + (dy / curL) * newL);
+                selectedEdgeIndex = null;
+                renderActiveDrawing(); renderSmartPopup(); renderPopovers();
+            }
         });
+        document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); });
+        return;
     }
 
-    if (edgeEditorEl) {
-        if (selectedEdgeIndex !== null && pts.length > selectedEdgeIndex) {
-            const p1 = pts[selectedEdgeIndex];
-            const p2 = pts[(selectedEdgeIndex + 1) % pts.length];
-            const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
-            edgeEditorEl.style.display = 'flex';
-            if (txtHudEdgeTitle) txtHudEdgeTitle.textContent = `Chỉnh Sửa Cạnh ${selectedEdgeIndex + 1}`;
-            if (inputEdgeLength) inputEdgeLength.value = len;
-        } else {
-            edgeEditorEl.style.display = 'none';
-        }
-    }
-
-    // 2. Render Danh Sách Kiến Trúc / Phòng
-    const roomsListEl = document.getElementById('hudRoomsList');
-    const roomEditorEl = document.getElementById('hudRoomEditor');
-    const txtHudRoomTitle = document.getElementById('txtHudRoomTitle');
-    const inputHudRoomName = document.getElementById('inputHudRoomName');
-    const inputHudRoomW = document.getElementById('inputHudRoomW');
-    const inputHudRoomH = document.getElementById('inputHudRoomH');
-
-    if (roomsListEl) {
-        const rooms = currentGeometry.rooms || [];
-        if (rooms.length === 0) {
-            roomsListEl.innerHTML = `<div style="padding: 10px; font-size: 0.76rem; color: #94a3b8; text-align: center;">Chưa có cấu trúc. Bấm tab [+ Thêm] để tạo.</div>`;
-        } else {
-            roomsListEl.innerHTML = rooms.map(r => {
-                const isSel = (selectedRoomId === r.id);
-                return `
-                    <div class="hud-item-row ${isSel ? 'active' : ''}" data-room-id="${r.id}">
-                        <span>${r.name}</span>
-                        <span class="hud-item-val">${r.w}×${r.h}</span>
-                    </div>
-                `;
-            }).join('');
-
-            roomsListEl.querySelectorAll('.hud-item-row').forEach(row => {
-                row.addEventListener('click', () => {
-                    const rId = row.getAttribute('data-room-id');
-                    selectRoom(rId);
-                });
-            });
-        }
-    }
-
-    if (roomEditorEl) {
+    if (selectedRoomId) {
         const room = currentGeometry.rooms?.find(r => r.id === selectedRoomId);
         if (room) {
-            roomEditorEl.style.display = 'flex';
-            if (txtHudRoomTitle) txtHudRoomTitle.textContent = room.name;
-            if (inputHudRoomName) inputHudRoomName.value = room.name;
-            if (inputHudRoomW) inputHudRoomW.value = room.w;
-            if (inputHudRoomH) inputHudRoomH.value = room.h;
-        } else {
-            roomEditorEl.style.display = 'none';
+            popup.style.display = 'flex';
+            popup.innerHTML = `<span class="popup-label">🚪 ${room.name}:</span><div class="popup-input-group"><input type="number" id="popupInputRoomW" value="${room.w}"><input type="number" id="popupInputRoomH" value="${room.h}"></div><button type="button" class="popup-btn save" id="btnPopupSaveRoom">✓</button><button type="button" class="popup-btn cancel" id="btnPopupCancelRoom">✕</button>`;
+            document.getElementById('btnPopupSaveRoom')?.addEventListener('click', () => {
+                room.w = parseInt(document.getElementById('popupInputRoomW').value);
+                room.h = parseInt(document.getElementById('popupInputRoomH').value);
+                selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers();
+            });
+            document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); });
+            return;
         }
     }
+    popup.style.display = 'none';
 }
 
-function initFloatingHud() {
-    const btnToggleHud = document.getElementById('btnToggleHud');
-    const hudHeader = document.getElementById('hudHeader');
-    const panel = document.getElementById('cadFloatingPanel');
+function initFloatingToolbar() {
+    const btnTriggerAdd = document.getElementById('btnTriggerAdd');
+    const popoverMenuAdd = document.getElementById('popoverMenuAdd');
 
-    if (btnToggleHud && panel) {
-        btnToggleHud.addEventListener('click', (e) => {
-            e.stopPropagation();
-            panel.classList.toggle('collapsed');
-        });
-    }
-    if (hudHeader && panel) {
-        hudHeader.addEventListener('click', () => {
-            panel.classList.toggle('collapsed');
-        });
-    }
-
-    document.getElementById('tabHudEdges')?.addEventListener('click', () => switchHudTab('paneHudEdges'));
-    document.getElementById('tabHudRooms')?.addEventListener('click', () => switchHudTab('paneHudRooms'));
-    document.getElementById('tabHudAdd')?.addEventListener('click', () => switchHudTab('paneHudAdd'));
-
-    // Edge Confirm / Cancel
-    document.getElementById('btnConfirmEdge')?.addEventListener('click', () => {
-        if (selectedEdgeIndex === null || !currentGeometry?.footprintPoints) return;
-        const pts = currentGeometry.footprintPoints;
-        const i = selectedEdgeIndex;
-        const p1 = pts[i];
-        const p2 = pts[(i + 1) % pts.length];
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-        const curL = Math.hypot(dx, dy);
-        const newL = parseFloat(document.getElementById('inputEdgeLength')?.value);
-
-        if (newL > 100 && curL > 0) {
-            const ux = dx / curL;
-            const uy = dy / curL;
-            p2.x = Math.round(p1.x + ux * newL);
-            p2.y = Math.round(p1.y + uy * newL);
-
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            pts.forEach(p => {
-                if (p.x < minX) minX = p.x;
-                if (p.x > maxX) maxX = p.x;
-                if (p.y < minY) minY = p.y;
-                if (p.y > maxY) maxY = p.y;
-            });
-            currentGeometry.widthMm = Math.max(2000, maxX - minX);
-            currentGeometry.depthMm = Math.max(2000, maxY - minY);
-
-            selectedEdgeIndex = null;
-            if (viewportController) viewportController.fitToScreen();
-            renderActiveDrawing();
-            renderFloatingHud();
-        }
+    btnTriggerAdd?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopovers();
+        popoverMenuAdd.style.display = popoverMenuAdd.style.display === 'flex' ? 'none' : 'flex';
     });
 
-    document.getElementById('btnCancelEdge')?.addEventListener('click', () => {
-        selectedEdgeIndex = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    });
-
-    // Room Confirm / Rotate / Delete / Cancel
-    document.getElementById('btnConfirmHudRoom')?.addEventListener('click', () => {
-        if (!selectedRoomId || !currentGeometry?.rooms) return;
-        const room = currentGeometry.rooms.find(r => r.id === selectedRoomId);
-        if (room) {
-            const newName = document.getElementById('inputHudRoomName')?.value;
-            const newW = parseInt(document.getElementById('inputHudRoomW')?.value, 10);
-            const newH = parseInt(document.getElementById('inputHudRoomH')?.value, 10);
-            if (newName) room.name = newName;
-            if (newW > 200) room.w = newW;
-            if (newH > 200) room.h = newH;
-            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-        }
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    });
-
-    document.getElementById('btnRotateHudRoom')?.addEventListener('click', () => {
-        if (!selectedRoomId || !currentGeometry?.rooms) return;
-        const room = currentGeometry.rooms.find(r => r.id === selectedRoomId);
-        if (room) {
-            const temp = room.w;
-            room.w = room.h;
-            room.h = temp;
-            room.rot = ((room.rot || 0) + 90) % 360;
-            roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot };
-            const inputHudRoomW = document.getElementById('inputHudRoomW');
-            const inputHudRoomH = document.getElementById('inputHudRoomH');
-            if (inputHudRoomW) inputHudRoomW.value = room.w;
-            if (inputHudRoomH) inputHudRoomH.value = room.h;
-            renderActiveDrawing();
-        }
-    });
-
-    document.getElementById('btnDeleteHudRoom')?.addEventListener('click', () => {
-        if (!selectedRoomId || !currentGeometry?.rooms) return;
-        const rIdx = currentGeometry.rooms.findIndex(r => r.id === selectedRoomId);
-        if (rIdx !== -1) {
-            delete roomPositionCache[selectedRoomId];
-            currentGeometry.rooms.splice(rIdx, 1);
-            for (let p in dndPlacements) {
-                dndPlacements[p] = dndPlacements[p].filter(r => r.id !== selectedRoomId);
-            }
-        }
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    });
-
-    document.getElementById('btnCancelHudRoom')?.addEventListener('click', () => {
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    });
-
-    // Component Library Click Handlers
-    document.querySelectorAll('.hud-comp-btn').forEach(btn => {
+    document.querySelectorAll('.hud-comp-chip').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.getAttribute('data-type');
-            const name = btn.getAttribute('data-name');
-            const w = parseInt(btn.getAttribute('data-w'), 10) || 3000;
-            const h = parseInt(btn.getAttribute('data-h'), 10) || 3000;
-
-            if (!currentGeometry.rooms) currentGeometry.rooms = [];
-            const cx = (currentGeometry.widthMm || 5000) / 2;
-            const cy = (currentGeometry.depthMm || 16000) / 2;
-            const newRoom = {
-                id: 'obj_' + Date.now(),
-                name: name.toUpperCase(),
-                type: type,
-                x: Math.round(Math.max(100, cx - w / 2)),
-                y: Math.round(Math.max(100, cy - h / 2)),
-                w: w,
-                h: h,
-                rot: 0
-            };
+            const newRoom = { id: 'obj_' + Date.now(), name: btn.getAttribute('data-name'), type: type, x: 500, y: 500, w: 3000, h: 3000, rot: 0 };
             currentGeometry.rooms.push(newRoom);
-            roomPositionCache[newRoom.id] = { ...newRoom };
-
+            closeAllPopovers();
             selectRoom(newRoom.id);
         });
     });
 }
 
-function startCadVertexInteraction(vertexIdx, clientX, clientY) {
-    if (!currentGeometry || !currentGeometry.footprintPoints || !currentGeometry.footprintPoints[vertexIdx]) return;
-    const pt = currentGeometry.footprintPoints[vertexIdx];
-    pointerState.isInteracting = true;
-    pointerState.mode = 'vertex';
-    pointerState.targetVertexIdx = vertexIdx;
-    pointerState.startClientX = clientX;
-    pointerState.startClientY = clientY;
-    pointerState.origX = pt.x;
-    pointerState.origY = pt.y;
-}
-
-function startCadPointerInteraction(mode, roomId, handle, clientX, clientY) {
-    if (!currentGeometry || !currentGeometry.rooms) return;
-    const room = currentGeometry.rooms.find(r => r.id === roomId);
-    if (!room) return;
-
-    pointerState.isInteracting = true;
-    pointerState.mode = mode;
-    pointerState.handle = handle;
-    pointerState.targetRoomId = roomId;
-    pointerState.startClientX = clientX;
-    pointerState.startClientY = clientY;
-    pointerState.origX = room.x;
-    pointerState.origY = room.y;
-    pointerState.origW = room.w;
-    pointerState.origH = room.h;
-}
-
-function handleMiniActionClick(btn) {
-    const action = btn.getAttribute('data-action');
-    const roomId = btn.getAttribute('data-room-id');
-    if (!currentGeometry || !currentGeometry.rooms) return;
-
-    const roomIndex = currentGeometry.rooms.findIndex(r => r.id === roomId);
-    if (roomIndex === -1) return;
-    const room = currentGeometry.rooms[roomIndex];
-
-    if (action === 'confirm') {
-        room.history = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
-        roomPositionCache[room.id] = { ...room.history };
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    } else if (action === 'reset') {
-        if (room.history) {
-            room.x = room.history.x;
-            room.y = room.history.y;
-            room.w = room.history.w;
-            room.h = room.history.h;
-            room.rot = room.history.rot || 0;
-            roomPositionCache[room.id] = { ...room.history };
-        }
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    } else if (action === 'rotate') {
-        const temp = room.w;
-        room.w = room.h;
-        room.h = temp;
-        room.rot = ((room.rot || 0) + 90) % 360;
-        roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot };
-        renderActiveDrawing();
-        renderFloatingHud();
-    } else if (action === 'delete') {
-        delete roomPositionCache[roomId];
-        currentGeometry.rooms.splice(roomIndex, 1);
-        for (let p in dndPlacements) {
-            dndPlacements[p] = dndPlacements[p].filter(r => r.id !== roomId);
-        }
-        renderDndGrid();
-        selectedRoomId = null;
-        if (cadRenderer) cadRenderer.selectedRoomId = null;
-        if (viewportController) viewportController.fitToScreen();
-        renderActiveDrawing();
-        renderFloatingHud();
-    }
-}
-
-/* 9. Toolbar Buttons & Matrix Controls */
-function initToolbar() {
-    const btnToggleTheme = document.getElementById('btnToggleTheme');
-    const txtThemeMode = document.getElementById('txtThemeMode');
-    const btnToggleDimensions = document.getElementById('btnToggleDimensions');
-    const btnToggleFurniture = document.getElementById('btnToggleFurniture');
-    const btnToggleAxes = document.getElementById('btnToggleAxes');
-    const btnToggleCompass = document.getElementById('btnToggleCompass');
-    const btnToggleOrientation = document.getElementById('btnToggleOrientation');
-    const txtOrientationMode = document.getElementById('txtOrientationMode');
-    const viewportWrapper = document.getElementById('svgViewportShell');
-
-    const btnZoomIn = document.getElementById('btnZoomIn');
-    const btnZoomOut = document.getElementById('btnZoomOut');
-    const btnZoomFit = document.getElementById('btnZoomFit');
-    const btnExportSvg = document.getElementById('btnExportSvg');
-    const btnExportPng = document.getElementById('btnExportPng');
-
-    const btnMatrixOrientHouse = document.getElementById('btnMatrixOrientHouse');
-    const btnMatrixOrientLoShu = document.getElementById('btnMatrixOrientLoShu');
-
-    if (btnToggleTheme) {
-        btnToggleTheme.addEventListener('click', () => {
-            currentThemeMode = currentThemeMode === 'white' ? 'dark' : 'white';
-            if (txtThemeMode) {
-                txtThemeMode.textContent = currentThemeMode === 'white' ? 'Bản Vẽ Trắng (CAD)' : 'Bản Vẽ Tối (Dark)';
-            }
-            if (viewportWrapper) {
-                viewportWrapper.classList.toggle('dark-mode', currentThemeMode === 'dark');
-            }
-            const wrapper = document.querySelector('.canvas-viewport-wrapper');
-            if (wrapper) {
-                wrapper.classList.toggle('dark-mode', currentThemeMode === 'dark');
-            }
-            cadRenderer.theme = currentThemeMode;
-            renderActiveDrawing();
-        });
-    }
-
-    if (btnToggleDimensions) {
-        btnToggleDimensions.addEventListener('click', () => {
-            layerState.dimensions = !layerState.dimensions;
-            btnToggleDimensions.classList.toggle('active', layerState.dimensions);
-            renderActiveDrawing();
-        });
-    }
-
-    if (btnToggleFurniture) {
-        btnToggleFurniture.addEventListener('click', () => {
-            layerState.furniture = !layerState.furniture;
-            btnToggleFurniture.classList.toggle('active', layerState.furniture);
-            renderActiveDrawing();
-        });
-    }
-
-    if (btnToggleAxes) {
-        btnToggleAxes.addEventListener('click', () => {
-            layerState.axes = !layerState.axes;
-            btnToggleAxes.classList.toggle('active', layerState.axes);
-            renderActiveDrawing();
-        });
-    }
-
-    if (btnToggleCompass) {
-        btnToggleCompass.addEventListener('click', () => {
-            layerState.luoPan = !layerState.luoPan;
-            layerState.ninePalaces = layerState.luoPan;
-            btnToggleCompass.classList.toggle('active', layerState.luoPan);
-
-            const tabFS = document.getElementById('tabDrawingFengShui');
-            if (tabFS) tabFS.classList.toggle('active', layerState.luoPan);
-
-            renderActiveDrawing();
-        });
-    }
-
-    if (btnToggleOrientation) {
-        btnToggleOrientation.addEventListener('click', () => {
-            isLandscapeMode = !isLandscapeMode;
-            btnToggleOrientation.classList.toggle('active', isLandscapeMode);
-            if (txtOrientationMode) {
-                txtOrientationMode.textContent = isLandscapeMode ? 'Khổ Nằm (Ngang)' : 'Khổ Đứng (Dọc)';
-            }
-            cadRenderer.isLandscape = isLandscapeMode;
-            handleCalculate(false);
-        });
-    }
-
-    if (btnMatrixOrientHouse && btnMatrixOrientLoShu) {
-        btnMatrixOrientHouse.addEventListener('click', () => {
-            currentMatrixOrientMode = 'house';
-            btnMatrixOrientHouse.classList.add('active');
-            btnMatrixOrientLoShu.classList.remove('active');
-            if (currentFlyingStars && currentBatTrach) {
-                renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
-            }
-        });
-
-        btnMatrixOrientLoShu.addEventListener('click', () => {
-            currentMatrixOrientMode = 'loshu';
-            btnMatrixOrientLoShu.classList.add('active');
-            btnMatrixOrientHouse.classList.remove('active');
-            if (currentFlyingStars && currentBatTrach) {
-                renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
-            }
-        });
-    }
-
-    if (btnZoomIn && viewportController) {
-        btnZoomIn.addEventListener('click', () => viewportController.zoomIn());
-    }
-    if (btnZoomOut && viewportController) {
-        btnZoomOut.addEventListener('click', () => viewportController.zoomOut());
-    }
-    if (btnZoomFit && viewportController) {
-        btnZoomFit.addEventListener('click', () => viewportController.fitToScreen());
-    }
-
-    if (btnExportSvg && viewportController) {
-        btnExportSvg.addEventListener('click', () => {
-            viewportController.exportSvg('Ban_Ve_Phong_Thuy_CAD.svg');
-        });
-    }
-
-    if (btnExportPng && viewportController) {
-        btnExportPng.addEventListener('click', () => {
-            viewportController.exportPng('Ban_Ve_Phong_Thuy_CAD.png');
-        });
-    }
-
-    // Native Fullscreen Controller
-    const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
-    const iconFsOpen = document.getElementById('iconFullscreenOpen');
-    const iconFsExit = document.getElementById('iconFullscreenExit');
-    const txtFs = document.getElementById('txtFullscreen');
-    const canvasWrapper = document.querySelector('.canvas-viewport-wrapper');
-
-    function toggleFullscreen() {
-        if (!canvasWrapper) return;
-        const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-
-        if (!isNativeFs) {
-            if (canvasWrapper.requestFullscreen) {
-                canvasWrapper.requestFullscreen().catch(() => {
-                    canvasWrapper.classList.add('is-fullscreen');
-                    syncFullscreenUi(true);
-                });
-            } else if (canvasWrapper.webkitRequestFullscreen) {
-                canvasWrapper.webkitRequestFullscreen();
-            } else {
-                canvasWrapper.classList.add('is-fullscreen');
-                syncFullscreenUi(true);
-            }
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(() => {});
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
-            canvasWrapper.classList.remove('is-fullscreen');
-            syncFullscreenUi(false);
-        }
-    }
-
-    function syncFullscreenUi(isFs) {
-        if (btnToggleFullscreen) {
-            btnToggleFullscreen.classList.toggle('active', isFs);
-        }
-        if (iconFsOpen) iconFsOpen.style.display = isFs ? 'none' : 'inline-block';
-        if (iconFsExit) iconFsExit.style.display = isFs ? 'inline-block' : 'none';
-        if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn Hình';
-
-        if (viewportController) {
-            setTimeout(() => {
-                viewportController.fitToScreen();
-            }, 100);
-        }
-    }
-
-    if (btnToggleFullscreen) {
-        btnToggleFullscreen.addEventListener('click', toggleFullscreen);
-    }
-
-    document.addEventListener('fullscreenchange', () => {
-        const isFs = !!document.fullscreenElement;
-        canvasWrapper?.classList.toggle('is-fullscreen', isFs);
-        syncFullscreenUi(isFs);
-    });
-
-    document.addEventListener('webkitfullscreenchange', () => {
-        const isFs = !!document.webkitFullscreenElement;
-        canvasWrapper?.classList.toggle('is-fullscreen', isFs);
-        syncFullscreenUi(isFs);
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && (document.fullscreenElement || canvasWrapper?.classList.contains('is-fullscreen'))) {
-            if (document.fullscreenElement && document.exitFullscreen) {
-                document.exitFullscreen().catch(() => {});
-            }
-            canvasWrapper?.classList.remove('is-fullscreen');
-            syncFullscreenUi(false);
         }
     });
 }
@@ -1270,7 +737,8 @@ function handleCalculate(shouldScroll = false) {
     renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
     renderDndGrid();
     renderDetailedReport(currentSpatialResult);
-    renderFloatingHud();
+    renderPopovers();
+    renderSmartPopup();
 
     if (shouldScroll && resultsSection) {
         resultsSection.scrollIntoView({ behavior: 'smooth' });

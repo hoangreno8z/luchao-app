@@ -353,236 +353,135 @@
 
             <!-- Studio Grid: SVG Viewport Left, Flying Star Matrix Right -->
             <div class="cad-studio-container">
-                <!-- SVG Vector Viewport Wrapper -->
-                <div class="canvas-viewport-wrapper">
-                    
-                    <!-- 2 Main Drawing Layer Switchers -->
-                    <div class="drawing-mode-tabs">
-                        <button type="button" class="drawing-tab-btn active" id="tabDrawingArch" title="Bật/Tắt Lớp Bản Vẽ Kiến Trúc">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 18h16M6 18V6M10 18V6M14 18V6M18 18V6M2 6h20L12 2z"/></svg>
-                            <span>BẢN VẼ KIẾN TRÚC (LỚP 1)</span>
-                        </button>
-                        <button type="button" class="drawing-tab-btn active" id="tabDrawingFengShui" title="Bật/Tắt Lớp La Kinh & Cửu Cung">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 4 15 12 12 20 9 12 12 4"/></svg>
-                            <span>LA KINH & CỬU CUNG (LỚP 2-3)</span>
-                        </button>
+                <!-- 2 Main Drawing Layer Switchers -->
+                <div class="drawing-mode-tabs">
+                    <button type="button" class="drawing-tab-btn active" id="tabDrawingArch" title="Bật/Tắt Lớp Bản Vẽ Kiến Trúc">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M4 18h16M6 18V6M10 18V6M14 18V6M18 18V6M2 6h20L12 2z"/></svg>
+                        <span>BẢN VẼ KIẾN TRÚC (LỚP 1)</span>
+                    </button>
+                    <button type="button" class="drawing-tab-btn active" id="tabDrawingFengShui" title="Bật/Tắt Lớp La Kinh & Cửu Cung">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 4 15 12 12 20 9 12 12 4"/></svg>
+                        <span>LA KINH & CỬU CUNG (LỚP 2-3)</span>
+                    </button>
+                </div>
+
+                <!-- CAD WORKSPACE (Chuẩn Native Fullscreen & Scale 100%) -->
+                <div id="cad-workspace" class="cad-workspace">
+                    <!-- SVG Stage chiếm 100% diện tích workspace -->
+                    <div id="svgStage" class="svg-stage">
+                        <!-- SVG element rendered dynamically -->
                     </div>
 
-                    <!-- Technical Architectural Toolbar (Zero Emojis, Pure SVG Icons) -->
-                    <div class="cad-toolbar">
-                        <button type="button" class="cad-tool-btn" id="btnToggleTheme" title="Chuyển đổi màu nền bản vẽ">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                            <span id="txtThemeMode">Bản Vẽ Trắng (CAD)</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn active" id="btnToggleDimensions" title="Bật/Tắt đường gióng kích thước">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="5" x2="2" y2="19"/><line x1="22" y1="5" x2="22" y2="19"/><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/></svg>
-                            <span>Kích Thước (Dim)</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn active" id="btnToggleFurniture" title="Bật/Tắt nội thất kiến trúc">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="9" rx="2"/><path d="M5 11V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"/><line x1="3" y1="16" x2="21" y2="16"/></svg>
-                            <span>Nội Thất Vector</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn active" id="btnToggleAxes" title="Bật/Tắt hệ trục định vị">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
-                            <span>Trục Định Vị</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn active" id="btnToggleCompass" title="Bật/Tắt đĩa La Kinh Hoa Tiêu">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 4 15 12 12 20 9 12 12 4"/></svg>
-                            <span>La Kinh 24 Sơn</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn" id="btnToggleOrientation" title="Xoay hướng hiển thị bản vẽ (Dọc / Ngang)">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                            <span id="txtOrientationMode">Khổ Đứng (Dọc)</span>
-                        </button>
-
-                        <!-- Viewport Zoom / Pan / Fit Controls -->
-                        <div class="viewport-zoom-group">
-                            <button type="button" class="cad-tool-btn icon-only" id="btnZoomOut" title="Thu nhỏ (-)">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <!-- Floating Glassmorphism Toolbar (Mờ, Nổi đè lên mép phải bản vẽ) -->
+                    <div class="cad-floating-toolbar" id="cadFloatingToolbar">
+                        <!-- Thêm Cấu Trúc Trigger & Popover Menu -->
+                        <div class="hud-popover-wrapper">
+                            <button type="button" class="hud-floating-btn highlight" id="btnTriggerAdd" title="Thêm cấu trúc kiến trúc (+)">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span>Thêm</span>
                             </button>
-                            <button type="button" class="cad-tool-btn icon-only" id="btnZoomFit" title="Vừa màn hình (Fit)">
-                                <span>FIT</span>
-                            </button>
-                            <button type="button" class="cad-tool-btn icon-only" id="btnZoomIn" title="Phóng to (+)">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            </button>
+                            <div class="hud-popover-menu" id="popoverMenuAdd" style="display: none;">
+                                <div class="popover-header">
+                                    <span>THÊM CẤU TRÚC</span>
+                                    <button type="button" class="btn-popover-close" id="btnClosePopoverAdd">×</button>
+                                </div>
+                                <div class="popover-grid">
+                                    <button type="button" class="hud-comp-chip" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">🚪 Cửa Chính</button>
+                                    <button type="button" class="hud-comp-chip" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">⛩️ Cổng</button>
+                                    <button type="button" class="hud-comp-chip" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">🚪 Cửa Phụ</button>
+                                    <button type="button" class="hud-comp-chip" data-type="window" data-name="Cửa Sổ" data-w="1600" data-h="250">🪟 Cửa Sổ</button>
+                                    <button type="button" class="hud-comp-chip" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">🪜 Cầu Thang</button>
+                                    <button type="button" class="hud-comp-chip" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">🛋️ P. Khách</button>
+                                    <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">🛏️ P. Ngủ</button>
+                                    <button type="button" class="hud-comp-chip" data-type="office" data-name="P. Làm Việc" data-w="3500" data-h="3800">💼 P. Làm Việc</button>
+                                    <button type="button" class="hud-comp-chip" data-type="gym" data-name="P. Thể Thao" data-w="3600" data-h="4000">🏋️ P. Thể Thao</button>
+                                    <button type="button" class="hud-comp-chip" data-type="pool" data-name="Hồ Bơi" data-w="4000" data-h="8000">🏊 Hồ Bơi</button>
+                                    <button type="button" class="hud-comp-chip" data-type="yard" data-name="Sân Vườn" data-w="5000" data-h="4000">🌳 Sân Vườn</button>
+                                    <button type="button" class="hud-comp-chip" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">🍳 Bếp & Ăn</button>
+                                    <button type="button" class="hud-comp-chip" data-type="toilet" data-name="Vệ Sinh" data-w="1800" data-h="2500">🚿 Vệ Sinh</button>
+                                    <button type="button" class="hud-comp-chip" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">🕯️ P. Thờ</button>
+                                    <button type="button" class="hud-comp-chip" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">🚗 Gara Xe</button>
+                                    <button type="button" class="hud-comp-chip" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">☀️ Giếng Trời</button>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Export Options -->
-                        <button type="button" class="cad-tool-btn" id="btnExportSvg" title="Tải file Vector SVG gốc">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Xuất SVG</span>
-                        </button>
-                        <button type="button" class="cad-tool-btn" id="btnExportPng" style="color: var(--gold-light); border-color: rgba(245, 158, 11, 0.4);" title="Tải file ảnh bản vẽ chất lượng cao">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Xuất HD PNG</span>
-                        </button>
+                        <!-- Cạnh Khung Đất Popover Trigger -->
+                        <div class="hud-popover-wrapper">
+                            <button type="button" class="hud-floating-btn" id="btnTriggerEdges" title="Danh sách các cạnh của thửa đất">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 3h18M3 12h18"/></svg>
+                                <span>Cạnh Đất</span>
+                            </button>
+                            <div class="hud-popover-menu" id="popoverMenuEdges" style="display: none;">
+                                <div class="popover-header">
+                                    <span>CẠNH THỬA ĐẤT</span>
+                                    <button type="button" class="btn-popover-close" id="btnClosePopoverEdges">×</button>
+                                </div>
+                                <div class="popover-list" id="popoverEdgesList"></div>
+                            </div>
+                        </div>
 
-                        <!-- Fullscreen Toggle Button (Pure Code SVG Icon) -->
-                        <button type="button" class="cad-tool-btn" id="btnToggleFullscreen" style="color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);" title="Phóng to toàn màn hình (Fullscreen / Esc để thoát)">
-                            <svg id="iconFullscreenOpen" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                            </svg>
-                            <svg id="iconFullscreenExit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
-                            </svg>
+                        <!-- Danh Sách Phòng Popover Trigger -->
+                        <div class="hud-popover-wrapper">
+                            <button type="button" class="hud-floating-btn" id="btnTriggerRooms" title="Danh sách các phòng và cấu trúc">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+                                <span>Phòng</span>
+                            </button>
+                            <div class="hud-popover-menu" id="popoverMenuRooms" style="display: none;">
+                                <div class="popover-header">
+                                    <span>DANH SÁCH PHÒNG</span>
+                                    <button type="button" class="btn-popover-close" id="btnClosePopoverRooms">×</button>
+                                </div>
+                                <div class="popover-list" id="popoverRoomsList"></div>
+                            </div>
+                        </div>
+
+                        <div class="hud-divider"></div>
+
+                        <!-- Toàn Màn Hình -->
+                        <button type="button" class="hud-floating-btn fs-btn" id="btnToggleFullscreen" title="Phóng to toàn màn hình (Fullscreen / Esc để thoát)">
+                            <svg id="iconFullscreenOpen" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                            <svg id="iconFullscreenExit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
                             <span id="txtFullscreen">Toàn Màn Hình</span>
                         </button>
-                    </div>
 
-                    <!-- Interactive Pure Vector SVG Viewport Shell -->
-                    <div id="svgViewportShell" class="svg-viewport-shell">
-                        <div id="svgStage" class="svg-stage">
-                            <!-- SVG element rendered dynamically -->
-                        </div>
-                    </div>
+                        <!-- Căn Vừa Viewport (FIT) -->
+                        <button type="button" class="hud-floating-btn" id="btnZoomFit" title="Căn vừa màn hình (Fit View)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                            <span>Fit</span>
+                        </button>
 
-                    <!-- Floating Glassmorphism Overlay Panel (HUD) -->
-                    <div id="cadFloatingPanel" class="cad-floating-panel">
-                        <div class="hud-header" id="hudHeader">
-                            <div class="hud-title">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                                <span>BẢNG ĐỐI TƯỢNG & SỬA NHANH</span>
-                            </div>
-                            <button type="button" class="btn-hud-toggle" id="btnToggleHud" title="Thu gọn / Mở rộng bảng">
-                                <svg id="iconHudChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <!-- Zoom In / Out Group -->
+                        <div class="hud-btn-row">
+                            <button type="button" class="hud-floating-btn icon-only" id="btnZoomOut" title="Thu nhỏ (-)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                            <button type="button" class="hud-floating-btn icon-only" id="btnZoomIn" title="Phóng to (+)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
                         </div>
 
-                        <div class="hud-body" id="hudBody">
-                            <!-- 3 HUD Tabs -->
-                            <div class="hud-nav-tabs">
-                                <button type="button" class="hud-tab-btn active" id="tabHudEdges">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 3h18M3 12h18"/></svg>
-                                    <span>Khung Đất</span>
-                                </button>
-                                <button type="button" class="hud-tab-btn" id="tabHudRooms">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
-                                    <span>Kiến Trúc</span>
-                                </button>
-                                <button type="button" class="hud-tab-btn" id="tabHudAdd" style="color: #67e8f9;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    <span>+ Thêm</span>
-                                </button>
-                            </div>
+                        <div class="hud-divider"></div>
 
-                            <!-- Tab 1: Khung Đất (Edges List & Parametric Edge Editor) -->
-                            <div class="hud-tab-pane active" id="paneHudEdges">
-                                <div class="hud-items-list" id="hudEdgesList">
-                                    <!-- Populated dynamically -->
-                                </div>
-                                <div class="hud-editor-card" id="hudEdgeEditor" style="display: none;">
-                                    <div class="hud-editor-header">
-                                        <span id="txtHudEdgeTitle">Chỉnh Sửa Cạnh 1</span>
-                                    </div>
-                                    <div class="hud-input-row">
-                                        <label>Chiều dài cạnh:</label>
-                                        <div class="hud-input-group">
-                                            <input type="number" id="inputEdgeLength" min="400" max="100000" step="100">
-                                            <span class="hud-unit">mm</span>
-                                        </div>
-                                    </div>
-                                    <div class="hud-action-row">
-                                        <button type="button" class="hud-btn success" id="btnConfirmEdge">✓ Xác Nhận</button>
-                                        <button type="button" class="hud-btn secondary" id="btnCancelEdge">✕ Hủy</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Toggle Nền Trắng / Tối -->
+                        <button type="button" class="hud-floating-btn" id="btnToggleTheme" title="Chuyển đổi màu nền bản vẽ (Trắng CAD / Tối)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                            <span id="txtThemeMode">Trắng</span>
+                        </button>
 
-                            <!-- Tab 2: Kiến Trúc (Rooms/Objects List & Smart Object Editor) -->
-                            <div class="hud-tab-pane" id="paneHudRooms">
-                                <div class="hud-items-list" id="hudRoomsList">
-                                    <!-- Populated dynamically -->
-                                </div>
-                                <div class="hud-editor-card" id="hudRoomEditor" style="display: none;">
-                                    <div class="hud-editor-header">
-                                        <span id="txtHudRoomTitle">Phòng Khách</span>
-                                    </div>
-                                    <div class="hud-input-row">
-                                        <label>Tên gọi:</label>
-                                        <input type="text" id="inputHudRoomName" class="hud-input-text">
-                                    </div>
-                                    <div class="hud-grid-2col">
-                                        <div class="hud-input-row">
-                                            <label>Rộng (W):</label>
-                                            <div class="hud-input-group">
-                                                <input type="number" id="inputHudRoomW" min="300" max="50000" step="50">
-                                                <span class="hud-unit">mm</span>
-                                            </div>
-                                        </div>
-                                        <div class="hud-input-row">
-                                            <label>Sâu (H):</label>
-                                            <div class="hud-input-group">
-                                                <input type="number" id="inputHudRoomH" min="300" max="50000" step="50">
-                                                <span class="hud-unit">mm</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="hud-action-row">
-                                        <button type="button" class="hud-btn icon" id="btnRotateHudRoom" title="Xoay 90 độ">↻ Xoay</button>
-                                        <button type="button" class="hud-btn success" id="btnConfirmHudRoom">✓ Lưu</button>
-                                        <button type="button" class="hud-btn danger" id="btnDeleteHudRoom">🗑️ Xóa</button>
-                                        <button type="button" class="hud-btn secondary" id="btnCancelHudRoom">✕</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Xuất Ảnh HD PNG -->
+                        <button type="button" class="hud-floating-btn" id="btnExportPng" title="Tải file ảnh bản vẽ chất lượng cao HD PNG">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Lưu Ảnh</span>
+                        </button>
+                    </div>
 
-                            <!-- Tab 3: Thư Viện Cấu Trúc Kiến Trúc (Add Components) -->
-                            <div class="hud-tab-pane" id="paneHudAdd">
-                                <div class="hud-components-grid">
-                                    <button type="button" class="hud-comp-btn" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">
-                                        <span>🚪 Cửa Chính</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">
-                                        <span>⛩️ Cửa Cổng</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">
-                                        <span>🚪 Cửa Phụ</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="window" data-name="Cửa Sổ" data-w="1600" data-h="250">
-                                        <span>🪟 Cửa Sổ</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">
-                                        <span>🪜 Cầu Thang</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">
-                                        <span>🛋️ P. Khách</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">
-                                        <span>🛏️ P. Ngủ</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="office" data-name="P. Làm Việc" data-w="3500" data-h="3800">
-                                        <span>💼 P. Làm Việc</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="gym" data-name="P. Thể Thao" data-w="3600" data-h="4000">
-                                        <span>🏋️ P. Thể Thao</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="pool" data-name="Hồ Bơi" data-w="4000" data-h="8000">
-                                        <span>🏊 Hồ Bơi</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="yard" data-name="Sân Vườn" data-w="5000" data-h="4000">
-                                        <span>🌳 Sân Vườn</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">
-                                        <span>🍳 Bếp & Ăn</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="toilet" data-name="Vệ Sinh (WC)" data-w="1800" data-h="2500">
-                                        <span>🚿 Vệ Sinh</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">
-                                        <span>🕯️ Phòng Thờ</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">
-                                        <span>🚗 Gara Xe</span>
-                                    </button>
-                                    <button type="button" class="hud-comp-btn" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">
-                                        <span>☀️ Giếng Trời</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Smart Floating Popup (Hiện gọn nhẹ ở mép dưới khi chọn 1 phòng hoặc 1 cạnh) -->
+                    <div id="cadSmartPopup" class="cad-smart-popup" style="display: none;">
+                        <!-- Render dynamically by JavaScript -->
                     </div>
                 </div>
+            </div>
 
                 <!-- Flying Stars Matrix & Summary Panel -->
                 <div class="glass-card" style="margin-bottom: 0;">

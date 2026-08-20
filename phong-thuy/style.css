@@ -450,154 +450,342 @@ body {
     }
 }
 
-/* CAD Toolbar */
-.cad-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    background: rgba(15, 23, 42, 0.95);
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    margin-bottom: 10px;
-    z-index: 10;
+/* CAD WORKSPACE & FULLSCREEN SYSTEM (Scale 100% tràn viền) */
+.cad-workspace {
+    position: relative;
+    width: 100%;
+    height: 640px;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: block;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    transition: background 0.3s ease;
 }
-.cad-tool-btn {
-    padding: 6px 12px;
+.cad-workspace:active {
+    cursor: grabbing;
+}
+.cad-workspace.dark-mode {
+    background: #090d16;
+}
+
+#cad-workspace:fullscreen, #cad-workspace.is-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    background-color: #ffffff;
+    border-radius: 0 !important;
+    border: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 999999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+#cad-workspace.dark-mode:fullscreen, #cad-workspace.dark-mode.is-fullscreen {
+    background-color: #090d16 !important;
+}
+
+.cad-workspace .svg-stage {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cad-workspace svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Quan trọng để nét vẽ không bị bóp méo tỉ lệ */
+    preserveAspectRatio: xMidYMid meet;
+}
+
+/* FLOATING GLASSMORPHISM TOOLBAR (Mờ, Nổi đè mép phải bản vẽ) */
+.cad-floating-toolbar {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+}
+
+.hud-floating-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    padding: 6px 10px;
     border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    user-select: none;
+}
+.hud-floating-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.hud-floating-btn.active {
+    background: rgba(245, 158, 11, 0.35);
+    border-color: var(--gold-primary);
+    color: #fef08a;
+}
+.hud-floating-btn.highlight {
+    background: rgba(245, 158, 11, 0.3);
+    border-color: rgba(245, 158, 11, 0.7);
+    color: #fef08a;
+}
+.hud-floating-btn.fs-btn {
+    color: #67e8f9;
+    border-color: rgba(6, 182, 212, 0.5);
+    background: rgba(6, 182, 212, 0.12);
+}
+.hud-floating-btn.fs-btn:hover {
+    background: rgba(6, 182, 212, 0.25);
+    color: #ffffff;
+}
+.hud-floating-btn.icon-only {
+    padding: 6px 8px;
+}
+
+.hud-btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+.hud-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 2px 0;
+}
+
+/* POPOVER MENUS */
+.hud-popover-wrapper {
+    position: relative;
+}
+.hud-popover-menu {
+    position: absolute;
+    right: 100%;
+    top: 0;
+    margin-right: 8px;
+    width: 280px;
+    max-width: calc(100vw - 80px);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 4px;
+}
+.btn-popover-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.btn-popover-close:hover {
+    color: #fff;
+}
+.popover-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+.hud-comp-chip {
+    padding: 6px 8px;
+    background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.06);
-    color: #cbd5e1;
-    font-size: 0.78rem;
+    border-radius: 6px;
+    color: #f1f5f9;
+    font-size: 0.72rem;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
+    justify-content: flex-start;
+    gap: 4px;
+    transition: all 0.15s ease;
 }
-.cad-tool-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(245, 158, 11, 0.4);
-}
-.cad-tool-btn.active {
-    background: rgba(217, 119, 6, 0.3);
+.hud-comp-chip:hover {
+    background: rgba(245, 158, 11, 0.25);
+    border-color: var(--gold-primary);
     color: #fef08a;
-    border-color: rgba(245, 158, 11, 0.7);
 }
-.cad-tool-btn.icon-only {
-    padding: 6px 10px;
+.popover-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.popover-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    transition: all 0.15s ease;
+}
+.popover-item-row:hover {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #fff;
+}
+.popover-item-row.active {
+    background: rgba(245, 158, 11, 0.3);
+    border-color: var(--gold-primary);
+    color: #fef08a;
+    font-weight: 800;
 }
 
-.viewport-zoom-group {
+/* SMART FLOATING POPUP (Gọn gàng ở mép dưới khi chọn phòng/cạnh) */
+.cad-smart-popup {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 70;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 24px);
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: popupFadeIn 0.2s ease-out;
+}
+@keyframes popupFadeIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+.popup-label {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--gold-light);
+    white-space: nowrap;
+}
+.popup-input-group {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 4px 6px;
+    gap: 4px;
+}
+.popup-input-group input {
+    width: 60px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    outline: none;
+    text-align: center;
+}
+.popup-unit {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    font-weight: 700;
+}
+.popup-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 3px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 2px 4px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+    transition: all 0.15s ease;
 }
-
-/* SVG Viewport Shell & Stage */
-.canvas-viewport-wrapper {
-    position: relative;
-    background: #0b0f19;
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    border-radius: 14px;
-    overflow: hidden;
-    min-height: 600px;
-    height: 720px;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    transition: background 0.3s ease;
-    padding: 12px;
+.popup-btn.save {
+    background: #16a34a;
+    color: #fff;
 }
-.canvas-viewport-wrapper.dark-mode {
-    background: #060911;
-    border-color: var(--border-color);
+.popup-btn.save:hover {
+    background: #15803d;
 }
-
-.svg-viewport-shell {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    min-height: 520px;
-    max-height: 80vh;
-    overflow: hidden;
-    cursor: grab;
-    user-select: none;
-    touch-action: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #030712;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
+.popup-btn.rotate {
+    background: #0284c7;
+    color: #fff;
 }
-.svg-viewport-shell:active {
-    cursor: grabbing;
+.popup-btn.rotate:hover {
+    background: #0369a1;
 }
-.svg-stage {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform-origin: center center;
-    position: relative;
+.popup-btn.delete {
+    background: #dc2626;
+    color: #fff;
 }
-.svg-stage svg {
-    height: 94%;
-    width: auto;
-    max-width: 94%;
-    max-height: 94%;
-    display: block;
-    border-radius: 6px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(245, 158, 11, 0.35);
-    transition: box-shadow 0.2s ease;
+.popup-btn.delete:hover {
+    background: #b91c1c;
 }
-
-/* Fullscreen CAD Workspace Mode */
-.canvas-viewport-wrapper.is-fullscreen {
-    position: fixed !important;
-    inset: 0 !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    z-index: 99999 !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    background: #020617 !important;
-    padding: 16px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    box-shadow: none !important;
+.popup-btn.cancel {
+    background: rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
 }
-
-.canvas-viewport-wrapper.is-fullscreen .cad-toolbar {
-    margin-bottom: 12px;
-}
-
-.canvas-viewport-wrapper.is-fullscreen .svg-viewport-shell {
-    flex: 1;
-    height: 100% !important;
-    max-height: calc(100vh - 120px) !important;
-    background: #010409 !important;
-}
-
-.canvas-viewport-wrapper.is-fullscreen .svg-stage svg {
-    height: 96% !important;
-    max-height: 96% !important;
-    max-width: 96% !important;
+.popup-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
 }
 
 /* Interactive 360° Compass Dial Styles (GPU 60FPS) */
@@ -866,315 +1054,6 @@ body {
     font-size: 0.92rem;
     font-weight: 800;
     color: var(--gold-light);
-}
-
-/* Floating Glassmorphism Overlay Panel (HUD) */
-.cad-floating-panel {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    width: 330px;
-    max-width: calc(100% - 32px);
-    max-height: 480px;
-    z-index: 60;
-    background: rgba(15, 23, 42, 0.94);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    border-radius: 14px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
-}
-.cad-floating-panel.collapsed {
-    max-height: 44px;
-}
-.canvas-viewport-wrapper.is-fullscreen .cad-floating-panel {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 100000;
-}
-@media (max-width: 768px) {
-    .cad-floating-panel {
-        left: 10px;
-        right: 10px;
-        width: auto;
-        max-width: none;
-        bottom: 10px;
-    }
-}
-
-.hud-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: rgba(30, 41, 59, 0.8);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.25);
-    cursor: pointer;
-    user-select: none;
-}
-.hud-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: var(--gold-light);
-    letter-spacing: 0.5px;
-}
-.btn-hud-toggle {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-.btn-hud-toggle:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
-}
-.cad-floating-panel.collapsed #iconHudChevron {
-    transform: rotate(180deg);
-}
-
-.hud-body {
-    padding: 10px 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    max-height: 420px;
-}
-
-.hud-nav-tabs {
-    display: flex;
-    gap: 4px;
-    background: rgba(0, 0, 0, 0.35);
-    padding: 4px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.hud-tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 6px 4px;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.76rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.hud-tab-btn:hover {
-    color: #ffffff;
-}
-.hud-tab-btn.active {
-    background: rgba(245, 158, 11, 0.2);
-    border-color: rgba(245, 158, 11, 0.5);
-    color: #fef08a;
-}
-
-.hud-tab-pane {
-    display: none;
-    flex-direction: column;
-    gap: 8px;
-}
-.hud-tab-pane.active {
-    display: flex;
-}
-
-.hud-items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 180px;
-    overflow-y: auto;
-    padding-right: 2px;
-}
-.hud-item-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #cbd5e1;
-    transition: all 0.15s ease;
-}
-.hud-item-row:hover {
-    background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(245, 158, 11, 0.4);
-    color: #f8fafc;
-}
-.hud-item-row.active {
-    background: rgba(245, 158, 11, 0.25);
-    border-color: var(--gold-primary);
-    color: #fef08a;
-    font-weight: 800;
-}
-.hud-item-val {
-    font-family: 'Courier New', monospace;
-    font-size: 0.76rem;
-    color: #38bdf8;
-    font-weight: 700;
-}
-
-.hud-editor-card {
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.hud-editor-header {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: var(--gold-light);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 4px;
-}
-.hud-input-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.hud-input-row label {
-    font-size: 0.72rem;
-    color: #94a3b8;
-    font-weight: 600;
-}
-.hud-input-group {
-    display: flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
-    padding: 4px 8px;
-}
-.hud-input-group input, .hud-input-text {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 0.82rem;
-    font-weight: 700;
-    outline: none;
-}
-.hud-input-text {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
-    padding: 6px 8px;
-}
-.hud-unit {
-    font-size: 0.72rem;
-    color: #94a3b8;
-    font-weight: 700;
-}
-.hud-grid-2col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.hud-action-row {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
-.hud-btn {
-    flex: 1;
-    padding: 7px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 0.76rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    transition: all 0.15s ease;
-}
-.hud-btn.success {
-    background: #16a34a;
-    color: #ffffff;
-}
-.hud-btn.success:hover {
-    background: #15803d;
-}
-.hud-btn.secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-}
-.hud-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-}
-.hud-btn.danger {
-    background: #dc2626;
-    color: #ffffff;
-}
-.hud-btn.danger:hover {
-    background: #b91c1c;
-}
-.hud-btn.icon {
-    background: #0284c7;
-    color: #ffffff;
-}
-.hud-btn.icon:hover {
-    background: #0369a1;
-}
-
-/* Component Library Grid */
-.hud-components-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    max-height: 280px;
-    overflow-y: auto;
-    padding-right: 2px;
-}
-.hud-comp-btn {
-    padding: 8px 10px;
-    background: rgba(30, 41, 59, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #f1f5f9;
-    font-size: 0.76rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 6px;
-    transition: all 0.15s ease;
-}
-.hud-comp-btn:hover {
-    background: rgba(245, 158, 11, 0.2);
-    border-color: var(--gold-primary);
-    color: #fef08a;
-    transform: translateY(-1px);
 }
 
 /* Footer */
