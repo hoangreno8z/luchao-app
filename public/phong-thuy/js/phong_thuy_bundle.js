@@ -1692,6 +1692,37 @@ export class SvgViewportController {
     initEvents() {
         if (!this.stage) return;
 
+        let touchStartDist = 0;
+        let touchStartScale = 1;
+
+        this.stage.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                touchStartDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                touchStartScale = this.scale;
+            }
+        }, { passive: true });
+
+        this.stage.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && touchStartDist > 0) {
+                const curDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const factor = curDist / touchStartDist;
+                this.scale = Math.max(0.2, Math.min(8.0, touchStartScale * factor));
+                this.updateTransform();
+            }
+        }, { passive: true });
+
+        this.stage.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                touchStartDist = 0;
+            }
+        }, { passive: true });
+
         this.stage.addEventListener('wheel', (e) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;

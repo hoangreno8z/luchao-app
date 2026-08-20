@@ -925,25 +925,38 @@ function selectEdge(edgeIdx, rerender = true) {
     }
 }
 
-/* 9. Action Buttons & Export */
+/* 9. Action Buttons, Fullscreen & Zoom Controller */
 function initActionButtons() {
     const btnCalc = document.getElementById('btnCalculate');
     const btnToggleFs = document.getElementById('btnToggleFullscreen');
     const btnExportPng = document.getElementById('btnExportPng');
+    const btnZoomIn = document.getElementById('btnZoomIn');
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    const btnZoomFit = document.getElementById('btnZoomFit');
 
     if (btnCalc) {
         btnCalc.addEventListener('click', () => handleCalculate(true));
     }
 
     if (btnToggleFs) {
-        btnToggleFs.addEventListener('click', () => {
-            const ws = document.getElementById('cad-workspace');
-            if (!ws) return;
-            if (!document.fullscreenElement) {
-                ws.requestFullscreen().catch(err => console.error(err));
-            } else {
-                document.exitFullscreen();
-            }
+        btnToggleFs.addEventListener('click', () => toggleCadFullscreen());
+    }
+
+    if (btnZoomIn) {
+        btnZoomIn.addEventListener('click', () => {
+            if (viewportController) viewportController.zoom(1.25);
+        });
+    }
+
+    if (btnZoomOut) {
+        btnZoomOut.addEventListener('click', () => {
+            if (viewportController) viewportController.zoom(0.8);
+        });
+    }
+
+    if (btnZoomFit) {
+        btnZoomFit.addEventListener('click', () => {
+            if (viewportController) viewportController.fitToScreen();
         });
     }
 
@@ -951,6 +964,59 @@ function initActionButtons() {
         btnExportPng.addEventListener('click', () => {
             exportSvgToPng();
         });
+    }
+
+    // Synchronize Fullscreen Events across all browser types
+    const syncFullscreenState = () => {
+        const ws = document.getElementById('cad-workspace');
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || (ws && ws.classList.contains('is-fullscreen')));
+        updateFullscreenUi(isFs);
+    };
+
+    document.addEventListener('fullscreenchange', syncFullscreenState);
+    document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+    document.addEventListener('mozfullscreenchange', syncFullscreenState);
+    document.addEventListener('MSFullscreenChange', syncFullscreenState);
+}
+
+function toggleCadFullscreen() {
+    const ws = document.getElementById('cad-workspace');
+    if (!ws) return;
+
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || ws.classList.contains('is-fullscreen'));
+
+    if (!isFs) {
+        const req = ws.requestFullscreen || ws.webkitRequestFullscreen || ws.mozRequestFullScreen || ws.msRequestFullscreen;
+        if (req) {
+            req.call(ws).catch(() => {
+                ws.classList.add('is-fullscreen');
+                updateFullscreenUi(true);
+            });
+        } else {
+            ws.classList.add('is-fullscreen');
+            updateFullscreenUi(true);
+        }
+    } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (document.fullscreenElement && exit) {
+            exit.call(document).catch(() => {});
+        }
+        ws.classList.remove('is-fullscreen');
+        updateFullscreenUi(false);
+    }
+}
+
+function updateFullscreenUi(isFs) {
+    const iconOpen = document.getElementById('iconFullscreenOpen');
+    const iconExit = document.getElementById('iconFullscreenExit');
+    const txtFs = document.getElementById('txtFullscreen');
+
+    if (iconOpen) iconOpen.style.display = isFs ? 'none' : 'inline-block';
+    if (iconExit) iconExit.style.display = isFs ? 'inline-block' : 'none';
+    if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn';
+
+    if (viewportController) {
+        setTimeout(() => viewportController.updateTransform(), 120);
     }
 }
 
