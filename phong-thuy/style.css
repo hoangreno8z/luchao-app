@@ -450,24 +450,6 @@ body {
     }
 }
 
-.canvas-viewport-wrapper {
-    position: relative;
-    background: #f8fafc;
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    border-radius: 14px;
-    overflow: hidden;
-    min-height: 560px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    transition: background 0.3s ease;
-    padding: 12px;
-}
-.canvas-viewport-wrapper.dark-mode {
-    background: #080c16;
-    border-color: var(--border-color);
-}
-
 /* CAD Toolbar */
 .cad-toolbar {
     display: flex;

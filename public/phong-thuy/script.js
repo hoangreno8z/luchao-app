@@ -639,6 +639,10 @@ function initToolbar() {
             if (viewportWrapper) {
                 viewportWrapper.classList.toggle('dark-mode', currentThemeMode === 'dark');
             }
+            const wrapper = document.querySelector('.canvas-viewport-wrapper');
+            if (wrapper) {
+                wrapper.classList.toggle('dark-mode', currentThemeMode === 'dark');
+            }
             cadRenderer.theme = currentThemeMode;
             renderActiveDrawing();
         });
@@ -982,7 +986,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
         if (!pal) return '';
 
         const isFacingPal = pId === flyingStars.facingPalace;
-        const isSittingPal = pId === sittingPalace;
+        const isSittingPal = pId === flyingStars.sittingPalace;
 
         let palTag = PALACE_NAMES[pId] || pId;
         if (isFacingPal) palTag = `⭐ HƯỚNG (${PALACE_SHORT[pId]})`;
