@@ -1685,6 +1685,9 @@ export class SvgViewportController {
         this.isPanning = false;
         this.startX = 0;
         this.startY = 0;
+        this.activePointers = new Map();
+        this.initialPinchDist = 0;
+        this.initialPinchScale = 1;
 
         this.initEvents();
     }
@@ -1692,69 +1695,71 @@ export class SvgViewportController {
     initEvents() {
         if (!this.stage) return;
 
-        let touchStartDist = 0;
-        let touchStartScale = 1;
-
-        this.stage.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                touchStartDist = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                touchStartScale = this.scale;
-            }
-        }, { passive: true });
-
-        this.stage.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && touchStartDist > 0) {
-                const curDist = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                const factor = curDist / touchStartDist;
-                this.scale = Math.max(0.2, Math.min(8.0, touchStartScale * factor));
-                this.updateTransform();
-            }
-        }, { passive: true });
-
-        this.stage.addEventListener('touchend', (e) => {
-            if (e.touches.length < 2) {
-                touchStartDist = 0;
-            }
-        }, { passive: true });
-
         this.stage.addEventListener('wheel', (e) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            this.zoom(delta, e.clientX, e.clientY);
+            this.zoom(delta);
         }, { passive: false });
 
         this.stage.addEventListener('pointerdown', (e) => {
-            if (e.target.closest('.cad-room-interactive') || e.target.closest('.cad-vertex-handle') || e.target.closest('.cad-edge-hitbox') || e.target.closest('.cad-resize-handle') || e.target.closest('.btn-cad-mini-action')) {
-                return;
+            this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+            if (this.activePointers.size === 1) {
+                if (e.target.closest('.cad-room-interactive') || 
+                    e.target.closest('.cad-vertex-handle') || 
+                    e.target.closest('.cad-edge-hitbox') || 
+                    e.target.closest('.cad-resize-handle') || 
+                    e.target.closest('.btn-cad-mini-action') ||
+                    e.target.closest('.cad-floating-toolbar') ||
+                    e.target.closest('.cad-smart-popup')) {
+                    return;
+                }
+                this.isPanning = true;
+                this.startX = e.clientX - this.panX;
+                this.startY = e.clientY - this.panY;
+                try { this.stage.setPointerCapture(e.pointerId); } catch (_) {}
+            } else if (this.activePointers.size >= 2) {
+                this.isPanning = false;
+                const pts = Array.from(this.activePointers.values());
+                this.initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                this.initialPinchScale = this.scale;
             }
-            this.isPanning = true;
-            this.startX = e.clientX - this.panX;
-            this.startY = e.clientY - this.panY;
-            this.stage.setPointerCapture(e.pointerId);
         });
 
         this.stage.addEventListener('pointermove', (e) => {
-            if (!this.isPanning) return;
-            this.panX = e.clientX - this.startX;
-            this.panY = e.clientY - this.startY;
-            this.updateTransform();
+            if (!this.activePointers.has(e.pointerId)) return;
+            this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+            if (this.activePointers.size >= 2) {
+                const pts = Array.from(this.activePointers.values());
+                const curDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+                if (curDist > 10 && this.initialPinchDist > 10) {
+                    const ratio = curDist / this.initialPinchDist;
+                    this.scale = Math.max(0.2, Math.min(8.0, this.initialPinchScale * ratio));
+                    this.updateTransform();
+                }
+            } else if (this.activePointers.size === 1 && this.isPanning) {
+                this.panX = e.clientX - this.startX;
+                this.panY = e.clientY - this.startY;
+                this.updateTransform();
+            }
         });
 
-        const stopPan = (e) => {
-            if (this.isPanning) {
+        const handlePointerEnd = (e) => {
+            this.activePointers.delete(e.pointerId);
+            try { this.stage.releasePointerCapture(e.pointerId); } catch (_) {}
+            if (this.activePointers.size === 0) {
                 this.isPanning = false;
-                try { this.stage.releasePointerCapture(e.pointerId); } catch (_) {}
+                this.initialPinchDist = 0;
+            } else if (this.activePointers.size === 1) {
+                const p = this.activePointers.values().next().value;
+                this.startX = p.x - this.panX;
+                this.startY = p.y - this.panY;
             }
         };
 
-        this.stage.addEventListener('pointerup', stopPan);
-        this.stage.addEventListener('pointercancel', stopPan);
+        this.stage.addEventListener('pointerup', handlePointerEnd);
+        this.stage.addEventListener('pointercancel', handlePointerEnd);
     }
 
     setSvgContent(svgHtml) {
@@ -1770,7 +1775,7 @@ export class SvgViewportController {
         this.svg.style.transformOrigin = 'center center';
     }
 
-    zoom(factor, clientX, clientY) {
+    zoom(factor) {
         const nextScale = Math.max(0.2, Math.min(8.0, this.scale * factor));
         this.scale = nextScale;
         this.updateTransform();
@@ -1793,6 +1798,7 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     const wallsContent = cadLayers.wallsLayer || '';
     const vertexContent = cadLayers.vertexLayer || '';
     const roomsContent = layerState.furniture ? (cadLayers.roomsLayer || '') : '';
+    const roomLabelsContent = layerState.furniture ? (cadLayers.roomLabelsLayer || '') : '';
     const dimsContent = layerState.dimensions ? (cadLayers.dimensionsLayer || '') : '';
     const centerContent = cadLayers.centerLayer || '';
     const luoPanContent = layerState.luoPan ? luoPanOverlay : '';
@@ -1812,10 +1818,10 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     ${roomsContent}
     ${dimsContent}
     ${centerContent}
-    ${vertexContent}
-
     ${ninePalacesContent}
     ${luoPanContent}
+    ${roomLabelsContent}
+    ${vertexContent}
 </svg>
     `.trim();
 }

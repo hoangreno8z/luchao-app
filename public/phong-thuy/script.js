@@ -811,7 +811,22 @@ function renderSmartPopup() {
         const p2 = pts[(selectedEdgeIndex + 1) % pts.length];
         const len = Math.round(Math.hypot(p2.x - p1.x, p2.y - p1.y));
         popup.style.display = 'flex';
-        popup.innerHTML = `<span class="popup-label">Cạnh ${selectedEdgeIndex + 1}:</span><div class="popup-input-group"><input type="number" id="popupInputEdgeL" value="${len}" min="200"></div><button type="button" class="popup-btn save" id="btnPopupSaveEdge">LƯU</button><button type="button" class="popup-btn cancel" id="btnPopupCancelEdge">HỦY</button>`;
+        popup.innerHTML = `
+            <div class="popup-drag-header" id="popupDragHeader">
+                <span>CHỈNH CHIỀU DÀI CẠNH ${selectedEdgeIndex + 1}</span>
+                <button type="button" id="btnPopupCloseEdge" style="background:none; border:none; color:#cbd5e1; font-weight:bold; cursor:pointer; font-size:0.9rem;">✕</button>
+            </div>
+            <div class="popup-field-col">
+                <label>Chiều dài cạnh (mm):</label>
+                <input type="number" id="popupInputEdgeL" class="popup-input-ctrl" value="${len}" min="200" step="100">
+            </div>
+            <div class="popup-actions-row">
+                <button type="button" class="popup-action-btn save" id="btnPopupSaveEdge">LƯU THAY ĐỔI</button>
+                <button type="button" class="popup-action-btn cancel" id="btnPopupCancelEdge">HỦY</button>
+            </div>
+        `;
+
+        initDraggablePopup(popup);
 
         document.getElementById('btnPopupSaveEdge')?.addEventListener('click', () => {
             const newL = parseFloat(document.getElementById('popupInputEdgeL')?.value);
@@ -825,6 +840,7 @@ function renderSmartPopup() {
             }
         });
         document.getElementById('btnPopupCancelEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
+        document.getElementById('btnPopupCloseEdge')?.addEventListener('click', () => { selectedEdgeIndex = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
         return;
     }
 
@@ -832,17 +848,81 @@ function renderSmartPopup() {
         const room = currentGeometry.rooms?.find(r => r.id === selectedRoomId);
         if (room) {
             popup.style.display = 'flex';
-            popup.innerHTML = `<span class="popup-label">${room.name}:</span><div class="popup-input-group"><input type="number" id="popupInputRoomW" value="${room.w}"><input type="number" id="popupInputRoomH" value="${room.h}"></div><button type="button" class="popup-btn save" id="btnPopupSaveRoom">LƯU</button><button type="button" class="popup-btn cancel" id="btnPopupCancelRoom">HỦY</button>`;
+            popup.innerHTML = `
+                <div class="popup-drag-header" id="popupDragHeader">
+                    <span>SỬA KÍCH THƯỚC: ${room.name}</span>
+                    <button type="button" id="btnPopupCloseRoom" style="background:none; border:none; color:#cbd5e1; font-weight:bold; cursor:pointer; font-size:0.9rem;">✕</button>
+                </div>
+                <div class="popup-fields-grid">
+                    <div class="popup-field-col">
+                        <label>Rộng W (mm):</label>
+                        <input type="number" id="popupInputRoomW" class="popup-input-ctrl" value="${room.w}" min="300" step="100">
+                    </div>
+                    <div class="popup-field-col">
+                        <label>Dài H (mm):</label>
+                        <input type="number" id="popupInputRoomH" class="popup-input-ctrl" value="${room.h}" min="300" step="100">
+                    </div>
+                </div>
+                <div class="popup-actions-row">
+                    <button type="button" class="popup-action-btn save" id="btnPopupSaveRoom">LƯU KÍCH THƯỚC</button>
+                    <button type="button" class="popup-action-btn cancel" id="btnPopupCancelRoom">HỦY</button>
+                </div>
+            `;
+
+            initDraggablePopup(popup);
+
             document.getElementById('btnPopupSaveRoom')?.addEventListener('click', () => {
-                room.w = parseInt(document.getElementById('popupInputRoomW').value);
-                room.h = parseInt(document.getElementById('popupInputRoomH').value);
-                selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers();
+                room.w = Math.max(300, parseInt(document.getElementById('popupInputRoomW').value, 10) || room.w);
+                room.h = Math.max(300, parseInt(document.getElementById('popupInputRoomH').value, 10) || room.h);
+                roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
+                selectedRoomId = null; 
+                renderActiveDrawing(); renderSmartPopup(); renderPopovers();
             });
             document.getElementById('btnPopupCancelRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
+            document.getElementById('btnPopupCloseRoom')?.addEventListener('click', () => { selectedRoomId = null; renderActiveDrawing(); renderSmartPopup(); renderPopovers(); });
             return;
         }
     }
     popup.style.display = 'none';
+}
+
+function initDraggablePopup(popupEl) {
+    const header = popupEl.querySelector('.popup-drag-header');
+    if (!header) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0, origLeft = 0, origTop = 0;
+
+    header.addEventListener('pointerdown', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = popupEl.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+        header.setPointerCapture(e.pointerId);
+    });
+
+    header.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        popupEl.style.left = `${origLeft + dx}px`;
+        popupEl.style.top = `${origTop + dy}px`;
+        popupEl.style.bottom = 'auto';
+        popupEl.style.transform = 'none';
+    });
+
+    const stopDrag = (e) => {
+        if (isDragging) {
+            isDragging = false;
+            try { header.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+    };
+
+    header.addEventListener('pointerup', stopDrag);
+    header.addEventListener('pointercancel', stopDrag);
 }
 
 function renderPopovers() {
@@ -887,9 +967,8 @@ function renderPopovers() {
             hudRoomChipsList.innerHTML = rooms.map(r => {
                 const isSel = r.id === selectedRoomId;
                 return `
-                    <div class="hud-room-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chọn ${r.name}">
+                    <div class="hud-room-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chỉnh sửa kích thước ${r.name}">
                         <span>${r.name}</span>
-                        <span class="chip-dim">${r.w}x${r.h}</span>
                     </div>
                 `;
             }).join('');
