@@ -589,8 +589,8 @@ export class ArchitecturalCADRenderer {
         const D = Math.max(2000, maxY - minY);
 
         // Viewbox bám sát đúng kích thước W x D
-        const padX = Math.max(1000, Math.round(W * 0.16));
-        const padY = Math.max(1200, Math.round(D * 0.12));
+        const padX = Math.max(800, Math.round(W * 0.12));
+        const padY = Math.max(1000, Math.round(D * 0.08));
         const viewX = minX - padX;
         const viewY = minY - padY;
         const viewW = W + padX * 2;
@@ -1148,7 +1148,7 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     const showNinePalaces = layerVisibility.ninePalaces !== false;
 
     return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: ${themeBg}; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: auto; height: 100%; max-width: 100%; max-height: 100%; aspect-ratio: ${vb.w} / ${vb.h}; background: ${themeBg}; font-family: 'Helvetica Neue', Arial, sans-serif; user-select: none;">
     <!-- LỚP 1: BẢN VẼ KIẾN TRÚC CAD (Tường & Neo) -->
     <g id="layer-cad-architecture">
         ${cadLayers.wallsLayer}
