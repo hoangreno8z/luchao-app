@@ -317,12 +317,12 @@ export function calculateFlyingStars(params = {}) {
 export function getOrientedPalaceGrid(facingPalaceId) {
     const ring = [1, 8, 3, 4, 9, 2, 7, 6];
     const fIdx = ring.indexOf(facingPalaceId);
-    if (fIdx === -1) return [4, 9, 2, 3, 5, 7, 8, 1, 6];
+    if (fIdx === -1) return [8, 1, 6, 3, 5, 7, 4, 9, 2];
     const getP = (offset) => ring[((fIdx + offset) % 8 + 8) % 8];
     return [
-        getP(-1), getP(0), getP(1),
+        getP(-3), getP(4), getP(3),
         getP(-2), 5,       getP(2),
-        getP(-3), getP(4), getP(3)
+        getP(-1), getP(0), getP(1)
     ];
 }
 
@@ -1779,6 +1779,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         const radius = Math.max(3800, Math.max(houseW, houseD) * 0.65 + 1500) * scaleFactor;
         const facingDeg = flyingStars.facingDegree !== undefined ? flyingStars.facingDegree : 180;
         const sittingDeg = (facingDeg + 180) % 360;
+        const luoPanRot = 180 - facingDeg; // Xoay La Kinh theo hướng nhà để Hướng luôn chĩa thẳng mặt tiền
 
         // 1. VÒNG NGOÀI CÙNG: 360 ĐỘ (VẠCH CHIA TỪNG ĐỘ VÀ SỐ ĐỘ MỖI 10 ĐỘ)
         let ticksSvg = '<g id="layer-360-degrees" pointer-events="none">';
@@ -1932,11 +1933,14 @@ export class LuoPanAndFlyingStarsSvgRenderer {
                 <circle cx="0" cy="0" r="${rMntIn}" fill="none" stroke="#dc2626" stroke-width="${30 * scaleFactor}"/>
                 <circle cx="0" cy="0" r="${radius * 0.32}" fill="none" stroke="#ef4444" stroke-width="${20 * scaleFactor}" stroke-dasharray="${80 * scaleFactor},${50 * scaleFactor}"/>
 
-                ${ticksSvg}
-                ${dragons72Svg}
-                ${mountainsSvg}
-                ${cardinalSvg}
-                ${arrowSvg}
+                <!-- Khối La Kinh xoay mượt mà theo đúng hướng nhà thời gian thực -->
+                <g transform="rotate(${luoPanRot.toFixed(2)})">
+                    ${ticksSvg}
+                    ${dragons72Svg}
+                    ${mountainsSvg}
+                    ${cardinalSvg}
+                    ${arrowSvg}
+                </g>
             </g>
         `;
     }
@@ -2012,7 +2016,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
                     <text x="${cellW * 0.78}" y="${cellH * 0.82}" text-anchor="middle" dominant-baseline="central" font-size="${fontStar}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${pal.huongStar}</text>
 
                     <!-- Ở dưới: Tên Cung Viết Tắt -->
-                    <text x="${cellW / 2}" y="${cellH * 0.92}" text-anchor="middle" font-size="${fontLabel}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${shortLabel}</text>
+                    <text x="${cellW / 2}" y="${cellH * 0.92}" text-anchor="middle" font-size="${fontLabel}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${PALACE_NAMES[pId] ? PALACE_NAMES[pId].toUpperCase() : shortLabel}</text>
                 </g>
             `;
         });

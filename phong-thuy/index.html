@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1787297674306">
+    <link rel="stylesheet" href="style.css?v=1787299207821">
 </head>
 <body>
 
@@ -213,14 +213,15 @@
                             <label class="form-label" style="margin: 0; font-weight: 800; color: var(--gold-light);">HƯỚNG NHÀ (ĐỘ LA BÀN 0° - 360°):</label>
                             <span id="labelFacingType" class="audit-badge good" style="font-size: 0.7rem;">Chính Hướng (Hạ Quái)</span>
                         </div>
-                        <div class="facing-slider-wrapper">
-                            <input type="range" id="inputFacingDegree" class="facing-slider" min="0" max="359" value="180" step="1">
-                            <div class="facing-degree-badge">
-                                <input type="number" id="inputFacingNumber" value="180" min="0" max="359" style="width: 50px; background: transparent; border: none; color: #fff; font-weight: 800; font-size: 0.95rem; text-align: center; outline: none;">
+                        <div class="facing-slider-wrapper" style="display: flex; align-items: center; gap: 12px; background: rgba(15, 23, 42, 0.8); padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.35);">
+                            <input type="range" id="inputFacingDegree" class="facing-slider" min="0" max="359.9" value="180" step="0.1" style="flex: 1; accent-color: var(--gold-primary); cursor: pointer;">
+                            <div style="display: flex; align-items: center; background: rgba(0,0,0,0.6); border: 1.5px solid var(--gold-primary); border-radius: 8px; padding: 4px 10px; width: 100px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);">
+                                <input type="number" id="inputFacingNumber" value="180" min="0" max="359.9" step="0.1" style="width: 100%; background: transparent; border: none; color: #fff; font-weight: 900; font-size: 1.05rem; text-align: center; outline: none; font-family: monospace;">
+                                <span style="color: var(--gold-light); font-weight: 900; font-size: 1rem; margin-left: 2px;">°</span>
                             </div>
                         </div>
                         <div class="mountain-indicator" id="displayMountainInfo" style="margin-top: 8px; text-align: center; font-size: 0.85rem; font-weight: 800; color: var(--gold-light);">
-                            Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ · Quái Ly (Hỏa)
+                            Hướng Ngọ (180.0°) — Tọa Tý Hướng Ngọ · Quái Ly (Hỏa)
                         </div>
                     </div>
 
@@ -789,6 +790,6 @@
         <p style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Liên hệ tư vấn trực tiếp: 0933 116 860 · Vận 9 Hạ Nguyên (2024 - 2043)</p>
     </footer>
 
-    <script type="module" src="script.js?v=1787297674306"></script>
+    <script type="module" src="script.js?v=1787299207821"></script>
 </body>
 </html>

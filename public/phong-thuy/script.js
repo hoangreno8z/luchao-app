@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787297674306';
+} from './js/phong_thuy_bundle.js?v=1787299207821';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -603,13 +603,13 @@ function initFacingDegreeControls() {
     const display = document.getElementById('displayMountainInfo') || document.getElementById('mountainDisplay');
     const mountainStatusBadge = document.getElementById('labelFacingType') || document.getElementById('mountainStatusBadge');
 
-    function updateFacing(deg, triggerCalculate = false) {
+    function updateFacing(deg, triggerCalculate = false, source = null) {
         let normalized = ((deg % 360) + 360) % 360;
         const match = findMountain(normalized);
         const opp = getOppositeMountain(normalized);
 
-        if (slider) slider.value = normalized;
-        if (number) number.value = normalized;
+        if (slider && source !== 'slider') slider.value = normalized;
+        if (number && source !== 'number') number.value = normalized;
 
         if (display) {
             display.textContent = `Hướng ${match.mountain.name} (${normalized.toFixed(1)}°) — Tọa ${opp.mountain.name} Hướng ${match.mountain.name} · Quái ${match.mountain.trigram} (${match.mountain.element})`;
@@ -628,14 +628,18 @@ function initFacingDegreeControls() {
     if (slider) {
         slider.addEventListener('input', (e) => {
             const deg = parseFloat(e.target.value) || 0;
-            updateFacing(deg, true);
+            updateFacing(deg, true, 'slider');
         });
     }
 
     if (number) {
         number.addEventListener('input', (e) => {
             const deg = parseFloat(e.target.value) || 0;
-            updateFacing(deg, true);
+            updateFacing(deg, true, 'number');
+        });
+        number.addEventListener('change', (e) => {
+            const deg = parseFloat(e.target.value) || 0;
+            updateFacing(deg, true, 'number');
         });
     }
 }
