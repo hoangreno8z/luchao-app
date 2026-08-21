@@ -2134,7 +2134,8 @@ export function calculateFengShuiSpatial(geometry, params) {
     return {
         stars,
         gua,
-        spatialPalaces
+        spatialPalaces,
+        geometry
     };
 }
 
@@ -2314,82 +2315,284 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
 
 export const LANDSCAPE_FENG_SHUI_KNOWLEDGE = {
     'mountain': {
-        title: 'NÚI CAO (Huyền Vũ / Tọa Sơn)',
-        evalFacing: { grade: 'HUNG', status: 'Án Sơn Bức Môn', desc: 'Núi chắn ngay trước cửa chính làm cản trở sinh khí lưu thông, tầm nhìn bị che khuất.', remedy: 'Giữ khoảng sân trước thông thoáng, mở thêm cửa phụ hoặc giếng trời lấy sáng.' },
-        evalSitting: { grade: 'ĐẠI CÁT', status: 'Tọa Sơn Đắc Vị', desc: 'Sau nhà có điểm tựa núi cao vững chãi (Huyền Vũ hộ trì). Chủ nhân đinh hưng vượng, sức khỏe dồi dào, quý nhân phò trợ.', remedy: 'Vị trí đắc địa nhất trong phong thủy Loan Đầu. Rất tốt!' },
-        evalSide: { grade: 'CÁT', status: 'Thanh Long / Bạch Hổ Hộ Vệ', desc: 'Núi ở hai bên sườn tạo thành thế tay ngai bao bọc tàng phong tụ khí.', remedy: 'Duy trì không gian xanh sạch sẽ.' }
+        title: 'NÚI CAO / GÒ ĐẤT (Huyền Vũ / Tọa Sơn)',
+        category: 'Địa Hình Tự Nhiên',
+        evalFacing: {
+            grade: 'HUNG',
+            status: 'Án Sơn Bức Môn (Chắn Khí Tiền Phương)',
+            satType: 'Án Sơn Sát',
+            desc: 'Núi cao án ngữ ngay trước cửa chính che khuất tầm nhìn, bít tắc sinh khí Minh Đường không thể lưu thông.',
+            archRemedy: 'Thiết kế khoảng lùi sân trước (Setback), mở giếng trời (skylight) ở giữa nhà để hút thiên khí, mở cửa phụ đón gió.',
+            remedy: 'Treo Gương Bát Quái lồi để đẩy lùi khí bức bối, thắp đèn cổng sáng sủa.'
+        },
+        evalSitting: {
+            grade: 'ĐẠI CÁT',
+            status: 'Tọa Sơn Đắc Vị (Huyền Vũ Hộ Trì)',
+            satType: 'Cát Khí Đắc Địa',
+            desc: 'Sau nhà có điểm tựa núi cao vững chãi. Thế đất "Tọa Sơn Hướng Thủy" đại phú đại quý, nhân đinh hưng vượng, quý nhân phò trợ.',
+            archRemedy: 'Bố trí phòng ngủ Master, phòng thờ hoặc phòng làm việc ở phía sau để hấp thụ trọn vẹn điểm tựa vững chãi.',
+            remedy: 'Giữ khu vực sau nhà sạch sẽ, tôn nghiêm.'
+        },
+        evalSide: {
+            grade: 'CÁT',
+            status: 'Thanh Long / Bạch Hổ Hộ Vệ',
+            satType: 'Cát Khí Hộ Vệ',
+            desc: 'Thế núi hai bên tạo thành thế tay ngai vững chãi, tàng phong tụ khí, che chắn gió độc.',
+            archRemedy: 'Tận dụng không gian bên hông làm sân vườn cảnh quan, ban công thưởng ngoạn.',
+            remedy: 'Trồng thêm cây xanh hài hòa.'
+        }
     },
     'river_lake': {
-        title: 'SÔNG / HỒ (Minh Đường Tụ Thủy)',
-        evalFacing: { grade: 'ĐẠI CÁT', status: 'Minh Đường Tụ Thủy', desc: 'Trước cửa có dòng nước trong xanh uốn khúc bao bọc. Thủy quản tài lộc, gia chủ phát tài cực thịnh, tiền vào như nước.', remedy: 'Mở cửa chính đón gió mát lành từ mặt nước.' },
-        evalSitting: { grade: 'HUNG', status: 'Thủy Bối Hậu (Mất Tựa)', desc: 'Sau lưng nhà có sông hồ lớn, phía sau bị hẫng hụt không có chỗ dựa, dễ gây hao tán tài sản.', remedy: 'Xây tường rào kiên cố phía sau, trồng hàng cây xanh tạo điểm tựa.' },
-        evalSide: { grade: 'CÁT', status: 'Thủy Khí Nhuận Trạch', desc: 'Dòng nước bên hông nhà mang lại độ ẩm điều hòa vi khí hậu mát mẻ.', remedy: 'Không xả rác xuống nguồn nước.' }
+        title: 'SÔNG / HỒ NƯỚC (Minh Đường Tụ Thủy)',
+        category: 'Đường Thủy / Thủy Khẩu',
+        evalFacing: {
+            grade: 'ĐẠI CÁT',
+            status: 'Minh Đường Tụ Thủy (Khí Nạp Đại Tài)',
+            satType: 'Cát Khí Chiêu Tài',
+            desc: 'Dòng nước trong xanh uốn lượn trước mặt tiền nhà. Phong thủy học: "Sơn quản nhân đinh, Thủy quản tài lộc" — Tiền tài dồi dào, vượng phát.',
+            archRemedy: 'Thiết kế hiên rộng (Loggia), cửa kính lớn kịch trần mở tối đa view ngắm mặt nước để nạp trọn vẹn tài khí.',
+            remedy: 'Giữ nguồn nước trước nhà luôn trong lành, không để rác thải ứ đọng.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Thủy Bối Hậu (Khuyết Huyền Vũ / Mất Chỗ Dựa)',
+            satType: 'Thủy Bối Sát',
+            desc: 'Sau lưng nhà có sông hồ lớn chảy xiết, địa thế phía sau bị hẫng hụt, dễ gây hao tán tài sản, gia đạo bất an.',
+            archRemedy: 'Xây tường rào phía sau kiên cố, đắp tiểu cảnh "Hòn Non Bộ" (giả sơn) ở sân sau để bổ khuyết Huyền Vũ.',
+            remedy: 'Trồng một hàng tre/trúc hoặc cây bàng thân gỗ lớn dọc bờ tường sau để tạo điểm tựa vững chắc.'
+        },
+        evalSide: {
+            grade: 'CÁT',
+            status: 'Thủy Khí Nhuận Trạch',
+            satType: 'Cát Khí Điều Hòa',
+            desc: 'Dòng nước bên hông nhà mang lại độ ẩm và không khí mát lành quanh năm.',
+            archRemedy: 'Thiết kế cửa sổ mở lấy gió mát từ bờ sông, làm lối đi dạo ven bờ.',
+            remedy: 'Duy trì vệ sinh cảnh quan.'
+        }
     },
     't_junction': {
         title: 'NGÃ 3 ĐƯỜNG (Thương Sát / Trực Xung Sát)',
-        evalFacing: { grade: 'ĐẠI HUNG', status: 'Thương Sát Trực Xung', desc: 'Con đường đâm thẳng vào mặt tiền nhà, xe cộ lao tới mang theo luồng sát khí mãnh liệt, dễ xảy ra tai ách bất ngờ, bất an.', remedy: 'BẮT BUỘC: Xây bức bình phong chắn trước cổng, treo Gương Bát Quái lồi, trồng hàng cây dày cản khí hoặc đặt cặp Kỳ Lân đá.' },
-        evalSitting: { grade: 'HUNG', status: 'Ám Tiễn Xung Lưng', desc: 'Đường đâm sau lưng nhà gây cảm giác bất an, dễ bị tiểu nhân hãm hại sau lưng.', remedy: 'Xây tường rào phía sau dày dặn, trồng cây xanh rậm rạp che chắn.' },
-        evalSide: { grade: 'BÌNH', status: 'Giao Lộ Kế Bên', desc: 'Giao thông thuận tiện nhưng cần chú ý bụi và tiếng ồn.', remedy: 'Lắp cửa kính cách âm.' }
+        category: 'Hình Sát Đô Thị',
+        evalFacing: {
+            grade: 'ĐẠI HUNG',
+            status: 'Thương Sát (Đường Đâm Trực Diện Mặt Tiền)',
+            satType: 'Thương Sát',
+            desc: 'Trục đường thẳng đâm trực diện vào cửa chính, xe cộ lao tới mang theo luồng xung sát khí cực mạnh, dễ gây tai ách, hao tài bất ngờ.',
+            archRemedy: 'TUYỆT ĐỐI KHÔNG mở cửa chính đối diện tâm đường đâm. Thiết kế mặt tiền lùi sâu (Setback), xây bức TƯỜNG BÌNH PHONG hoặc đài phun nước tròn xoay để chuyển hướng dòng sát khí.',
+            remedy: 'Treo Gương Bát Quái lồi trước cổng, đặt cặp Tỳ Hưu / Kỳ Lân đá canh giữ, trồng hàng cau hoặc rặng cây rậm rạp cản khí.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Ám Tiễn Sát (Đường Đâm Sau Lưng)',
+            satType: 'Ám Tiễn Sát',
+            desc: 'Đường đâm sau lưng nhà tạo cảm giác bất an, dễ bị tiểu nhân gièm pha hãm hại sau lưng.',
+            archRemedy: 'Xây tường bao sau nhà dày dặn, không mở cửa hậu thông thẳng trục đường đâm.',
+            remedy: 'Trồng hàng cây xanh che chắn kín đáo phía sau.'
+        },
+        evalSide: {
+            grade: 'BÌNH',
+            status: 'Giao Lộ Kế Bên',
+            satType: 'Giao Khí',
+            desc: 'Thuận tiện giao thông nhưng cần chú ý tiếng ồn và khói bụi.',
+            archRemedy: 'Lắp cửa kính hộp cách âm 2 lớp.',
+            remedy: 'Trồng bồn hoa lọc bụi.'
+        }
     },
     'crossroad': {
         title: 'NGÃ 4 ĐƯỜNG (Giao Lộ Động Khí)',
-        evalFacing: { grade: 'CÁT', status: 'Khí Khẩu Nạp Tài (Nếu xa) / Xung Khí (Nếu sát)', desc: 'Ngã tư đường là nơi giao thoa của các luồng giao thông. Kinh doanh buôn bán rất đắc lợi nhưng cần tránh bị các góc đường đâm trực diện.', remedy: 'Trồng bồn hoa cây cảnh ngăn bụi và điều hòa luồng khí.' },
-        evalSitting: { grade: 'BÌNH', status: 'Giao Thông Phía Sau', desc: 'Khí trường phía sau chuyển động liên tục.', remedy: 'Giữ tường rào phía sau chắc chắn.' },
-        evalSide: { grade: 'CÁT', status: 'Góc Phố 2 Mặt Tiền', desc: 'Vị trí góc phố thuận lợi mở cửa hàng kinh doanh, sinh tài lộc.', remedy: 'Bố trí biển hiệu và cửa hàng sáng sủa.' }
+        category: 'Hình Thế Giao Thông',
+        evalFacing: {
+            grade: 'CÁT',
+            status: 'Giao Lộ Tứ Thông (Khí Khẩu Nạp Tài)',
+            satType: 'Kinh Doanh Đắc Lợi',
+            desc: 'Ngã tư đường là nơi hội tụ luồng người và xe, dòng năng lượng động khí mạnh mẽ, cực kỳ phát đạt cho kinh doanh thương mại.',
+            archRemedy: 'Thiết kế tầng trệt làm Showroom / Cửa hàng kinh doanh, vát góc kiến trúc để mở rộng tầm nhìn 2 mặt tiền.',
+            remedy: 'Trồng cây cảnh ở góc vát để điều hòa dòng người xe cộ.'
+        },
+        evalSitting: {
+            grade: 'BÌNH',
+            status: 'Động Khí Hậu Phương',
+            satType: 'Động Khí',
+            desc: 'Phía sau chuyển động không ngừng.',
+            archRemedy: 'Tăng cường tường cách âm cho các phòng ngủ phía sau.',
+            remedy: 'Giữ tường rào sau nhà vững chãi.'
+        },
+        evalSide: {
+            grade: 'CÁT',
+            status: 'Nhà 2 Mặt Tiền Đắc Địa',
+            satType: 'Kinh Thương Đại Cát',
+            desc: 'Vị trí góc phố nạp tài lộc từ hai phía.',
+            archRemedy: 'Bố trí ban công và biển hiệu thoáng đãng.',
+            remedy: 'Đèn chiếu sáng sang trọng.'
+        }
     },
     'temple': {
-        title: 'CHÙA / ĐÌNH (Âm Khí Hương Khói)',
-        evalFacing: { grade: 'HUNG', status: 'Đình Chùa Chiếu Môn', desc: 'Trước cửa nhìn thẳng vào chùa/đình thường chịu ảnh hưởng của trường khí âm linh và hương khói, dễ khiến người trong nhà cô đơn, khó lập gia đình.', remedy: 'Treo Gương Bát Quái gỗ đào hoặc gương lồi trước cửa, thắp đèn cổng sáng rực rỡ, đặt cặp Tỳ Hưu đá hướng ra ngoài.' },
-        evalSitting: { grade: 'HUNG', status: 'Tựa Lưng Đình Chùa', desc: 'Khí trường phía sau quá thanh tịnh, không phù hợp với nhà ở gia đình trần tục.', remedy: 'Tăng cường dương khí bằng ánh sáng và cây xanh.' },
-        evalSide: { grade: 'BÌNH', status: 'Lân Cận Đình Chùa', desc: 'Không gian tĩnh lặng.', remedy: 'Duy trì lối sống hòa nhã, thiện tâm.' }
+        title: 'CHÙA / ĐÌNH / MIẾU (Âm Khí Thanh Tịnh)',
+        category: 'Tâm Linh & Tôn Giáo',
+        evalFacing: {
+            grade: 'HUNG',
+            status: 'Đình Chùa Chiếu Môn (Cô Dương / Cô Âm Sát)',
+            satType: 'Âm Linh Sát',
+            desc: 'Trước cửa nhìn thẳng vào chùa đình miếu mạo chịu trường khí âm linh và hương khói, dễ khiến người trong nhà cô đơn, tâm tư bất an.',
+            archRemedy: 'Thiết kế cổng chính lệch góc nhìn, xây tường rào hoa văn che chắn, mở cửa sổ hướng sang hai bên thay vì hướng thẳng vào chùa.',
+            remedy: 'Treo Gương Bát Quái gỗ đào hoặc gương lồi, thắp đèn cổng sáng rực rỡ, đặt cặp Tỳ Hưu đá hướng ra ngoài.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Tựa Lưng Đình Chùa (Khí Trường Bất Phù Hợp)',
+            satType: 'Âm Khí Hậu Phương',
+            desc: 'Khí trường tâm linh thanh tịnh phía sau không phù hợp nhà ở gia đình trần thế.',
+            archRemedy: 'Bố trí phòng kho hoặc sân phơi phía sau, tránh đặt phòng ngủ vợ chồng giáp tường chùa.',
+            remedy: 'Trồng cây xanh tán rộng tăng cường sinh khí dương.'
+        },
+        evalSide: {
+            grade: 'BÌNH',
+            status: 'Lân Cận Đình Chùa',
+            satType: 'Thanh Tĩnh',
+            desc: 'Không gian sống tĩnh lặng.',
+            archRemedy: 'Cách âm tốt khi chùa có lễ hội.',
+            remedy: 'Sống lương thiện hòa nhã.'
+        }
     },
     'cemetery': {
-        title: 'NGHĨA TRANG (Đại Âm Sát Khí)',
-        evalFacing: { grade: 'ĐẠI HUNG', status: 'Âm Hàn Xâm Trực', desc: 'Nhà nhìn ra nghĩa trang chịu từ trường âm khí nặng nề, dễ sinh bệnh tật, trẻ nhỏ hay quấy khóc, người già mệt mỏi.', remedy: 'Trồng rặng cau hoặc hàng tre/trúc xanh ngăn cách, sử dụng đèn pha chiếu sáng mặt tiền, treo chuông gió kim loại và gương Bát Quái xua tà.' },
-        evalSitting: { grade: 'HUNG', status: 'Huyền Vũ Âm Sát', desc: 'Phía sau nhà có mồ mả nghĩa địa.', remedy: 'Xây tường cao, sơn màu ấm áp (vàng kem, trắng sáng).' },
-        evalSide: { grade: 'HUNG', status: 'Âm Khí Cận Kề', desc: 'Cần củng cố hàng rào che chắn.', remedy: 'Trồng cây xanh tốt quanh tường rào.' }
+        title: 'NGHĨA TRANG / MỒ MẢ (Đại Âm Sát Khí)',
+        category: 'Tâm Linh & Âm Khí',
+        evalFacing: {
+            grade: 'ĐẠI HUNG',
+            status: 'Âm Hàn Xâm Trực (Đại Âm Sát)',
+            satType: 'Đại Âm Sát',
+            desc: 'Nhà nhìn thẳng ra nghĩa địa chịu từ trường âm khí nặng nề, dễ sinh ốm đau suy nhược, trẻ nhỏ bất an quấy khóc.',
+            archRemedy: 'Xây tường rào cao chắn tầm nhìn, thiết kế hệ cửa sổ sử dụng kính màu ấm và rèm dày, tăng cường hệ thống chiếu sáng mặt tiền.',
+            remedy: 'BẮT BUỘC: Treo Gương Bát Quái Hổ Phù / Gương lồi, trồng hàng cau hoặc hàng tre/trúc xanh ngăn cách, dùng đèn pha rọi sáng rực rỡ cổng trước.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Huyền Vũ Âm Sát',
+            satType: 'Âm Khí Hậu Phương',
+            desc: 'Phía sau nhà có mồ mả nghĩa địa.',
+            archRemedy: 'Xây tường bao sau nhà cao và sơn màu ấm áp (vàng kem, trắng sáng).',
+            remedy: 'Trồng hàng cây xanh tốt quanh tường rào.'
+        },
+        evalSide: {
+            grade: 'HUNG',
+            status: 'Âm Khí Cận Kề',
+            satType: 'Âm Sát',
+            desc: 'Cần che chắn tường bên hông.',
+            archRemedy: 'Hạn chế mở cửa sổ lớn nhìn thẳng sang nghĩa trang.',
+            remedy: 'Trồng cây xanh che chắn.'
+        }
     },
     'park': {
-        title: 'CÔNG VIÊN CÂY XANH (Sinh Khí Đại Cát)',
-        evalFacing: { grade: 'ĐẠI CÁT', status: 'Minh Đường Sinh Khí', desc: 'Trước nhà là công viên cây xanh cung cấp dưỡng khí dồi dào, tầm nhìn thoáng đãng, gia đình mạnh khỏe, con cháu thông minh.', remedy: 'Mở rộng cửa đón trọn không khí trong lành.' },
-        evalSitting: { grade: 'CÁT', status: 'Hậu Hoa Viên', desc: 'Sau nhà có vườn hoa công viên tươi mát.', remedy: 'Rất tốt cho việc nghỉ ngơi thư giãn.' },
-        evalSide: { grade: 'CÁT', status: 'Môi Trường Sinh Thái', desc: 'Không gian sống lý tưởng.', remedy: 'Tận dụng ban công ngắm cảnh.' }
+        title: 'CÔNG VIÊN CÂY XANH (Minh Đường Sinh Khí)',
+        category: 'Môi Trường Sinh Thái',
+        evalFacing: {
+            grade: 'ĐẠI CÁT',
+            status: 'Minh Đường Khoáng Đạt (Sinh Khí Đại Vượng)',
+            satType: 'Đại Cát Sinh Khí',
+            desc: 'Công viên trước nhà cung cấp dưỡng khí dồi dào, tầm nhìn thoáng đãng, gia đình mạnh khỏe, con cháu thông tuệ.',
+            archRemedy: 'Mở rộng tối đa hệ cửa kính mặt tiền, thiết kế ban công xanh để đón trọn luồng sinh khí tinh khôi.',
+            remedy: 'Rất tuyệt vời, tận hưởng không gian sống trong lành.'
+        },
+        evalSitting: {
+            grade: 'CÁT',
+            status: 'Hậu Hoa Viên (Dưỡng Khí An Lành)',
+            satType: 'Sinh Khí',
+            desc: 'Sau nhà có vườn hoa công viên tươi mát.',
+            archRemedy: 'Thiết kế phòng ngủ và góc thư giãn phía sau.',
+            remedy: 'Mở cửa sổ đón gió sạch.'
+        },
+        evalSide: {
+            grade: 'CÁT',
+            status: 'Môi Trường Sinh Thái Trong Lành',
+            satType: 'Cát Khí',
+            desc: 'Vi khí hậu lý tưởng.',
+            archRemedy: 'Bố trí ban công ngắm cảnh.',
+            remedy: 'Trồng hoa trang trí.'
+        }
     },
     'substation': {
-        title: 'TRẠM ĐIỆN / CAO THẾ (Hỏa Sát & Từ Trường)',
-        evalFacing: { grade: 'ĐẠI HUNG', status: 'Hỏa Thiêu Sát Môn', desc: 'Cột điện cao thế và trạm biến áp tạo ra sóng từ trường mạnh và Hỏa khí cực thịnh, dễ gây đau đầu, bệnh tim mạch, tâm lý nóng nảy cáu gắt.', remedy: 'Dùng vật phẩm thuộc Thổ (đá Thạch Anh vàng, quả cầu thạch anh, chậu gốm sứ lớn) để tiết giảm Hỏa khí. Lắp rèm cách nhiệt chống bức xạ.' },
-        evalSitting: { grade: 'HUNG', status: 'Từ Trường Sau Lưng', desc: 'Ảnh hưởng đến giấc ngủ của các phòng phía sau.', remedy: 'Không kê đầu giường sát tường giáp trạm điện.' },
-        evalSide: { grade: 'HUNG', status: 'Bức Xạ Bên Hông', desc: 'Cần che chắn tường bên hông.', remedy: 'Trồng cây xanh thân gỗ hấp thụ từ trường.' }
-    },
-    'bus_station': {
-        title: 'BẾN XE (Động Khí Tạp Loạn)',
-        evalFacing: { grade: 'BÌNH', status: 'Giao Thương Thuận Tiện / Ồn Ào', desc: 'Vị trí sầm uất thích hợp kinh doanh buôn bán dịch vụ ăn uống, nhà nghỉ, nhưng không khí và tiếng ồn khá phức tạp.', remedy: 'Lắp cửa kính cách âm nhiều lớp, trồng cây xanh lọc bụi.' },
-        evalSitting: { grade: 'BÌNH', status: 'Hậu Trường Náo Nhiệt', desc: 'Phía sau ồn ào.', remedy: 'Tăng cường tường cách âm.' },
-        evalSide: { grade: 'BÌNH', status: 'Khu Vực Dịch Vụ', desc: 'Thích hợp thương mại.', remedy: 'Bố trí phòng ngủ lùi sâu vào bên trong.' }
-    },
-    'seaport': {
-        title: 'CẢNG BIỂN (Đại Thủy Tụ Hội)',
-        evalFacing: { grade: 'ĐẠI CÁT', status: 'Hải Cảng Nạp Tài', desc: 'Cảng biển lớn là nơi giao thương hàng hải quốc tế, tụ hội đại tài lộc.', remedy: 'Sơn chống ăn mòn muối biển, tận dụng đón tài vận.' },
-        evalSitting: { grade: 'CÁT', status: 'Tựa Lưng Cảng Biển', desc: 'Hoạt động giao thương sầm uất.', remedy: 'Bố trí kho bãi và giao thông hợp lý.' },
-        evalSide: { grade: 'CÁT', status: 'Kinh Tế Biển Phát Triển', desc: 'Tài chính hanh thông.', remedy: 'Khai thác tối đa thế mạnh thương mại.' }
-    },
-    'airport': {
-        title: 'SÂN BAY (Phi Trường Động Khí)',
-        evalFacing: { grade: 'BÌNH', status: 'Thanh Sát (Tiếng Ồn) / Không Gian Rộng', desc: 'Đường băng sân bay tạo ra không gian thoáng đãng nhưng chịu tiếng gầm rú của động cơ phản lực (Thanh sát).', remedy: 'Sử dụng hệ thống cửa kính cách âm chuyên dụng và điều hòa không khí khép kín.' },
-        evalSitting: { grade: 'BÌNH', status: 'Đường Bay Sau Lưng', desc: 'Cần chú ý tiếng ồn khi cất hạ cánh.', remedy: 'Cách âm phòng ngủ.' },
-        evalSide: { grade: 'BÌNH', status: 'Hành Lang An Toàn Bay', desc: 'Quy hoạch chiều cao công trình chặt chẽ.', remedy: 'Thiết kế độ cao đúng giấy phép.' }
+        title: 'TRẠM BIẾN ÁP / CỘT CAO THẾ (Hỏa Thiêu Sát)',
+        category: 'Hình Sát Điện Từ',
+        evalFacing: {
+            grade: 'ĐẠI HUNG',
+            status: 'Hỏa Thiêu Sát Môn (Từ Trường Bức Xạ)',
+            satType: 'Hỏa Sát',
+            desc: 'Trạm điện cao thế phát ra sóng từ trường mạnh và tính Hỏa cực vượng, dễ gây đau đầu, bệnh tim mạch, tính khí nóng nảy.',
+            archRemedy: 'Lắp rèm cản nhiệt và kính hộp chống bức xạ. Thiết kế mảng tường đá hoa cương hoặc tiểu cảnh nước để làm dịu nhiệt hỏa.',
+            remedy: 'Dùng vật phẩm thuộc Thổ (đá Thạch Anh vàng, quả cầu thạch anh, chậu gốm sứ lớn) để tiết giảm Hỏa khí hung hãn.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Hỏa Sát Sau Lưng',
+            satType: 'Hỏa Khí Bức Xạ',
+            desc: 'Từ trường phía sau ảnh hưởng giấc ngủ.',
+            archRemedy: 'Không kê đầu giường sát tường giáp trạm điện.',
+            remedy: 'Đặt đá thạch anh vàng đầu giường.'
+        },
+        evalSide: {
+            grade: 'HUNG',
+            status: 'Bức Xạ Bên Hông',
+            satType: 'Từ Trường Sát',
+            desc: 'Cần che chắn tường bên hông.',
+            archRemedy: 'Xây tường 2 lớp cách nhiệt.',
+            remedy: 'Trồng dải cây xanh thân gỗ hấp thụ từ trường.'
+        }
     },
     'railway': {
         title: 'ĐƯỜNG SẮT (Cát Cước Sát - Cắt Chân)',
-        evalFacing: { grade: 'HUNG', status: 'Cát Cước Sát (Cắt Chân)', desc: 'Tàu hỏa chạy với vận tốc cao và tải trọng lớn làm chấn động long mạch đất, tạo ra tiếng ồn và rung lắc mạnh.', remedy: 'Xây móng nhà kiên cố chống rung chấn, làm tường rào cách âm và trồng rặng cây xanh rậm rạp giảm chấn.' },
-        evalSitting: { grade: 'HUNG', status: 'Chấn Động Hậu Phương', desc: 'Rung lắc ảnh hưởng giấc ngủ phía sau.', remedy: 'Kê giường cách xa tường phía đường sắt.' },
-        evalSide: { grade: 'HUNG', status: 'Rung Động Bên Hông', desc: 'Cần chú ý kết cấu công trình.', remedy: 'Gia cố móng cọc bê tông.' }
+        category: 'Hình Sát Rung Chấn',
+        evalFacing: {
+            grade: 'HUNG',
+            status: 'Cát Cước Sát (Rung Chấn Cắt Chân)',
+            satType: 'Rung Chấn Sát',
+            desc: 'Tàu hỏa chạy tải trọng lớn gây chấn động long mạch đất, tiếng ồn lớn làm phân tán khí trường.',
+            archRemedy: 'Thiết kế móng cọc bê tông kiên cố chống rung chấn, làm tường rào cách âm và lắp kính cách âm 3 lớp.',
+            remedy: 'Trồng rặng cây xanh rậm rạp để tiêu giảm tiếng ồn và sóng chấn động.'
+        },
+        evalSitting: {
+            grade: 'HUNG',
+            status: 'Chấn Động Hậu Phương',
+            satType: 'Rung Động Sát',
+            desc: 'Ảnh hưởng giấc ngủ các phòng sau.',
+            archRemedy: 'Bố trí phòng ngủ cách xa phía đường sắt.',
+            remedy: 'Gia cố tường cách âm.'
+        },
+        evalSide: {
+            grade: 'HUNG',
+            status: 'Rung Động Bên Hông',
+            satType: 'Chấn Động',
+            desc: 'Cần chú ý kết cấu công trình.',
+            archRemedy: 'Móng nhà kiên cố.',
+            remedy: 'Trồng dải cây xanh giảm chấn.'
+        }
     },
     'field': {
         title: 'RUỘNG ĐỒNG (Minh Đường Khoáng Đạt)',
-        evalFacing: { grade: 'CÁT', status: 'Minh Đường Rộng Rãi', desc: 'Trước mặt là ruộng đồng mênh mông, tầm nhìn không bị che chắn, không khí mát mẻ trong lành, gia đạo yên bình tích lũy tài sản.', remedy: 'Mở ban công và cửa lớn đón gió thiên nhiên.' },
-        evalSitting: { grade: 'BÌNH', status: 'Đồng Ruộng Sau Nhà', desc: 'Không gian thoáng mát phía sau.', remedy: 'Trồng thêm cây bóng mát sau vườn.' },
-        evalSide: { grade: 'CÁT', status: 'Thanh Bình Thư Thái', desc: 'Vi khí hậu trong lành.', remedy: 'Thích hợp nhà vườn nghỉ dưỡng.' }
+        category: 'Cảnh Quan Tự Nhiên',
+        evalFacing: {
+            grade: 'CÁT',
+            status: 'Minh Đường Rộng Lớn (Bình Yên Tích Lũy)',
+            satType: 'Cát Khí Khoáng Đạt',
+            desc: 'Trước mặt là ruộng đồng mênh mông, tầm nhìn không bị che chắn, không khí mát mẻ trong lành, gia đạo yên bình tích lũy tài sản.',
+            archRemedy: 'Mở ban công và cửa lớn đón gió thiên nhiên.',
+            remedy: 'Rất tốt cho nghỉ dưỡng và an cư.'
+        },
+        evalSitting: {
+            grade: 'BÌNH',
+            status: 'Đồng Ruộng Sau Nhà',
+            satType: 'Thoáng Mát',
+            desc: 'Không gian thoáng đãng.',
+            archRemedy: 'Trồng thêm cây bóng mát sau vườn.',
+            remedy: 'Duy trì vi khí hậu mát mẻ.'
+        },
+        evalSide: {
+            grade: 'CÁT',
+            status: 'Thanh Bình Thư Thái',
+            satType: 'Bình Yên',
+            desc: 'Vi khí hậu trong lành.',
+            archRemedy: 'Thiết kế nhà vườn sinh thái.',
+            remedy: 'Tận dụng không gian xanh.'
+        }
     }
 };
 
@@ -2691,109 +2894,36 @@ export class FengShuiInterpretationEngine {
         };
     }
 
-    renderReports(spatialResult, containerEl, filter = 'all') {
+        renderReports(spatialResult, containerEl, filter = 'all') {
         if (!containerEl || !spatialResult) return;
 
-        const landscapes = spatialResult.geometry?.landscapes || [];
-        const centroid = spatialResult.geometry?.footprintPoints ? HouseCenterGeometryEngine.calculatePolygonCentroid(spatialResult.geometry.footprintPoints) : { x: 2500, y: 8000 };
+        const geom = spatialResult.geometry;
+        const rooms = geom?.rooms || [];
+        const landscapes = geom?.landscapes || [];
+        const centroid = geom?.footprintPoints ? HouseCenterGeometryEngine.calculatePolygonCentroid(geom.footprintPoints) : { x: 2500, y: 8000 };
         const facingDeg = spatialResult.stars?.facingDegree || 180;
         if (!containerEl || !spatialResult || !spatialResult.spatialPalaces) return;
 
         const palaces = Object.values(spatialResult.spatialPalaces);
 
+        // Header and filter chips
         let html = `
-            <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+            <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; background: rgba(15, 23, 42, 0.6); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button type="button" class="report-filter-chip ${filter === 'all' ? 'active' : ''}" data-filter="all" style="padding: 5px 12px; border-radius: 6px; border: 1px solid ${filter === 'all' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'all' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(0,0,0,0.3)'}; color: #fff; font-size: 0.78rem; font-weight: bold; cursor: pointer;">Tất Cả (9 Cung)</button>
-                    <button type="button" class="report-filter-chip ${filter === 'good' ? 'active' : ''}" data-filter="good" style="padding: 5px 12px; border-radius: 6px; border: 1px solid ${filter === 'good' ? '#22c55e' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'good' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(0,0,0,0.3)'}; color: #4ade80; font-size: 0.78rem; font-weight: bold; cursor: pointer;">★ Vị Trí Cát (Tốt)</button>
-                    <button type="button" class="report-filter-chip ${filter === 'bad' ? 'active' : ''}" data-filter="bad" style="padding: 5px 12px; border-radius: 6px; border: 1px solid ${filter === 'bad' ? '#ef4444' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'bad' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0,0,0,0.3)'}; color: #f87171; font-size: 0.78rem; font-weight: bold; cursor: pointer;">⚠ Vị Trí Hung & Hóa Giải</button>
+                    <button type="button" class="report-filter-chip ${filter === 'all' ? 'active' : ''}" data-filter="all" style="padding: 6px 14px; border-radius: 6px; border: 1px solid ${filter === 'all' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'all' ? 'rgba(245, 158, 11, 0.25)' : 'rgba(0,0,0,0.3)'}; color: #fff; font-size: 0.78rem; font-weight: bold; cursor: pointer;">Tất Cả (9 Cung & Loan Đầu)</button>
+                    <button type="button" class="report-filter-chip ${filter === 'good' ? 'active' : ''}" data-filter="good" style="padding: 6px 14px; border-radius: 6px; border: 1px solid ${filter === 'good' ? '#22c55e' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'good' ? 'rgba(34, 197, 94, 0.25)' : 'rgba(0,0,0,0.3)'}; color: #4ade80; font-size: 0.78rem; font-weight: bold; cursor: pointer;">★ Vị Trí Cát (Tốt)</button>
+                    <button type="button" class="report-filter-chip ${filter === 'bad' ? 'active' : ''}" data-filter="bad" style="padding: 6px 14px; border-radius: 6px; border: 1px solid ${filter === 'bad' ? '#ef4444' : 'rgba(255,255,255,0.2)'}; background: ${filter === 'bad' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(0,0,0,0.3)'}; color: #f87171; font-size: 0.78rem; font-weight: bold; cursor: pointer;">⚠ Cảnh Báo Hung & Hóa Giải</button>
                 </div>
-                <div style="font-size: 0.78rem; color: #94a3b8;">
-                    Mệnh Chủ: <b style="color: var(--gold-light);">${spatialResult.gua?.guaName || ''} (${spatialResult.gua?.element || ''})</b> · <b style="color: #38bdf8;">${spatialResult.gua?.group || ''}</b>
+                <div style="font-size: 0.78rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
+                    <span>Mệnh Chủ: <b style="color: var(--gold-light);">${spatialResult.gua?.guaName || ''} (${spatialResult.gua?.element || ''})</b> · <b style="color: #38bdf8;">${spatialResult.gua?.group || ''}</b></span>
+                    <span class="audit-badge good" style="font-size: 0.65rem; padding: 2px 6px;">Thời Vận 9</span>
                 </div>
             </div>
         `;
 
-        
-        // Thêm các thẻ phân tích Ngoại Cảnh (Loan Đầu) nếu có
-        let landscapeHtml = '';
-        if (landscapes.length > 0) {
-            landscapeHtml = `
-                <div style="grid-column: 1 / -1; margin-top: 10px; margin-bottom: 4px; padding-top: 10px; border-top: 2px solid rgba(245, 158, 11, 0.4);">
-                    <div style="font-size: 0.92rem; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
-                        <span>🏔 LUẬN GIẢI LOAN ĐẦU NGOẠI CẢNH XUNG QUANH (${landscapes.length} YẾU TỐ):</span>
-                    </div>
-                </div>
-            `;
-
-            landscapes.forEach(l => {
-                const lx = l.x + l.w / 2;
-                const ly = l.y + l.h / 2;
-                const dx = lx - centroid.x;
-                const dy = ly - centroid.y;
-                let angle = ((Math.atan2(dy, dx) * 180 / Math.PI) + 90 + 360) % 360;
-
-                // Xác định vị trí tương đối so với hướng nhà
-                let relAngle = (angle - facingDeg + 360) % 360;
-                let posType = 'evalSide';
-                let posName = 'Bên Hông Nhà';
-
-                if (relAngle <= 45 || relAngle >= 315) {
-                    posType = 'evalFacing';
-                    posName = 'Trước Mặt Tiền Nhà (Minh Đường)';
-                } else if (relAngle >= 135 && relAngle <= 225) {
-                    posType = 'evalSitting';
-                    posName = 'Sau Lưng Nhà (Huyền Vũ / Tọa)';
-                } else if (relAngle > 45 && relAngle < 135) {
-                    posType = 'evalSide';
-                    posName = 'Bên Tay Phải (Hữu Bạch Hổ)';
-                } else {
-                    posType = 'evalSide';
-                    posName = 'Bên Tay Trái (Tả Thanh Long)';
-                }
-
-                const kn = LANDSCAPE_FENG_SHUI_KNOWLEDGE[l.type] || LANDSCAPE_FENG_SHUI_KNOWLEDGE['mountain'];
-                const ev = kn[posType] || kn.evalSide;
-                const isGood = (ev.grade === 'ĐẠI CÁT' || ev.grade === 'CÁT');
-                const isBad = (ev.grade === 'ĐẠI HUNG' || ev.grade === 'HUNG');
-
-                if (filter === 'good' && !isGood) return;
-                if (filter === 'bad' && !isBad) return;
-
-                const badgeColor = isGood ? 'good' : (isBad ? 'bad' : 'neutral');
-                const distM = (Math.hypot(dx, dy) / 1000).toFixed(1);
-
-                landscapeHtml += `
-                    <div class="report-card ${isGood ? 'card-good' : (isBad ? 'card-bad' : '')}" style="background: rgba(30, 41, 59, 0.85); border: 2px solid ${isGood ? 'rgba(34, 197, 94, 0.5)' : (isBad ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)')}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                <div>
-                                    <span style="font-size: 0.95rem; font-weight: 900; color: #fde68a;">${l.name}</span>
-                                    <span style="font-size: 0.72rem; color: #38bdf8; margin-left: 6px;">[${posName}]</span>
-                                </div>
-                                <span class="audit-badge ${badgeColor}" style="font-size: 0.72rem; font-weight: 800; padding: 2px 8px;">${ev.grade}</span>
-                            </div>
-
-                            <div style="font-size: 0.73rem; color: #94a3b8; margin-bottom: 6px;">
-                                📐 Khoảng cách ước tính: <b>${distM} mét</b> · Góc phương vị: <b>${angle.toFixed(1)}°</b>
-                            </div>
-
-                            <div style="font-size: 0.82rem; font-weight: 800; color: ${isGood ? '#4ade80' : (isBad ? '#f87171' : '#fbbf24')}; margin-bottom: 4px;">
-                                ${ev.status}
-                            </div>
-                            <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 8px;">
-                                ${ev.desc}
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.73rem; color: var(--gold-light);">
-                            <b>💡 Pháp Hóa Giải / Tận Dụng:</b> ${ev.remedy}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
+        // ----------------------------------------------------
+        // PHẦN 1: BỐ TRÍ PHÒNG CỬU CUNG THỜI GIAN THỰC (9 CUNG)
+        // ----------------------------------------------------
         let visibleCount = 0;
 
         palaces.forEach(p => {
@@ -2806,24 +2936,24 @@ export class FengShuiInterpretationEngine {
             visibleCount++;
 
             const combo = this.getStarCombinationDetail(p.sonStar, p.huongStar, spatialResult.stars?.van || 9);
-            const matchedRooms = this.findRoomsInPalace(p.palaceId, spatialResult.geometry, spatialResult.stars?.facingPalace || 9);
+            const matchedRooms = this.findRoomsInPalace(p.palaceId, geom, spatialResult.stars?.facingPalace || 9);
 
             let roomAnalysisHtml = '';
             if (matchedRooms.length > 0) {
                 roomAnalysisHtml = `
                     <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.15);">
-                        <div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">
-                            🏢 BỐ TRÍ CÔNG NĂNG THỰC TẾ:
+                        <div style="font-size: 0.76rem; font-weight: 800; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                            <span>🏢 BỐ TRÍ PHÒNG THỰC TẾ (${matchedRooms.length}):</span>
                         </div>
                         ${matchedRooms.map(rm => {
                             const ev = this.evaluateRoomPlacement(rm, p.grade, p.bazhaiStar, combo);
                             return `
-                                <div style="margin-bottom: 6px; padding: 6px 8px; background: rgba(0,0,0,0.25); border-radius: 6px; border-left: 3px solid ${ev.badge === 'good' ? '#22c55e' : '#f59e0b'};">
-                                    <div style="display: flex; justify-content: space-between; font-size: 0.76rem; font-weight: bold; margin-bottom: 2px;">
+                                <div style="margin-bottom: 6px; padding: 8px 10px; background: rgba(0,0,0,0.35); border-radius: 6px; border-left: 4px solid ${ev.badge === 'good' ? '#22c55e' : '#ef4444'};">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: bold; margin-bottom: 3px;">
                                         <span style="color: #fff;">${rm.name}</span>
-                                        <span class="audit-badge ${ev.badge}" style="font-size: 0.65rem; padding: 1px 5px;">${ev.status}</span>
+                                        <span class="audit-badge ${ev.badge}" style="font-size: 0.65rem; padding: 1px 6px;">${ev.status}</span>
                                     </div>
-                                    <div style="font-size: 0.72rem; color: #cbd5e1; line-height: 1.35;">${ev.eval}</div>
+                                    <div style="font-size: 0.73rem; color: #cbd5e1; line-height: 1.4;">${ev.eval}</div>
                                 </div>
                             `;
                         }).join('')}
@@ -2831,7 +2961,7 @@ export class FengShuiInterpretationEngine {
                 `;
             } else {
                 roomAnalysisHtml = `
-                    <div style="margin-top: 8px; font-size: 0.72rem; color: #94a3b8; font-style: italic;">
+                    <div style="margin-top: 8px; padding: 6px 8px; background: rgba(0,0,0,0.15); border-radius: 6px; font-size: 0.72rem; color: #94a3b8; font-style: italic;">
                         (Chưa có phòng nào được xếp trong cung này)
                     </div>
                 `;
@@ -2840,7 +2970,7 @@ export class FengShuiInterpretationEngine {
             const badgeColor = isGood ? 'good' : (isBad ? 'bad' : 'neutral');
 
             html += `
-                <div class="report-card ${isGood ? 'card-good' : (isBad ? 'card-bad' : '')}" style="background: rgba(15, 23, 42, 0.75); border: 1px solid ${isGood ? 'rgba(34, 197, 94, 0.35)' : (isBad ? 'rgba(239, 68, 68, 0.35)' : 'rgba(255,255,255,0.1)')}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s;">
+                <div class="report-card ${isGood ? 'card-good' : (isBad ? 'card-bad' : '')}" style="background: rgba(15, 23, 42, 0.85); border: 1px solid ${isGood ? 'rgba(34, 197, 94, 0.35)' : (isBad ? 'rgba(239, 68, 68, 0.35)' : 'rgba(255,255,255,0.1)')}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s;">
                     <div>
                         <!-- Header -->
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
@@ -2890,7 +3020,105 @@ export class FengShuiInterpretationEngine {
             `;
         });
 
-        if (visibleCount === 0) {
+        // ----------------------------------------------------
+        // PHẦN 2: CHUYÊN ĐỀ LOAN ĐẦU & HÌNH SÁT NGOẠI CẢNH (GIS ENGINE)
+        // ----------------------------------------------------
+        if (landscapes.length > 0) {
+            html += `
+                <div style="grid-column: 1 / -1; margin-top: 20px; margin-bottom: 8px; padding-top: 14px; border-top: 2px solid rgba(245, 158, 11, 0.4);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div style="font-size: 1rem; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+                            <span>🏔 CHUYÊN ĐỀ LOAN ĐẦU & HÌNH SÁT NGOẠI CẢNH (${landscapes.length} YẾU TỐ ĐANG QUÉT):</span>
+                        </div>
+                        <span class="audit-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; font-size: 0.72rem; padding: 3px 8px;">GIS Shanshui Mingtang Engine</span>
+                    </div>
+                    <p style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">Tự động đo đạc khoảng cách, góc phương vị so với Lập Cực và phân tích thế đất Tứ Tượng (Minh Đường, Huyền Vũ, Thanh Long, Bạch Hổ) theo thời gian thực.</p>
+                </div>
+            `;
+
+            landscapes.forEach(l => {
+                const lx = l.x + l.w / 2;
+                const ly = l.y + l.h / 2;
+                const dx = lx - centroid.x;
+                const dy = ly - centroid.y;
+                let angle = ((Math.atan2(dy, dx) * 180 / Math.PI) + 90 + 360) % 360;
+
+                // Xác định vị trí tương đối so với hướng nhà
+                let relAngle = (angle - facingDeg + 360) % 360;
+                let posType = 'evalSide';
+                let posName = 'Bên Hông Nhà';
+                let tuTuongName = 'Tả Thanh Long / Hữu Bạch Hổ';
+
+                if (relAngle <= 45 || relAngle >= 315) {
+                    posType = 'evalFacing';
+                    posName = 'Trước Mặt Tiền Nhà';
+                    tuTuongName = 'MINH ĐƯỜNG (Chu Tước / Tiền Hướng)';
+                } else if (relAngle >= 135 && relAngle <= 225) {
+                    posType = 'evalSitting';
+                    posName = 'Sau Lưng Nhà';
+                    tuTuongName = 'TỌA SƠN (Huyền Vũ / Hậu Phương)';
+                } else if (relAngle > 45 && relAngle < 135) {
+                    posType = 'evalSide';
+                    posName = 'Bên Phải';
+                    tuTuongName = 'HỮU BẠCH HỔ (Sườn Phải)';
+                } else {
+                    posType = 'evalSide';
+                    posName = 'Bên Trái';
+                    tuTuongName = 'TẢ THANH LONG (Sườn Trái)';
+                }
+
+                const kn = LANDSCAPE_FENG_SHUI_KNOWLEDGE[l.type] || LANDSCAPE_FENG_SHUI_KNOWLEDGE['mountain'];
+                const ev = kn[posType] || kn.evalSide;
+                const isGood = (ev.grade === 'ĐẠI CÁT' || ev.grade === 'CÁT');
+                const isBad = (ev.grade === 'ĐẠI HUNG' || ev.grade === 'HUNG');
+
+                if (filter === 'good' && !isGood) return;
+                if (filter === 'bad' && !isBad) return;
+
+                const badgeColor = isGood ? 'good' : (isBad ? 'bad' : 'neutral');
+                const distM = (Math.hypot(dx, dy) / 1000).toFixed(1);
+
+                html += `
+                    <div class="report-card ${isGood ? 'card-good' : (isBad ? 'card-bad' : '')}" style="background: rgba(30, 41, 59, 0.9); border: 2px solid ${isGood ? 'rgba(34, 197, 94, 0.5)' : (isBad ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)')}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div>
+                                    <span style="font-size: 0.98rem; font-weight: 900; color: #fde68a;">${l.name}</span>
+                                    <div style="font-size: 0.72rem; color: #38bdf8; font-weight: 700; margin-top: 2px;">[${tuTuongName}]</div>
+                                </div>
+                                <span class="audit-badge ${badgeColor}" style="font-size: 0.72rem; font-weight: 800; padding: 2px 8px;">${ev.grade}</span>
+                            </div>
+
+                            <div style="font-size: 0.73rem; color: #94a3b8; margin-bottom: 8px; background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 4px;">
+                                📐 Khoảng cách tới Tâm Lập Cực: <b style="color: #fff;">${distM} mét</b> · Góc phương vị: <b style="color: #fff;">${angle.toFixed(1)}°</b>
+                            </div>
+
+                            <div style="font-size: 0.82rem; font-weight: 800; color: ${isGood ? '#4ade80' : (isBad ? '#f87171' : '#fbbf24')}; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                                <span>${isBad ? '⚠' : (isGood ? '★' : 'ℹ')}</span>
+                                <span>${ev.status}</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 8px;">
+                                ${ev.desc}
+                            </div>
+                        </div>
+
+                        <div>
+                            <!-- Đề xuất Kiến Trúc Hóa Giải (Architectural Remedies) -->
+                            <div style="margin-top: 8px; padding: 8px 10px; background: rgba(2, 132, 199, 0.15); border-left: 3px solid #0284c7; border-radius: 4px; font-size: 0.74rem; color: #e0f2fe; line-height: 1.4;">
+                                <b style="color: #38bdf8;">🏛 Đề Xuất Giải Pháp Kiến Trúc:</b> ${ev.archRemedy || 'Thiết kế mặt bằng thông thoáng, hài hòa cảnh quan xung quanh.'}
+                            </div>
+
+                            <!-- Đề xuất Vật Phẩm & Phong Thủy -->
+                            <div style="margin-top: 6px; padding: 8px 10px; background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; border-radius: 4px; font-size: 0.74rem; color: #fef3c7; line-height: 1.4;">
+                                <b style="color: var(--gold-light);">💡 Pháp Khí & Hóa Giải:</b> ${ev.remedy}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (visibleCount === 0 && landscapes.length === 0) {
             html += `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #94a3b8; font-size: 0.88rem;">
                     Không có cung nào phù hợp với bộ lọc đã chọn.
@@ -2898,7 +3126,6 @@ export class FengShuiInterpretationEngine {
             `;
         }
 
-        html += landscapeHtml;
         containerEl.innerHTML = html;
 
         containerEl.querySelectorAll('.report-filter-chip').forEach(btn => {
