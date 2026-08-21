@@ -678,9 +678,13 @@ function initFloatingToolbar() {
         isDragging = true;
         startX = e.clientX;
         startY = e.clientY;
-        const rect = tb.getBoundingClientRect();
-        origLeft = rect.left;
-        origTop = rect.top;
+        
+        const parentRect = (tb.offsetParent || document.getElementById('cad-workspace')).getBoundingClientRect();
+        const tbRect = tb.getBoundingClientRect();
+        
+        origLeft = tbRect.left - parentRect.left;
+        origTop = tbRect.top - parentRect.top;
+        
         dragHeader.setPointerCapture(e.pointerId);
     });
 
@@ -688,8 +692,16 @@ function initFloatingToolbar() {
         if (!isDragging) return;
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        tb.style.left = `${origLeft + dx}px`;
-        tb.style.top = `${origTop + dy}px`;
+        
+        const parentEl = tb.offsetParent || document.getElementById('cad-workspace');
+        const maxW = parentEl ? (parentEl.clientWidth - tb.offsetWidth) : 2000;
+        const maxH = parentEl ? (parentEl.clientHeight - tb.offsetHeight) : 2000;
+        
+        const newLeft = Math.max(0, Math.min(maxW, origLeft + dx));
+        const newTop = Math.max(0, Math.min(maxH, origTop + dy));
+        
+        tb.style.left = `${newLeft}px`;
+        tb.style.top = `${newTop}px`;
         tb.style.right = 'auto';
         tb.style.bottom = 'auto';
     });
@@ -964,9 +976,13 @@ function initDraggablePopup(popupEl) {
         isDragging = true;
         startX = e.clientX;
         startY = e.clientY;
-        const rect = popupEl.getBoundingClientRect();
-        origLeft = rect.left;
-        origTop = rect.top;
+        
+        const parentRect = (popupEl.offsetParent || document.getElementById('cad-workspace')).getBoundingClientRect();
+        const pRect = popupEl.getBoundingClientRect();
+        
+        origLeft = pRect.left - parentRect.left;
+        origTop = pRect.top - parentRect.top;
+        
         header.setPointerCapture(e.pointerId);
     });
 
@@ -974,8 +990,16 @@ function initDraggablePopup(popupEl) {
         if (!isDragging) return;
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        popupEl.style.left = `${origLeft + dx}px`;
-        popupEl.style.top = `${origTop + dy}px`;
+        
+        const parentEl = popupEl.offsetParent || document.getElementById('cad-workspace');
+        const maxW = parentEl ? (parentEl.clientWidth - popupEl.offsetWidth) : 2000;
+        const maxH = parentEl ? (parentEl.clientHeight - popupEl.offsetHeight) : 2000;
+        
+        const newLeft = Math.max(0, Math.min(maxW, origLeft + dx));
+        const newTop = Math.max(0, Math.min(maxH, origTop + dy));
+        
+        popupEl.style.left = `${newLeft}px`;
+        popupEl.style.top = `${newTop}px`;
         popupEl.style.bottom = 'auto';
         popupEl.style.transform = 'none';
     });
