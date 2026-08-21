@@ -1369,6 +1369,21 @@ function initActionButtons() {
         btnHeaderFs.addEventListener('click', () => toggleCadFullscreen());
     }
 
+    const btnExitTop = document.getElementById('btnExitFullscreenTop');
+    if (btnExitTop) {
+        btnExitTop.addEventListener('click', () => toggleCadFullscreen());
+    }
+
+    // Lắng nghe phím ESC để thoát toàn màn hình mượt mà
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const ws = document.getElementById('cad-workspace');
+            if (ws && (ws.classList.contains('is-fullscreen') || document.fullscreenElement)) {
+                toggleCadFullscreen();
+            }
+        }
+    });
+
     if (btnCalc) {
         btnCalc.addEventListener('click', () => handleCalculate(true));
     }
@@ -1434,7 +1449,10 @@ function toggleCadFullscreen() {
     if (!isFs) {
         const req = ws.requestFullscreen || ws.webkitRequestFullscreen || ws.mozRequestFullScreen || ws.msRequestFullscreen;
         if (req) {
-            req.call(ws).catch(() => {
+            req.call(ws).then(() => {
+                ws.classList.add('is-fullscreen');
+                updateFullscreenUi(true);
+            }).catch(() => {
                 ws.classList.add('is-fullscreen');
                 updateFullscreenUi(true);
             });
@@ -1444,8 +1462,8 @@ function toggleCadFullscreen() {
         }
     } else {
         const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-        if (document.fullscreenElement && exit) {
-            exit.call(document).catch(() => {});
+        if ((document.fullscreenElement || document.webkitFullscreenElement) && exit) {
+            try { exit.call(document); } catch (_) {}
         }
         ws.classList.remove('is-fullscreen');
         updateFullscreenUi(false);
@@ -1456,45 +1474,153 @@ function updateFullscreenUi(isFs) {
     const iconOpen = document.getElementById('iconFullscreenOpen');
     const iconExit = document.getElementById('iconFullscreenExit');
     const txtFs = document.getElementById('txtFullscreen');
+    const btnHeaderFs = document.getElementById('btnHeaderFullscreen');
+    const btnExitTop = document.getElementById('btnExitFullscreenTop');
+    const ws = document.getElementById('cad-workspace');
 
     if (iconOpen) iconOpen.style.display = isFs ? 'none' : 'inline-block';
     if (iconExit) iconExit.style.display = isFs ? 'inline-block' : 'none';
     if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn';
 
+    if (btnHeaderFs) {
+        btnHeaderFs.innerHTML = isFs 
+            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg><span>✕ THU NHỎ</span>'
+            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>TOÀN MÀN HÌNH</span>';
+    }
+
+    if (btnExitTop) {
+        btnExitTop.style.display = isFs ? 'inline-flex' : 'none';
+    }
+
     if (viewportController) {
-        setTimeout(() => viewportController.updateTransform(), 120);
+        setTimeout(() => {
+            viewportController.updateTransform();
+        }, 150);
     }
 }
 
-function exportSvgToPng() {
+function showExportToast(message, isSuccess = true) {
+    const existing = document.querySelector('.cad-export-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'cad-export-toast';
+    toast.style.borderColor = isSuccess ? '#22c55e' : '#ef4444';
+    toast.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${isSuccess ? '#22c55e' : '#ef4444'}" stroke-width="2.5"><circle cx="12" cy="12" r="10"/>${isSuccess ? '<path d="M8 12l3 3 6-6"/>' : '<path d="M15 9l-6 6M9 9l6 6"/>'}</svg>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translate(-50%, 20px)';
+        setTimeout(() => toast.remove(), 400);
+    }, 3200);
+}
+
+/* Universal Cross-Platform Image Saver (iOS Photos / Android Gallery / PC Download) */
+async function exportSvgToPng() {
     const svgEl = document.querySelector('#svgStage svg');
-    if (!svgEl) return;
+    if (!svgEl) {
+        showExportToast('Không tìm thấy bản vẽ để xuất!', false);
+        return;
+    }
 
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svgEl);
-    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const URL = window.URL || window.webkitURL || window;
-    const blobURL = URL.createObjectURL(svgBlob);
+    showExportToast('Đang tạo ảnh bản vẽ 4K siêu nét...');
 
-    const image = new Image();
-    image.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 3840; // 4K Resolution
-        canvas.height = Math.round((3840 * image.naturalHeight) / image.naturalWidth);
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    try {
+        // 1. Chuẩn hóa SVG với namespace và kích thước chính xác
+        const clonedSvg = svgEl.cloneNode(true);
+        clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+        
+        const vbAttr = svgEl.getAttribute('viewBox') || '0 0 24000 24000';
+        const vbParts = vbAttr.split(/[s,]+/).map(parseFloat);
+        const vbW = vbParts[2] || 24000;
+        const vbH = vbParts[3] || 24000;
 
-        const pngURL = canvas.toDataURL('image/png');
-        const downloadLink = document.createElement('a');
-        downloadLink.href = pngURL;
-        downloadLink.download = `Ban-Ve-Phong-Thuy-${Date.now()}.png`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    };
-    image.src = blobURL;
+        clonedSvg.setAttribute('width', vbW);
+        clonedSvg.setAttribute('height', vbH);
+
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(clonedSvg);
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobURL = URL.createObjectURL(svgBlob);
+
+        const image = new Image();
+        image.crossOrigin = 'anonymous';
+
+        image.onload = async () => {
+            try {
+                const canvas = document.createElement('canvas');
+                const targetWidth = 3200; // Độ phân giải 4K sắc nét cho CAD
+                const targetHeight = Math.round((targetWidth * vbH) / vbW);
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(blobURL);
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        showExportToast('Lỗi nén ảnh PNG!', false);
+                        return;
+                    }
+
+                    const fileName = `Ban-Ve-Phong-Thuy-${Date.now()}.png`;
+
+                    // 1. Hỗ trợ Web Share API (Lưu trực tiếp vào Thư Viện Ảnh / Photos trên iOS & Android)
+                    if (navigator.canShare && typeof File !== 'undefined') {
+                        const file = new File([blob], fileName, { type: 'image/png' });
+                        if (navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Bản Vẽ Phong Thủy & Kiến Trúc',
+                                    text: 'Bản vẽ phong thủy Huyền Không Phi Tinh & Kiến Trúc CAD'
+                                });
+                                showExportToast('Đã mở menu lưu vào Thư Viện Ảnh!');
+                                return;
+                            } catch (shareErr) {
+                                if (shareErr.name === 'AbortError') return; // Người dùng tự bấm hủy
+                                console.warn('Web Share failed, fallback to direct download:', shareErr);
+                            }
+                        }
+                    }
+
+                    // 2. Fallback tải về trực tiếp trên PC và các trình duyệt di động
+                    const pngBlobUrl = URL.createObjectURL(blob);
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = pngBlobUrl;
+                    downloadLink.download = fileName;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
+                    showExportToast('Đã tải ảnh bản vẽ về máy thành công!');
+                    setTimeout(() => URL.revokeObjectURL(pngBlobUrl), 15000);
+                }, 'image/png', 0.95);
+            } catch (err) {
+                console.error('Canvas draw error:', err);
+                showExportToast('Lỗi tạo ảnh PNG: ' + err.message, false);
+            }
+        };
+
+        image.onerror = (imgErr) => {
+            console.error('Image load error:', imgErr);
+            showExportToast('Lỗi xử lý vector SVG sang PNG!', false);
+        };
+
+        image.src = blobURL;
+    } catch (err) {
+        console.error('Export error:', err);
+        showExportToast('Lỗi xuất ảnh: ' + err.message, false);
+    }
 }
 
 
