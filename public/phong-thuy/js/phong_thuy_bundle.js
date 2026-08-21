@@ -319,19 +319,22 @@ export function getOrientedPalaceGrid(facingPalaceId, isInverted = false) {
     const fIdx = ring.indexOf(facingPalaceId);
     if (fIdx === -1) return [4, 9, 2, 3, 5, 7, 8, 1, 6];
     const getP = (offset) => ring[((fIdx + offset) % 8 + 8) % 8];
+    
+    // Ma trận chuẩn khi Hướng Trên (mũi đỏ lên) / Tọa Dưới (mũi xanh xuống):
+    const normal = [
+        getP(-1), getP(0), getP(1),
+        getP(-2), 5,       getP(2),
+        getP(-3), getP(4), getP(3)
+    ];
+
     if (!isInverted) {
-        // Chế độ 1 (Mặc định): Hướng Trên (mũi đỏ lên), Tọa Dưới (mũi xanh xuống)
-        return [
-            getP(-1), getP(0), getP(1),
-            getP(-2), 5,       getP(2),
-            getP(-3), getP(4), getP(3)
-        ];
+        return normal;
     } else {
-        // Chế độ 2 (Đảo chiều): Tọa Trên (mũi xanh lên), Hướng Dưới (mũi đỏ xuống)
+        // Phép quay không gian 180 độ thực thụ (Đảo cả hàng Y và cột X đối xứng):
         return [
-            getP(-3), getP(4), getP(3),
-            getP(-2), 5,       getP(2),
-            getP(-1), getP(0), getP(1)
+            normal[8], normal[7], normal[6],
+            normal[5], normal[4], normal[3],
+            normal[2], normal[1], normal[0]
         ];
     }
 }
