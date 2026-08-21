@@ -1592,7 +1592,66 @@ export class LuoPanAndFlyingStarsSvgRenderer {
 }
 
 // ------------------------------------------------------------
-// 9. SPATIAL FENG SHUI EVALUATOR & REPORT ENGINE
+
+// ------------------------------------------------------------
+// 9. BÁT TRẠCH MINH KÍNH & TỔ HỢP SAO HUYỀN KHÔNG KINH ĐIỂN
+// ------------------------------------------------------------
+
+export const BAZHAI_MATRIX = {
+    // 1: Khảm, 2: Khôn, 3: Chấn, 4: Tốn, 6: Càn, 7: Đoài, 8: Cấn, 9: Ly
+    1: { 1: 'Phục Vị', 2: 'Tuyệt Mệnh', 3: 'Thiên Y', 4: 'Sinh Khí', 6: 'Lục Sát', 7: 'Họa Hại', 8: 'Ngũ Quỷ', 9: 'Diên Niên' },
+    2: { 1: 'Tuyệt Mệnh', 2: 'Phục Vị', 3: 'Họa Hại', 4: 'Ngũ Quỷ', 6: 'Diên Niên', 7: 'Thiên Y', 8: 'Sinh Khí', 9: 'Lục Sát' },
+    3: { 1: 'Thiên Y', 2: 'Họa Hại', 3: 'Phục Vị', 4: 'Diên Niên', 6: 'Ngũ Quỷ', 7: 'Tuyệt Mệnh', 8: 'Lục Sát', 9: 'Sinh Khí' },
+    4: { 1: 'Sinh Khí', 2: 'Ngũ Quỷ', 3: 'Diên Niên', 4: 'Phục Vị', 6: 'Họa Hại', 7: 'Lục Sát', 8: 'Tuyệt Mệnh', 9: 'Thiên Y' },
+    6: { 1: 'Lục Sát', 2: 'Diên Niên', 3: 'Ngũ Quỷ', 4: 'Họa Hại', 6: 'Phục Vị', 7: 'Sinh Khí', 8: 'Thiên Y', 9: 'Tuyệt Mệnh' },
+    7: { 1: 'Họa Hại', 2: 'Thiên Y', 3: 'Tuyệt Mệnh', 4: 'Lục Sát', 6: 'Sinh Khí', 7: 'Phục Vị', 8: 'Diên Niên', 9: 'Ngũ Quỷ' },
+    8: { 1: 'Ngũ Quỷ', 2: 'Sinh Khí', 3: 'Lục Sát', 4: 'Tuyệt Mệnh', 6: 'Thiên Y', 7: 'Diên Niên', 8: 'Phục Vị', 9: 'Họa Hại' },
+    9: { 1: 'Diên Niên', 2: 'Lục Sát', 3: 'Sinh Khí', 4: 'Thiên Y', 6: 'Tuyệt Mệnh', 7: 'Ngũ Quỷ', 8: 'Họa Hại', 9: 'Phục Vị' }
+};
+
+export const BAZHAI_STAR_DETAILS = {
+    'Sinh Khí':  { type: 'Cát', grade: 'Đại Cát', rank: 1, element: 'Mộc', desc: 'Chủ phú quý hiển đạt, sự nghiệp hanh thông, sinh con quý tử.' },
+    'Thiên Y':   { type: 'Cát', grade: 'Đại Cát', rank: 2, element: 'Thổ', desc: 'Chủ sức khỏe dồi dào, tiêu trừ tật bệnh, gia đạo êm ấm.' },
+    'Diên Niên': { type: 'Cát', grade: 'Thứ Cát', rank: 3, element: 'Kim', desc: 'Chủ tình duyên hòa hợp, nhân đinh phát triển, các mối quan hệ bền vững.' },
+    'Phục Vị':   { type: 'Cát', grade: 'Tiểu Cát', rank: 4, element: 'Mộc', desc: 'Chủ bình an thanh tịnh, củng cố tâm thức, thuận lợi thi cử.' },
+    'Tuyệt Mệnh':{ type: 'Hung', grade: 'Đại Hung', rank: 8, element: 'Kim', desc: 'Chủ tổn hại sức khỏe, tai ách bất ngờ, hao tán tài sản.' },
+    'Ngũ Quỷ':   { type: 'Hung', grade: 'Đại Hung', rank: 7, element: 'Hỏa', desc: 'Chủ hỏa hoạn, thị phi kiện tụng, tiểu nhân quấy phá.' },
+    'Lục Sát':   { type: 'Hung', grade: 'Thứ Hung', rank: 6, element: 'Thủy', desc: 'Chủ đào hoa sát, tình cảm rạn nứt, hao tài tốn của.' },
+    'Họa Hại':   { type: 'Hung', grade: 'Tiểu Hung', rank: 5, element: 'Thổ', desc: 'Chủ bất hòa, quan hệ trắc trở, việc nhỏ hóa to.' }
+};
+
+export function analyzeStarCombination(sonStar, huongStar, van = 9) {
+    const pair = `${sonStar}-${huongStar}`;
+    const sortedPair = [sonStar, huongStar].sort().join('-');
+
+    if (pair === '1-4' || pair === '4-1') {
+        return { grade: 'ĐẠI CÁT', effect: 'Danh tài xuất chúng, đăng khoa giáp bảng, văn chương khoa cử hiển đạt.', source: 'Thẩm Thị Huyền Không Học' };
+    }
+    if (pair === '1-6' || pair === '6-1') {
+        return { grade: 'CÁT', effect: 'Thủy Hỏa tương tề, quan lộc hanh thông, tài quan song toàn.', source: 'Huyền Không Bí Chỉ' };
+    }
+    if (pair === '8-9' || pair === '9-8') {
+        return { grade: 'ĐẠI CÁT', effect: 'Hỷ khánh lâm môn, phú quý song toàn, đất nở hoa sinh quý tử.', source: 'Tử Bạch Quyết' };
+    }
+    if (pair === '2-5' || pair === '5-2') {
+        return { grade: 'ĐẠI HUNG', effect: 'Nhị Hắc - Ngũ Hoàng giao gia, chủ tật bệnh, ôn dịch, tổn đinh hao tài.', source: 'Thẩm Thị Huyền Không Học' };
+    }
+    if (pair === '3-7' || pair === '7-3') {
+        return { grade: 'HUNG', effect: 'Tặc kiếp sát, khẩu thiệt thị phi, đề phòng trộm cắp và kiện tụng.', source: 'Phi Tinh Phú' };
+    }
+    if (pair === '9-7' || pair === '7-9') {
+        return { grade: 'HUNG', effect: 'Hỏa thiêu Phế kim, đề phòng hỏa tai và bệnh đường hô hấp.', source: 'Huyền Cơ Phú' };
+    }
+    if (pair === '6-7' || pair === '7-6') {
+        return { grade: 'HUNG', effect: 'Giao kiếm sát, tranh đấu vũ lực, thương tích kim khí.', source: 'Phi Tinh Phú' };
+    }
+    if (huongStar === van || sonStar === van) {
+        return { grade: 'CÁT', effect: `Đương Lệnh Vượng Khí Vận ${van}, nạp tài chiêu lộc đại cát.`, source: 'Cửu Tinh Đắc Lệnh' };
+    }
+
+    return { grade: 'BÌNH', effect: 'Khí trường trung hòa, phối hợp âm dương điều độ.', source: 'Huyền Không Học Cơ Bản' };
+}
+
 // ------------------------------------------------------------
 
 export function calculateFengShuiSpatial(geometry, params) {
@@ -1602,37 +1661,39 @@ export function calculateFengShuiSpatial(geometry, params) {
 
     for (let p = 1; p <= 9; p++) {
         const pal = stars.palaces[p];
-        let grade = 'BÌNH';
-        let analysis = '';
-        let remedy = '';
+        const combo = analyzeStarCombination(pal.sonStar, pal.huongStar, stars.van);
+        
+        let bazhaiStar = 'Trung Cung';
+        let bazhaiDetail = { type: 'Trung Hòa', grade: 'Bình', desc: 'Trung cung nạp khí' };
 
-        if (pal.isFacing) {
-            grade = 'ĐẠI CÁT';
-            analysis = `Cung Hướng đón trọn vẹn Khí Thiên Bàn Vận ${stars.van}. Hướng Tinh số ${pal.huongStar} làm chủ tài lộc.`;
-            remedy = 'Bố trí cửa chính, phòng khách sáng thoáng để nạp vượng khí.';
-        } else if (pal.isSitting) {
-            grade = 'CÁT';
-            analysis = `Cung Tọa quản nhân đinh, sức khỏe gia đạo. Sơn Tinh số ${pal.sonStar} đắc vị.`;
-            remedy = 'Bố trí phòng ngủ Master, hậu phương vững chắc, tựa sơn.';
-        } else if (pal.huongStar === 8 || pal.huongStar === 9 || pal.huongStar === 1) {
-            grade = 'CÁT';
-            analysis = `Cung cát hội tụ Sinh Khí (Sao số ${pal.huongStar}).`;
-            remedy = 'Thích hợp bố trí phòng làm việc, phòng ngủ hoặc bếp.';
-        } else if (pal.huongStar === 2 || pal.huongStar === 5) {
-            grade = 'HUNG';
-            analysis = `Phạm Nhị Hắc / Ngũ Hoàng Đại Sát.`;
-            remedy = 'Bố trí WC hoặc kho chứa đồ để trấn áp uế khí, kỵ đặt giường ngủ/bàn thờ.';
-        } else {
-            grade = 'TRUNG BÌNH';
-            analysis = `Khí trường ổn định, âm dương cân bằng.`;
-            remedy = 'Bố trí lối đi, giếng trời hoặc sân vườn.';
+        if (p !== 5 && BAZHAI_MATRIX[gua.guaNum] && BAZHAI_MATRIX[gua.guaNum][p]) {
+            bazhaiStar = BAZHAI_MATRIX[gua.guaNum][p];
+            bazhaiDetail = BAZHAI_STAR_DETAILS[bazhaiStar] || bazhaiDetail;
+        }
+
+        let grade = combo.grade;
+        if (pal.isFacing) grade = 'ĐẠI CÁT';
+        else if (pal.isSitting) grade = 'CÁT';
+        else if (bazhaiDetail.type === 'Cát' && combo.grade !== 'ĐẠI HUNG') grade = 'CÁT';
+        else if (bazhaiDetail.type === 'Hung' && (pal.huongStar === 2 || pal.huongStar === 5)) grade = 'ĐẠI HUNG';
+
+        let analysis = `Tọa Tinh số ${pal.sonStar} + Hướng Tinh số ${pal.huongStar}. ${combo.effect} Bát Trạch: Cung ${bazhaiStar} (${bazhaiDetail.desc})`;
+        let remedy = 'Giữ gìn không gian sạch sẽ, thông thoáng.';
+
+        if (grade === 'ĐẠI CÁT' || grade === 'CÁT') {
+            remedy = 'Thích hợp bố trí Cửa Chính, Phòng Khách, Phòng Ngủ Master, Bàn Thờ, Phòng Làm Việc.';
+        } else if (grade === 'ĐẠI HUNG' || grade === 'HUNG') {
+            remedy = 'Thích hợp bố trí Khu Vệ Sinh, Phòng Giặt, Nhà Kho để trấn hung nạp cát.';
         }
 
         spatialPalaces[p] = {
             ...pal,
             grade,
             analysis,
-            remedy
+            remedy,
+            bazhaiStar,
+            bazhaiDetail,
+            starCombination: combo
         };
     }
 
