@@ -483,7 +483,7 @@
                                     <div class="hud-popover-wrapper">
                                         <button type="button" class="hud-floating-btn" id="btnTriggerEdges" title="Danh sách các cạnh của thửa đất">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 3h18M3 12h18"/></svg>
-                                            <span>Cạnh Đất</span>
+                                            <span>Cạnh</span>
                                         </button>
                                         <div class="hud-popover-menu" id="popoverMenuEdges" style="display: none;">
                                             <div class="popover-header">
@@ -491,6 +491,34 @@
                                                 <button type="button" class="btn-popover-close" id="btnClosePopoverEdges">×</button>
                                             </div>
                                             <div class="popover-list" id="popoverEdgesList"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2.1 Quản Lý Lớp Bản Vẽ (Layers) -->
+                                    <div class="hud-popover-wrapper">
+                                        <button type="button" class="hud-floating-btn" id="btnTriggerLayers" title="Bật/tắt các lớp bản vẽ và độ mờ">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                                            <span>Lớp</span>
+                                        </button>
+                                        <div class="hud-popover-menu" id="popoverMenuLayers" style="display: none; min-width: 170px;">
+                                            <div class="popover-header">
+                                                <span>QUẢN LÝ LỚP</span>
+                                                <button type="button" class="btn-popover-close" id="btnClosePopoverLayers">×</button>
+                                            </div>
+                                            <div class="layer-toggles-list" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerWalls" checked> Tường & Cột</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerFurniture" checked> Nội Thất</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerDimensions" checked> Kích Thước</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLabels" checked> Tên Phòng</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerCenter" checked> Tâm Nhà</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerNinePalaces" checked> Cửu Cung</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLuoPan" checked> La Kinh</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerSourceImg"> Ảnh Gốc So Sánh</label>
+                                                <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                                    <span style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 2px;">Độ mờ ảnh gốc:</span>
+                                                    <input type="range" id="rngSourceOpacity" min="10" max="90" value="35" style="width: 100%; accent-color: var(--gold-primary); cursor: pointer;">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 

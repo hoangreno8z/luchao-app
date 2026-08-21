@@ -55,12 +55,18 @@ let roomCounters = {
 // Cache lưu vị trí phòng đã kéo / co giãn / xoay trên canvas cho cả Đất và Nhà Sẵn Có
 const roomPositionCache = {};
 
+let uploadedSourceImageSrc = '';
+
 const layerState = {
-    dimensions: true,
+    walls: true,
     furniture: true,
+    dimensions: true,
+    roomLabels: true,
     axes: true,
     luoPan: true,
-    ninePalaces: true
+    ninePalaces: true,
+    sourceImage: false,
+    sourceImageOpacity: 0.35
 };
 
 const dndPlacements = {
@@ -242,6 +248,7 @@ function initScanImageControls() {
 function handleScanUploadedFile(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
+        uploadedSourceImageSrc = e.target.result;
         const imgPreview = document.getElementById('scanPreviewImg');
         const imgWrapper = document.getElementById('scanPreviewWrapper');
         if (imgPreview && imgWrapper) {
@@ -720,6 +727,47 @@ function initFloatingToolbar() {
     const btnEdges = document.getElementById('btnTriggerEdges');
     const popEdges = document.getElementById('popoverMenuEdges');
     const btnCloseEdges = document.getElementById('btnClosePopoverEdges');
+
+    const btnLayers = document.getElementById('btnTriggerLayers');
+    const popLayers = document.getElementById('popoverMenuLayers');
+    const btnCloseLayers = document.getElementById('btnClosePopoverLayers');
+
+    if (btnLayers && popLayers) {
+        btnLayers.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = popLayers.style.display === 'block';
+            closeAllPopovers();
+            popLayers.style.display = isVisible ? 'none' : 'block';
+        });
+    }
+
+    if (btnCloseLayers && popLayers) {
+        btnCloseLayers.addEventListener('click', () => popLayers.style.display = 'none');
+    }
+
+    // Layer checkboxes
+    const chkWalls = document.getElementById('chkLayerWalls');
+    const chkFurn = document.getElementById('chkLayerFurniture');
+    const chkDims = document.getElementById('chkLayerDimensions');
+    const chkLabels = document.getElementById('chkLayerLabels');
+    const chkCenter = document.getElementById('chkLayerCenter');
+    const chk9Pal = document.getElementById('chkLayerNinePalaces');
+    const chkLuoPan = document.getElementById('chkLayerLuoPan');
+    const chkSrcImg = document.getElementById('chkLayerSourceImg');
+    const rngSrcOpacity = document.getElementById('rngSourceOpacity');
+
+    if (chkWalls) chkWalls.addEventListener('change', (e) => { layerState.walls = e.target.checked; renderActiveDrawing(); });
+    if (chkFurn) chkFurn.addEventListener('change', (e) => { layerState.furniture = e.target.checked; renderActiveDrawing(); });
+    if (chkDims) chkDims.addEventListener('change', (e) => { layerState.dimensions = e.target.checked; renderActiveDrawing(); });
+    if (chkLabels) chkLabels.addEventListener('change', (e) => { layerState.roomLabels = e.target.checked; renderActiveDrawing(); });
+    if (chkCenter) chkCenter.addEventListener('change', (e) => { layerState.axes = e.target.checked; renderActiveDrawing(); });
+    if (chk9Pal) chk9Pal.addEventListener('change', (e) => { layerState.ninePalaces = e.target.checked; renderActiveDrawing(); });
+    if (chkLuoPan) chkLuoPan.addEventListener('change', (e) => { layerState.luoPan = e.target.checked; renderActiveDrawing(); });
+    if (chkSrcImg) chkSrcImg.addEventListener('change', (e) => { layerState.sourceImage = e.target.checked; renderActiveDrawing(); });
+    if (rngSrcOpacity) rngSrcOpacity.addEventListener('input', (e) => { 
+        layerState.sourceImageOpacity = parseFloat(e.target.value) / 100;
+        if (layerState.sourceImage) renderActiveDrawing();
+    });
 
     if (btnAdd && popAdd) {
         btnAdd.addEventListener('click', (e) => {
@@ -1520,7 +1568,8 @@ function renderActiveDrawing() {
         cadLayers,
         luoPanOverlay,
         ninePalacesOverlay,
-        layerState
+        layerState,
+        { sourceImageUrl: uploadedSourceImageSrc }
     );
 
     viewportController.setSvgContent(fullSvg);

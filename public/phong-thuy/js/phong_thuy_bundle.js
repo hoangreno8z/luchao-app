@@ -1627,17 +1627,27 @@ export class SvgViewportController {
 // 11. RENDER UNIFIED MULTI-LAYER SVG (100% THUẦN VECTOR)
 // ------------------------------------------------------------
 
-export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, layerState, options = {}) {
+export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, layerState = {}, options = {}) {
     const vb = cadLayers.viewBox;
 
-    const wallsContent = cadLayers.wallsLayer || '';
+    const wallsContent = layerState.walls !== false ? (cadLayers.wallsLayer || '') : '';
     const vertexContent = cadLayers.vertexLayer || '';
-    const roomsContent = layerState.furniture ? (cadLayers.roomsLayer || '') : '';
-    const roomLabelsContent = layerState.furniture ? (cadLayers.roomLabelsLayer || '') : '';
-    const dimsContent = layerState.dimensions ? (cadLayers.dimensionsLayer || '') : '';
-    const centerContent = cadLayers.centerLayer || '';
+    const roomsContent = layerState.furniture !== false ? (cadLayers.roomsLayer || '') : '';
+    const roomLabelsContent = layerState.roomLabels !== false ? (cadLayers.roomLabelsLayer || '') : '';
+    const dimsContent = layerState.dimensions !== false ? (cadLayers.dimensionsLayer || '') : '';
+    const centerContent = layerState.axes !== false ? (cadLayers.centerLayer || '') : '';
     const luoPanContent = layerState.luoPan ? luoPanOverlay : '';
     const ninePalacesContent = layerState.ninePalaces ? ninePalacesOverlay : '';
+
+    let sourceImageContent = '';
+    if (layerState.sourceImage && options.sourceImageUrl) {
+        const opacity = layerState.sourceImageOpacity !== undefined ? layerState.sourceImageOpacity : 0.35;
+        sourceImageContent = `
+            <g class="layer-source-image-overlay" pointer-events="none" opacity="${opacity}">
+                <image href="${options.sourceImageUrl}" x="${cadLayers.houseMinX}" y="${cadLayers.houseMinY}" width="${cadLayers.houseWidth}" height="${cadLayers.houseDepth}" preserveAspectRatio="none"/>
+            </g>
+        `;
+    }
 
     return `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="scan2cad-interactive-drawing" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; touch-action: none;">
@@ -1649,6 +1659,7 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     
     <rect x="${vb.x}" y="${vb.y}" width="${vb.w}" height="${vb.h}" fill="url(#cadGridPattern)"/>
 
+    ${sourceImageContent}
     ${wallsContent}
     ${roomsContent}
     ${dimsContent}
