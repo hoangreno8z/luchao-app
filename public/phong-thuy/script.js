@@ -17,118 +17,9 @@ import {
     PALACE_SHORT
 } from './js/phong_thuy_bundle.js';
 
-function handleLandscapeMiniAction(action, landscapeId) {
-    if (!currentGeometry || !currentGeometry.landscapes) return;
-    const l = currentGeometry.landscapes.find(item => item.id === landscapeId);
-    if (!l) return;
-
-    if (action === 'confirm_landscape') {
-        selectedLandscapeId = null;
-        renderActiveDrawing();
-        renderSmartPopup();
-    } else if (action === 'rotate_landscape') {
-        l.rot = ((l.rot || 0) + 45) % 360;
-        renderActiveDrawing();
-        renderSmartPopup();
-        refreshSpatialFengShui();
-    } else if (action === 'delete_landscape') {
-        currentGeometry.landscapes = currentGeometry.landscapes.filter(item => item.id !== landscapeId);
-        selectedLandscapeId = null;
-        renderActiveDrawing();
-        renderSmartPopup();
-        refreshSpatialFengShui();
-    }
-}
-
-
-function handleAddLandscapeDirect(type, name, w, h) {
-    if (!currentGeometry) return;
-    if (!currentGeometry.landscapes) currentGeometry.landscapes = [];
-
-    const lCount = currentGeometry.landscapes.filter(l => l.type === type).length + 1;
-    const id = `landscape_${type}_${Date.now()}`;
-    const cleanName = lCount > 1 ? `${name} ${lCount}` : name;
-
-    const houseW = currentGeometry.widthMm || 5000;
-    const houseD = currentGeometry.depthMm || 16000;
-    const cx = (currentGeometry.widthMm ? currentGeometry.widthMm / 2 : 2500) - w / 2;
-    // Đặt mặc định ở phía trước hoặc bên ngoài nhà
-    const cy = -h - 1500;
-
-    const newLandscape = {
-        id,
-        name: cleanName.toUpperCase(),
-        type,
-        x: Math.round(cx),
-        y: Math.round(cy),
-        w,
-        h,
-        rot: 0
-    };
-
-    currentGeometry.landscapes.push(newLandscape);
-    selectedLandscapeId = id;
-    selectedRoomId = null;
-
-    renderActiveDrawing();
-    renderPopovers();
-    renderSmartPopup();
-    refreshSpatialFengShui();
-}
-
-
-function getRoomPalaceInfo(room) {
-    if (!room || !currentGeometry) return null;
-    const W = currentGeometry.widthMm || (currentGeometry.widthM * 1000) || 5000;
-    const D = currentGeometry.depthMm || (currentGeometry.lengthM * 1000) || 16000;
-    const rx = room.x + room.w / 2;
-    const ry = room.y + room.h / 2;
-    const col = Math.min(2, Math.max(0, Math.floor(rx / (W / 3))));
-    const row = Math.min(2, Math.max(0, Math.floor(ry / (D / 3))));
-
-    const gridToPalace = [
-        [4, 9, 2],
-        [3, 5, 7],
-        [8, 1, 6]
-    ];
-    const palaceId = gridToPalace[row][col];
-    if (!currentSpatialResult || !currentSpatialResult.spatialPalaces) return { palaceId, palaceName: PALACE_NAMES[palaceId] };
-    return currentSpatialResult.spatialPalaces[palaceId];
-}
-
-function refreshSpatialFengShui() {
-    if (!currentGeometry) return;
-    const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
-    const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
-    const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
-    const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
-    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 20;
-    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 6;
-    const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
-    const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
-
-    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
-        facingDegree,
-        buildYear,
-        currentYear,
-        currentMonth,
-        currentDay,
-        currentHour,
-        ownerYear,
-        ownerGender
-    });
-
-    renderDetailedReport(currentSpatialResult);
-}
-
 // ============================================================
-// Phong Thủy & Kiến Trúc Controller Script v8.0
-// Tác giả: Dịch Sư Nguyễn Huy Hoàng & Computational Geometry Core
-// 100% Thuần Code Vector (SVG / Canvas) — Không sử dụng Emoji
+// STATE & MODULE VARIABLES
 // ============================================================
-
-
-
 let currentMode = 'empty_land'; // 'empty_land' | 'existing_house' | 'scan_image'
 let currentThemeMode = 'white'; // 'white' | 'dark'
 let currentMatrixOrientMode = 'house'; // 'house' | 'loshu'
@@ -187,9 +78,10 @@ const dndPlacements = {
 // Pointer Drag & Resize State for CAD Manipulation
 const pointerState = {
     isInteracting: false,
-    mode: null, // 'move' | 'resize' | 'vertex'
+    mode: null, // 'move' | 'resize' | 'vertex' | 'move_landscape' | 'resize_landscape'
     handle: null,
     targetRoomId: null,
+    targetLandscapeId: null,
     targetVertexIdx: null,
     startClientX: 0,
     startClientY: 0,
@@ -199,21 +91,131 @@ const pointerState = {
     origH: 0
 };
 
+
+
+function handleLandscapeMiniAction(action, landscapeId) {
+    if (!currentGeometry || !currentGeometry.landscapes) return;
+    const l = currentGeometry.landscapes.find(item => item.id === landscapeId);
+    if (!l) return;
+
+    if (action === 'confirm_landscape') {
+        selectedLandscapeId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+    } else if (action === 'rotate_landscape') {
+        l.rot = ((l.rot || 0) + 45) % 360;
+        renderActiveDrawing();
+        renderSmartPopup();
+        refreshSpatialFengShui();
+    } else if (action === 'delete_landscape') {
+        currentGeometry.landscapes = currentGeometry.landscapes.filter(item => item.id !== landscapeId);
+        selectedLandscapeId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+        refreshSpatialFengShui();
+    }
+}
+
+function handleAddLandscapeDirect(type, name, w, h) {
+    if (!currentGeometry) return;
+    if (!currentGeometry.landscapes) currentGeometry.landscapes = [];
+
+    const lCount = currentGeometry.landscapes.filter(l => l.type === type).length + 1;
+    const id = `landscape_${type}_${Date.now()}`;
+    const cleanName = lCount > 1 ? `${name} ${lCount}` : name;
+
+    const houseW = currentGeometry.widthMm || 5000;
+    const houseD = currentGeometry.depthMm || 16000;
+    const cx = (currentGeometry.widthMm ? currentGeometry.widthMm / 2 : 2500) - w / 2;
+    const cy = -h - 1500;
+
+    const newLandscape = {
+        id,
+        name: cleanName.toUpperCase(),
+        type,
+        x: Math.round(cx),
+        y: Math.round(cy),
+        w,
+        h,
+        rot: 0
+    };
+
+    currentGeometry.landscapes.push(newLandscape);
+    selectedLandscapeId = id;
+    selectedRoomId = null;
+
+    renderActiveDrawing();
+    renderPopovers();
+    renderSmartPopup();
+    refreshSpatialFengShui();
+}
+
+function getRoomPalaceInfo(room) {
+    if (!room || !currentGeometry) return null;
+    const W = currentGeometry.widthMm || (currentGeometry.widthM * 1000) || 5000;
+    const D = currentGeometry.depthMm || (currentGeometry.lengthM * 1000) || 16000;
+    const rx = room.x + room.w / 2;
+    const ry = room.y + room.h / 2;
+    const col = Math.min(2, Math.max(0, Math.floor(rx / (W / 3))));
+    const row = Math.min(2, Math.max(0, Math.floor(ry / (D / 3))));
+
+    const gridToPalace = [
+        [4, 9, 2],
+        [3, 5, 7],
+        [8, 1, 6]
+    ];
+    const palaceId = gridToPalace[row][col];
+    if (!currentSpatialResult || !currentSpatialResult.spatialPalaces) return { palaceId, palaceName: PALACE_NAMES[palaceId] };
+    return currentSpatialResult.spatialPalaces[palaceId];
+}
+
+function refreshSpatialFengShui() {
+    if (!currentGeometry) return;
+    const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
+    const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
+    const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
+    const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
+    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 20;
+    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 6;
+    const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
+    const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
+
+    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
+        ownerYear,
+        ownerGender
+    });
+
+    renderDetailedReport(currentSpatialResult);
+}
+
+
 function bootstrapApp() {
-    initMenuDropdown();
-    initAccordions();
-    initModeTabs();
-    initDrawingTabs();
-    initFacingDegreeControls();
-    initDragAndDropPalaces();
-    initViewport();
-    initFloatingToolbar();
-    initActionButtons();
-    initCadInteractiveEngine();
-    initScanImageControls();
+    console.log('[PhongThuyApp] Bootstrapping Application...');
+    try { initMenuDropdown(); } catch (e) { console.error('initMenuDropdown error:', e); }
+    try { initAccordions(); } catch (e) { console.error('initAccordions error:', e); }
+    try { initModeTabs(); } catch (e) { console.error('initModeTabs error:', e); }
+    try { initDrawingTabs(); } catch (e) { console.error('initDrawingTabs error:', e); }
+    try { initFacingDegreeControls(); } catch (e) { console.error('initFacingDegreeControls error:', e); }
+    try { initDragAndDropPalaces(); } catch (e) { console.error('initDragAndDropPalaces error:', e); }
+    try { initViewport(); } catch (e) { console.error('initViewport error:', e); }
+    try { initFloatingToolbar(); } catch (e) { console.error('initFloatingToolbar error:', e); }
+    try { initActionButtons(); } catch (e) { console.error('initActionButtons error:', e); }
+    try { initCadInteractiveEngine(); } catch (e) { console.error('initCadInteractiveEngine error:', e); }
+    try { initScanImageControls(); } catch (e) { console.error('initScanImageControls error:', e); }
 
     // Auto-calculate and render immediately on load
-    handleCalculate(false);
+    try { 
+        handleCalculate(false); 
+        console.log('[PhongThuyApp] Initialization and first render completed successfully!');
+    } catch (e) { 
+        console.error('handleCalculate error:', e); 
+    }
 }
 
 if (document.readyState === 'loading') {
@@ -246,6 +248,8 @@ function initAccordions() {
     const headerInfo = document.getElementById('accordionHeaderInfo');
     const cardDesign = document.getElementById('accordionCardDesign');
     const headerDesign = document.getElementById('accordionHeaderDesign');
+    const cardLandscape = document.getElementById('accordionCardLandscape');
+    const headerLandscape = document.getElementById('accordionHeaderLandscape');
 
     if (headerInfo && cardInfo) {
         headerInfo.addEventListener('click', () => {
@@ -256,6 +260,12 @@ function initAccordions() {
     if (headerDesign && cardDesign) {
         headerDesign.addEventListener('click', () => {
             cardDesign.classList.toggle('collapsed');
+        });
+    }
+
+    if (headerLandscape && cardLandscape) {
+        headerLandscape.addEventListener('click', () => {
+            cardLandscape.classList.toggle('collapsed');
         });
     }
 }
