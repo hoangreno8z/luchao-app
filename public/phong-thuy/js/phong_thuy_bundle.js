@@ -1012,19 +1012,20 @@ export class ArchitecturalCADRenderer {
             });
         }
 
-        const padX = 2200;
-        const padY = 2400;
+        const centroid = HouseCenterGeometryEngine.calculatePolygonCentroid(pts);
         const maxHouseW = Math.max(1000, maxX - minX);
         const maxHouseD = Math.max(1000, maxY - minY);
 
-        const viewBox = {
-            x: Math.round(minX - padX),
-            y: Math.round(minY - padY),
-            w: Math.round(maxHouseW + padX * 2),
-            h: Math.round(maxHouseD + padY * 2)
-        };
+        // Bán kính bao phủ toàn bộ vòng tròn La Kinh và ngôi nhà
+        const compassRadius = Math.max(2800, Math.max(maxHouseW, maxHouseD) * 0.62 + 1000);
+        const safeRadius = Math.max(compassRadius + 600, Math.max(maxHouseW, maxHouseD) / 2 + 1200);
 
-        const centroid = HouseCenterGeometryEngine.calculatePolygonCentroid(pts);
+        const viewBox = {
+            x: Math.round(centroid.x - safeRadius),
+            y: Math.round(centroid.y - safeRadius),
+            w: Math.round(safeRadius * 2),
+            h: Math.round(safeRadius * 2)
+        };
 
         // 1. TƯỜNG NGOÀI (220mm) VÀ CỘT BÊ TÔNG ĐEN GÓC (220x220mm)
         let wallsSvg = '<g class="layer-exterior-walls">';
@@ -1541,87 +1542,216 @@ export class LuoPanAndFlyingStarsSvgRenderer {
     renderOverlayLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD) {
         if (!flyingStars) return '';
 
-        const radius = Math.max(1600, Math.max(houseW, houseD) * 0.65);
-        const facingDeg = flyingStars.facingDegree || 0;
+        const radius = Math.max(2800, Math.max(houseW, houseD) * 0.62 + 1000);
+        const facingDeg = flyingStars.facingDegree !== undefined ? flyingStars.facingDegree : 180;
+        const sittingDeg = (facingDeg + 180) % 360;
+
+        // Vành ngoài cùng: Vòng chia độ 360 độ
+        let ticksSvg = '';
+        for (let deg = 0; deg < 360; deg++) {
+            const rad = ((deg - 90) * Math.PI) / 180;
+            const is10 = (deg % 10 === 0);
+            const is5 = (deg % 5 === 0);
+            const tickLen = is10 ? 110 : (is5 ? 70 : 40);
+            const r1 = radius;
+            const r2 = radius - tickLen;
+
+            const x1 = r1 * Math.cos(rad);
+            const y1 = r1 * Math.sin(rad);
+            const x2 = r2 * Math.cos(rad);
+            const y2 = r2 * Math.sin(rad);
+
+            ticksSvg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${is10 ? '#dc2626' : (is5 ? '#ef4444' : '#64748b')}" stroke-width="${is10 ? 6 : (is5 ? 4 : 2)}"/>`;
+
+            if (is10) {
+                const rText = radius - 180;
+                const tx = rText * Math.cos(rad);
+                const ty = rText * Math.sin(rad);
+                let rotText = deg;
+                if (deg > 90 && deg < 270) rotText = (rotText + 180) % 360;
+                ticksSvg += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="52" font-weight="800" fill="#1e293b" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${deg}</text>`;
+            }
+        }
+
+        // Vành 24 Sơn Hướng
+        const rMntOut = radius - 260;
+        const rMntIn = radius * 0.58;
+        let mountainsSvg = '';
+
+        MOUNTAINS_24.forEach(m => {
+            const radStart = ((m.startDeg - 90) * Math.PI) / 180;
+            const radCenter = ((m.center - 90) * Math.PI) / 180;
+
+            const xLine1 = rMntIn * Math.cos(radStart);
+            const yLine1 = rMntIn * Math.sin(radStart);
+            const xLine2 = rMntOut * Math.cos(radStart);
+            const yLine2 = rMntOut * Math.sin(radStart);
+
+            mountainsSvg += `<line x1="${xLine1.toFixed(1)}" y1="${yLine1.toFixed(1)}" x2="${xLine2.toFixed(1)}" y2="${yLine2.toFixed(1)}" stroke="#cbd5e1" stroke-width="4"/>`;
+
+            // Tên Sơn
+            const rText = (rMntIn + rMntOut) / 2;
+            const tx = rText * Math.cos(radCenter);
+            const ty = rText * Math.sin(radCenter);
+            let rotText = m.center;
+            if (m.center > 90 && m.center < 270) rotText = (rotText + 180) % 360;
+
+            const isFacingMnt = (m.name === flyingStars.facingMountain);
+            const isSittingMnt = (m.name === flyingStars.sittingMountain);
+
+            mountainsSvg += `
+                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${isFacingMnt || isSittingMnt ? 76 : 64}" font-weight="900" fill="${isFacingMnt ? '#dc2626' : (isSittingMnt ? '#0284c7' : '#0f172a')}" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${m.name}</text>
+            `;
+        });
+
+        // 8 Phương Hướng Lớn Màu Đỏ (BẮC, NAM, ĐÔNG, TÂY, ĐÔNG BẮC, ĐÔNG NAM, TÂY BẮC, TÂY NAM)
+        const cardinalLabels = [
+            { name: 'BẮC', deg: 0 },
+            { name: 'ĐÔNG BẮC', deg: 45 },
+            { name: 'ĐÔNG', deg: 90 },
+            { name: 'ĐÔNG NAM', deg: 135 },
+            { name: 'NAM', deg: 180 },
+            { name: 'TÂY NAM', deg: 225 },
+            { name: 'TÂY', deg: 270 },
+            { name: 'TÂY BẮC', deg: 315 }
+        ];
+
+        let cardinalSvg = '';
+        cardinalLabels.forEach(c => {
+            const rad = ((c.deg - 90) * Math.PI) / 180;
+            const rText = radius * 0.46;
+            const tx = rText * Math.cos(rad);
+            const ty = rText * Math.sin(rad);
+            let rotText = c.deg;
+            if (c.deg > 90 && c.deg < 270) rotText = (rotText + 180) % 360;
+
+            // Nan phân cách màu đỏ nét đứt
+            const xLine = radius * Math.cos(rad);
+            const yLine = radius * Math.sin(rad);
+            cardinalSvg += `
+                <line x1="0" y1="0" x2="${xLine.toFixed(1)}" y2="${yLine.toFixed(1)}" stroke="#dc2626" stroke-width="4" stroke-dasharray="25,15" opacity="0.75"/>
+                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="78" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif" letter-spacing="2" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${c.name}</text>
+            `;
+        });
+
+        // Mũi Tên Chỉ HƯỚNG (Đỏ) và TỌA (Xanh)
+        const radFacing = ((facingDeg - 90) * Math.PI) / 180;
+        const radSitting = ((sittingDeg - 90) * Math.PI) / 180;
+
+        const hx = (radius + 240) * Math.cos(radFacing);
+        const hy = (radius + 240) * Math.sin(radFacing);
+        const sx = (radius + 240) * Math.cos(radSitting);
+        const sy = (radius + 240) * Math.sin(radSitting);
+
+        const arrowSvg = `
+            <!-- Trục chỉ Hướng (Đỏ) -->
+            <line x1="0" y1="0" x2="${hx.toFixed(1)}" y2="${hy.toFixed(1)}" stroke="#dc2626" stroke-width="12"/>
+            <polygon points="${hx.toFixed(1)},${hy.toFixed(1)} ${(hx - 70 * Math.cos(radFacing - 0.3)).toFixed(1)},${(hy - 70 * Math.sin(radFacing - 0.3)).toFixed(1)} ${(hx - 70 * Math.cos(radFacing + 0.3)).toFixed(1)},${(hy - 70 * Math.sin(radFacing + 0.3)).toFixed(1)}" fill="#dc2626"/>
+            <g transform="translate(${(radius - 380) * Math.cos(radFacing)}, ${(radius - 380) * Math.sin(radFacing)}) rotate(${facingDeg})">
+                <rect x="-160" y="-45" width="320" height="90" rx="14" fill="#dc2626"/>
+                <text x="0" y="8" text-anchor="middle" font-size="52" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">HƯỚNG</text>
+            </g>
+
+            <!-- Trục chỉ Tọa (Xanh) -->
+            <line x1="0" y1="0" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}" stroke="#0284c7" stroke-width="12"/>
+            <polygon points="${sx.toFixed(1)},${sy.toFixed(1)} ${(sx - 70 * Math.cos(radSitting - 0.3)).toFixed(1)},${(sy - 70 * Math.sin(radSitting - 0.3)).toFixed(1)} ${(sx - 70 * Math.cos(radSitting + 0.3)).toFixed(1)},${(sy - 70 * Math.sin(radSitting + 0.3)).toFixed(1)}" fill="#0284c7"/>
+            <g transform="translate(${(radius - 380) * Math.cos(radSitting)}, ${(radius - 380) * Math.sin(radSitting)}) rotate(${sittingDeg})">
+                <rect x="-140" y="-45" width="280" height="90" rx="14" fill="#0284c7"/>
+                <text x="0" y="8" text-anchor="middle" font-size="52" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">TỌA</text>
+            </g>
+        `;
 
         return `
-            <g class="layer-luopan-overlay" transform="translate(${houseCenterX}, ${houseCenterY}) rotate(${facingDeg})" opacity="0.88" pointer-events="none">
-                <!-- Vòng ngoài bảo vệ -->
-                <circle cx="0" cy="0" r="${radius}" fill="none" stroke="#f59e0b" stroke-width="12" stroke-dasharray="30,15"/>
-                <circle cx="0" cy="0" r="${radius * 0.88}" fill="rgba(15, 23, 42, 0.06)" stroke="#b45309" stroke-width="8"/>
-                <circle cx="0" cy="0" r="${radius * 0.55}" fill="none" stroke="#f59e0b" stroke-width="6"/>
+            <g class="layer-luopan-overlay" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
+                <!-- Vòng tròn nền La Kinh trắng viền đỏ -->
+                <circle cx="0" cy="0" r="${radius}" fill="rgba(255, 255, 255, 0.94)" stroke="#dc2626" stroke-width="10"/>
+                <circle cx="0" cy="0" r="${rMntOut}" fill="none" stroke="#dc2626" stroke-width="6"/>
+                <circle cx="0" cy="0" r="${rMntIn}" fill="none" stroke="#dc2626" stroke-width="6"/>
+                <circle cx="0" cy="0" r="${radius * 0.4}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="20,15"/>
 
-                <!-- 24 Sơn Hướng Phân Kim -->
-                ${MOUNTAINS_24.map(m => {
-                    const rad = ((m.center - 90) * Math.PI) / 180;
-                    const rText = radius * 0.72;
-                    const tx = rText * Math.cos(rad);
-                    const ty = rText * Math.sin(rad);
-                    const isFacing = m.name === flyingStars.facingMountain;
-                    const isSitting = m.name === flyingStars.sittingMountain;
-
-                    return `
-                        <line x1="0" y1="0" x2="${radius * Math.cos(((m.startDeg - 90) * Math.PI) / 180)}" y2="${radius * Math.sin(((m.startDeg - 90) * Math.PI) / 180)}" stroke="rgba(245, 158, 11, 0.4)" stroke-width="4"/>
-                        <circle cx="${tx}" cy="${ty}" r="${isFacing || isSitting ? 90 : 60}" fill="${isFacing ? '#ef4444' : (isSitting ? '#0284c7' : '#ffffff')}" stroke="#0f172a" stroke-width="6"/>
-                        <text x="${tx}" y="${ty + (isFacing || isSitting ? 28 : 20)}" text-anchor="middle" font-size="${isFacing || isSitting ? 75 : 55}" font-weight="900" fill="${isFacing || isSitting ? '#ffffff' : '#0f172a'}" font-family="'Inter', sans-serif">${m.name}</text>
-                    `;
-                }).join('')}
-
-                <!-- Kim Chỉ Nam Thiên Trì -->
-                <g class="heavenly-pool-needle">
-                    <polygon points="0,${-radius * 0.85} -45,0 45,0" fill="#ef4444" stroke="#7f1d1d" stroke-width="8"/>
-                    <polygon points="0,${radius * 0.85} -45,0 45,0" fill="#0284c7" stroke="#1e3a8a" stroke-width="8"/>
-                    <circle cx="0" cy="0" r="70" fill="#f59e0b" stroke="#ffffff" stroke-width="14"/>
-                </g>
+                ${ticksSvg}
+                ${mountainsSvg}
+                ${cardinalSvg}
+                ${arrowSvg}
             </g>
         `;
     }
 
-    renderNinePalacesLayer(flyingStars, minX, minY, totalW, totalD, facingPalaceId = 9) {
+    renderNinePalacesLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, facingPalaceId = 9) {
         if (!flyingStars || !flyingStars.palaces) return '';
 
-        const cellW = totalW / 3;
-        const cellH = totalD / 3;
+        // Kích thước khung vuông 3x3 Cửu Cung đặt ngay tại tâm
+        const boxSize = Math.max(2400, Math.min(houseW, houseD) * 0.85);
+        const cellSize = boxSize / 3;
+        const halfBox = boxSize / 2;
+
+        // Ma trận 3x3 chuẩn theo hướng nhà
         const order = getOrientedPalaceGrid(facingPalaceId);
 
-        let gridSvg = '<g class="layer-nine-palaces-matrix" pointer-events="none">';
+        let cellsSvg = '';
 
         order.forEach((pId, idx) => {
             const row = Math.floor(idx / 3);
             const col = idx % 3;
-            const x = minX + col * cellW;
-            const y = minY + row * cellH;
+            const x = -halfBox + col * cellSize;
+            const y = -halfBox + row * cellSize;
 
             const pal = flyingStars.palaces[pId];
             if (!pal) return;
 
-            const isFacing = pal.isFacing;
-            const isSitting = pal.isSitting;
+            const nienS = pal.nienStar || 1;
+            const nguyetS = pal.nguyetStar || 1;
+            const nhatS = pal.nhatStar || 1;
+            const thoiS = pal.thoiStar || 1;
 
-            const bgFill = isFacing 
-                ? 'rgba(239, 68, 68, 0.08)' 
-                : (isSitting ? 'rgba(2, 132, 199, 0.08)' : 'rgba(245, 158, 11, 0.04)');
-            const strokeCol = isFacing ? '#ef4444' : (isSitting ? '#0284c7' : 'rgba(245, 158, 11, 0.3)');
+            const shortLabel = PALACE_SHORT[pId] || '';
 
-            gridSvg += `
+            cellsSvg += `
                 <g transform="translate(${x}, ${y})">
-                    <rect width="${cellW}" height="${cellH}" fill="${bgFill}" stroke="${strokeCol}" stroke-width="8" stroke-dasharray="25,15"/>
-                    <rect x="20" y="20" width="${Math.min(cellW - 40, 650)}" height="110" rx="16" fill="rgba(15, 23, 42, 0.75)"/>
-                    <text x="45" y="92" font-size="65" font-weight="900" fill="${isFacing ? '#ef4444' : (isSitting ? '#38bdf8' : '#f59e0b')}" font-family="'Inter', sans-serif">${pal.palaceName}</text>
-                    
-                    <g transform="translate(${cellW / 2}, ${cellH / 2})">
-                        <circle cx="0" cy="0" r="140" fill="rgba(15, 23, 42, 0.85)" stroke="${strokeCol}" stroke-width="8"/>
-                        <!-- Tọa Tinh (Trái) | Vận Tinh (Giữa) | Hướng Tinh (Phải) -->
-                        <text x="-70" y="32" text-anchor="middle" font-size="95" font-weight="900" fill="#38bdf8" font-family="'Inter', sans-serif">${pal.sonStar}</text>
-                        <text x="0" y="32" text-anchor="middle" font-size="75" font-weight="700" fill="#94a3b8" font-family="'Inter', sans-serif">${pal.vanStar}</text>
-                        <text x="70" y="32" text-anchor="middle" font-size="95" font-weight="900" fill="#ef4444" font-family="'Inter', sans-serif">${pal.huongStar}</text>
+                    <!-- Viền ô đơn lẻ -->
+                    <rect width="${cellSize}" height="${cellSize}" fill="rgba(255, 255, 255, 0.95)" stroke="#000000" stroke-width="8"/>
+
+                    <!-- Hàng trên: 4 vòng tròn màu nhỏ (Năm - Tháng - Ngày - Giờ) -->
+                    <g transform="translate(${cellSize / 2}, 75)">
+                        <!-- Niên (Xanh lá) -->
+                        <circle cx="-135" cy="0" r="34" fill="#ffffff" stroke="#16a34a" stroke-width="5"/>
+                        <text x="-135" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#16a34a" font-family="'Inter', sans-serif">${nienS}</text>
+
+                        <!-- Nguyệt (Đỏ) -->
+                        <circle cx="-45" cy="0" r="34" fill="#ffffff" stroke="#dc2626" stroke-width="5"/>
+                        <text x="-45" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif">${nguyetS}</text>
+
+                        <!-- Nhật (Cam) -->
+                        <circle cx="45" cy="0" r="34" fill="#ffffff" stroke="#ea580c" stroke-width="5"/>
+                        <text x="45" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#ea580c" font-family="'Inter', sans-serif">${nhatS}</text>
+
+                        <!-- Thời (Tím) -->
+                        <circle cx="135" cy="0" r="34" fill="#ffffff" stroke="#9333ea" stroke-width="5"/>
+                        <text x="135" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#9333ea" font-family="'Inter', sans-serif">${thoiS}</text>
                     </g>
+
+                    <!-- Ở giữa: Số Vận Tinh (Màu Xanh Dương Blue To Đậm) -->
+                    <text x="${cellSize / 2}" y="${cellSize * 0.52}" text-anchor="middle" font-size="180" font-weight="900" fill="#0284c7" font-family="'Inter', sans-serif">${pal.vanStar}</text>
+
+                    <!-- Bên trái: Số Sơn Tinh (Tọa Tinh - Màu Đen To Đậm) -->
+                    <text x="${cellSize * 0.22}" y="${cellSize * 0.82}" text-anchor="middle" font-size="170" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.sonStar}</text>
+
+                    <!-- Bên phải: Số Hướng Tinh (Màu Đen To Đậm) -->
+                    <text x="${cellSize * 0.78}" y="${cellSize * 0.82}" text-anchor="middle" font-size="170" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.huongStar}</text>
+
+                    <!-- Ở dưới: Tên Cung Viết Tắt -->
+                    <text x="${cellSize / 2}" y="${cellSize * 0.88}" text-anchor="middle" font-size="70" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${shortLabel}</text>
                 </g>
             `;
         });
 
-        gridSvg += '</g>';
-        return gridSvg;
+        return `
+            <g class="layer-nine-palaces-matrix" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
+                <!-- Khung viền ngoài đậm của ma trận 3x3 -->
+                <rect x="${-halfBox}" y="${-halfBox}" width="${boxSize}" height="${boxSize}" fill="none" stroke="#000000" stroke-width="18"/>
+                ${cellsSvg}
+            </g>
+        `;
     }
 }
 

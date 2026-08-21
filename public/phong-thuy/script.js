@@ -1646,8 +1646,8 @@ function renderActiveDrawing() {
 
     const ninePalacesOverlay = luoPanRenderer.renderNinePalacesLayer(
         currentFlyingStars,
-        cadLayers.houseMinX,
-        cadLayers.houseMinY,
+        cadLayers.houseCenterX,
+        cadLayers.houseCenterY,
         cadLayers.houseWidth,
         cadLayers.houseDepth,
         currentFlyingStars ? currentFlyingStars.facingPalace : 9
