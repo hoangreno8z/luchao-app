@@ -1904,3 +1904,129 @@ body {
     border-radius: var(--radius-md) !important;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7) !important;
 }
+
+
+/* ============================================================
+   REFINED COMPACT CAD TOOLBAR & MINIMALIST BACK BUTTON
+   ============================================================ */
+.cad-floating-toolbar {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 50;
+    width: 135px !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-radius: 10px !important;
+    padding: 5px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    user-select: none;
+}
+
+.hud-header {
+    padding: 2px 4px !important;
+    margin-bottom: 4px !important;
+}
+.hud-header-title {
+    font-size: 0.68rem !important;
+    font-weight: 900 !important;
+    color: #fbbf24 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.hud-actions-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 3px !important;
+    margin-bottom: 0 !important;
+}
+
+.hud-floating-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    height: 26px !important;
+    padding: 0 4px !important;
+    font-size: 0.66rem !important;
+    font-weight: 800 !important;
+    border-radius: 5px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
+.hud-floating-btn:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+.hud-floating-btn.highlight {
+    background: rgba(245, 158, 11, 0.18) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #fef08a !important;
+}
+
+/* MINIMALIST SLEEK BACK BUTTON (Top-Left in Fullscreen) */
+.btn-fullscreen-back {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 99999;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    height: 32px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: #e2e8f0;
+    font-size: 0.76rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    transition: all 0.18s ease;
+    user-select: none;
+}
+.btn-fullscreen-back:hover {
+    background: rgba(15, 23, 42, 0.95);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateX(-2px);
+}
+.btn-fullscreen-back:active {
+    transform: scale(0.96);
+}
+
+/* Floating Actions Pill at Bottom Right */
+.floating-cad-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 3px 6px !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+.floating-tool-btn {
+    height: 28px !important;
+    padding: 0 8px !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    border-radius: 14px !important;
+}
+.floating-tool-btn.primary {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #0f172a !important;
+    font-weight: 900 !important;
+}

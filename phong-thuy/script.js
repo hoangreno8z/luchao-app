@@ -1359,19 +1359,14 @@ function selectEdge(edgeIdx, rerender = true) {
 function initActionButtons() {
     const btnCalc = document.getElementById('btnCalculate');
     const btnToggleFs = document.getElementById('btnToggleFullscreen');
-    const btnHeaderFs = document.getElementById('btnHeaderFullscreen');
     const btnExportPng = document.getElementById('btnExportPng');
     const btnZoomIn = document.getElementById('btnZoomIn');
     const btnZoomOut = document.getElementById('btnZoomOut');
     const btnZoomFit = document.getElementById('btnZoomFit');
+    const btnBack = document.getElementById('btnFullscreenBack');
 
-    if (btnHeaderFs) {
-        btnHeaderFs.addEventListener('click', () => toggleCadFullscreen());
-    }
-
-    const btnExitTop = document.getElementById('btnExitFullscreenTop');
-    if (btnExitTop) {
-        btnExitTop.addEventListener('click', () => toggleCadFullscreen());
+    if (btnBack) {
+        btnBack.addEventListener('click', () => toggleCadFullscreen());
     }
 
     // Lắng nghe phím ESC để thoát toàn màn hình mượt mà
@@ -1474,22 +1469,14 @@ function updateFullscreenUi(isFs) {
     const iconOpen = document.getElementById('iconFullscreenOpen');
     const iconExit = document.getElementById('iconFullscreenExit');
     const txtFs = document.getElementById('txtFullscreen');
-    const btnHeaderFs = document.getElementById('btnHeaderFullscreen');
-    const btnExitTop = document.getElementById('btnExitFullscreenTop');
-    const ws = document.getElementById('cad-workspace');
+    const btnBack = document.getElementById('btnFullscreenBack');
 
     if (iconOpen) iconOpen.style.display = isFs ? 'none' : 'inline-block';
     if (iconExit) iconExit.style.display = isFs ? 'inline-block' : 'none';
     if (txtFs) txtFs.textContent = isFs ? 'Thu Nhỏ' : 'Toàn Màn';
 
-    if (btnHeaderFs) {
-        btnHeaderFs.innerHTML = isFs 
-            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg><span>✕ THU NHỎ</span>'
-            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span>TOÀN MÀN HÌNH</span>';
-    }
-
-    if (btnExitTop) {
-        btnExitTop.style.display = isFs ? 'inline-flex' : 'none';
+    if (btnBack) {
+        btnBack.style.display = isFs ? 'inline-flex' : 'none';
     }
 
     if (viewportController) {
