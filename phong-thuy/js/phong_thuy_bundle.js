@@ -1700,6 +1700,9 @@ export class ArchitecturalCADRenderer {
         }
         roomLabelsSvg += '</g>';
 
+        const bboxCenterX = Math.round((houseMinX + houseMaxX) / 2);
+        const bboxCenterY = Math.round((houseMinY + houseMaxY) / 2);
+
         return {
             viewBox,
             wallsLayer: wallsSvg,
@@ -1710,9 +1713,15 @@ export class ArchitecturalCADRenderer {
             vertexLayer: handlesLayer,
             centerLayer: centerMarkerSvg,
             houseMinX,
+            houseMaxX,
             houseMinY,
+            houseMaxY,
             houseWidth: houseW,
             houseDepth: houseD,
+            houseBboxCenterX: bboxCenterX,
+            houseBboxCenterY: bboxCenterY,
+            houseCentroidX: centroid.x,
+            houseCentroidY: centroid.y,
             houseCenterX: centroid.x,
             houseCenterY: centroid.y
         };

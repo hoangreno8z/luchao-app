@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787296607990';
+} from './js/phong_thuy_bundle.js?v=1787296996883';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -1940,6 +1940,7 @@ function initCadInteractiveEngine() {
                 pt.x = snapToGrid(pointerState.origX + dx, 50);
                 pt.y = snapToGrid(pointerState.origY + dy, 50);
                 renderActiveDrawing();
+                renderPopovers();
             }
         }
     });
@@ -2178,8 +2179,8 @@ function renderActiveDrawing() {
 
     const luoPanOverlay = luoPanRenderer.renderOverlayLayer(
         currentFlyingStars,
-        cadLayers.houseCenterX,
-        cadLayers.houseCenterY,
+        cadLayers.houseCentroidX || cadLayers.houseCenterX,
+        cadLayers.houseCentroidY || cadLayers.houseCenterY,
         cadLayers.houseWidth,
         cadLayers.houseDepth,
         luoPanScaleFactor
@@ -2187,8 +2188,8 @@ function renderActiveDrawing() {
 
     const ninePalacesOverlay = luoPanRenderer.renderNinePalacesLayer(
         currentFlyingStars,
-        cadLayers.houseCenterX,
-        cadLayers.houseCenterY,
+        cadLayers.houseBboxCenterX || cadLayers.houseCenterX,
+        cadLayers.houseBboxCenterY || cadLayers.houseCenterY,
         cadLayers.houseWidth,
         cadLayers.houseDepth,
         currentFlyingStars ? currentFlyingStars.facingPalace : 9,
