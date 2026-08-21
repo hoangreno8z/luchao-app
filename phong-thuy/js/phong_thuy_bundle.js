@@ -314,19 +314,26 @@ export function calculateFlyingStars(params = {}) {
     };
 }
 
-export function getOrientedPalaceGrid(facingPalaceId) {
+export function getOrientedPalaceGrid(facingPalaceId, isInverted = false) {
     const ring = [1, 8, 3, 4, 9, 2, 7, 6];
     const fIdx = ring.indexOf(facingPalaceId);
     if (fIdx === -1) return [4, 9, 2, 3, 5, 7, 8, 1, 6];
     const getP = (offset) => ring[((fIdx + offset) % 8 + 8) % 8];
-    // Row 0 (Top / HƯỚNG NHÀ - Mũi đỏ hướng lên): getP(-1), getP(0)=HƯỚNG, getP(1)
-    // Row 1 (Mid / Giữa nhà): getP(-2), 5, getP(2)
-    // Row 2 (Bottom / TỌA NHÀ - Mũi xanh hướng xuống): getP(-3), getP(4)=TỌA, getP(3)
-    return [
-        getP(-1), getP(0), getP(1),
-        getP(-2), 5,       getP(2),
-        getP(-3), getP(4), getP(3)
-    ];
+    if (!isInverted) {
+        // Chế độ 1 (Mặc định): Hướng Trên (mũi đỏ lên), Tọa Dưới (mũi xanh xuống)
+        return [
+            getP(-1), getP(0), getP(1),
+            getP(-2), 5,       getP(2),
+            getP(-3), getP(4), getP(3)
+        ];
+    } else {
+        // Chế độ 2 (Đảo chiều): Tọa Trên (mũi xanh lên), Hướng Dưới (mũi đỏ xuống)
+        return [
+            getP(-3), getP(4), getP(3),
+            getP(-2), 5,       getP(2),
+            getP(-1), getP(0), getP(1)
+        ];
+    }
 }
 
 export function calculateGua(birthYear, gender = 'nam') {
@@ -1776,14 +1783,15 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         return svg;
     }
 
-    renderOverlayLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, scaleFactor = 1.0) {
+    renderOverlayLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, scaleFactor = 1.0, isInverted = false) {
         if (!flyingStars) return '';
 
         const radius = Math.max(3800, Math.max(houseW, houseD) * 0.65 + 1500) * scaleFactor;
         const facingDeg = flyingStars.facingDegree !== undefined ? flyingStars.facingDegree : 180;
         const sittingDeg = (facingDeg + 180) % 360;
-        // BÊN TRÊN LÀ HƯỚNG (mũi đỏ hướng lên), BÊN DƯỚI LÀ TỌA (mũi xanh hướng xuống):
-        const luoPanRot = -facingDeg;
+        // isInverted = false: Hướng trên (mũi đỏ lên), Tọa dưới (mũi xanh xuống)
+        // isInverted = true: Tọa trên (mũi xanh lên), Hướng dưới (mũi đỏ xuống)
+        const luoPanRot = isInverted ? (180 - facingDeg) : (-facingDeg);
 
         // 1. VÒNG NGOÀI CÙNG: 360 ĐỘ (VẠCH CHIA TỪNG ĐỘ VÀ SỐ ĐỘ MỖI 10 ĐỘ)
         let ticksSvg = '<g id="layer-360-degrees" pointer-events="none">';
@@ -1806,8 +1814,9 @@ export class LuoPanAndFlyingStarsSvgRenderer {
                 const rText = radius - 580 * scaleFactor;
                 const tx = rText * Math.cos(rad);
                 const ty = rText * Math.sin(rad);
+                const screenAngle = ((deg + luoPanRot) % 360 + 360) % 360;
                 let rotText = deg;
-                if (deg > 90 && deg < 270) rotText = (rotText + 180) % 360;
+                if (screenAngle > 90 && screenAngle < 270) rotText = (rotText + 180) % 360;
                 ticksSvg += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${260 * scaleFactor}" font-weight="900" fill="#0f172a" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${deg}</text>`;
             }
         }
@@ -1844,12 +1853,13 @@ export class LuoPanAndFlyingStarsSvgRenderer {
 
             mountainsSvg += `<line x1="${xLine1.toFixed(1)}" y1="${yLine1.toFixed(1)}" x2="${xLine2.toFixed(1)}" y2="${yLine2.toFixed(1)}" stroke="#dc2626" stroke-width="${20 * scaleFactor}"/>`;
 
-            // Tên 24 Sơn
+            // Tên 24 Sơn (Luôn xoay chữ thuận hướng đọc mắt người)
             const rText = (rMntIn + rMntOut) / 2;
             const tx = rText * Math.cos(radCenter);
             const ty = rText * Math.sin(radCenter);
+            const screenAngle = ((m.center + luoPanRot) % 360 + 360) % 360;
             let rotText = m.center;
-            if (m.center > 90 && m.center < 270) rotText = (rotText + 180) % 360;
+            if (screenAngle > 90 && screenAngle < 270) rotText = (rotText + 180) % 360;
 
             const isFacingMnt = (m.name === flyingStars.facingMountain);
             const isSittingMnt = (m.name === flyingStars.sittingMountain);
@@ -1878,8 +1888,9 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             const rText = radius * 0.40;
             const tx = rText * Math.cos(rad);
             const ty = rText * Math.sin(rad);
+            const screenAngle = ((c.deg + luoPanRot) % 360 + 360) % 360;
             let rotText = c.deg;
-            if (c.deg > 90 && c.deg < 270) rotText = (rotText + 180) % 360;
+            if (screenAngle > 90 && screenAngle < 270) rotText = (rotText + 180) % 360;
 
             // Nan phân cách 8 hướng màu đỏ nét đứt
             const xLine = radius * Math.cos(rad);
@@ -1949,7 +1960,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         `;
     }
 
-    renderNinePalacesLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, facingPalaceId = 9, scaleFactor = 1.0) {
+    renderNinePalacesLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, facingPalaceId = 9, scaleFactor = 1.0, isInverted = false) {
         if (!flyingStars || !flyingStars.palaces) return '';
 
         // KHỚP CHÍNH XÁC 100% THEO CHIỀU NGANG VÀ CHIỀU DÀI CỦA NGÔI NHÀ / KHU ĐẤT
@@ -1961,7 +1972,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         const halfH = gridH / 2;
 
         // Ma trận 3x3 theo góc hướng nhà
-        const order = getOrientedPalaceGrid(facingPalaceId);
+        const order = getOrientedPalaceGrid(facingPalaceId, isInverted);
 
         let cellsSvg = '';
 

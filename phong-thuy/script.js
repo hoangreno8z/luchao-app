@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787299617917';
+} from './js/phong_thuy_bundle.js?v=1787299949057';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -1402,6 +1402,19 @@ function initActionButtons() {
         btnCalc.addEventListener('click', () => handleCalculate(true));
     }
 
+    const btnToggleInvertOrientation = document.getElementById('btnToggleInvertOrientation');
+    const labelInvertOrientation = document.getElementById('labelInvertOrientation');
+
+    if (btnToggleInvertOrientation) {
+        btnToggleInvertOrientation.addEventListener('click', () => {
+            isOrientationInverted = !isOrientationInverted;
+            if (labelInvertOrientation) {
+                labelInvertOrientation.textContent = isOrientationInverted ? '⇄ Đang: Tọa Trên' : '⇄ Đang: Hướng Trên';
+            }
+            refreshSpatialFengShui();
+        });
+    }
+
     const btnMatrixOrientHouse = document.getElementById('btnMatrixOrientHouse');
     const btnMatrixOrientLoShu = document.getElementById('btnMatrixOrientLoShu');
 
@@ -2237,7 +2250,7 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
 
     const facingPal = flyingStars ? flyingStars.facingPalace : 9;
     const order = currentMatrixOrientMode === 'house'
-        ? getOrientedPalaceGrid(facingPal)
+        ? getOrientedPalaceGrid(facingPal, isOrientationInverted)
         : [4, 9, 2, 3, 5, 7, 8, 1, 6];
 
     grid.innerHTML = order.map(pId => {
