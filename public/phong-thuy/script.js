@@ -64,6 +64,7 @@ const layerState = {
     roomLabels: true,
     axes: true,
     luoPan: true,
+    luoPanScale: 1.0,
     ninePalaces: true,
     sourceImage: false,
     sourceImageOpacity: 0.35
@@ -769,6 +770,17 @@ function initFloatingToolbar() {
         layerState.sourceImageOpacity = parseFloat(e.target.value) / 100;
         if (layerState.sourceImage) renderActiveDrawing();
     });
+
+    const rngLuopanScale = document.getElementById('rngLuopanScale');
+    const lblLuopanScale = document.getElementById('lblLuopanScale');
+    if (rngLuopanScale) {
+        rngLuopanScale.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value, 10) || 100;
+            layerState.luoPanScale = val / 100;
+            if (lblLuopanScale) lblLuopanScale.textContent = `${val}%`;
+            renderActiveDrawing();
+        });
+    }
 
     if (btnAdd && popAdd) {
         btnAdd.addEventListener('click', (e) => {
@@ -1648,12 +1660,15 @@ function renderActiveDrawing() {
         selectedEdgeIndex
     });
 
+    const luoPanScaleFactor = layerState.luoPanScale || 1.0;
+
     const luoPanOverlay = luoPanRenderer.renderOverlayLayer(
         currentFlyingStars,
         cadLayers.houseCenterX,
         cadLayers.houseCenterY,
         cadLayers.houseWidth,
-        cadLayers.houseDepth
+        cadLayers.houseDepth,
+        luoPanScaleFactor
     );
 
     const ninePalacesOverlay = luoPanRenderer.renderNinePalacesLayer(
@@ -1662,7 +1677,8 @@ function renderActiveDrawing() {
         cadLayers.houseCenterY,
         cadLayers.houseWidth,
         cadLayers.houseDepth,
-        currentFlyingStars ? currentFlyingStars.facingPalace : 9
+        currentFlyingStars ? currentFlyingStars.facingPalace : 9,
+        luoPanScaleFactor
     );
 
     const fullSvg = renderUnifiedSvg(
