@@ -442,18 +442,99 @@ export class HouseCenterGeometryEngine {
         return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
     }
 
-    static analyzePolygon(pts) {
+    static calculatePerimeter(pts) {
+        if (!pts || pts.length < 2) return 0;
+        let perim = 0;
+        for (let i = 0; i < pts.length; i++) {
+            const j = (i + 1) % pts.length;
+            perim += Math.hypot(pts[j].x - pts[i].x, pts[j].y - pts[i].y);
+        }
+        return Math.round(perim);
+    }
+
+    static isConvex(pts) {
+        if (!pts || pts.length < 4) return true;
+        let sign = 0;
+        const n = pts.length;
+        for (let i = 0; i < n; i++) {
+            const p1 = pts[i];
+            const p2 = pts[(i + 1) % n];
+            const p3 = pts[(i + 2) % n];
+            const cross = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
+            if (Math.abs(cross) > 1e-4) {
+                if (sign === 0) sign = cross > 0 ? 1 : -1;
+                else if ((cross > 0 ? 1 : -1) !== sign) return false;
+            }
+        }
+        return true;
+    }
+
+    static calculateDeficientSectors(pts, facingDegree = 180) {
+        if (!pts || pts.length < 5) return [];
+        const bbox = this.calculateBoundingBoxCenter(pts);
+        const cellW = bbox.width / 3;
+        const cellH = bbox.depth / 3;
+        const deficient = [];
+
+        const directionMap = [
+            { row: 0, col: 0, name: 'Tây Bắc (Càn)', palaceId: 6 },
+            { row: 0, col: 1, name: 'Bắc (Khảm)', palaceId: 1 },
+            { row: 0, col: 2, name: 'Đông Bắc (Cấn)', palaceId: 8 },
+            { row: 1, col: 0, name: 'Tây (Đoài)', palaceId: 7 },
+            { row: 1, col: 1, name: 'Trung Cung', palaceId: 5 },
+            { row: 1, col: 2, name: 'Đông (Chấn)', palaceId: 3 },
+            { row: 2, col: 0, name: 'Tây Nam (Khôn)', palaceId: 2 },
+            { row: 2, col: 1, name: 'Nam (Ly)', palaceId: 9 },
+            { row: 2, col: 2, name: 'Đông Nam (Tốn)', palaceId: 4 }
+        ];
+
+        directionMap.forEach(sec => {
+            if (sec.palaceId === 5) return;
+            const cx = bbox.minX + (sec.col + 0.5) * cellW;
+            const cy = bbox.minY + (sec.row + 0.5) * cellH;
+            
+            // Sample 9 points in sector
+            let insideCount = 0;
+            const subSteps = 3;
+            for (let r = 0; r < subSteps; r++) {
+                for (let c = 0; c < subSteps; c++) {
+                    const sx = bbox.minX + (sec.col + (c + 0.5) / subSteps) * cellW;
+                    const sy = bbox.minY + (sec.row + (r + 0.5) / subSteps) * cellH;
+                    if (this.isPointInPolygon({ x: sx, y: sy }, pts)) insideCount++;
+                }
+            }
+
+            const fillRatio = insideCount / (subSteps * subSteps);
+            if (fillRatio < 0.35) {
+                deficient.push({
+                    palaceId: sec.palaceId,
+                    name: sec.name,
+                    missingPercent: Math.round((1 - fillRatio) * 100),
+                    severity: fillRatio < 0.1 ? 'Khuyết Nặng' : 'Khuyết Nhẹ'
+                });
+            }
+        });
+
+        return deficient;
+    }
+
+    static analyzePolygon(pts, facingDegree = 180) {
         const areaMm2 = Math.abs(this.calculateShoelaceArea(pts));
         const areaM2 = (areaMm2 / 1000000).toFixed(2);
         const centroid = this.calculatePolygonCentroid(pts);
         const bbox = this.calculateBoundingBoxCenter(pts);
         const polylabel = this.calculatePolylabel(pts);
         const isCentroidInside = this.isPointInPolygon(centroid, pts);
+        const perimeterMm = this.calculatePerimeter(pts);
+        const perimeterM = (perimeterMm / 1000).toFixed(2);
+        const isConvex = this.isConvex(pts);
+        const deficientSectors = this.calculateDeficientSectors(pts, facingDegree);
 
         let shape = 'RECTANGLE';
         if (pts.length === 6) shape = 'L_SHAPE';
         else if (pts.length === 8) shape = 'U_SHAPE';
-        else if (pts.length > 4 && !isCentroidInside) shape = 'CONCAVE_POLYGON';
+        else if (!isConvex && !isCentroidInside) shape = 'CONCAVE_POLYGON';
+        else if (!isConvex) shape = 'DEFICIENT_POLYGON';
         else if (pts.length > 4) shape = 'POLYGON_' + pts.length;
 
         const confidence = pts.length === 4 ? 98.5 : (isCentroidInside ? 94.0 : 88.5);
@@ -461,11 +542,15 @@ export class HouseCenterGeometryEngine {
         return {
             areaMm2,
             areaM2,
+            perimeterMm,
+            perimeterM,
             centroid,
             boundingBoxCenter: { x: bbox.x, y: bbox.y },
             polylabel,
             isCentroidInside,
+            isConvex,
             shape,
+            deficientSectors,
             confidence: confidence.toFixed(1),
             edgesCount: pts.length,
             widthMm: bbox.width,
