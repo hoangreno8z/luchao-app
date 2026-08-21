@@ -1664,7 +1664,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         return `
             <g class="layer-luopan-overlay" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
                 <!-- Vòng tròn nền La Kinh trắng viền đỏ -->
-                <circle cx="0" cy="0" r="${radius}" fill="rgba(255, 255, 255, 0.94)" stroke="#dc2626" stroke-width="10"/>
+                <circle cx="0" cy="0" r="${radius}" fill="rgba(255, 255, 255, 0.15)" stroke="#dc2626" stroke-width="8"/>
                 <circle cx="0" cy="0" r="${rMntOut}" fill="none" stroke="#dc2626" stroke-width="6"/>
                 <circle cx="0" cy="0" r="${rMntIn}" fill="none" stroke="#dc2626" stroke-width="6"/>
                 <circle cx="0" cy="0" r="${radius * 0.4}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="20,15"/>
@@ -1709,7 +1709,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             cellsSvg += `
                 <g transform="translate(${x}, ${y})">
                     <!-- Viền ô đơn lẻ -->
-                    <rect width="${cellSize}" height="${cellSize}" fill="rgba(255, 255, 255, 0.95)" stroke="#000000" stroke-width="8"/>
+                    <rect width="${cellSize}" height="${cellSize}" fill="rgba(255, 255, 255, 0.75)" stroke="#000000" stroke-width="8"/>
 
                     <!-- Hàng trên: 4 vòng tròn màu nhỏ (Năm - Tháng - Ngày - Giờ) -->
                     <g transform="translate(${cellSize / 2}, 75)">
@@ -2023,12 +2023,12 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     <rect x="${vb.x}" y="${vb.y}" width="${vb.w}" height="${vb.h}" fill="url(#cadGridPattern)"/>
 
     ${sourceImageContent}
+    ${luoPanContent}
+    ${ninePalacesContent}
     ${wallsContent}
     ${roomsContent}
     ${dimsContent}
     ${centerContent}
-    ${ninePalacesContent}
-    ${luoPanContent}
     ${roomLabelsContent}
     ${vertexContent}
 </svg>

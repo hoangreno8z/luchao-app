@@ -703,10 +703,11 @@ function initFloatingToolbar() {
     dragHeader.addEventListener('pointerup', stopDrag);
     dragHeader.addEventListener('pointercancel', stopDrag);
 
-    if (btnMin && body) {
-        btnMin.addEventListener('click', () => {
-            body.classList.toggle('collapsed');
-            btnMin.textContent = body.classList.contains('collapsed') ? '+' : '−';
+    if (btnMin && tb) {
+        btnMin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tb.classList.toggle('collapsed');
+            btnMin.textContent = tb.classList.contains('collapsed') ? '+' : '−';
         });
     }
 
@@ -1015,18 +1016,18 @@ function renderPopovers() {
     if (hudRoomChipsList) {
         const rooms = currentGeometry.rooms || [];
         if (rooms.length === 0) {
-            hudRoomChipsList.innerHTML = '<span style="font-size:0.75rem; color:#64748b; font-style:italic;">Chưa có phòng nào</span>';
+            hudRoomChipsList.innerHTML = '<span style="font-size:0.65rem; color:#94a3b8; font-style:italic; padding:4px;">Chưa có phòng nào</span>';
         } else {
             hudRoomChipsList.innerHTML = rooms.map(r => {
-                const isSel = r.id === selectedRoomId;
+                const isSel = (r.id === selectedRoomId);
                 return `
-                    <div class="hud-room-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chỉnh sửa kích thước ${r.name}">
+                    <button type="button" class="hud-room-chip-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chỉnh sửa kích thước ${r.name}">
                         <span>${r.name}</span>
-                    </div>
+                    </button>
                 `;
             }).join('');
 
-            hudRoomChipsList.querySelectorAll('.hud-room-btn').forEach(btn => {
+            hudRoomChipsList.querySelectorAll('.hud-room-chip-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const rId = btn.getAttribute('data-room-id');
