@@ -1357,11 +1357,14 @@ export class ArchitecturalCADRenderer {
                 const rotStr = l.rot ? `rotate(${l.rot}, ${l.x + l.w / 2}, ${l.y + l.h / 2})` : '';
 
                 landscapesSvg += `
-                    <g class="cad-landscape-interactive ${isSel ? 'selected' : ''}" data-landscape-id="${l.id}" transform="${rotStr}" style="cursor: move;">
-                        <g transform="translate(${l.x}, ${l.y})">
+                    <g class="cad-landscape-interactive ${isSel ? 'selected' : ''}" data-landscape-id="${l.id}" transform="${rotStr}" style="cursor: move;" pointer-events="all">
+                        <!-- Hitbox trong suốt bao phủ toàn bộ diện tích ngoại cảnh để bắt sự kiện kéo thả chính xác 100% -->
+                        <rect class="cad-landscape-hitbox" data-landscape-id="${l.id}" x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" fill="transparent" pointer-events="all" style="cursor: move; touch-action: none;"/>
+                        
+                        <g transform="translate(${l.x}, ${l.y})" pointer-events="none">
                             ${sym}
                         </g>
-                        <g transform="translate(${l.x + l.w / 2}, ${l.y + l.h / 2})">
+                        <g transform="translate(${l.x + l.w / 2}, ${l.y + l.h / 2})" pointer-events="all">
                             <rect x="${-Math.min(l.w * 0.45, 900)}" y="-50" width="${Math.min(l.w * 0.9, 1800)}" height="100" rx="16" fill="rgba(255, 255, 255, 0.92)" stroke="#0f172a" stroke-width="8"/>
                             <text x="0" y="16" text-anchor="middle" font-size="65" font-weight="900" fill="#0f172a" font-family="'Inter', sans-serif" letter-spacing="1.5">${l.name}</text>
                         </g>

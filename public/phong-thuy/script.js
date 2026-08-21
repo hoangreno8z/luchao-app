@@ -896,6 +896,24 @@ function initFloatingToolbar() {
     }
 
     // Popover Triggers
+    const btnRooms = document.getElementById('btnTriggerRooms');
+    const popRooms = document.getElementById('popoverMenuRooms');
+    const btnCloseRooms = document.getElementById('btnClosePopoverRooms');
+
+    if (btnRooms && popRooms) {
+        btnRooms.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = popRooms.style.display === 'block';
+            closeAllPopovers();
+            popRooms.style.display = isVisible ? 'none' : 'block';
+            renderPopovers();
+        });
+    }
+
+    if (btnCloseRooms && popRooms) {
+        btnCloseRooms.addEventListener('click', () => popRooms.style.display = 'none');
+    }
+
     const btnAdd = document.getElementById('btnTriggerAdd');
     const popAdd = document.getElementById('popoverMenuAdd');
     const btnCloseAdd = document.getElementById('btnClosePopoverAdd');
@@ -1292,21 +1310,24 @@ function renderPopovers() {
     if (hudRoomChipsList) {
         const rooms = currentGeometry.rooms || [];
         if (rooms.length === 0) {
-            hudRoomChipsList.innerHTML = '<span style="font-size:0.65rem; color:#94a3b8; font-style:italic; padding:4px;">Chưa có phòng nào</span>';
+            hudRoomChipsList.innerHTML = '<span style="font-size:0.7rem; color:#94a3b8; font-style:italic; padding:4px;">Chưa có phòng nào</span>';
         } else {
             hudRoomChipsList.innerHTML = rooms.map(r => {
                 const isSel = (r.id === selectedRoomId);
+                const wM = (r.w / 1000).toFixed(1);
+                const hM = (r.h / 1000).toFixed(1);
                 return `
-                    <button type="button" class="hud-room-chip-btn ${isSel ? 'active' : ''}" data-room-id="${r.id}" title="Chạm để chỉnh sửa kích thước ${r.name}">
-                        <span>${r.name}</span>
-                    </button>
+                    <div class="popover-item-row ${isSel ? 'active' : ''}" data-room-id="${r.id}" style="display:flex; justify-content:space-between; align-items:center; padding:5px 8px; border-radius:6px; cursor:pointer; background:${isSel ? 'rgba(2, 132, 199, 0.25)' : 'rgba(15, 23, 42, 0.5)'}; border:1px solid ${isSel ? '#0284c7' : 'rgba(255,255,255,0.1)'};">
+                        <span style="font-size:0.74rem; font-weight:800; color:${isSel ? '#38bdf8' : '#fff'};">${r.name}</span>
+                        <span class="chip-dim" style="font-size:0.68rem; color:#94a3b8; font-family:monospace;">${wM}m × ${hM}m</span>
+                    </div>
                 `;
             }).join('');
 
-            hudRoomChipsList.querySelectorAll('.hud-room-chip-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            hudRoomChipsList.querySelectorAll('.popover-item-row').forEach(item => {
+                item.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const rId = btn.getAttribute('data-room-id');
+                    const rId = item.getAttribute('data-room-id');
                     selectRoom(rId, true);
                 });
             });
