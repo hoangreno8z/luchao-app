@@ -5,6 +5,7 @@
 // ============================================================
 
 import {
+    FengShuiInterpretationEngine,
     findMountain,
     getOppositeMountain,
     calculateFlyingStars,
@@ -34,6 +35,7 @@ let currentFlyingStars = null;
 let currentBatTrach = null;
 
 let cadRenderer = null;
+let interpretationEngine = null;
 let luoPanRenderer = null;
 let viewportController = null;
 
@@ -1718,7 +1720,7 @@ function renderActiveDrawing() {
 
 /* 14. Render Flying Stars 3x3 Matrix */
 function renderFlyingStarsMatrix(flyingStars, batTrach) {
-    const grid = document.getElementById('flyingStarsGrid');
+    const grid = document.getElementById('flyingStarsMatrix') || document.getElementById('flyingStarsGrid');
     if (!grid || !flyingStars) return;
 
     const order = [4, 9, 2, 3, 5, 7, 8, 1, 6]; // Standard Lo Shu order for reference table
@@ -1747,26 +1749,14 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     }).join('');
 }
 
-/* 15. Render Detailed Architectural & Spatial Report */
+/* 15. Render Standalone Detailed Architectural & Spatial Report */
 function renderDetailedReport(spatialResult) {
-    const container = document.getElementById('palaceReportsContainer');
-    if (!container || !spatialResult || !spatialResult.spatialPalaces) return;
+    const container = document.getElementById('detailedReportContainer') || document.getElementById('palaceReportsContainer');
+    if (!container || !spatialResult) return;
 
-    const palaces = Object.values(spatialResult.spatialPalaces);
-    container.innerHTML = palaces.map(p => {
-        return `
-            <div class="report-card">
-                <div class="report-card-header">
-                    <span class="report-palace-title">${p.palaceName}</span>
-                    <span class="audit-badge ${p.grade === 'ĐẠI CÁT' || p.grade === 'CÁT' ? 'good' : 'bad'}">${p.grade}</span>
-                </div>
-                <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.4;">
-                    ${p.analysis}
-                </div>
-                <div style="font-size: 0.8rem; color: var(--gold-light); font-weight: 600;">
-                    Bố trí: ${p.remedy}
-                </div>
-            </div>
-        `;
-    }).join('');
+    if (!interpretationEngine) {
+        interpretationEngine = new FengShuiInterpretationEngine();
+    }
+
+    interpretationEngine.renderReports(spatialResult, container, interpretationEngine.currentFilter || 'all');
 }
