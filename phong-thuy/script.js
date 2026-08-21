@@ -784,6 +784,35 @@ function initViewport() {
 
 /* 8. Floating Toolbar Initialization & Movable Drag Logic */
 function initFloatingToolbar() {
+    const btnLandscapeDirect = document.getElementById('btnTriggerLandscapeDirect');
+    const popLandscapeDirect = document.getElementById('popoverMenuLandscapeDirect');
+    const btnCloseLandscapeDirect = document.getElementById('btnClosePopoverLandscapeDirect');
+
+    if (btnLandscapeDirect && popLandscapeDirect) {
+        btnLandscapeDirect.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = popLandscapeDirect.style.display === 'block';
+            closeAllPopovers();
+            popLandscapeDirect.style.display = isVisible ? 'none' : 'block';
+        });
+    }
+
+    if (btnCloseLandscapeDirect && popLandscapeDirect) {
+        btnCloseLandscapeDirect.addEventListener('click', () => popLandscapeDirect.style.display = 'none');
+    }
+
+    document.querySelectorAll('.btn-sidebar-landscape').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = btn.getAttribute('data-type');
+            const name = btn.getAttribute('data-name');
+            const w = parseInt(btn.getAttribute('data-w'), 10) || 8000;
+            const h = parseInt(btn.getAttribute('data-h'), 10) || 6000;
+            handleAddLandscapeDirect(type, name, w, h);
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) resultsSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
     const tb = document.getElementById('cadFloatingToolbar');
     const dragHeader = document.getElementById('hudDragHeader');
     const btnMin = document.getElementById('btnMinimizeToolbar');

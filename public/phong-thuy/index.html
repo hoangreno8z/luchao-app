@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1787284555083">
 </head>
 <body>
 
@@ -383,6 +383,40 @@
                 </div>
             </div>
 
+            
+            <!-- Accordion 3: NGOẠI CẢNH (Loan Đầu Xung Quanh Nhà) -->
+            <div class="accordion-card" id="accordionCardLandscape">
+                <div class="accordion-header" id="accordionHeaderLandscape">
+                    <div class="accordion-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><path d="M8 3l4 8 5-5 5 15H2L8 3z"/></svg>
+                        <span>Ngoại Cảnh (Loan Đầu)</span>
+                    </div>
+                    <div class="accordion-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                </div>
+                <div class="accordion-body" id="accordionBodyLandscape">
+                    <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.4; margin-bottom: 10px;">
+                        Chạm vào biểu tượng bên dưới để <b>đặt công trình ngoại cảnh xung quanh nhà</b> (kéo thả, xoay 360°, co giãn kích thước tùy ý):
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 6px;">
+                        <button type="button" class="btn-sidebar-landscape" data-type="temple" data-name="Chùa" data-w="6000" data-h="6000">⛩ Chùa</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="t_junction" data-name="Ngã 3" data-w="8000" data-h="8000">🛣 Ngã 3</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="crossroad" data-name="Ngã 4" data-w="8000" data-h="8000">🚦 Ngã 4</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="river_lake" data-name="Sông/Hồ" data-w="10000" data-h="5000">🌊 Sông/Hồ</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="cemetery" data-name="Nghĩa Trang" data-w="7000" data-h="7000">🪦 Nghĩa Trang</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="park" data-name="Công Viên" data-w="8000" data-h="6000">🌳 Công Viên</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="substation" data-name="Trạm Điện" data-w="5000" data-h="5000">⚡ Trạm Điện</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="bus_station" data-name="Bến Xe" data-w="8000" data-h="6000">🚌 Bến Xe</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="seaport" data-name="Cảng" data-w="9000" data-h="6000">⚓ Cảng</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="airport" data-name="Sân Bay" data-w="12000" data-h="6000">✈ Sân Bay</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="railway" data-name="Đường Sắt" data-w="12000" data-h="3000">🚂 Đường Sắt</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="field" data-name="Ruộng" data-w="8000" data-h="6000">🌾 Ruộng</button>
+                        <button type="button" class="btn-sidebar-landscape" data-type="mountain" data-name="Núi" data-w="10000" data-h="6000">⛰ Núi</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Existing House 9-Palace Drag & Drop Area (Tab 2: Nhà) -->
             <div id="existingRoomsSection" style="display: none; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.2); padding-bottom: 6px;">
@@ -408,7 +442,7 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="dndPalacesGrid">
-                        <!-- Populated dynamically by script.js with 9 drop zones -->
+                        <!-- Populated dynamically by script.js?v=1787284555083 with 9 drop zones -->
                     </div>
                 </div>
             </div>
@@ -425,7 +459,7 @@
             
             <!-- Floor Switcher Bar -->
             <div class="floor-navigator" id="floorNavigator">
-                <!-- Generated dynamically by script.js -->
+                <!-- Generated dynamically by script.js?v=1787284555083 -->
             </div>
 
             <!-- Studio Grid: SVG Viewport Left, Flying Star Matrix Right -->
@@ -535,6 +569,34 @@
                                         </div>
                                     </div>
 
+                                                                        <!-- 4. Ngoại Cảnh Trigger -->
+                                    <div class="hud-popover-wrapper">
+                                        <button type="button" class="hud-floating-btn" id="btnTriggerLandscapeDirect" title="Thêm ngoại cảnh xung quanh (Núi, Sông, Chùa...)">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M8 3l4 8 5-5 5 15H2L8 3z"/></svg>
+                                            <span style="color:#fde68a;">Cảnh</span>
+                                        </button>
+                                        <div class="hud-popover-menu" id="popoverMenuLandscapeDirect" style="display: none; min-width: 240px;">
+                                            <div class="popover-header">
+                                                <span>NGOẠI CẢNH (LOAN ĐẦU)</span>
+                                                <button type="button" class="btn-popover-close" id="btnClosePopoverLandscapeDirect">×</button>
+                                            </div>
+                                            <div class="popover-grid" style="max-height: 280px; overflow-y: auto;">
+                                                <button type="button" class="hud-landscape-chip" data-type="temple" data-name="Chùa" data-w="6000" data-h="6000">⛩ Chùa</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="t_junction" data-name="Ngã 3" data-w="8000" data-h="8000">🛣 Ngã 3</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="crossroad" data-name="Ngã 4" data-w="8000" data-h="8000">🚦 Ngã 4</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="river_lake" data-name="Sông/Hồ" data-w="10000" data-h="5000">🌊 Sông/Hồ</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="cemetery" data-name="Nghĩa Trang" data-w="7000" data-h="7000">🪦 Nghĩa Trang</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="park" data-name="Công Viên" data-w="8000" data-h="6000">🌳 Công Viên</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="substation" data-name="Trạm Điện" data-w="5000" data-h="5000">⚡ Trạm Điện</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="bus_station" data-name="Bến Xe" data-w="8000" data-h="6000">🚌 Bến Xe</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="seaport" data-name="Cảng" data-w="9000" data-h="6000">⚓ Cảng</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="airport" data-name="Sân Bay" data-w="12000" data-h="6000">✈ Sân Bay</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="railway" data-name="Đường Sắt" data-w="12000" data-h="3000">🚂 Đường Sắt</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="field" data-name="Ruộng" data-w="8000" data-h="6000">🌾 Ruộng</button>
+                                                <button type="button" class="hud-landscape-chip" data-type="mountain" data-name="Núi" data-w="10000" data-h="6000">⛰ Núi</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <!-- 2.1 Quản Lý Lớp Bản Vẽ (Layers) -->
                                     <div class="hud-popover-wrapper">
                                         <button type="button" class="hud-floating-btn" id="btnTriggerLayers" title="Bật/tắt các lớp bản vẽ và độ mờ">
@@ -605,7 +667,7 @@
                                 <div class="hud-rooms-section">
                                     <div class="hud-section-label">CHỌN PHÒNG ĐỂ SỬA:</div>
                                     <div class="hud-room-chips-list" id="hudRoomChipsList">
-                                        <!-- Rendered dynamically by script.js -->
+                                        <!-- Rendered dynamically by script.js?v=1787284555083 -->
                                     </div>
                                 </div>
                             </div>
@@ -678,7 +740,7 @@
 
                     <!-- 9-Palace Matrix (Lo Shu 3x3 Grid) -->
                     <div class="palace-grid" id="flyingStarsMatrix">
-                        <!-- Populated by script.js -->
+                        <!-- Populated by script.js?v=1787284555083 -->
                     </div>
 
                     <!-- Cách Cục Summary -->
@@ -701,7 +763,7 @@
                 </div>
 
                 <div id="detailedReportContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
-                    <!-- Populated dynamically by script.js -->
+                    <!-- Populated dynamically by script.js?v=1787284555083 -->
                 </div>
             </div>
 
@@ -714,6 +776,6 @@
         <p style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Liên hệ tư vấn trực tiếp: 0933 116 860 · Vận 9 Hạ Nguyên (2024 - 2043)</p>
     </footer>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=1787284555083"></script>
 </body>
 </html>
