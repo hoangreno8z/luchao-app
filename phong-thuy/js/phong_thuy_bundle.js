@@ -1032,7 +1032,7 @@ export class ArchitecturalCADRenderer {
         if (pts.length >= 3) {
             const pathData = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
             wallsSvg += `
-                <path d="${pathData}" fill="#ffffff" stroke="#0f172a" stroke-width="220" stroke-linejoin="miter" stroke-linecap="square"/>
+                <path d="${pathData}" fill="rgba(255, 255, 255, 0.4)" stroke="#0f172a" stroke-width="220" stroke-linejoin="miter" stroke-linecap="square"/>
                 <path d="${pathData}" fill="none" stroke="#64748b" stroke-width="6" stroke-dasharray="25,15" opacity="0.8"/>
             `;
 
