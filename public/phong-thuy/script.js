@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787299949057';
+} from './js/phong_thuy_bundle.js?v=1787300205706';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -195,6 +195,17 @@ function refreshSpatialFengShui() {
     const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
     const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
 
+    currentFlyingStars = calculateFlyingStars({
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour
+    });
+
+    currentBatTrach = calculateGua(ownerYear, ownerGender);
+
     currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
         facingDegree,
         buildYear,
@@ -206,6 +217,8 @@ function refreshSpatialFengShui() {
         ownerGender
     });
 
+    renderActiveDrawing();
+    renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
     renderDetailedReport(currentSpatialResult);
 }
 
@@ -2219,7 +2232,8 @@ function renderActiveDrawing() {
         cadLayers.houseCentroidY || cadLayers.houseCenterY,
         cadLayers.houseWidth,
         cadLayers.houseDepth,
-        luoPanScaleFactor
+        luoPanScaleFactor,
+        isOrientationInverted
     );
 
     const ninePalacesOverlay = luoPanRenderer.renderNinePalacesLayer(
@@ -2229,7 +2243,8 @@ function renderActiveDrawing() {
         cadLayers.houseWidth,
         cadLayers.houseDepth,
         currentFlyingStars ? currentFlyingStars.facingPalace : 9,
-        luoPanScaleFactor
+        luoPanScaleFactor,
+        isOrientationInverted
     );
 
     const fullSvg = renderUnifiedSvg(

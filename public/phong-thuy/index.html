@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1787299949057">
+    <link rel="stylesheet" href="style.css?v=1787300205706">
 </head>
 <body>
 
@@ -680,10 +680,14 @@
 
                         <!-- Floating Canvas Action Controls -->
                         <div class="floating-cad-actions">
+                            <button type="button" class="floating-tool-btn" id="btnToggleInvertOrientation" title="Đổi hướng hiển thị: Hướng Trên / Tọa Dưới ⇄ Tọa Trên / Hướng Dưới" style="font-weight: 800; color: #fef08a; border-color: rgba(245, 158, 11, 0.5); padding: 4px 8px; width: auto;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/></svg>
+                                <span id="labelInvertOrientation" style="font-size: 0.68rem; margin-left: 3px;">⇄ Đang: Hướng Trên</span>
+                            </button>
                             <button type="button" class="floating-tool-btn" id="btnZoomIn" title="Phóng To">+</button>
                             <button type="button" class="floating-tool-btn" id="btnZoomOut" title="Thu Nhỏ">−</button>
                             <button type="button" class="floating-tool-btn" id="btnZoomFit" title="Vừa Khung">[]</button>
-                            <button type="button" class="floating-tool-btn" id="btnToggleFullscreen" class="floating-tool-btn fullscreen-btn" title="Toàn Màn Hình">
+                            <button type="button" class="floating-tool-btn fullscreen-btn" id="btnToggleFullscreen" title="Toàn Màn Hình">
                                 <svg id="iconFullscreenOpen" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
                                 <svg id="iconFullscreenExit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
                                 <span id="txtFullscreen" style="font-size: 0.65rem; margin-left: 2px;">Toàn Màn</span>
@@ -790,6 +794,6 @@
         <p style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Liên hệ tư vấn trực tiếp: 0933 116 860 · Vận 9 Hạ Nguyên (2024 - 2043)</p>
     </footer>
 
-    <script type="module" src="script.js?v=1787299949057"></script>
+    <script type="module" src="script.js?v=1787300205706"></script>
 </body>
 </html>
