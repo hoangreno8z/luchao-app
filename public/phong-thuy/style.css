@@ -1634,3 +1634,273 @@ body {
     from { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
     to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
+
+
+/* ============================================================
+   MODERN FROSTED GLASSMORPHISM & SHADCN-INSPIRED DESIGN SYSTEM
+   ============================================================ */
+:root {
+    --bg-main: #090d16;
+    --card-bg: rgba(15, 23, 42, 0.65);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --gold-primary: #f59e0b;
+    --gold-light: #fbbf24;
+    --gold-glow: rgba(245, 158, 11, 0.35);
+    --cyan-accent: #06b6d4;
+    --cyan-glow: rgba(6, 182, 212, 0.35);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-full: 9999px;
+    --glass-blur: blur(16px);
+    --transition-fast: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass Card Global Upgrade */
+.glass-card {
+    background: var(--card-bg) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--card-border) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    transition: border-color 0.25s ease;
+}
+.glass-card:hover {
+    border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+/* Segmented Control / Mode Switcher Tabs */
+.mode-tabs-container {
+    display: flex;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 16px;
+}
+.mode-tab-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    user-select: none;
+}
+.mode-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+.mode-tab-btn.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(245, 158, 11, 0.08));
+    border-color: var(--gold-primary);
+    color: var(--gold-light);
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+}
+.mode-tab-btn:active {
+    transform: scale(0.98);
+}
+
+/* Accordion Cards */
+.accordion-card {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+.accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: rgba(255, 255, 255, 0.02);
+    transition: var(--transition-fast);
+}
+.accordion-header:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+.accordion-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--gold-light);
+    letter-spacing: 0.3px;
+}
+.accordion-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.accordion-card.collapsed .accordion-icon {
+    transform: rotate(-90deg);
+}
+.accordion-card.collapsed .accordion-body {
+    display: none;
+}
+.accordion-body {
+    padding: 14px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Form Controls & Inputs */
+.form-control {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--radius-sm) !important;
+    color: #ffffff !important;
+    padding: 8px 12px !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    transition: var(--transition-fast) !important;
+    outline: none !important;
+}
+.form-control:focus {
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;
+}
+.form-label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 5px;
+    letter-spacing: 0.2px;
+}
+
+/* Landscape Buttons (Frosted Pill Chips) */
+.btn-sidebar-landscape {
+    padding: 8px 6px !important;
+    background: rgba(30, 41, 59, 0.45) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--radius-md) !important;
+    color: #fde68a !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    transition: var(--transition-fast) !important;
+    white-space: nowrap !important;
+    user-select: none;
+}
+.btn-sidebar-landscape:hover {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.1)) !important;
+    border-color: var(--gold-primary) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25) !important;
+}
+.btn-sidebar-landscape:active {
+    transform: scale(0.96) !important;
+}
+
+/* Primary Action Button (Tạo Bản Vẽ) */
+.btn-primary-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 13px 24px !important;
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    border: 1px solid #fbbf24 !important;
+    border-radius: var(--radius-md) !important;
+    color: #0f172a !important;
+    font-size: 0.92rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35) !important;
+    transition: var(--transition-fast) !important;
+    user-select: none !important;
+}
+.btn-primary-action:hover {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+.btn-primary-action:active {
+    transform: scale(0.98) !important;
+}
+
+/* Drawing Mode Switcher Tabs */
+.drawing-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    user-select: none;
+}
+.drawing-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+.drawing-tab-btn.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(245, 158, 11, 0.06));
+    border-color: var(--gold-primary);
+    color: var(--gold-light);
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+}
+.drawing-tab-btn:active {
+    transform: scale(0.97);
+}
+
+/* CAD Floating Toolbar - Island Design */
+.cad-floating-toolbar {
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+    width: 175px !important;
+    padding: 6px !important;
+}
+.cad-floating-toolbar:hover {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+.hud-floating-btn {
+    border-radius: var(--radius-sm) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    padding: 6px 8px !important;
+}
+.hud-popover-menu {
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(24px) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7) !important;
+}
