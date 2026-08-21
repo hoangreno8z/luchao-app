@@ -1,3 +1,48 @@
+
+function getRoomPalaceInfo(room) {
+    if (!room || !currentGeometry) return null;
+    const W = currentGeometry.widthMm || (currentGeometry.widthM * 1000) || 5000;
+    const D = currentGeometry.depthMm || (currentGeometry.lengthM * 1000) || 16000;
+    const rx = room.x + room.w / 2;
+    const ry = room.y + room.h / 2;
+    const col = Math.min(2, Math.max(0, Math.floor(rx / (W / 3))));
+    const row = Math.min(2, Math.max(0, Math.floor(ry / (D / 3))));
+
+    const gridToPalace = [
+        [4, 9, 2],
+        [3, 5, 7],
+        [8, 1, 6]
+    ];
+    const palaceId = gridToPalace[row][col];
+    if (!currentSpatialResult || !currentSpatialResult.spatialPalaces) return { palaceId, palaceName: PALACE_NAMES[palaceId] };
+    return currentSpatialResult.spatialPalaces[palaceId];
+}
+
+function refreshSpatialFengShui() {
+    if (!currentGeometry) return;
+    const facingDegree = parseFloat(document.getElementById('inputFacingNumber')?.value || document.getElementById('inputFacingDegree')?.value || 180);
+    const buildYear = parseInt(document.getElementById('inputBuildYear')?.value, 10) || 2025;
+    const currentYear = parseInt(document.getElementById('inputCurrentYear')?.value, 10) || 2026;
+    const currentMonth = parseInt(document.getElementById('inputCurrentMonth')?.value, 10) || 8;
+    const currentDay = parseInt(document.getElementById('inputCurrentDay')?.value, 10) || 20;
+    const currentHour = parseInt(document.getElementById('inputCurrentHour')?.value, 10) || 6;
+    const ownerYear = parseInt(document.getElementById('inputOwnerYear')?.value, 10) || 1990;
+    const ownerGender = document.getElementById('inputOwnerGender')?.value || 'nam';
+
+    currentSpatialResult = calculateFengShuiSpatial(currentGeometry, {
+        facingDegree,
+        buildYear,
+        currentYear,
+        currentMonth,
+        currentDay,
+        currentHour,
+        ownerYear,
+        ownerGender
+    });
+
+    renderDetailedReport(currentSpatialResult);
+}
+
 // ============================================================
 // Phong Thủy & Kiến Trúc Controller Script v8.0
 // Tác giả: Dịch Sư Nguyễn Huy Hoàng & Computational Geometry Core
@@ -154,6 +199,19 @@ function initAccordions() {
 
 /* 3. Mode Selection Tabs (Đất, Nhà, Tải Bản Vẽ) */
 function initModeTabs() {
+    document.querySelectorAll('.btn-quick-reno').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = btn.getAttribute('data-type');
+            const name = btn.getAttribute('data-name');
+            const w = parseInt(btn.getAttribute('data-w'), 10) || 3000;
+            const h = parseInt(btn.getAttribute('data-h'), 10) || 3500;
+            handleAddRoomDirect(type, name, w, h);
+            refreshSpatialFengShui();
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection) resultsSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
     const tabEmptyLand = document.getElementById('tabEmptyLand');
     const tabExistingHouse = document.getElementById('tabExistingHouse');
     const tabScanImage = document.getElementById('tabScanImage');
@@ -921,11 +979,23 @@ function renderSmartPopup() {
     if (selectedRoomId) {
         const room = currentGeometry.rooms?.find(r => r.id === selectedRoomId);
         if (room) {
+            const palInfo = getRoomPalaceInfo(room);
+            const isGood = palInfo && (palInfo.grade === 'ĐẠI CÁT' || palInfo.grade === 'CÁT');
+            const isBad = palInfo && (palInfo.grade === 'ĐẠI HUNG' || palInfo.grade === 'HUNG');
+            const statusBadge = palInfo ? `<span class="audit-badge ${isGood ? 'good' : (isBad ? 'bad' : 'neutral')}" style="font-size:0.58rem; padding:1px 4px;">${palInfo.grade || 'BÌNH'}</span>` : '';
+            const palLabel = palInfo ? `${palInfo.palaceName} (${palInfo.bazhaiStar || ''})` : '';
+
             popup.style.display = 'flex';
             popup.innerHTML = `
                 <div class="popup-drag-header" id="popupDragHeader" style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding-bottom:3px; border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="font-size:0.68rem; font-weight:800; color:var(--gold-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:125px;">${room.name}</span>
-                    <button type="button" id="btnPopupCloseRoom" title="Ẩn bảng (Giữ 8 điểm kéo trên phòng)" style="background:none; border:none; color:#94a3b8; font-weight:bold; cursor:pointer; font-size:0.85rem; padding:0 3px;">✕</button>
+                    <span style="font-size:0.68rem; font-weight:800; color:var(--gold-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:110px;">${room.name}</span>
+                    <div style="display:flex; align-items:center; gap:3px;">
+                        ${statusBadge}
+                        <button type="button" id="btnPopupCloseRoom" title="Ẩn bảng" style="background:none; border:none; color:#94a3b8; font-weight:bold; cursor:pointer; font-size:0.85rem; padding:0 3px;">✕</button>
+                    </div>
+                </div>
+                <div style="font-size:0.6rem; color:#38bdf8; margin-top:2px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    📍 Cung: ${palLabel}
                 </div>
                 <div style="display:flex; gap:3px; align-items:center; margin-top:2px;">
                     <div style="flex:1; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px;">
@@ -1467,6 +1537,7 @@ function initCadInteractiveEngine() {
             try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
             renderSmartPopup();
             renderPopovers();
+            refreshSpatialFengShui();
         }
     };
 

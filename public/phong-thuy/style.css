@@ -1398,3 +1398,21 @@ body {
     accent-color: #0284c7;
     cursor: pointer;
 }
+
+
+.btn-quick-reno {
+    padding: 5px 10px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--gold-primary);
+    border-radius: 6px;
+    color: var(--gold-light);
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-quick-reno:hover {
+    background: var(--gold-primary);
+    color: #000;
+    transform: translateY(-1px);
+}
