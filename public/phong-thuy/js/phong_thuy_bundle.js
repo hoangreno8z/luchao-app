@@ -1260,6 +1260,57 @@ export class ArchitecturalCADRenderer {
             `;
         };
 
+        
+        const renderOfficeBlock = (x, y, w, h, name = 'P.LÀM VIỆC') => {
+            const deskW = Math.min(w * 0.75, 1800);
+            const deskH = Math.min(h * 0.4, 800);
+            const dx = x + (w - deskW) / 2;
+            const dy = y + 140;
+            const chairR = Math.min(deskH * 0.45, 240);
+
+            return `
+                <g class="arch-block-office">
+                    <rect x="${dx}" y="${dy}" width="${deskW}" height="${deskH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="10"/>
+                    <rect x="${dx + (deskW - 550) / 2}" y="${dy + 120}" width="550" height="80" rx="6" fill="#1e293b" stroke="#0f172a" stroke-width="4"/>
+                    <rect x="${dx + (deskW - 200) / 2}" y="${dy + 220}" width="200" height="120" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="4"/>
+                    <circle cx="${dx + deskW / 2}" cy="${dy + deskH + chairR + 40}" r="${chairR}" fill="#ffffff" stroke="#111827" stroke-width="10"/>
+                    <path d="M ${dx + deskW / 2 - chairR * 0.7} ${dy + deskH + chairR + 40} Q ${dx + deskW / 2} ${dy + deskH + 40} ${dx + deskW / 2 + chairR * 0.7} ${dy + deskH + chairR + 40}" fill="none" stroke="#111827" stroke-width="8"/>
+                </g>
+            `;
+        };
+
+        const renderGarageBlock = (x, y, w, h, name = 'GARA XE') => {
+            const carW = Math.min(w * 0.7, 1800);
+            const carH = Math.min(h * 0.8, 3800);
+            const cx = x + (w - carW) / 2;
+            const cy = y + (h - carH) / 2;
+
+            return `
+                <g class="arch-block-garage">
+                    <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="none" stroke="#94a3b8" stroke-width="6" stroke-dasharray="25,15"/>
+                    <g transform="translate(${cx}, ${cy})">
+                        <rect width="${carW}" height="${carH}" rx="80" fill="#ffffff" stroke="#111827" stroke-width="12"/>
+                        <path d="M 60 450 Q ${carW / 2} 320 ${carW - 60} 450 L ${carW - 100} 950 Q ${carW / 2} 900 100 950 Z" fill="#e2e8f0" stroke="#111827" stroke-width="8"/>
+                        <path d="M 80 ${carH - 450} Q ${carW / 2} ${carH - 320} ${carW - 80} ${carH - 450} L ${carW - 110} ${carH - 850} Q ${carW / 2} ${carH - 800} 110 ${carH - 850} Z" fill="#e2e8f0" stroke="#111827" stroke-width="8"/>
+                        <rect x="20" y="200" width="40" height="150" rx="8" fill="#111827"/>
+                        <rect x="${carW - 60}" y="200" width="40" height="150" rx="8" fill="#111827"/>
+                        <rect x="20" y="${carH - 350}" width="40" height="150" rx="8" fill="#111827"/>
+                        <rect x="${carW - 60}" y="${carH - 350}" width="40" height="150" rx="8" fill="#111827"/>
+                    </g>
+                </g>
+            `;
+        };
+
+        const renderSkylightBlock = (x, y, w, h, name = 'GIẾNG TRỜI') => {
+            return `
+                <g class="arch-block-skylight">
+                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f0f9ff" stroke="#0284c7" stroke-width="8"/>
+                    <line x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}" stroke="#0284c7" stroke-width="6" stroke-dasharray="20,15"/>
+                    <line x1="${x + w}" y1="${y}" x2="${x}" y2="${y + h}" stroke="#0284c7" stroke-width="6" stroke-dasharray="20,15"/>
+                </g>
+            `;
+        };
+
         const renderYardBlock = (x, y, w, h, name = 'BAN CÔNG / SÂN') => {
             return `
                 <g class="arch-block-yard">
@@ -1279,9 +1330,11 @@ export class ArchitecturalCADRenderer {
                 const isSel = (r.id === selectedId);
 
                 let symbolSvg = '';
-                if (r.type === 'garage' || r.type === 'car') symbolSvg = renderLivingBlock(r.x, r.y, r.w, r.h, r.name);
+                if (r.type === 'garage' || r.type === 'car') symbolSvg = renderGarageBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'office' || r.type === 'study') symbolSvg = renderOfficeBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'skylight' || r.type === 'shaft' || r.type === 'void') symbolSvg = renderSkylightBlock(r.x, r.y, r.w, r.h, r.name);
                 else if (r.type === 'bed_master' || r.type === 'bed_regular' || r.type === 'bed') symbolSvg = renderBedBlock(r.x, r.y, r.w, r.h, r.name);
-                else if (r.type === 'living_room' || r.type === 'living' || r.type === 'office' || r.type === 'common_room' || r.type === 'gym') symbolSvg = renderLivingBlock(r.x, r.y, r.w, r.h, r.name);
+                else if (r.type === 'living_room' || r.type === 'living' || r.type === 'common_room' || r.type === 'gym') symbolSvg = renderLivingBlock(r.x, r.y, r.w, r.h, r.name);
                 else if (r.type === 'kitchen_dining' || r.type === 'kitchen') symbolSvg = renderKitchenBlock(r.x, r.y, r.w, r.h, r.name);
                 else if (r.type === 'toilet' || r.type === 'wc') symbolSvg = renderWCBlock(r.x, r.y, r.w, r.h, r.name);
                 else if (r.type === 'stairs') symbolSvg = renderStairsBlock(r.x, r.y, r.w, r.h, r.name);
