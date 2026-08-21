@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js';
+} from './js/phong_thuy_bundle.js?v=1787296607990';
 
 // ============================================================
 // STATE & MODULE VARIABLES

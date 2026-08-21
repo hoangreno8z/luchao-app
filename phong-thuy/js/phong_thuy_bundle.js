@@ -1935,10 +1935,13 @@ export class LuoPanAndFlyingStarsSvgRenderer {
     renderNinePalacesLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, facingPalaceId = 9, scaleFactor = 1.0) {
         if (!flyingStars || !flyingStars.palaces) return '';
 
-        // Khung ma trận 3x3 Cửu Cung tỉ lệ to rõ nổi bật ở trung tâm
-        const boxSize = Math.max(6800, Math.min(houseW, houseD) * 1.05) * scaleFactor;
-        const cellSize = boxSize / 3;
-        const halfBox = boxSize / 2;
+        // KHỚP CHÍNH XÁC 100% THEO CHIỀU NGANG VÀ CHIỀU DÀI CỦA NGÔI NHÀ / KHU ĐẤT
+        const gridW = houseW;
+        const gridH = houseD;
+        const cellW = gridW / 3;
+        const cellH = gridH / 3;
+        const halfW = gridW / 2;
+        const halfH = gridH / 2;
 
         // Ma trận 3x3 theo góc hướng nhà
         const order = getOrientedPalaceGrid(facingPalaceId);
@@ -1948,8 +1951,8 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         order.forEach((pId, idx) => {
             const row = Math.floor(idx / 3);
             const col = idx % 3;
-            const x = -halfBox + col * cellSize;
-            const y = -halfBox + row * cellSize;
+            const x = -halfW + col * cellW;
+            const y = -halfH + row * cellH;
 
             const pal = flyingStars.palaces[pId];
             if (!pal) return;
@@ -1961,49 +1964,54 @@ export class LuoPanAndFlyingStarsSvgRenderer {
 
             const shortLabel = PALACE_SHORT[pId] || '';
 
+            const circleR = Math.min(cellW * 0.08, cellH * 0.08, 140);
+            const fontVan = Math.min(cellW * 0.35, cellH * 0.35, 750);
+            const fontStar = Math.min(cellW * 0.28, cellH * 0.28, 650);
+            const fontLabel = Math.min(cellW * 0.12, cellH * 0.12, 280);
+
             cellsSvg += `
                 <g transform="translate(${x}, ${y})" pointer-events="none">
-                    <!-- Viền ô 100% trong suốt để lộ toàn bộ phòng ốc bên dưới, chỉ hiện đường phân chia đen đậm -->
-                    <rect width="${cellSize}" height="${cellSize}" fill="none" stroke="#000000" stroke-width="${40 * scaleFactor}"/>
+                    <!-- Viền ô 100% trong suốt bám khít từng phòng, đường nét đen chuẩn CAD -->
+                    <rect width="${cellW}" height="${cellH}" fill="none" stroke="#000000" stroke-width="24"/>
 
                     <!-- Hàng trên: 4 vòng tròn màu đánh số (Năm - Tháng - Ngày - Giờ) -->
-                    <g transform="translate(${cellSize / 2}, ${cellSize * 0.16})" pointer-events="none">
+                    <g transform="translate(${cellW / 2}, ${cellH * 0.14})" pointer-events="none">
                         <!-- Niên (Xanh lá) -->
-                        <circle cx="${-460 * scaleFactor}" cy="0" r="${130 * scaleFactor}" fill="rgba(255,255,255,0.85)" stroke="#16a34a" stroke-width="${22 * scaleFactor}"/>
-                        <text x="${-460 * scaleFactor}" y="${45 * scaleFactor}" text-anchor="middle" font-size="${150 * scaleFactor}" font-weight="900" fill="#16a34a" font-family="'Inter', sans-serif">${nienS}</text>
+                        <circle cx="${-circleR * 3.5}" cy="0" r="${circleR}" fill="rgba(255,255,255,0.9)" stroke="#16a34a" stroke-width="16"/>
+                        <text x="${-circleR * 3.5}" y="${circleR * 0.35}" text-anchor="middle" font-size="${circleR * 1.1}" font-weight="900" fill="#16a34a" font-family="'Inter', sans-serif">${nienS}</text>
 
                         <!-- Nguyệt (Đỏ) -->
-                        <circle cx="${-155 * scaleFactor}" cy="0" r="${130 * scaleFactor}" fill="rgba(255,255,255,0.85)" stroke="#dc2626" stroke-width="${22 * scaleFactor}"/>
-                        <text x="${-155 * scaleFactor}" y="${45 * scaleFactor}" text-anchor="middle" font-size="${150 * scaleFactor}" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif">${nguyetS}</text>
+                        <circle cx="${-circleR * 1.2}" cy="0" r="${circleR}" fill="rgba(255,255,255,0.9)" stroke="#dc2626" stroke-width="16"/>
+                        <text x="${-circleR * 1.2}" y="${circleR * 0.35}" text-anchor="middle" font-size="${circleR * 1.1}" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif">${nguyetS}</text>
 
                         <!-- Nhật (Cam) -->
-                        <circle cx="${155 * scaleFactor}" cy="0" r="${130 * scaleFactor}" fill="rgba(255,255,255,0.85)" stroke="#ea580c" stroke-width="${22 * scaleFactor}"/>
-                        <text x="${155 * scaleFactor}" y="${45 * scaleFactor}" text-anchor="middle" font-size="${150 * scaleFactor}" font-weight="900" fill="#ea580c" font-family="'Inter', sans-serif">${nhatS}</text>
+                        <circle cx="${circleR * 1.2}" cy="0" r="${circleR}" fill="rgba(255,255,255,0.9)" stroke="#ea580c" stroke-width="16"/>
+                        <text x="${circleR * 1.2}" y="${circleR * 0.35}" text-anchor="middle" font-size="${circleR * 1.1}" font-weight="900" fill="#ea580c" font-family="'Inter', sans-serif">${nhatS}</text>
 
                         <!-- Thời (Tím) -->
-                        <circle cx="${460 * scaleFactor}" cy="0" r="${130 * scaleFactor}" fill="rgba(255,255,255,0.85)" stroke="#9333ea" stroke-width="${22 * scaleFactor}"/>
-                        <text x="${460 * scaleFactor}" y="${45 * scaleFactor}" text-anchor="middle" font-size="${150 * scaleFactor}" font-weight="900" fill="#9333ea" font-family="'Inter', sans-serif">${thoiS}</text>
+                        <circle cx="${circleR * 3.5}" cy="0" r="${circleR}" fill="rgba(255,255,255,0.9)" stroke="#9333ea" stroke-width="16"/>
+                        <text x="${circleR * 3.5}" y="${circleR * 0.35}" text-anchor="middle" font-size="${circleR * 1.1}" font-weight="900" fill="#9333ea" font-family="'Inter', sans-serif">${thoiS}</text>
                     </g>
 
                     <!-- Ở giữa: Số Vận Tinh (Màu Xanh Dương Blue To Đậm Nét) -->
-                    <text x="${cellSize / 2}" y="${cellSize * 0.54}" text-anchor="middle" font-size="${820 * scaleFactor}" font-weight="900" fill="#0284c7" font-family="'Inter', sans-serif" pointer-events="none">${pal.vanStar}</text>
+                    <text x="${cellW / 2}" y="${cellH * 0.52}" text-anchor="middle" dominant-baseline="central" font-size="${fontVan}" font-weight="900" fill="#0284c7" font-family="'Inter', sans-serif" pointer-events="none">${pal.vanStar}</text>
 
                     <!-- Bên trái: Số Sơn Tinh (Tọa Tinh - Màu Đen To Đậm Nét) -->
-                    <text x="${cellSize * 0.22}" y="${cellSize * 0.84}" text-anchor="middle" font-size="${750 * scaleFactor}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${pal.sonStar}</text>
+                    <text x="${cellW * 0.22}" y="${cellH * 0.82}" text-anchor="middle" dominant-baseline="central" font-size="${fontStar}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${pal.sonStar}</text>
 
                     <!-- Bên phải: Số Hướng Tinh (Màu Đen To Đậm Nét) -->
-                    <text x="${cellSize * 0.78}" y="${cellSize * 0.84}" text-anchor="middle" font-size="${750 * scaleFactor}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${pal.huongStar}</text>
+                    <text x="${cellW * 0.78}" y="${cellH * 0.82}" text-anchor="middle" dominant-baseline="central" font-size="${fontStar}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${pal.huongStar}</text>
 
                     <!-- Ở dưới: Tên Cung Viết Tắt -->
-                    <text x="${cellSize / 2}" y="${cellSize * 0.90}" text-anchor="middle" font-size="${320 * scaleFactor}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${shortLabel}</text>
+                    <text x="${cellW / 2}" y="${cellH * 0.92}" text-anchor="middle" font-size="${fontLabel}" font-weight="900" fill="#000000" font-family="'Inter', sans-serif" pointer-events="none">${shortLabel}</text>
                 </g>
             `;
         });
 
         return `
             <g class="layer-nine-palaces-matrix" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
-                <!-- Khung viền ngoài đậm của ma trận 3x3 -->
-                <rect x="${-halfBox}" y="${-halfBox}" width="${boxSize}" height="${boxSize}" fill="none" stroke="#000000" stroke-width="${80 * scaleFactor}"/>
+                <!-- Khung viền ngoài đậm của ma trận 3x3 bao trọn toàn bộ diện tích nhà -->
+                <rect x="${-halfW}" y="${-halfH}" width="${gridW}" height="${gridH}" fill="none" stroke="#000000" stroke-width="40"/>
                 ${cellsSvg}
             </g>
         `;
