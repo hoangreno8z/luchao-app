@@ -1539,20 +1539,56 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         this.size = options.size || 800;
     }
 
+    // Vẽ quẻ Bát Quái thuần SVG (Vạch Liền Dương / Vạch Đứt Âm) tỉ lệ mm CAD
+    renderTrigramSymbol(trigramId, cx, cy, size = 320, rotDeg = 0) {
+        const trigramLines = {
+            1: [0, 1, 0], // Khảm
+            2: [0, 0, 0], // Khôn
+            3: [1, 0, 0], // Chấn
+            4: [0, 1, 1], // Tốn
+            6: [1, 1, 1], // Càn
+            7: [1, 1, 0], // Đoài
+            8: [0, 0, 1], // Cấn
+            9: [1, 0, 1]  // Ly
+        };
+
+        const lines = trigramLines[trigramId] || [1, 1, 1];
+        const lineW = size * 1.3;
+        const lineH = size * 0.18;
+        const gap = size * 0.14;
+        const halfW = lineW / 2;
+
+        let svg = `<g transform="translate(${cx.toFixed(1)}, ${cy.toFixed(1)}) rotate(${rotDeg})">`;
+        lines.forEach((isYang, idx) => {
+            const y = (idx - 1) * (lineH + gap);
+            if (isYang) {
+                // Hào Dương: Vạch liền
+                svg += `<rect x="${-halfW}" y="${y - lineH / 2}" width="${lineW}" height="${lineH}" rx="${lineH * 0.2}" fill="#dc2626"/>`;
+            } else {
+                // Hào Âm: Vạch đứt (2 đoạn)
+                const segW = (lineW - gap * 1.2) / 2;
+                svg += `<rect x="${-halfW}" y="${y - lineH / 2}" width="${segW}" height="${lineH}" rx="${lineH * 0.2}" fill="#dc2626"/>`;
+                svg += `<rect x="${gap * 0.6}" y="${y - lineH / 2}" width="${segW}" height="${lineH}" rx="${lineH * 0.2}" fill="#dc2626"/>`;
+            }
+        });
+        svg += '</g>';
+        return svg;
+    }
+
     renderOverlayLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD) {
         if (!flyingStars) return '';
 
-        const radius = Math.max(2800, Math.max(houseW, houseD) * 0.62 + 1000);
+        const radius = Math.max(3800, Math.max(houseW, houseD) * 0.65 + 1500);
         const facingDeg = flyingStars.facingDegree !== undefined ? flyingStars.facingDegree : 180;
         const sittingDeg = (facingDeg + 180) % 360;
 
-        // Vành ngoài cùng: Vòng chia độ 360 độ
-        let ticksSvg = '';
+        // 1. VÒNG NGOÀI CÙNG: 360 ĐỘ (VẠCH CHIA TỪNG ĐỘ VÀ SỐ ĐỘ MỖI 10 ĐỘ)
+        let ticksSvg = '<g id="layer-360-degrees">';
         for (let deg = 0; deg < 360; deg++) {
             const rad = ((deg - 90) * Math.PI) / 180;
             const is10 = (deg % 10 === 0);
             const is5 = (deg % 5 === 0);
-            const tickLen = is10 ? 110 : (is5 ? 70 : 40);
+            const tickLen = is10 ? 380 : (is5 ? 240 : 130);
             const r1 = radius;
             const r2 = radius - tickLen;
 
@@ -1561,22 +1597,38 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             const x2 = r2 * Math.cos(rad);
             const y2 = r2 * Math.sin(rad);
 
-            ticksSvg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${is10 ? '#dc2626' : (is5 ? '#ef4444' : '#64748b')}" stroke-width="${is10 ? 6 : (is5 ? 4 : 2)}"/>`;
+            ticksSvg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${is10 ? '#dc2626' : (is5 ? '#ef4444' : '#64748b')}" stroke-width="${is10 ? 28 : (is5 ? 18 : 10)}"/>`;
 
             if (is10) {
-                const rText = radius - 180;
+                const rText = radius - 580;
                 const tx = rText * Math.cos(rad);
                 const ty = rText * Math.sin(rad);
                 let rotText = deg;
                 if (deg > 90 && deg < 270) rotText = (rotText + 180) % 360;
-                ticksSvg += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="52" font-weight="800" fill="#1e293b" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${deg}</text>`;
+                ticksSvg += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="260" font-weight="900" fill="#0f172a" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${deg}</text>`;
             }
         }
+        ticksSvg += '</g>';
 
-        // Vành 24 Sơn Hướng
-        const rMntOut = radius - 260;
-        const rMntIn = radius * 0.58;
-        let mountainsSvg = '';
+        // 2. VÒNG 72 XUYÊN SƠN LONG (72 DRAGONS RING)
+        const r72Out = radius - 820;
+        const r72In = radius - 1200;
+        let dragons72Svg = '<g id="layer-72-dragons">';
+        for (let i = 0; i < 72; i++) {
+            const deg = i * 5;
+            const rad = ((deg - 90) * Math.PI) / 180;
+            const x1 = r72In * Math.cos(rad);
+            const y1 = r72In * Math.sin(rad);
+            const x2 = r72Out * Math.cos(rad);
+            const y2 = r72Out * Math.sin(rad);
+            dragons72Svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#cbd5e1" stroke-width="14"/>`;
+        }
+        dragons72Svg += '</g>';
+
+        // 3. VÒNG 24 SƠN HƯỚNG (24 MOUNTAINS RING)
+        const rMntOut = r72In;
+        const rMntIn = radius * 0.52;
+        let mountainsSvg = '<g id="layer-24-mountains">';
 
         MOUNTAINS_24.forEach(m => {
             const radStart = ((m.startDeg - 90) * Math.PI) / 180;
@@ -1587,9 +1639,9 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             const xLine2 = rMntOut * Math.cos(radStart);
             const yLine2 = rMntOut * Math.sin(radStart);
 
-            mountainsSvg += `<line x1="${xLine1.toFixed(1)}" y1="${yLine1.toFixed(1)}" x2="${xLine2.toFixed(1)}" y2="${yLine2.toFixed(1)}" stroke="#cbd5e1" stroke-width="4"/>`;
+            mountainsSvg += `<line x1="${xLine1.toFixed(1)}" y1="${yLine1.toFixed(1)}" x2="${xLine2.toFixed(1)}" y2="${yLine2.toFixed(1)}" stroke="#dc2626" stroke-width="20"/>`;
 
-            // Tên Sơn
+            // Tên 24 Sơn
             const rText = (rMntIn + rMntOut) / 2;
             const tx = rText * Math.cos(radCenter);
             const ty = rText * Math.sin(radCenter);
@@ -1600,76 +1652,90 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             const isSittingMnt = (m.name === flyingStars.sittingMountain);
 
             mountainsSvg += `
-                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${isFacingMnt || isSittingMnt ? 76 : 64}" font-weight="900" fill="${isFacingMnt ? '#dc2626' : (isSittingMnt ? '#0284c7' : '#0f172a')}" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${m.name}</text>
+                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="${isFacingMnt || isSittingMnt ? 380 : 320}" font-weight="900" fill="${isFacingMnt ? '#dc2626' : (isSittingMnt ? '#0284c7' : '#0f172a')}" font-family="'Inter', sans-serif" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${m.name}</text>
             `;
         });
+        mountainsSvg += '</g>';
 
-        // 8 Phương Hướng Lớn Màu Đỏ (BẮC, NAM, ĐÔNG, TÂY, ĐÔNG BẮC, ĐÔNG NAM, TÂY BẮC, TÂY NAM)
+        // 4. VÒNG BÁT QUÁI & 8 HƯỚNG LỚN MÀU ĐỎ (8 TRIGRAMS & CARDINAL DIRECTIONS)
         const cardinalLabels = [
-            { name: 'BẮC', deg: 0 },
-            { name: 'ĐÔNG BẮC', deg: 45 },
-            { name: 'ĐÔNG', deg: 90 },
-            { name: 'ĐÔNG NAM', deg: 135 },
-            { name: 'NAM', deg: 180 },
-            { name: 'TÂY NAM', deg: 225 },
-            { name: 'TÂY', deg: 270 },
-            { name: 'TÂY BẮC', deg: 315 }
+            { name: 'BẮC', deg: 0, trigram: 1 },
+            { name: 'ĐÔNG BẮC', deg: 45, trigram: 8 },
+            { name: 'ĐÔNG', deg: 90, trigram: 3 },
+            { name: 'ĐÔNG NAM', deg: 135, trigram: 4 },
+            { name: 'NAM', deg: 180, trigram: 9 },
+            { name: 'TÂY NAM', deg: 225, trigram: 2 },
+            { name: 'TÂY', deg: 270, trigram: 7 },
+            { name: 'TÂY BẮC', deg: 315, trigram: 6 }
         ];
 
-        let cardinalSvg = '';
+        let cardinalSvg = '<g id="layer-8-trigrams">';
         cardinalLabels.forEach(c => {
             const rad = ((c.deg - 90) * Math.PI) / 180;
-            const rText = radius * 0.46;
+            const rText = radius * 0.40;
             const tx = rText * Math.cos(rad);
             const ty = rText * Math.sin(rad);
             let rotText = c.deg;
             if (c.deg > 90 && c.deg < 270) rotText = (rotText + 180) % 360;
 
-            // Nan phân cách màu đỏ nét đứt
+            // Nan phân cách 8 hướng màu đỏ nét đứt
             const xLine = radius * Math.cos(rad);
             const yLine = radius * Math.sin(rad);
+
+            // Quẻ Bát Quái
+            const rTrig = radius * 0.47;
+            const trigX = rTrig * Math.cos(rad);
+            const trigY = rTrig * Math.sin(rad);
+            const trigSvg = this.renderTrigramSymbol(c.trigram, trigX, trigY, 320, rotText);
+
             cardinalSvg += `
-                <line x1="0" y1="0" x2="${xLine.toFixed(1)}" y2="${yLine.toFixed(1)}" stroke="#dc2626" stroke-width="4" stroke-dasharray="25,15" opacity="0.75"/>
-                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="78" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif" letter-spacing="2" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${c.name}</text>
+                <line x1="0" y1="0" x2="${xLine.toFixed(1)}" y2="${yLine.toFixed(1)}" stroke="#dc2626" stroke-width="22" stroke-dasharray="120,60" opacity="0.85"/>
+                ${trigSvg}
+                <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="440" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif" letter-spacing="4" transform="rotate(${rotText}, ${tx.toFixed(1)}, ${ty.toFixed(1)})">${c.name}</text>
             `;
         });
+        cardinalSvg += '</g>';
 
-        // Mũi Tên Chỉ HƯỚNG (Đỏ) và TỌA (Xanh)
+        // 5. KIM CHỈ TỌA - HƯỚNG CHÍNH XÁC (NEEDLE DIRECTION ARROWS)
         const radFacing = ((facingDeg - 90) * Math.PI) / 180;
         const radSitting = ((sittingDeg - 90) * Math.PI) / 180;
 
-        const hx = (radius + 240) * Math.cos(radFacing);
-        const hy = (radius + 240) * Math.sin(radFacing);
-        const sx = (radius + 240) * Math.cos(radSitting);
-        const sy = (radius + 240) * Math.sin(radSitting);
+        const hx = (radius + 600) * Math.cos(radFacing);
+        const hy = (radius + 600) * Math.sin(radFacing);
+        const sx = (radius + 600) * Math.cos(radSitting);
+        const sy = (radius + 600) * Math.sin(radSitting);
 
         const arrowSvg = `
-            <!-- Trục chỉ Hướng (Đỏ) -->
-            <line x1="0" y1="0" x2="${hx.toFixed(1)}" y2="${hy.toFixed(1)}" stroke="#dc2626" stroke-width="12"/>
-            <polygon points="${hx.toFixed(1)},${hy.toFixed(1)} ${(hx - 70 * Math.cos(radFacing - 0.3)).toFixed(1)},${(hy - 70 * Math.sin(radFacing - 0.3)).toFixed(1)} ${(hx - 70 * Math.cos(radFacing + 0.3)).toFixed(1)},${(hy - 70 * Math.sin(radFacing + 0.3)).toFixed(1)}" fill="#dc2626"/>
-            <g transform="translate(${(radius - 380) * Math.cos(radFacing)}, ${(radius - 380) * Math.sin(radFacing)}) rotate(${facingDeg})">
-                <rect x="-160" y="-45" width="320" height="90" rx="14" fill="#dc2626"/>
-                <text x="0" y="8" text-anchor="middle" font-size="52" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">HƯỚNG</text>
-            </g>
+            <g id="layer-direction-needles">
+                <!-- Trục chỉ Hướng (Đỏ) -->
+                <line x1="0" y1="0" x2="${hx.toFixed(1)}" y2="${hy.toFixed(1)}" stroke="#dc2626" stroke-width="60" stroke-linecap="round"/>
+                <polygon points="${hx.toFixed(1)},${hy.toFixed(1)} ${(hx - 360 * Math.cos(radFacing - 0.35)).toFixed(1)},${(hy - 360 * Math.sin(radFacing - 0.35)).toFixed(1)} ${(hx - 360 * Math.cos(radFacing + 0.35)).toFixed(1)},${(hy - 360 * Math.sin(radFacing + 0.35)).toFixed(1)}" fill="#dc2626"/>
+                <g transform="translate(${(radius - 1350) * Math.cos(radFacing)}, ${(radius - 1350) * Math.sin(radFacing)}) rotate(${facingDeg})">
+                    <rect x="-420" y="-130" width="840" height="260" rx="40" fill="#dc2626" stroke="#ffffff" stroke-width="20"/>
+                    <text x="0" y="25" text-anchor="middle" font-size="140" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">HƯỚNG</text>
+                </g>
 
-            <!-- Trục chỉ Tọa (Xanh) -->
-            <line x1="0" y1="0" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}" stroke="#0284c7" stroke-width="12"/>
-            <polygon points="${sx.toFixed(1)},${sy.toFixed(1)} ${(sx - 70 * Math.cos(radSitting - 0.3)).toFixed(1)},${(sy - 70 * Math.sin(radSitting - 0.3)).toFixed(1)} ${(sx - 70 * Math.cos(radSitting + 0.3)).toFixed(1)},${(sy - 70 * Math.sin(radSitting + 0.3)).toFixed(1)}" fill="#0284c7"/>
-            <g transform="translate(${(radius - 380) * Math.cos(radSitting)}, ${(radius - 380) * Math.sin(radSitting)}) rotate(${sittingDeg})">
-                <rect x="-140" y="-45" width="280" height="90" rx="14" fill="#0284c7"/>
-                <text x="0" y="8" text-anchor="middle" font-size="52" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">TỌA</text>
+                <!-- Trục chỉ Tọa (Xanh) -->
+                <line x1="0" y1="0" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}" stroke="#0284c7" stroke-width="60" stroke-linecap="round"/>
+                <polygon points="${sx.toFixed(1)},${sy.toFixed(1)} ${(sx - 360 * Math.cos(radSitting - 0.35)).toFixed(1)},${(sy - 360 * Math.sin(radSitting - 0.35)).toFixed(1)} ${(sx - 360 * Math.cos(radSitting + 0.35)).toFixed(1)},${(sy - 360 * Math.sin(radSitting + 0.35)).toFixed(1)}" fill="#0284c7"/>
+                <g transform="translate(${(radius - 1350) * Math.cos(radSitting)}, ${(radius - 1350) * Math.sin(radSitting)}) rotate(${sittingDeg})">
+                    <rect x="-380" y="-130" width="760" height="260" rx="40" fill="#0284c7" stroke="#ffffff" stroke-width="20"/>
+                    <text x="0" y="25" text-anchor="middle" font-size="140" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">TỌA</text>
+                </g>
             </g>
         `;
 
         return `
             <g class="layer-luopan-overlay" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
-                <!-- Vòng tròn nền La Kinh trắng viền đỏ -->
-                <circle cx="0" cy="0" r="${radius}" fill="rgba(255, 255, 255, 0.15)" stroke="#dc2626" stroke-width="8"/>
-                <circle cx="0" cy="0" r="${rMntOut}" fill="none" stroke="#dc2626" stroke-width="6"/>
-                <circle cx="0" cy="0" r="${rMntIn}" fill="none" stroke="#dc2626" stroke-width="6"/>
-                <circle cx="0" cy="0" r="${radius * 0.4}" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="20,15"/>
+                <!-- Vòng tròn viền La Kinh đỏ đậm sắc nét -->
+                <circle cx="0" cy="0" r="${radius}" fill="rgba(255, 255, 255, 0.35)" stroke="#dc2626" stroke-width="45"/>
+                <circle cx="0" cy="0" r="${r72Out}" fill="none" stroke="#dc2626" stroke-width="25"/>
+                <circle cx="0" cy="0" r="${r72In}" fill="none" stroke="#dc2626" stroke-width="25"/>
+                <circle cx="0" cy="0" r="${rMntIn}" fill="none" stroke="#dc2626" stroke-width="30"/>
+                <circle cx="0" cy="0" r="${radius * 0.32}" fill="none" stroke="#ef4444" stroke-width="20" stroke-dasharray="80,50"/>
 
                 ${ticksSvg}
+                ${dragons72Svg}
                 ${mountainsSvg}
                 ${cardinalSvg}
                 ${arrowSvg}
@@ -1680,12 +1746,12 @@ export class LuoPanAndFlyingStarsSvgRenderer {
     renderNinePalacesLayer(flyingStars, houseCenterX, houseCenterY, houseW, houseD, facingPalaceId = 9) {
         if (!flyingStars || !flyingStars.palaces) return '';
 
-        // Kích thước khung vuông 3x3 Cửu Cung đặt ngay tại tâm
-        const boxSize = Math.max(2400, Math.min(houseW, houseD) * 0.85);
+        // Khung ma trận 3x3 Cửu Cung tỉ lệ to rõ nổi bật ở trung tâm
+        const boxSize = Math.max(6800, Math.min(houseW, houseD) * 1.05);
         const cellSize = boxSize / 3;
         const halfBox = boxSize / 2;
 
-        // Ma trận 3x3 chuẩn theo hướng nhà
+        // Ma trận 3x3 theo góc hướng nhà
         const order = getOrientedPalaceGrid(facingPalaceId);
 
         let cellsSvg = '';
@@ -1699,48 +1765,48 @@ export class LuoPanAndFlyingStarsSvgRenderer {
             const pal = flyingStars.palaces[pId];
             if (!pal) return;
 
-            const nienS = pal.nienStar || 1;
-            const nguyetS = pal.nguyetStar || 1;
-            const nhatS = pal.nhatStar || 1;
-            const thoiS = pal.thoiStar || 1;
+            const nienS = pal.nienStar !== undefined ? pal.nienStar : 1;
+            const nguyetS = pal.nguyetStar !== undefined ? pal.nguyetStar : 1;
+            const nhatS = pal.nhatStar !== undefined ? pal.nhatStar : 1;
+            const thoiS = pal.thoiStar !== undefined ? pal.thoiStar : 1;
 
             const shortLabel = PALACE_SHORT[pId] || '';
 
             cellsSvg += `
                 <g transform="translate(${x}, ${y})">
-                    <!-- Viền ô đơn lẻ -->
-                    <rect width="${cellSize}" height="${cellSize}" fill="rgba(255, 255, 255, 0.75)" stroke="#000000" stroke-width="8"/>
+                    <!-- Viền ô bán trong suốt chống chói -->
+                    <rect width="${cellSize}" height="${cellSize}" fill="rgba(255, 255, 255, 0.92)" stroke="#000000" stroke-width="40"/>
 
-                    <!-- Hàng trên: 4 vòng tròn màu nhỏ (Năm - Tháng - Ngày - Giờ) -->
-                    <g transform="translate(${cellSize / 2}, 75)">
+                    <!-- Hàng trên: 4 vòng tròn màu đánh số (Năm - Tháng - Ngày - Giờ) -->
+                    <g transform="translate(${cellSize / 2}, ${cellSize * 0.16})">
                         <!-- Niên (Xanh lá) -->
-                        <circle cx="-135" cy="0" r="34" fill="#ffffff" stroke="#16a34a" stroke-width="5"/>
-                        <text x="-135" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#16a34a" font-family="'Inter', sans-serif">${nienS}</text>
+                        <circle cx="-460" cy="0" r="130" fill="#ffffff" stroke="#16a34a" stroke-width="22"/>
+                        <text x="-460" y="45" text-anchor="middle" font-size="150" font-weight="900" fill="#16a34a" font-family="'Inter', sans-serif">${nienS}</text>
 
                         <!-- Nguyệt (Đỏ) -->
-                        <circle cx="-45" cy="0" r="34" fill="#ffffff" stroke="#dc2626" stroke-width="5"/>
-                        <text x="-45" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif">${nguyetS}</text>
+                        <circle cx="-155" cy="0" r="130" fill="#ffffff" stroke="#dc2626" stroke-width="22"/>
+                        <text x="-155" y="45" text-anchor="middle" font-size="150" font-weight="900" fill="#dc2626" font-family="'Inter', sans-serif">${nguyetS}</text>
 
                         <!-- Nhật (Cam) -->
-                        <circle cx="45" cy="0" r="34" fill="#ffffff" stroke="#ea580c" stroke-width="5"/>
-                        <text x="45" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#ea580c" font-family="'Inter', sans-serif">${nhatS}</text>
+                        <circle cx="155" cy="0" r="130" fill="#ffffff" stroke="#ea580c" stroke-width="22"/>
+                        <text x="155" y="45" text-anchor="middle" font-size="150" font-weight="900" fill="#ea580c" font-family="'Inter', sans-serif">${nhatS}</text>
 
                         <!-- Thời (Tím) -->
-                        <circle cx="135" cy="0" r="34" fill="#ffffff" stroke="#9333ea" stroke-width="5"/>
-                        <text x="135" y="12" text-anchor="middle" font-size="38" font-weight="900" fill="#9333ea" font-family="'Inter', sans-serif">${thoiS}</text>
+                        <circle cx="460" cy="0" r="130" fill="#ffffff" stroke="#9333ea" stroke-width="22"/>
+                        <text x="460" y="45" text-anchor="middle" font-size="150" font-weight="900" fill="#9333ea" font-family="'Inter', sans-serif">${thoiS}</text>
                     </g>
 
-                    <!-- Ở giữa: Số Vận Tinh (Màu Xanh Dương Blue To Đậm) -->
-                    <text x="${cellSize / 2}" y="${cellSize * 0.52}" text-anchor="middle" font-size="180" font-weight="900" fill="#0284c7" font-family="'Inter', sans-serif">${pal.vanStar}</text>
+                    <!-- Ở giữa: Số Vận Tinh (Màu Xanh Dương Blue To Đậm Nét) -->
+                    <text x="${cellSize / 2}" y="${cellSize * 0.54}" text-anchor="middle" font-size="820" font-weight="900" fill="#0284c7" font-family="'Inter', sans-serif">${pal.vanStar}</text>
 
-                    <!-- Bên trái: Số Sơn Tinh (Tọa Tinh - Màu Đen To Đậm) -->
-                    <text x="${cellSize * 0.22}" y="${cellSize * 0.82}" text-anchor="middle" font-size="170" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.sonStar}</text>
+                    <!-- Bên trái: Số Sơn Tinh (Tọa Tinh - Màu Đen To Đậm Nét) -->
+                    <text x="${cellSize * 0.22}" y="${cellSize * 0.84}" text-anchor="middle" font-size="750" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.sonStar}</text>
 
-                    <!-- Bên phải: Số Hướng Tinh (Màu Đen To Đậm) -->
-                    <text x="${cellSize * 0.78}" y="${cellSize * 0.82}" text-anchor="middle" font-size="170" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.huongStar}</text>
+                    <!-- Bên phải: Số Hướng Tinh (Màu Đen To Đậm Nét) -->
+                    <text x="${cellSize * 0.78}" y="${cellSize * 0.84}" text-anchor="middle" font-size="750" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${pal.huongStar}</text>
 
                     <!-- Ở dưới: Tên Cung Viết Tắt -->
-                    <text x="${cellSize / 2}" y="${cellSize * 0.88}" text-anchor="middle" font-size="70" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${shortLabel}</text>
+                    <text x="${cellSize / 2}" y="${cellSize * 0.90}" text-anchor="middle" font-size="320" font-weight="900" fill="#000000" font-family="'Inter', sans-serif">${shortLabel}</text>
                 </g>
             `;
         });
@@ -1748,7 +1814,7 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         return `
             <g class="layer-nine-palaces-matrix" transform="translate(${houseCenterX}, ${houseCenterY})" pointer-events="none">
                 <!-- Khung viền ngoài đậm của ma trận 3x3 -->
-                <rect x="${-halfBox}" y="${-halfBox}" width="${boxSize}" height="${boxSize}" fill="none" stroke="#000000" stroke-width="18"/>
+                <rect x="${-halfBox}" y="${-halfBox}" width="${boxSize}" height="${boxSize}" fill="none" stroke="#000000" stroke-width="80"/>
                 ${cellsSvg}
             </g>
         `;
