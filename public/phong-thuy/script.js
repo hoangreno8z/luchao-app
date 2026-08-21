@@ -1,3 +1,21 @@
+import {
+    FengShuiInterpretationEngine,
+    findMountain,
+    getOppositeMountain,
+    calculateFlyingStars,
+    calculateGua,
+    generateParametricFloorplan,
+    ArchitecturalCADRenderer,
+    LuoPanAndFlyingStarsSvgRenderer,
+    calculateFengShuiSpatial,
+    SvgViewportController,
+    getOrientedPalaceGrid,
+    renderUnifiedSvg,
+    FloorplanVisionVectorizer,
+    HouseCenterGeometryEngine,
+    PALACE_NAMES,
+    PALACE_SHORT
+} from './js/phong_thuy_bundle.js';
 
 function handleLandscapeMiniAction(action, landscapeId) {
     if (!currentGeometry || !currentGeometry.landscapes) return;
@@ -109,24 +127,7 @@ function refreshSpatialFengShui() {
 // 100% Thuần Code Vector (SVG / Canvas) — Không sử dụng Emoji
 // ============================================================
 
-import {
-    FengShuiInterpretationEngine,
-    findMountain,
-    getOppositeMountain,
-    calculateFlyingStars,
-    calculateGua,
-    generateParametricFloorplan,
-    ArchitecturalCADRenderer,
-    LuoPanAndFlyingStarsSvgRenderer,
-    calculateFengShuiSpatial,
-    SvgViewportController,
-    getOrientedPalaceGrid,
-    renderUnifiedSvg,
-    FloorplanVisionVectorizer,
-    HouseCenterGeometryEngine,
-    PALACE_NAMES,
-    PALACE_SHORT
-} from './js/phong_thuy_bundle.js';
+
 
 let currentMode = 'empty_land'; // 'empty_land' | 'existing_house' | 'scan_image'
 let currentThemeMode = 'white'; // 'white' | 'dark'
