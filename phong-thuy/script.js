@@ -1729,12 +1729,16 @@ function initCadInteractiveEngine() {
         if (!svgEl) return;
 
         const rect = svgEl.getBoundingClientRect();
-        const vb = cadRenderer.renderLayers(currentGeometry).viewBox;
-        const scaleX = vb.w / rect.width;
-        const scaleY = vb.h / rect.height;
+        if (rect.width === 0 || rect.height === 0) return;
 
-        const dx = (e.clientX - pointerState.startClientX) * scaleX;
-        const dy = (e.clientY - pointerState.startClientY) * scaleY;
+        if (!pointerState.cachedScaleX) {
+            const vb = cadRenderer.renderLayers(currentGeometry).viewBox;
+            pointerState.cachedScaleX = vb.w / rect.width;
+            pointerState.cachedScaleY = vb.h / rect.height;
+        }
+
+        const dx = (e.clientX - pointerState.startClientX) * pointerState.cachedScaleX;
+        const dy = (e.clientY - pointerState.startClientY) * pointerState.cachedScaleY;
 
         if (pointerState.mode === 'move_landscape') {
             const l = currentGeometry.landscapes?.find(item => item.id === pointerState.targetLandscapeId);
@@ -1811,6 +1815,8 @@ function initCadInteractiveEngine() {
         if (pointerState.isInteracting) {
             pointerState.isInteracting = false;
             pointerState.mode = null;
+            pointerState.cachedScaleX = null;
+            pointerState.cachedScaleY = null;
             try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
             renderSmartPopup();
             renderPopovers();

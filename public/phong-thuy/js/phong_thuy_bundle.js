@@ -1249,45 +1249,35 @@ export class ArchitecturalCADRenderer {
         const selectedLandscapeId = options.selectedLandscapeId || null;
         const selectedEdgeIdx = options.selectedEdgeIndex !== undefined ? options.selectedEdgeIndex : null;
 
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        // 1. TỌA ĐỘ VÀ TÂM NHÀ CỐ ĐỊNH (KHÔNG THAY ĐỔI KHI DI CHUYỂN NGOẠI CẢNH)
+        let houseMinX = Infinity, houseMaxX = -Infinity, houseMinY = Infinity, houseMaxY = -Infinity;
         pts.forEach(p => {
-            if (p.x < minX) minX = p.x;
-            if (p.x > maxX) maxX = p.x;
-            if (p.y < minY) minY = p.y;
-            if (p.y > maxY) maxY = p.y;
+            if (p.x < houseMinX) houseMinX = p.x;
+            if (p.x > houseMaxX) houseMaxX = p.x;
+            if (p.y < houseMinY) houseMinY = p.y;
+            if (p.y > houseMaxY) houseMaxY = p.y;
         });
 
-        if (geometry.rooms) {
-            geometry.rooms.forEach(r => {
-                if (r.x < minX) minX = r.x;
-                if (r.x + r.w > maxX) maxX = r.x + r.w;
-                if (r.y < minY) minY = r.y;
-                if (r.y + r.h > maxY) maxY = r.y + r.h;
-            });
-        }
-
-        if (geometry.landscapes) {
-            geometry.landscapes.forEach(l => {
-                if (l.x < minX) minX = l.x;
-                if (l.x + l.w > maxX) maxX = l.x + l.w;
-                if (l.y < minY) minY = l.y;
-                if (l.y + l.h > maxY) maxY = l.y + l.h;
-            });
+        if (pts.length === 0) {
+            houseMinX = 0; houseMaxX = geometry.widthMm || 5000;
+            houseMinY = 0; houseMaxY = geometry.depthMm || 16000;
         }
 
         const centroid = HouseCenterGeometryEngine.calculatePolygonCentroid(pts);
-        const maxHouseW = Math.max(1000, maxX - minX);
-        const maxHouseD = Math.max(1000, maxY - minY);
+        const houseW = Math.max(1000, houseMaxX - houseMinX);
+        const houseD = Math.max(1000, houseMaxY - houseMinY);
 
-        // Bán kính bao phủ toàn bộ vòng tròn La Kinh, ngôi nhà và ngoại cảnh xung quanh
-        const compassRadius = Math.max(3800, Math.max(maxHouseW, maxHouseD) * 0.65 + 1500);
-        const safeRadius = Math.max(compassRadius + 800, Math.max(maxHouseW, maxHouseD) / 2 + 1500);
+        // Bán kính La Kinh và Cửu Cung cố định theo kích thước ngôi nhà
+        const compassRadius = Math.max(4800, Math.max(houseW, houseD) * 0.70 + 2000);
+        
+        // Bán kính khung nhìn cố định (Anchor an toàn) — Đảm bảo di chuyển ngoại cảnh 100% không làm rung/nhảy/zoom viewBox
+        const fixedViewRadius = Math.max(12500, Math.max(houseW, houseD) * 1.35 + 4000);
 
         const viewBox = {
-            x: Math.round(centroid.x - safeRadius),
-            y: Math.round(centroid.y - safeRadius),
-            w: Math.round(safeRadius * 2),
-            h: Math.round(safeRadius * 2)
+            x: Math.round(centroid.x - fixedViewRadius),
+            y: Math.round(centroid.y - fixedViewRadius),
+            w: Math.round(fixedViewRadius * 2),
+            h: Math.round(fixedViewRadius * 2)
         };
 
         // 1. TƯỜNG NGOÀI (220mm) VÀ CỘT BÊ TÔNG ĐEN GÓC (220x220mm)
@@ -1719,10 +1709,10 @@ export class ArchitecturalCADRenderer {
             dimensionsLayer: dimsSvg,
             vertexLayer: handlesLayer,
             centerLayer: centerMarkerSvg,
-            houseMinX: minX,
-            houseMinY: minY,
-            houseWidth: maxHouseW,
-            houseDepth: maxHouseD,
+            houseMinX,
+            houseMinY,
+            houseWidth: houseW,
+            houseDepth: houseD,
             houseCenterX: centroid.x,
             houseCenterY: centroid.y
         };
