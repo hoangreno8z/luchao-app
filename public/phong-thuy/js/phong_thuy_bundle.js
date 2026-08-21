@@ -133,8 +133,10 @@ export function getPeriod(year) {
     return p ? p.period : 9;
 }
 
-export function findMountain(deg) {
-    let d = ((deg % 360) + 360) % 360;
+export function findMountain(deg, options = {}) {
+    const { declination = 0, northBasis = 'true' } = options;
+    let d = ((deg + (northBasis === 'magnetic' ? declination : 0)) % 360 + 360) % 360;
+    
     let match = MOUNTAINS_24.find(m => {
         if (m.startDeg > m.endDeg) {
             return d >= m.startDeg || d < m.endDeg;
@@ -149,6 +151,34 @@ export function findMountain(deg) {
     if (dev < -180) dev += 360;
     dev = parseFloat(dev.toFixed(2));
 
+    const trigramBoundaries = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5];
+    let minTrigramDist = Infinity;
+    trigramBoundaries.forEach(tb => {
+        let diff = Math.abs(d - tb);
+        if (diff > 180) diff = 360 - diff;
+        if (diff < minTrigramDist) minTrigramDist = diff;
+    });
+
+    let distToStart = Math.abs(d - match.startDeg);
+    if (distToStart > 180) distToStart = 360 - distToStart;
+    let distToEnd = Math.abs(d - match.endDeg);
+    if (distToEnd > 180) distToEnd = 360 - distToEnd;
+    const minMntDist = Math.min(distToStart, distToEnd);
+
+    let boundaryStatus = 'CHÍNH TUYẾN';
+    let isDaiKhongVong = false;
+    let isTieuKhongVong = false;
+
+    if (minTrigramDist <= 1.5) {
+        boundaryStatus = 'ĐẠI KHÔNG VONG';
+        isDaiKhongVong = true;
+    } else if (minMntDist <= 1.5) {
+        boundaryStatus = 'TIỂU KHÔNG VONG';
+        isTieuKhongVong = true;
+    } else if (Math.abs(dev) >= 3.0) {
+        boundaryStatus = 'KIÊM TUYẾN';
+    }
+
     const isKiemHuong = Math.abs(dev) >= 3.0;
 
     return {
@@ -156,7 +186,11 @@ export function findMountain(deg) {
         degree: d,
         deviation: dev,
         isKiemHuong,
-        chartType: isKiemHuong ? 'Kiêm Hướng (Thế Quái)' : 'Chính Hướng (Hạ Quái)'
+        boundaryStatus,
+        isDaiKhongVong,
+        isTieuKhongVong,
+        distanceToBoundary: parseFloat(minMntDist.toFixed(2)),
+        chartType: isDaiKhongVong ? 'Đại Không Vong (Xuất Quái Đại Sát)' : (isTieuKhongVong ? 'Tiểu Không Vong (Sai Thất)' : (isKiemHuong ? 'Kiêm Hướng (Thế Quái)' : 'Chính Hướng (Hạ Quái)'))
     };
 }
 
