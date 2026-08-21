@@ -1588,6 +1588,7 @@ function initCadInteractiveEngine() {
         const landscapeEl = e.target.closest('.cad-landscape-interactive');
         if (landscapeEl) {
             e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
             const lId = landscapeEl.getAttribute('data-landscape-id');
             selectedLandscapeId = lId;
             selectedRoomId = null;

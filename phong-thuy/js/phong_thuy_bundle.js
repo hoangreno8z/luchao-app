@@ -988,231 +988,253 @@ export class FloorplanVisionVectorizer {
 // VECTOR SYMBOLS CHO 13 LOẠI NGOẠI CẢNH (LOAN ĐẦU PHONG THỦY)
 // 100% Thuần Code SVG — Không Emoji — Tỉ Lệ Chuẩn mm CAD
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// VECTOR SYMBOLS CHO 13 LOẠI NGOẠI CẢNH (LOAN ĐẦU PHONG THỦY)
+// 100% THUẦN CODE VECTOR CAD LINE-ART — NỀN TRONG SUỐT (FILL="NONE")
+// ĐỒNG BỘ ĐƯỜNG NÉT ĐEN (#0f172a) & ĐỎ (#dc2626) VỚI BẢN VẼ
+// KHÔNG DÙNG NỀN ĐEN HAY MẢNG CHE KHUẤT KIẾN TRÚC
+// ------------------------------------------------------------
 export function renderLandscapeVectorSymbol(type, w, h) {
     const cx = w / 2;
     const cy = h / 2;
 
     switch (type) {
-        case 'temple': // 1. Chùa / Đình (Mái ngói cong, tam quan, tháp chuông)
+        case 'temple': // 1. Chùa / Đình (Mái ngói đao cong 2 tầng nét đỏ, tam quan, đỉnh tháp, lư hương)
             return `
-                <!-- Nền khuôn viên chùa màu vàng cam đất ấm áp -->
-                <rect width="${w}" height="${h}" fill="rgba(254, 243, 199, 0.6)" stroke="#b45309" stroke-width="16" rx="12"/>
-                <!-- Tường bao quanh -->
-                <rect x="${w * 0.08}" y="${h * 0.08}" width="${w * 0.84}" height="${h * 0.84}" fill="none" stroke="#d97706" stroke-width="10" stroke-dasharray="40,20"/>
-                <!-- Mái chùa cong ngói đỏ truyền thống -->
-                <path d="M ${w * 0.15} ${h * 0.45} Q ${cx} ${h * 0.22} ${w * 0.85} ${h * 0.45} L ${w * 0.75} ${h * 0.55} Q ${cx} ${h * 0.38} ${w * 0.25} ${h * 0.55} Z" fill="#dc2626" stroke="#991b1b" stroke-width="12"/>
-                <path d="M ${w * 0.22} ${h * 0.30} Q ${cx} ${h * 0.12} ${w * 0.78} ${h * 0.30} L ${w * 0.70} ${h * 0.38} Q ${cx} ${h * 0.24} ${w * 0.30} ${h * 0.38} Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="10"/>
+                <!-- Khung bao khuôn viên nét đứt thanh mảnh -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#dc2626" stroke-width="8" stroke-dasharray="40,25" rx="10"/>
+                
+                <!-- Mái chùa đao cong 2 tầng nét đỏ kỹ thuật CAD -->
+                <path d="M ${w * 0.12} ${h * 0.42} Q ${cx} ${h * 0.22} ${w * 0.88} ${h * 0.42} L ${w * 0.78} ${h * 0.50} Q ${cx} ${h * 0.36} ${w * 0.22} ${h * 0.50} Z" fill="none" stroke="#dc2626" stroke-width="14"/>
+                <path d="M ${w * 0.20} ${h * 0.28} Q ${cx} ${h * 0.12} ${w * 0.80} ${h * 0.28} L ${w * 0.72} ${h * 0.35} Q ${cx} ${h * 0.22} ${w * 0.28} ${h * 0.35} Z" fill="none" stroke="#dc2626" stroke-width="12"/>
+                
                 <!-- Đỉnh tháp bảo -->
-                <polygon points="${cx},${h * 0.06} ${cx - 60},${h * 0.14} ${cx + 60},${h * 0.14}" fill="#f59e0b" stroke="#b45309" stroke-width="8"/>
-                <!-- Cột đình & Tam quan -->
-                <rect x="${w * 0.32}" y="${h * 0.55}" width="${w * 0.06}" height="${h * 0.32}" fill="#78350f" rx="4"/>
-                <rect x="${w * 0.62}" y="${h * 0.55}" width="${w * 0.06}" height="${h * 0.32}" fill="#78350f" rx="4"/>
-                <rect x="${w * 0.40}" y="${h * 0.62}" width="${w * 0.20}" height="${h * 0.25}" fill="rgba(180, 83, 9, 0.25)" stroke="#b45309" stroke-width="8" rx="6"/>
-                <!-- Lư hương trước chùa -->
-                <circle cx="${cx}" cy="${h * 0.75}" r="${Math.min(w, h) * 0.06}" fill="#78350f" stroke="#f59e0b" stroke-width="6"/>
+                <polygon points="${cx},${h * 0.05} ${cx - 50},${h * 0.12} ${cx + 50},${h * 0.12}" fill="none" stroke="#dc2626" stroke-width="10"/>
+                <line x1="${cx}" y1="${h * 0.02}" x2="${cx}" y2="${h * 0.12}" stroke="#dc2626" stroke-width="8"/>
+                
+                <!-- Cột đình nét đôi & Cửa tam quan -->
+                <line x1="${w * 0.30}" y1="${h * 0.50}" x2="${w * 0.30}" y2="${h * 0.88}" stroke="#0f172a" stroke-width="12"/>
+                <line x1="${w * 0.70}" y1="${h * 0.50}" x2="${w * 0.70}" y2="${h * 0.88}" stroke="#0f172a" stroke-width="12"/>
+                <rect x="${w * 0.38}" y="${h * 0.56}" width="${w * 0.24}" height="${h * 0.32}" fill="none" stroke="#0f172a" stroke-width="10" rx="6"/>
+                <line x1="${cx}" y1="${h * 0.56}" x2="${cx}" y2="${h * 0.88}" stroke="#0f172a" stroke-width="8"/>
+                
+                <!-- Lư hương tròn trước cửa -->
+                <circle cx="${cx}" cy="${h * 0.78}" r="${Math.min(w,h) * 0.07}" fill="none" stroke="#dc2626" stroke-width="8"/>
+                <circle cx="${cx}" cy="${h * 0.78}" r="${Math.min(w,h) * 0.03}" fill="none" stroke="#dc2626" stroke-width="6"/>
             `;
 
-        case 't_junction': // 2. Ngã 3 Đường (Giao lộ chữ T + vạch kẻ đường)
+        case 't_junction': // 2. Ngã 3 Đường (Giao lộ chữ T nét đôi + vạch tim đường đỏ nét đứt)
             return `
-                <!-- Nền đường nhựa xám đậm -->
-                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#475569" stroke-width="16" rx="8"/>
-                <!-- Lòng đường chữ T xám sáng -->
-                <path d="M 0 ${h * 0.3} L ${w} ${h * 0.3} L ${w} ${h * 0.7} L ${w * 0.65} ${h * 0.7} L ${w * 0.65} ${h} L ${w * 0.35} ${h} L ${w * 0.35} ${h * 0.7} L 0 ${h * 0.7} Z" fill="#334155"/>
-                <!-- Vạch tim đường vàng nét đứt -->
-                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
-                <line x1="${cx}" y1="${h * 0.5}" x2="${cx}" y2="${h}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
-                <!-- Mũi tên chỉ hướng luồng khí giao thông -->
-                <polygon points="${w * 0.85},${h * 0.45} ${w * 0.95},${h * 0.5} ${w * 0.85},${h * 0.55}" fill="#ffffff"/>
-                <polygon points="${w * 0.15},${h * 0.55} ${w * 0.05},${h * 0.5} ${w * 0.15},${h * 0.45}" fill="#ffffff"/>
-                <polygon points="${cx - 40},${h * 0.88} ${cx},${h * 0.98} ${cx + 40},${h * 0.88}" fill="#ffffff"/>
+                <!-- Khung bao giao lộ trong suốt -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="6" stroke-dasharray="30,20"/>
+                
+                <!-- Lòng đường chữ T viền nét đôi đen đậm -->
+                <path d="M 0 ${h * 0.30} L ${w} ${h * 0.30}" stroke="#0f172a" stroke-width="16"/>
+                <path d="M 0 ${h * 0.70} L ${w * 0.32} ${h * 0.70} L ${w * 0.32} ${h}" stroke="#0f172a" stroke-width="16"/>
+                <path d="M ${w * 0.68} ${h} L ${w * 0.68} ${h * 0.70} L ${w} ${h * 0.70}" stroke="#0f172a" stroke-width="16"/>
+                
+                <!-- Vạch tim đường màu đỏ nét đứt -->
+                <line x1="0" y1="${h * 0.50}" x2="${w}" y2="${h * 0.50}" stroke="#dc2626" stroke-width="10" stroke-dasharray="80,50"/>
+                <line x1="${cx}" y1="${h * 0.50}" x2="${cx}" y2="${h}" stroke="#dc2626" stroke-width="10" stroke-dasharray="80,50"/>
+                
+                <!-- Mũi tên chỉ hướng luồng xe / luồng khí trực xung -->
+                <polyline points="${w * 0.85},${h * 0.44} ${w * 0.95},${h * 0.50} ${w * 0.85},${h * 0.56}" fill="none" stroke="#dc2626" stroke-width="10"/>
+                <polyline points="${w * 0.15},${h * 0.56} ${w * 0.05},${h * 0.50} ${w * 0.15},${h * 0.44}" fill="none" stroke="#dc2626" stroke-width="10"/>
+                <polyline points="${cx - 40},${h * 0.86} ${cx},${h * 0.96} ${cx + 40},${h * 0.86}" fill="none" stroke="#dc2626" stroke-width="10"/>
             `;
 
-        case 'crossroad': // 3. Ngã 4 Đường (Giao lộ chữ thập + vạch sang đường)
+        case 'crossroad': // 3. Ngã 4 Đường (Giao lộ chữ thập nét đôi + vạch sang đường)
             return `
-                <!-- Nền ngã tư nhựa xám -->
-                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#475569" stroke-width="16" rx="8"/>
-                <!-- Lòng đường chữ thập -->
-                <path d="M 0 ${h * 0.3} L ${w * 0.3} ${h * 0.3} L ${w * 0.3} 0 L ${w * 0.7} 0 L ${w * 0.7} ${h * 0.3} L ${w} ${h * 0.3} L ${w} ${h * 0.7} L ${w * 0.7} ${h * 0.7} L ${w * 0.7} ${h} L ${w * 0.3} ${h} L ${w * 0.3} ${h * 0.7} L 0 ${h * 0.7} Z" fill="#334155"/>
-                <!-- Vạch tim đường vàng nét đứt -->
-                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
-                <line x1="${cx}" y1="0" x2="${cx}" y2="${h}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
-                <!-- Vạch sang đường người đi bộ (Zebra Crossings) -->
-                <line x1="${w * 0.32}" y1="${h * 0.28}" x2="${w * 0.68}" y2="${h * 0.28}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
-                <line x1="${w * 0.32}" y1="${h * 0.72}" x2="${w * 0.68}" y2="${h * 0.72}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
-                <line x1="${w * 0.28}" y1="${h * 0.32}" x2="${w * 0.28}" y2="${h * 0.68}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
-                <line x1="${w * 0.72}" y1="${h * 0.32}" x2="${w * 0.72}" y2="${h * 0.68}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
+                <!-- Khung bao giao lộ trong suốt -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="6" stroke-dasharray="30,20"/>
+                
+                <!-- 4 góc vỉa hè ngã tư nét đôi đen -->
+                <path d="M 0 ${h * 0.30} L ${w * 0.30} ${h * 0.30} L ${w * 0.30} 0" stroke="#0f172a" stroke-width="16" fill="none"/>
+                <path d="M ${w * 0.70} 0 L ${w * 0.70} ${h * 0.30} L ${w} ${h * 0.30}" stroke="#0f172a" stroke-width="16" fill="none"/>
+                <path d="M 0 ${h * 0.70} L ${w * 0.30} ${h * 0.70} L ${w * 0.30} ${h}" stroke="#0f172a" stroke-width="16" fill="none"/>
+                <path d="M ${w} ${h * 0.70} L ${w * 0.70} ${h * 0.70} L ${w * 0.70} ${h}" stroke="#0f172a" stroke-width="16" fill="none"/>
+                
+                <!-- 2 đường tim đường giao thoa nét đỏ đứt -->
+                <line x1="0" y1="${h * 0.50}" x2="${w}" y2="${h * 0.50}" stroke="#dc2626" stroke-width="10" stroke-dasharray="80,50"/>
+                <line x1="${cx}" y1="0" x2="${cx}" y2="${h}" stroke="#dc2626" stroke-width="10" stroke-dasharray="80,50"/>
+                
+                <!-- 4 vạch sang đường người đi bộ (Zebra lines) nét đen -->
+                <line x1="${w * 0.33}" y1="${h * 0.28}" x2="${w * 0.67}" y2="${h * 0.28}" stroke="#0f172a" stroke-width="12" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.33}" y1="${h * 0.72}" x2="${w * 0.67}" y2="${h * 0.72}" stroke="#0f172a" stroke-width="12" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.28}" y1="${h * 0.33}" x2="${w * 0.28}" y2="${h * 0.67}" stroke="#0f172a" stroke-width="12" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.72}" y1="${h * 0.33}" x2="${w * 0.72}" y2="${h * 0.67}" stroke="#0f172a" stroke-width="12" stroke-dasharray="25,20"/>
             `;
 
-        case 'river_lake': // 4. Sông / Hồ (Mặt nước uốn lượn xanh ngọc + vân sóng)
+        case 'river_lake': // 4. Sông / Hồ (Đường bờ sông uốn lượn xanh dương + vân sóng nước)
             return `
-                <!-- Nền nước xanh ngọc trong suốt -->
-                <rect width="${w}" height="${h}" fill="rgba(14, 165, 233, 0.45)" stroke="#0284c7" stroke-width="16" rx="20"/>
-                <!-- Dải sông uốn lượn dòng chảy tự nhiên -->
-                <path d="M 0 ${h * 0.35} Q ${w * 0.3} ${h * 0.15} ${w * 0.6} ${h * 0.5} T ${w} ${h * 0.4} L ${w} ${h * 0.8} Q ${w * 0.6} ${h * 0.9} ${w * 0.3} ${h * 0.6} T 0 ${h * 0.75} Z" fill="rgba(2, 132, 199, 0.55)"/>
-                <!-- Các đường gợn sóng nước mềm mại -->
-                <path d="M ${w * 0.1} ${h * 0.4} Q ${w * 0.2} ${h * 0.3} ${w * 0.3} ${h * 0.4}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
-                <path d="M ${w * 0.45} ${h * 0.55} Q ${w * 0.55} ${h * 0.45} ${w * 0.65} ${h * 0.55}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
-                <path d="M ${w * 0.7} ${h * 0.35} Q ${w * 0.8} ${h * 0.25} ${w * 0.9} ${h * 0.35}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
-                <path d="M ${w * 0.25} ${h * 0.65} Q ${w * 0.35} ${h * 0.55} ${w * 0.45} ${h * 0.65}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                <!-- Đường bờ sông uốn lượn tự nhiên nét xanh dương đôi -->
+                <path d="M 0 ${h * 0.28} Q ${w * 0.28} ${h * 0.12} ${w * 0.58} ${h * 0.42} T ${w} ${h * 0.32}" fill="none" stroke="#0284c7" stroke-width="16"/>
+                <path d="M 0 ${h * 0.72} Q ${w * 0.28} ${h * 0.56} ${w * 0.58} ${h * 0.86} T ${w} ${h * 0.76}" fill="none" stroke="#0284c7" stroke-width="16"/>
+                
+                <!-- Các đường vân gợn sóng nước mềm mại -->
+                <path d="M ${w * 0.12} ${h * 0.46} Q ${w * 0.22} ${h * 0.36} ${w * 0.32} ${h * 0.46}" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.42} ${h * 0.60} Q ${w * 0.52} ${h * 0.50} ${w * 0.62} ${h * 0.60}" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.68} ${h * 0.48} Q ${w * 0.78} ${h * 0.38} ${w * 0.88} ${h * 0.48}" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.24} ${h * 0.62} Q ${w * 0.34} ${h * 0.52} ${w * 0.44} ${h * 0.62}" fill="none" stroke="#0284c7" stroke-width="8" stroke-linecap="round"/>
             `;
 
-        case 'cemetery': // 5. Nghĩa Trang (Khu mộ chí + cây bách + bia mộ đá)
+        case 'cemetery': // 5. Nghĩa Trang (Khung rào nét đứt + các cụm bia mộ đá CAD)
             return `
-                <!-- Nền khuôn viên nghĩa trang xám xanh tĩnh mịch -->
-                <rect width="${w}" height="${h}" fill="rgba(71, 85, 105, 0.4)" stroke="#475569" stroke-width="16" rx="10"/>
-                <!-- Hàng rào cây bách bao quanh -->
-                <rect x="${w * 0.06}" y="${h * 0.06}" width="${w * 0.88}" height="${h * 0.88}" fill="none" stroke="#15803d" stroke-width="8" stroke-dasharray="30,15"/>
-                <!-- Các dãy bia mộ đá xếp đều đặn -->
-                ${[0.2, 0.5, 0.8].map(px => [0.25, 0.65].map(py => `
+                <!-- Tường rào khuôn viên nghĩa trang nét đứt xám đen -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="10" stroke-dasharray="35,20" rx="8"/>
+                
+                <!-- Các dãy bia mộ đá kiến trúc nét đen -->
+                ${[0.2, 0.5, 0.8].map(px => [0.28, 0.68].map(py => `
                     <g transform="translate(${w * px}, ${h * py})">
-                        <path d="M -35 25 L -35 -15 A 35 35 0 0 1 35 -15 L 35 25 Z" fill="#cbd5e1" stroke="#334155" stroke-width="6"/>
-                        <line x1="0" y1="-10" x2="0" y2="10" stroke="#334155" stroke-width="4"/>
-                        <line x1="-12" y1="-2" x2="12" y2="-2" stroke="#334155" stroke-width="4"/>
-                        <rect x="-45" y="25" width="90" height="15" rx="3" fill="#64748b"/>
+                        <path d="M -30 20 L -30 -10 A 30 30 0 0 1 30 -10 L 30 20 Z" fill="none" stroke="#0f172a" stroke-width="8"/>
+                        <line x1="0" y1="-8" x2="0" y2="8" stroke="#0f172a" stroke-width="6"/>
+                        <line x1="-10" y1="-2" x2="10" y2="-2" stroke="#0f172a" stroke-width="6"/>
+                        <rect x="-40" y="20" width="80" height="12" rx="3" fill="none" stroke="#0f172a" stroke-width="6"/>
                     </g>
                 `).join('')).join('')}
             `;
 
-        case 'park': // 6. Công Viên Cây Xanh (Mảng cỏ tươi + tán cây + đường dạo bộ)
+        case 'park': // 6. Công Viên (Ranh giới xanh + các tán cây đồng tâm CAD)
             return `
-                <!-- Nền cỏ xanh sinh thái mát mẻ -->
-                <rect width="${w}" height="${h}" fill="rgba(34, 197, 94, 0.35)" stroke="#16a34a" stroke-width="16" rx="16"/>
-                <!-- Đường dạo bộ uốn lượn lát sỏi -->
-                <path d="M 0 ${h * 0.8} Q ${w * 0.4} ${h * 0.9} ${w * 0.5} ${h * 0.5} T ${w} ${h * 0.2}" fill="none" stroke="#fde047" stroke-width="35" stroke-linecap="round" opacity="0.75"/>
-                <!-- Cụm các tán cây cổ thụ bóng mát -->
+                <!-- Ranh giới mảng xanh công viên nét xanh lá -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#16a34a" stroke-width="12" rx="16"/>
+                <path d="M 0 ${h * 0.8} Q ${w * 0.4} ${h * 0.9} ${w * 0.5} ${h * 0.5} T ${w} ${h * 0.2}" fill="none" stroke="#16a34a" stroke-width="14" stroke-dasharray="30,15"/>
+                
+                <!-- Cụm các tán cây cổ thụ kiến trúc CAD (Đường tròn + tia phân nhánh) -->
                 ${[
-                    { x: 0.2, y: 0.3, r: 0.12, c: '#15803d' },
-                    { x: 0.35, y: 0.25, r: 0.10, c: '#16a34a' },
-                    { x: 0.75, y: 0.7, r: 0.14, c: '#15803d' },
-                    { x: 0.85, y: 0.55, r: 0.11, c: '#22c55e' },
-                    { x: 0.25, y: 0.75, r: 0.09, c: '#16a34a' }
+                    { x: 0.22, y: 0.32, r: 0.13 },
+                    { x: 0.40, y: 0.25, r: 0.10 },
+                    { x: 0.75, y: 0.68, r: 0.14 },
+                    { x: 0.84, y: 0.45, r: 0.11 },
+                    { x: 0.25, y: 0.72, r: 0.10 }
                 ].map(tree => `
-                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r}" fill="${tree.c}" stroke="#065f46" stroke-width="8"/>
-                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r * 0.4}" fill="#064e3b"/>
+                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r}" fill="none" stroke="#16a34a" stroke-width="10"/>
+                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r * 0.4}" fill="none" stroke="#16a34a" stroke-width="6"/>
+                    <line x1="${w * tree.x - Math.min(w, h) * tree.r}" y1="${h * tree.y}" x2="${w * tree.x + Math.min(w, h) * tree.r}" y2="${h * tree.y}" stroke="#16a34a" stroke-width="5"/>
+                    <line x1="${w * tree.x}" y1="${h * tree.y - Math.min(w, h) * tree.r}" x2="${w * tree.x}" y2="${h * tree.y + Math.min(w, h) * tree.r}" stroke="#16a34a" stroke-width="5"/>
                 `).join('')}
             `;
 
-        case 'substation': // 7. Trạm Điện / Cột Điện Cao Thế (Cột thép giàn + tia sét cảnh báo)
+        case 'substation': // 7. Trạm Điện (Tháp giàn tam giác đỏ + tia sét Hỏa Sát)
             return `
-                <!-- Nền cảnh báo nguy hiểm sọc vàng đen -->
-                <rect width="${w}" height="${h}" fill="rgba(234, 88, 12, 0.25)" stroke="#ea580c" stroke-width="16" rx="10"/>
-                <!-- Hàng rào thép gai bảo vệ -->
-                <rect x="${w * 0.08}" y="${h * 0.08}" width="${w * 0.84}" height="${h * 0.84}" fill="none" stroke="#ea580c" stroke-width="10" stroke-dasharray="30,15"/>
-                <!-- Tháp giàn điện cao thế tam giác -->
-                <polygon points="${cx},${h * 0.15} ${w * 0.25},${h * 0.85} ${w * 0.75},${h * 0.85}" fill="none" stroke="#ea580c" stroke-width="14"/>
-                <line x1="${w * 0.32}" y1="${h * 0.65}" x2="${w * 0.68}" y2="${h * 0.65}" stroke="#ea580c" stroke-width="12"/>
-                <line x1="${w * 0.38}" y1="${h * 0.45}" x2="${w * 0.62}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="12"/>
-                <line x1="${w * 0.25}" y1="${h * 0.85}" x2="${w * 0.62}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="8"/>
-                <line x1="${w * 0.75}" y1="${h * 0.85}" x2="${w * 0.38}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="8"/>
-                <!-- Cánh tay đòn xà đỡ sứ cách điện -->
-                <line x1="${w * 0.15}" y1="${h * 0.35}" x2="${w * 0.85}" y2="${h * 0.35}" stroke="#ea580c" stroke-width="14"/>
-                <line x1="${w * 0.20}" y1="${h * 0.50}" x2="${w * 0.80}" y2="${h * 0.50}" stroke="#ea580c" stroke-width="14"/>
-                <!-- Biểu tượng tia sét cảnh báo Hỏa Sát -->
-                <polygon points="${cx + 20},${h * 0.4} ${cx - 40},${h * 0.6} ${cx},${h * 0.6} ${cx - 20},${h * 0.8} ${cx + 40},${h * 0.55} ${cx},${h * 0.55}" fill="#facc15" stroke="#ca8a04" stroke-width="6"/>
+                <!-- Ranh giới trạm điện nét đứt đỏ cảnh báo -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#dc2626" stroke-width="10" stroke-dasharray="30,15" rx="8"/>
+                
+                <!-- Tháp giàn tam giác cao thế nét đỏ -->
+                <polygon points="${cx},${h * 0.12} ${w * 0.22},${h * 0.88} ${w * 0.78},${h * 0.88}" fill="none" stroke="#dc2626" stroke-width="14"/>
+                <line x1="${w * 0.32}" y1="${h * 0.65}" x2="${w * 0.68}" y2="${h * 0.65}" stroke="#dc2626" stroke-width="10"/>
+                <line x1="${w * 0.38}" y1="${h * 0.42}" x2="${w * 0.62}" y2="${h * 0.42}" stroke="#dc2626" stroke-width="10"/>
+                <line x1="${w * 0.12}" y1="${h * 0.35}" x2="${w * 0.88}" y2="${h * 0.35}" stroke="#dc2626" stroke-width="12"/>
+                <line x1="${w * 0.18}" y1="${h * 0.52}" x2="${w * 0.82}" y2="${h * 0.52}" stroke="#dc2626" stroke-width="12"/>
+                
+                <!-- Tia sét điện quang nét vẽ đỏ -->
+                <polyline points="${cx + 25},${h * 0.38} ${cx - 35},${h * 0.58} ${cx},${h * 0.58} ${cx - 20},${h * 0.78} ${cx + 40},${h * 0.52} ${cx},${h * 0.52}" fill="none" stroke="#dc2626" stroke-width="8"/>
             `;
 
-        case 'bus_station': // 8. Bến Xe Khách (Nhà ga mái vòm + bãi đỗ xe bus)
+        case 'bus_station': // 8. Bến Xe (Nhà chờ nét đôi + các vạch ô đỗ xe)
             return `
-                <!-- Nền nhà ga bến bãi -->
-                <rect width="${w}" height="${h}" fill="rgba(30, 58, 138, 0.3)" stroke="#1e3a8a" stroke-width="16" rx="10"/>
-                <!-- Nhà chờ ga bến xe trung tâm -->
-                <rect x="${w * 0.1}" y="${h * 0.12}" width="${w * 0.8}" height="${h * 0.35}" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="8"/>
-                <text x="${cx}" y="${h * 0.32}" text-anchor="middle" font-size="${Math.min(w,h) * 0.12}" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">BẾN XE</text>
-                <!-- Các ô kẻ đỗ xe bus -->
-                ${[0.15, 0.42, 0.7].map(xOff => `
-                    <rect x="${w * xOff}" y="${h * 0.55}" width="${w * 0.22}" height="${h * 0.38}" fill="#334155" stroke="#facc15" stroke-width="8" rx="6"/>
-                    <!-- Kính xe & bánh xe bus -->
-                    <rect x="${w * xOff + 20}" y="${h * 0.58}" width="${w * 0.22 - 40}" height="${h * 0.1}" fill="#38bdf8" rx="4"/>
-                    <circle cx="${w * xOff + 40}" cy="${h * 0.88}" r="25" fill="#0f172a" stroke="#ffffff" stroke-width="4"/>
-                    <circle cx="${w * xOff + w * 0.22 - 40}" cy="${h * 0.88}" r="25" fill="#0f172a" stroke="#ffffff" stroke-width="4"/>
+                <!-- Khung bến xe nét đôi đen -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="12" rx="10"/>
+                <rect x="${w * 0.10}" y="${h * 0.12}" width="${w * 0.80}" height="${h * 0.32}" fill="none" stroke="#0f172a" stroke-width="10" rx="6"/>
+                <line x1="${w * 0.10}" y1="${h * 0.28}" x2="${w * 0.90}" y2="${h * 0.28}" stroke="#0f172a" stroke-width="6"/>
+                
+                <!-- 3 ô đỗ xe bus nét đứt -->
+                ${[0.15, 0.42, 0.70].map(xOff => `
+                    <rect x="${w * xOff}" y="${h * 0.55}" width="${w * 0.22}" height="${h * 0.36}" fill="none" stroke="#0f172a" stroke-width="8" stroke-dasharray="15,10" rx="4"/>
+                    <!-- Hình dáng xe bus CAD nét mảnh -->
+                    <rect x="${w * xOff + 20}" y="${h * 0.60}" width="${w * 0.22 - 40}" height="${h * 0.26}" fill="none" stroke="#0f172a" stroke-width="6" rx="4"/>
                 `).join('')}
             `;
 
-        case 'seaport': // 9. Cảng Biển (Cầu cảng bê tông + cần cẩu + mỏ neo)
+        case 'seaport': // 9. Cảng Biển (Cầu cảng bê tông vươn dài + cần cẩu + mỏ neo)
             return `
-                <!-- Nền nước biển xanh thẫm -->
-                <rect width="${w}" height="${h}" fill="rgba(3, 105, 161, 0.4)" stroke="#0369a1" stroke-width="16" rx="10"/>
-                <!-- Cầu cảng bê tông vươn ra biển -->
-                <rect x="0" y="${h * 0.3}" width="${w * 0.65}" height="${h * 0.4}" fill="#64748b" stroke="#334155" stroke-width="12" rx="4"/>
-                <line x1="${w * 0.65}" y1="${h * 0.3}" x2="${w * 0.65}" y2="${h * 0.7}" stroke="#facc15" stroke-width="14" stroke-dasharray="30,20"/>
-                <!-- Cần cẩu bốc dỡ container cảng -->
-                <polygon points="${w * 0.2},${h * 0.35} ${w * 0.35},${h * 0.15} ${w * 0.55},${h * 0.15} ${w * 0.4},${h * 0.35}" fill="#dc2626" stroke="#991b1b" stroke-width="8"/>
-                <line x1="${w * 0.55}" y1="${h * 0.15}" x2="${w * 0.55}" y2="${h * 0.45}" stroke="#0f172a" stroke-width="6"/>
-                <!-- Biểu tượng Mỏ Neo lớn -->
-                <circle cx="${w * 0.82}" cy="${h * 0.35}" r="35" fill="none" stroke="#ffffff" stroke-width="10"/>
-                <line x1="${w * 0.82}" y1="${h * 0.35}" x2="${w * 0.82}" y2="${h * 0.75}" stroke="#ffffff" stroke-width="12"/>
-                <path d="M ${w * 0.72} ${h * 0.65} Q ${w * 0.82} ${h * 0.82} ${w * 0.92} ${h * 0.65}" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+                <!-- Đường bờ kè biển nét xanh dương -->
+                <line x1="0" y1="${h * 0.15}" x2="${w}" y2="${h * 0.15}" stroke="#0284c7" stroke-width="12"/>
+                <!-- Cầu cảng bê tông vươn ra biển nét đôi đen -->
+                <rect x="${w * 0.30}" y="${h * 0.15}" width="${w * 0.40}" height="${h * 0.70}" fill="none" stroke="#0f172a" stroke-width="14"/>
+                <line x1="${w * 0.30}" y1="${h * 0.40}" x2="${w * 0.70}" y2="${h * 0.40}" stroke="#0f172a" stroke-width="8"/>
+                <line x1="${w * 0.30}" y1="${h * 0.65}" x2="${w * 0.70}" y2="${h * 0.65}" stroke="#0f172a" stroke-width="8"/>
+                
+                <!-- Biểu tượng Mỏ Neo lớn nét xanh/đen -->
+                <circle cx="${w * 0.82}" cy="${h * 0.40}" r="28" fill="none" stroke="#0284c7" stroke-width="8"/>
+                <line x1="${w * 0.82}" y1="${h * 0.40}" x2="${w * 0.82}" y2="${h * 0.75}" stroke="#0284c7" stroke-width="10"/>
+                <path d="M ${w * 0.72} ${h * 0.66} Q ${w * 0.82} ${h * 0.82} ${w * 0.92} ${h * 0.66}" fill="none" stroke="#0284c7" stroke-width="10" stroke-linecap="round"/>
             `;
 
-        case 'airport': // 10. Sân Bay (Đường băng cất hạ cánh + máy bay phản lực)
+        case 'airport': // 10. Sân Bay (Dải đường băng cất hạ cánh + máy bay CAD)
             return `
-                <!-- Nền đường băng sân bay xám bê tông -->
-                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#64748b" stroke-width="16" rx="10"/>
-                <!-- Dải đường băng cất hạ cánh chính (Runway) -->
-                <rect x="${w * 0.05}" y="${h * 0.3}" width="${w * 0.9}" height="${h * 0.4}" fill="#0f172a" stroke="#ffffff" stroke-width="8"/>
-                <!-- Vạch kẻ sơn tim đường băng & vạch ngưỡng cất cánh -->
-                <line x1="${w * 0.1}" y1="${h * 0.5}" x2="${w * 0.9}" y2="${h * 0.5}" stroke="#ffffff" stroke-width="16" stroke-dasharray="80,50"/>
-                <line x1="${w * 0.08}" y1="${h * 0.35}" x2="${w * 0.08}" y2="${h * 0.65}" stroke="#ffffff" stroke-width="20" stroke-dasharray="15,10"/>
-                <line x1="${w * 0.92}" y1="${h * 0.35}" x2="${w * 0.92}" y2="${h * 0.65}" stroke="#ffffff" stroke-width="20" stroke-dasharray="15,10"/>
-                <!-- Biểu tượng Máy Bay Phản Lực cất cánh -->
+                <!-- Biên dải đường băng nét đôi đen -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="10" stroke-dasharray="40,20"/>
+                <rect x="${w * 0.05}" y="${h * 0.32}" width="${w * 0.90}" height="${h * 0.36}" fill="none" stroke="#0f172a" stroke-width="14"/>
+                
+                <!-- Vạch tim đường băng nét đứt dài & vạch ngưỡng -->
+                <line x1="${w * 0.10}" y1="${h * 0.50}" x2="${w * 0.90}" y2="${h * 0.50}" stroke="#0f172a" stroke-width="12" stroke-dasharray="70,40"/>
+                <line x1="${w * 0.08}" y1="${h * 0.35}" x2="${w * 0.08}" y2="${h * 0.65}" stroke="#0f172a" stroke-width="14" stroke-dasharray="15,10"/>
+                <line x1="${w * 0.92}" y1="${h * 0.35}" x2="${w * 0.92}" y2="${h * 0.65}" stroke="#0f172a" stroke-width="14" stroke-dasharray="15,10"/>
+                
+                <!-- Máy bay phản lực CAD nét mảnh -->
                 <g transform="translate(${cx}, ${cy}) rotate(-35)">
-                    <!-- Thân máy bay -->
-                    <path d="M 0 -80 C 15 -60 15 60 0 80 C -15 60 -15 -60 0 -80 Z" fill="#38bdf8" stroke="#ffffff" stroke-width="8"/>
-                    <!-- Cánh máy bay -->
-                    <polygon points="0,-20 90,30 80,45 0,10 -80,45 -90,30" fill="#0284c7" stroke="#ffffff" stroke-width="6"/>
-                    <!-- Đuôi máy bay -->
-                    <polygon points="0,50 35,75 30,85 0,75 -30,85 -35,75" fill="#0369a1"/>
+                    <path d="M 0 -70 C 12 -50 12 50 0 70 C -12 50 -12 -50 0 -70 Z" fill="none" stroke="#0284c7" stroke-width="8"/>
+                    <polygon points="0,-15 80,25 70,35 0,8 -70,35 -80,25" fill="none" stroke="#0284c7" stroke-width="7"/>
+                    <polygon points="0,45 30,65 25,72 0,65 -25,72 -30,65" fill="none" stroke="#0284c7" stroke-width="6"/>
                 </g>
             `;
 
         case 'railway': // 11. Tuyến Đường Sắt (Đường ray đôi song song + tà vẹt gỗ)
             return `
-                <!-- Nền hành lang an toàn đường sắt rải đá ba lát -->
-                <rect width="${w}" height="${h}" fill="#334155" stroke="#475569" stroke-width="16" rx="6"/>
-                <!-- Các thanh tà vẹt gỗ xếp đều đặn -->
+                <!-- 2 thanh ray song song nét đôi đen -->
+                <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#0f172a" stroke-width="14"/>
+                <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#0f172a" stroke-width="14"/>
+                
+                <!-- 16 thanh tà vẹt gỗ ngang xếp đều đặn -->
                 ${Array.from({ length: 16 }).map((_, i) => `
-                    <rect x="${(w / 16) * i + 10}" y="${h * 0.15}" width="${w / 28}" height="${h * 0.7}" fill="#78350f" rx="3" stroke="#451a03" stroke-width="4"/>
+                    <line x1="${(w / 16) * i + (w / 32)}" y1="${h * 0.18}" x2="${(w / 16) * i + (w / 32)}" y2="${h * 0.82}" stroke="#0f172a" stroke-width="8"/>
                 `).join('')}
-                <!-- 2 thanh ray thép song song sáng bóng -->
-                <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#e2e8f0" stroke-width="16"/>
-                <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#e2e8f0" stroke-width="16"/>
-                <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#64748b" stroke-width="6"/>
-                <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#64748b" stroke-width="6"/>
             `;
 
-        case 'field': // 12. Ruộng Đồng / Đất Canh Tác (Bờ thửa ô cờ xanh mạ)
+        case 'field': // 12. Ruộng Đồng (Bờ thửa bàn cờ nét đen + khóm lúa)
             return `
-                <!-- Nền ruộng đất phù sa màu mỡ -->
-                <rect width="${w}" height="${h}" fill="rgba(101, 163, 13, 0.45)" stroke="#65a30d" stroke-width="16" rx="8"/>
-                <!-- Các ô bờ ruộng bàn cờ -->
-                <line x1="${w * 0.33}" y1="0" x2="${w * 0.33}" y2="${h}" stroke="#78350f" stroke-width="16"/>
-                <line x1="${w * 0.66}" y1="0" x2="${w * 0.66}" y2="${h}" stroke="#78350f" stroke-width="16"/>
-                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#78350f" stroke-width="16"/>
-                <!-- Các hàng lúa mạ non gợn sóng -->
-                ${[0.15, 0.48, 0.82].map(px => [0.25, 0.75].map(py => `
-                    <path d="M ${w * px - 40} ${h * py} Q ${w * px} ${h * py - 30} ${w * px + 40} ${h * py}" fill="none" stroke="#4d7c0f" stroke-width="8" stroke-linecap="round"/>
+                <!-- Khung bờ ruộng nét đôi đen -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="12" rx="8"/>
+                <line x1="${w * 0.33}" y1="0" x2="${w * 0.33}" y2="${h}" stroke="#0f172a" stroke-width="10"/>
+                <line x1="${w * 0.66}" y1="0" x2="${w * 0.66}" y2="${h}" stroke="#0f172a" stroke-width="10"/>
+                <line x1="0" y1="${h * 0.50}" x2="${w}" y2="${h * 0.50}" stroke="#0f172a" stroke-width="10"/>
+                
+                <!-- Khóm lúa mạ non CAD nét mảnh -->
+                ${[0.16, 0.50, 0.83].map(px => [0.25, 0.75].map(py => `
+                    <path d="M ${w * px - 35} ${h * py} Q ${w * px} ${h * py - 25} ${w * px + 35} ${h * py}" fill="none" stroke="#16a34a" stroke-width="7" stroke-linecap="round"/>
+                    <line x1="${w * px}" y1="${h * py - 25}" x2="${w * px}" y2="${h * py}" stroke="#16a34a" stroke-width="6"/>
                 `).join('')).join('')}
             `;
 
-        case 'mountain': // 13. Núi Cao (3 đỉnh núi trùng điệp đổ bóng 3D)
+        case 'mountain': // 13. Núi Cao (3 đỉnh núi nét đôi đen & đường gân sống núi đỏ)
         default:
             return `
-                <!-- Nền chân núi hùng vĩ -->
-                <rect width="${w}" height="${h}" fill="rgba(51, 65, 85, 0.35)" stroke="#475569" stroke-width="16" rx="16"/>
-                <!-- Đỉnh núi bên trái -->
-                <polygon points="${w * 0.25},${h * 0.25} ${w * 0.05},${h * 0.9} ${w * 0.5},${h * 0.9}" fill="#475569" stroke="#1e293b" stroke-width="12"/>
-                <polygon points="${w * 0.25},${h * 0.25} ${w * 0.05},${h * 0.9} ${w * 0.25},${h * 0.9}" fill="#64748b"/>
-                <!-- Đỉnh núi bên phải -->
-                <polygon points="${w * 0.75},${h * 0.30} ${w * 0.5},${h * 0.9} ${w * 0.95},${h * 0.9}" fill="#334155" stroke="#1e293b" stroke-width="12"/>
-                <polygon points="${w * 0.75},${h * 0.30} ${w * 0.5},${h * 0.9} ${w * 0.75},${h * 0.9}" fill="#475569"/>
-                <!-- Đỉnh núi trung tâm cao vút (Tọa Sơn Chủ Đỉnh) -->
-                <polygon points="${cx},${h * 0.1} ${w * 0.2},${h * 0.92} ${w * 0.8},${h * 0.92}" fill="#1e293b" stroke="#0f172a" stroke-width="14"/>
-                <polygon points="${cx},${h * 0.1} ${w * 0.2},${h * 0.92} ${cx},${h * 0.92}" fill="#334155"/>
-                <!-- Đỉnh tuyết phủ trắng hoặc mây phủ vượng khí -->
-                <polygon points="${cx},${h * 0.1} ${cx - 60},${h * 0.28} ${cx},${h * 0.24} ${cx + 60},${h * 0.28}" fill="#ffffff"/>
+                <!-- Khung chân núi nét đứt -->
+                <rect width="${w}" height="${h}" fill="none" stroke="#0f172a" stroke-width="6" stroke-dasharray="35,20" rx="10"/>
+                
+                <!-- Đỉnh núi bên trái nét đen -->
+                <polygon points="${w * 0.25},${h * 0.22} ${w * 0.05},${h * 0.88} ${w * 0.50},${h * 0.88}" fill="none" stroke="#0f172a" stroke-width="14"/>
+                <line x1="${w * 0.25}" y1="${h * 0.22}" x2="${w * 0.25}" y2="${h * 0.88}" stroke="#dc2626" stroke-width="8" stroke-dasharray="15,10"/>
+                
+                <!-- Đỉnh núi bên phải nét đen -->
+                <polygon points="${w * 0.75},${h * 0.26} ${w * 0.50},${h * 0.88} ${w * 0.95},${h * 0.88}" fill="none" stroke="#0f172a" stroke-width="14"/>
+                <line x1="${w * 0.75}" y1="${h * 0.26}" x2="${w * 0.75}" y2="${h * 0.88}" stroke="#dc2626" stroke-width="8" stroke-dasharray="15,10"/>
+                
+                <!-- Đỉnh núi trung tâm cao vút (Chủ Sơn) -->
+                <polygon points="${cx},${h * 0.08} ${w * 0.18},${h * 0.90} ${w * 0.82},${h * 0.90}" fill="none" stroke="#0f172a" stroke-width="18"/>
+                <line x1="${cx}" y1="${h * 0.08}" x2="${cx}" y2="${h * 0.90}" stroke="#dc2626" stroke-width="10"/>
+                
+                <!-- Nét gân dốc núi (Hatch lines CAD) -->
+                <line x1="${cx - 80}" y1="${h * 0.35}" x2="${cx - 160}" y2="${h * 0.45}" stroke="#0f172a" stroke-width="6"/>
+                <line x1="${cx + 80}" y1="${h * 0.35}" x2="${cx + 160}" y2="${h * 0.45}" stroke="#0f172a" stroke-width="6"/>
+                <line x1="${cx - 120}" y1="${h * 0.55}" x2="${cx - 240}" y2="${h * 0.70}" stroke="#0f172a" stroke-width="6"/>
+                <line x1="${cx + 120}" y1="${h * 0.55}" x2="${cx + 240}" y2="${h * 0.70}" stroke="#0f172a" stroke-width="6"/>
             `;
     }
 }
+
 
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
@@ -1340,8 +1362,8 @@ export class ArchitecturalCADRenderer {
                             ${sym}
                         </g>
                         <g transform="translate(${l.x + l.w / 2}, ${l.y + l.h / 2})">
-                            <rect x="${-Math.min(l.w * 0.45, 900)}" y="-50" width="${Math.min(l.w * 0.9, 1800)}" height="100" rx="20" fill="rgba(15, 23, 42, 0.85)" stroke="#f59e0b" stroke-width="6"/>
-                            <text x="0" y="15" text-anchor="middle" font-size="65" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">${l.name}</text>
+                            <rect x="${-Math.min(l.w * 0.45, 900)}" y="-50" width="${Math.min(l.w * 0.9, 1800)}" height="100" rx="16" fill="rgba(255, 255, 255, 0.92)" stroke="#0f172a" stroke-width="8"/>
+                            <text x="0" y="16" text-anchor="middle" font-size="65" font-weight="900" fill="#0f172a" font-family="'Inter', sans-serif" letter-spacing="1.5">${l.name}</text>
                         </g>
                         ${handlesSvg}
                     </g>
@@ -2141,9 +2163,12 @@ export class SvgViewportController {
 
             if (this.activePointers.size === 1) {
                 if (e.target.closest('.cad-room-interactive') || 
+                    e.target.closest('.cad-landscape-interactive') || 
                     e.target.closest('.cad-vertex-handle') || 
                     e.target.closest('.cad-edge-hitbox') || 
                     e.target.closest('.cad-resize-handle') || 
+                    e.target.closest('.cad-resize-handle-group') || 
+                    e.target.closest('.cad-mini-action-bar') ||
                     e.target.closest('.btn-cad-mini-action') ||
                     e.target.closest('.cad-floating-toolbar') ||
                     e.target.closest('.cad-smart-popup')) {
