@@ -2543,34 +2543,38 @@ export class FengShuiInterpretationEngine {
         };
     }
 
-    findRoomsInPalace(palaceId, geometry) {
+    findRoomsInPalace(palaceId, geometry, facingPalaceId = 9) {
         if (!geometry || !geometry.rooms) return [];
-        const W = geometry.width || 5000;
-        const D = geometry.depth || 16000;
+        
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        const pts = geometry.footprintPoints || [];
+        pts.forEach(p => {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+        });
+
+        if (pts.length === 0) {
+            minX = 0; maxX = geometry.widthMm || 5000;
+            minY = 0; maxY = geometry.depthMm || 16000;
+        }
+
+        const W = maxX - minX;
+        const D = maxY - minY;
         const cellW = W / 3;
         const cellH = D / 3;
 
-        const palacePos = {
-            4: { col: 0, row: 0 }, 9: { col: 1, row: 0 }, 2: { col: 2, row: 0 },
-            3: { col: 0, row: 1 }, 5: { col: 1, row: 1 }, 7: { col: 2, row: 1 },
-            8: { col: 0, row: 2 }, 1: { col: 1, row: 2 }, 6: { col: 2, row: 2 }
-        };
-
-        const pos = palacePos[palaceId];
-        if (!pos) return [];
-
-        const bounds = {
-            minX: pos.col * cellW - 200,
-            maxX: (pos.col + 1) * cellW + 200,
-            minY: pos.row * cellH - 200,
-            maxY: (pos.row + 1) * cellH + 200
-        };
+        const order = getOrientedPalaceGrid(facingPalaceId);
 
         const matched = [];
         geometry.rooms.forEach(r => {
             const rx = r.x + r.w / 2;
             const ry = r.y + r.h / 2;
-            if (rx >= bounds.minX && rx <= bounds.maxX && ry >= bounds.minY && ry <= bounds.maxY) {
+            const col = Math.min(2, Math.max(0, Math.floor((rx - minX) / cellW)));
+            const row = Math.min(2, Math.max(0, Math.floor((ry - minY) / cellH)));
+            const idx = row * 3 + col;
+            if (order[idx] === palaceId) {
                 matched.push(r);
             }
         });
@@ -2785,7 +2789,7 @@ export class FengShuiInterpretationEngine {
             visibleCount++;
 
             const combo = this.getStarCombinationDetail(p.sonStar, p.huongStar, spatialResult.stars?.van || 9);
-            const matchedRooms = this.findRoomsInPalace(p.palaceId, spatialResult.geometry);
+            const matchedRooms = this.findRoomsInPalace(p.palaceId, spatialResult.geometry, spatialResult.stars?.facingPalace || 9);
 
             let roomAnalysisHtml = '';
             if (matchedRooms.length > 0) {

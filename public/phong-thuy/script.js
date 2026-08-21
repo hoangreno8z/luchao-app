@@ -152,19 +152,34 @@ function handleAddLandscapeDirect(type, name, w, h) {
 
 function getRoomPalaceInfo(room) {
     if (!room || !currentGeometry) return null;
-    const W = currentGeometry.widthMm || (currentGeometry.widthM * 1000) || 5000;
-    const D = currentGeometry.depthMm || (currentGeometry.lengthM * 1000) || 16000;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    const pts = currentGeometry.footprintPoints || [];
+    pts.forEach(p => {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+    });
+
+    if (pts.length === 0) {
+        minX = 0; maxX = currentGeometry.widthMm || 5000;
+        minY = 0; maxY = currentGeometry.depthMm || 16000;
+    }
+
+    const W = maxX - minX;
+    const D = maxY - minY;
+    const cellW = W / 3;
+    const cellH = D / 3;
+
     const rx = room.x + room.w / 2;
     const ry = room.y + room.h / 2;
-    const col = Math.min(2, Math.max(0, Math.floor(rx / (W / 3))));
-    const row = Math.min(2, Math.max(0, Math.floor(ry / (D / 3))));
+    const col = Math.min(2, Math.max(0, Math.floor((rx - minX) / cellW)));
+    const row = Math.min(2, Math.max(0, Math.floor((ry - minY) / cellH)));
 
-    const gridToPalace = [
-        [4, 9, 2],
-        [3, 5, 7],
-        [8, 1, 6]
-    ];
-    const palaceId = gridToPalace[row][col];
+    const facingPal = currentFlyingStars ? currentFlyingStars.facingPalace : 9;
+    const order = getOrientedPalaceGrid(facingPal);
+    const palaceId = order[row * 3 + col];
+
     if (!currentSpatialResult || !currentSpatialResult.spatialPalaces) return { palaceId, palaceName: PALACE_NAMES[palaceId] };
     return currentSpatialResult.spatialPalaces[palaceId];
 }
