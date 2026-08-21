@@ -1183,8 +1183,88 @@ function exportSvgToPng() {
     image.src = blobURL;
 }
 
+
+/* Snapping & Alignment Engine */
+function snapToGrid(val, step = 50) {
+    return Math.round(val / step) * step;
+}
+
+function snapRoomPosition(x, y, w, h, currentRoomId) {
+    let snappedX = snapToGrid(x, 50);
+    let snappedY = snapToGrid(y, 50);
+    const snapThreshold = 120;
+
+    // Snap to footprint points
+    if (currentGeometry && currentGeometry.footprintPoints) {
+        currentGeometry.footprintPoints.forEach(p => {
+            if (Math.abs(snappedX - p.x) < snapThreshold) snappedX = p.x;
+            if (Math.abs(snappedX + w - p.x) < snapThreshold) snappedX = p.x - w;
+            if (Math.abs(snappedY - p.y) < snapThreshold) snappedY = p.y;
+            if (Math.abs(snappedY + h - p.y) < snapThreshold) snappedY = p.y - h;
+        });
+    }
+
+    // Snap to other rooms
+    if (currentGeometry && currentGeometry.rooms) {
+        currentGeometry.rooms.forEach(other => {
+            if (other.id === currentRoomId) return;
+            if (Math.abs(snappedX - other.x) < snapThreshold) snappedX = other.x;
+            if (Math.abs(snappedX - (other.x + other.w)) < snapThreshold) snappedX = other.x + other.w;
+            if (Math.abs(snappedX + w - other.x) < snapThreshold) snappedX = other.x - w;
+            if (Math.abs(snappedX + w - (other.x + other.w)) < snapThreshold) snappedX = other.x + other.w - w;
+
+            if (Math.abs(snappedY - other.y) < snapThreshold) snappedY = other.y;
+            if (Math.abs(snappedY - (other.y + other.h)) < snapThreshold) snappedY = other.y + other.h;
+            if (Math.abs(snappedY + h - other.y) < snapThreshold) snappedY = other.y - h;
+            if (Math.abs(snappedY + h - (other.y + other.h)) < snapThreshold) snappedY = other.y + other.h - h;
+        });
+    }
+
+    return { x: snappedX, y: snappedY };
+}
+
 /* 10. Interactive CAD Manipulation Engine (Pointer Events) */
 function initCadInteractiveEngine() {
+
+    // Keyboard shortcuts for CAD Drawing
+    window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+        if (e.key === 'Escape') {
+            closeAllPopovers();
+            const popup = document.getElementById('cadSmartPopup');
+            if (popup) popup.style.display = 'none';
+        } else if (selectedRoomId) {
+            const room = currentGeometry?.rooms?.find(r => r.id === selectedRoomId);
+            if (!room) return;
+            const step = e.shiftKey ? 200 : 50;
+
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                room.x -= step;
+                renderActiveDrawing();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                room.x += step;
+                renderActiveDrawing();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                room.y -= step;
+                renderActiveDrawing();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                room.y += step;
+                renderActiveDrawing();
+            } else if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                handleMiniAction('rotate', room.id);
+            } else if (e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                handleMiniAction('delete', room.id);
+            }
+        }
+    });
+
     const stage = document.getElementById('svgStage');
     if (!stage) return;
 
@@ -1287,8 +1367,11 @@ function initCadInteractiveEngine() {
         if (pointerState.mode === 'move') {
             const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
             if (room) {
-                room.x = Math.round(pointerState.origX + dx);
-                room.y = Math.round(pointerState.origY + dy);
+                const rawX = pointerState.origX + dx;
+                const rawY = pointerState.origY + dy;
+                const snapped = snapRoomPosition(rawX, rawY, room.w, room.h, room.id);
+                room.x = snapped.x;
+                room.y = snapped.y;
                 roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
                 renderActiveDrawing();
             }
@@ -1296,26 +1379,32 @@ function initCadInteractiveEngine() {
             const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
             if (room) {
                 const h = pointerState.handle;
-                if (h.includes('e')) room.w = Math.max(800, Math.round(pointerState.origW + dx));
-                if (h.includes('s')) room.h = Math.max(800, Math.round(pointerState.origH + dy));
+                if (h.includes('e')) room.w = Math.max(400, snapToGrid(pointerState.origW + dx, 50));
+                if (h.includes('s')) room.h = Math.max(400, snapToGrid(pointerState.origH + dy, 50));
                 if (h.includes('w')) {
-                    const newW = Math.max(800, Math.round(pointerState.origW - dx));
-                    room.x = Math.round(pointerState.origX + (pointerState.origW - newW));
+                    const newW = Math.max(400, snapToGrid(pointerState.origW - dx, 50));
+                    room.x = snapToGrid(pointerState.origX + (pointerState.origW - newW), 50);
                     room.w = newW;
                 }
                 if (h.includes('n')) {
-                    const newH = Math.max(800, Math.round(pointerState.origH - dy));
-                    room.y = Math.round(pointerState.origY + (pointerState.origH - newH));
+                    const newH = Math.max(400, snapToGrid(pointerState.origH - dy, 50));
+                    room.y = snapToGrid(pointerState.origY + (pointerState.origH - newH), 50);
                     room.h = newH;
                 }
                 roomPositionCache[room.id] = { x: room.x, y: room.y, w: room.w, h: room.h, rot: room.rot || 0 };
                 renderActiveDrawing();
+
+                // Live update inputs in popup if open
+                const inpW = document.getElementById('popupInputRoomW');
+                const inpH = document.getElementById('popupInputRoomH');
+                if (inpW) inpW.value = room.w;
+                if (inpH) inpH.value = room.h;
             }
         } else if (pointerState.mode === 'vertex') {
             const pt = currentGeometry.footprintPoints?.[pointerState.targetVertexIdx];
             if (pt) {
-                pt.x = Math.round(pointerState.origX + dx);
-                pt.y = Math.round(pointerState.origY + dy);
+                pt.x = snapToGrid(pointerState.origX + dx, 50);
+                pt.y = snapToGrid(pointerState.origY + dy, 50);
                 renderActiveDrawing();
             }
         }
