@@ -1462,3 +1462,113 @@ body {
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
 }
+
+
+/* ============================================================
+   FLOATING CANVAS CONTROLS (PHÓNG TO, THU NHỎ, TOÀN MÀN HÌNH, LƯU ẢNH)
+   ============================================================ */
+.floating-cad-actions {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(245, 158, 11, 0.5);
+    border-radius: 12px;
+    padding: 6px 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    user-select: none;
+    pointer-events: auto;
+}
+
+.floating-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #f8fafc;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.floating-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.floating-tool-btn.primary {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #f59e0b;
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.floating-tool-btn.primary:hover {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+    color: #000000;
+}
+
+.floating-tool-btn.fullscreen-btn {
+    background: rgba(6, 182, 212, 0.2);
+    border-color: #06b6d4;
+    color: #67e8f9;
+}
+
+.floating-tool-btn.fullscreen-btn:hover {
+    background: #06b6d4;
+    color: #0f172a;
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.5);
+}
+
+/* Header Quick Fullscreen Button */
+.btn-header-fullscreen {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(6, 182, 212, 0.15);
+    border: 1.5px solid #06b6d4;
+    border-radius: 8px;
+    color: #67e8f9;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.btn-header-fullscreen:hover {
+    background: #06b6d4;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.45);
+    transform: translateY(-1px);
+}
+
+/* Fullscreen mode on workspace */
+.cad-workspace.is-fullscreen,
+.cad-workspace:fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    background: #090d16 !important;
+}

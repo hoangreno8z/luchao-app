@@ -1359,10 +1359,15 @@ function selectEdge(edgeIdx, rerender = true) {
 function initActionButtons() {
     const btnCalc = document.getElementById('btnCalculate');
     const btnToggleFs = document.getElementById('btnToggleFullscreen');
+    const btnHeaderFs = document.getElementById('btnHeaderFullscreen');
     const btnExportPng = document.getElementById('btnExportPng');
     const btnZoomIn = document.getElementById('btnZoomIn');
     const btnZoomOut = document.getElementById('btnZoomOut');
     const btnZoomFit = document.getElementById('btnZoomFit');
+
+    if (btnHeaderFs) {
+        btnHeaderFs.addEventListener('click', () => toggleCadFullscreen());
+    }
 
     if (btnCalc) {
         btnCalc.addEventListener('click', () => handleCalculate(true));
