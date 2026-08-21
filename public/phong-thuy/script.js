@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787300205706';
+} from './js/phong_thuy_bundle.js?v=1787300478268';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -25,6 +25,7 @@ let currentThemeMode = 'white'; // 'white' | 'dark'
 let currentMatrixOrientMode = 'house'; // 'house' | 'loshu'
 let currentDndOrientMode = 'house'; // 'house' | 'loshu'
 let isLandscapeMode = false;
+let isOrientationInverted = false; // false: Hướng Trên / Tọa Dưới | true: Tọa Trên / Hướng Dưới
 
 let currentGeometry = null;
 let currentSpatialResult = null;
