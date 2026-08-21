@@ -317,12 +317,15 @@ export function calculateFlyingStars(params = {}) {
 export function getOrientedPalaceGrid(facingPalaceId) {
     const ring = [1, 8, 3, 4, 9, 2, 7, 6];
     const fIdx = ring.indexOf(facingPalaceId);
-    if (fIdx === -1) return [8, 1, 6, 3, 5, 7, 4, 9, 2];
+    if (fIdx === -1) return [4, 9, 2, 3, 5, 7, 8, 1, 6];
     const getP = (offset) => ring[((fIdx + offset) % 8 + 8) % 8];
+    // Row 0 (Top / HƯỚNG NHÀ - Mũi đỏ hướng lên): getP(-1), getP(0)=HƯỚNG, getP(1)
+    // Row 1 (Mid / Giữa nhà): getP(-2), 5, getP(2)
+    // Row 2 (Bottom / TỌA NHÀ - Mũi xanh hướng xuống): getP(-3), getP(4)=TỌA, getP(3)
     return [
-        getP(-3), getP(4), getP(3),
+        getP(-1), getP(0), getP(1),
         getP(-2), 5,       getP(2),
-        getP(-1), getP(0), getP(1)
+        getP(-3), getP(4), getP(3)
     ];
 }
 
@@ -1779,7 +1782,8 @@ export class LuoPanAndFlyingStarsSvgRenderer {
         const radius = Math.max(3800, Math.max(houseW, houseD) * 0.65 + 1500) * scaleFactor;
         const facingDeg = flyingStars.facingDegree !== undefined ? flyingStars.facingDegree : 180;
         const sittingDeg = (facingDeg + 180) % 360;
-        const luoPanRot = 180 - facingDeg; // Xoay La Kinh theo hướng nhà để Hướng luôn chĩa thẳng mặt tiền
+        // BÊN TRÊN LÀ HƯỚNG (mũi đỏ hướng lên), BÊN DƯỚI LÀ TỌA (mũi xanh hướng xuống):
+        const luoPanRot = -facingDeg;
 
         // 1. VÒNG NGOÀI CÙNG: 360 ĐỘ (VẠCH CHIA TỪNG ĐỘ VÀ SỐ ĐỘ MỖI 10 ĐỘ)
         let ticksSvg = '<g id="layer-360-degrees" pointer-events="none">';

@@ -15,7 +15,7 @@ import {
     HouseCenterGeometryEngine,
     PALACE_NAMES,
     PALACE_SHORT
-} from './js/phong_thuy_bundle.js?v=1787299207821';
+} from './js/phong_thuy_bundle.js?v=1787299617917';
 
 // ============================================================
 // STATE & MODULE VARIABLES
@@ -1402,6 +1402,25 @@ function initActionButtons() {
         btnCalc.addEventListener('click', () => handleCalculate(true));
     }
 
+    const btnMatrixOrientHouse = document.getElementById('btnMatrixOrientHouse');
+    const btnMatrixOrientLoShu = document.getElementById('btnMatrixOrientLoShu');
+
+    if (btnMatrixOrientHouse && btnMatrixOrientLoShu) {
+        btnMatrixOrientHouse.addEventListener('click', () => {
+            currentMatrixOrientMode = 'house';
+            btnMatrixOrientHouse.classList.add('active');
+            btnMatrixOrientLoShu.classList.remove('active');
+            renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
+        });
+
+        btnMatrixOrientLoShu.addEventListener('click', () => {
+            currentMatrixOrientMode = 'loshu';
+            btnMatrixOrientLoShu.classList.add('active');
+            btnMatrixOrientHouse.classList.remove('active');
+            renderFlyingStarsMatrix(currentFlyingStars, currentBatTrach);
+        });
+    }
+
     // Auto recalculate and update Flying Stars & Luopan whenever inputs change
     ['inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour', 'inputOwnerYear', 'inputOwnerGender', 'inputShape', 'inputWidth', 'inputLength', 'inputFloors'].forEach(id => {
         const el = document.getElementById(id);
@@ -2216,7 +2235,10 @@ function renderFlyingStarsMatrix(flyingStars, batTrach) {
     const grid = document.getElementById('flyingStarsMatrix') || document.getElementById('flyingStarsGrid');
     if (!grid || !flyingStars) return;
 
-    const order = [4, 9, 2, 3, 5, 7, 8, 1, 6]; // Standard Lo Shu order for reference table
+    const facingPal = flyingStars ? flyingStars.facingPalace : 9;
+    const order = currentMatrixOrientMode === 'house'
+        ? getOrientedPalaceGrid(facingPal)
+        : [4, 9, 2, 3, 5, 7, 8, 1, 6];
 
     grid.innerHTML = order.map(pId => {
         const pal = flyingStars.palaces[pId];
