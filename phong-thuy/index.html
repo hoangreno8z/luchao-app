@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1787285145818">
+    <link rel="stylesheet" href="style.css?v=20260821_final">
 </head>
 <body>
 
@@ -92,11 +92,11 @@
                 </button>
             </div>
 
-            <!-- AI Floorplan Scan & Vectorizer Section (Tab 3: Tải Bản Vẽ) -->
+            <!-- Scan Image Upload Section (Tab 3: AI Scan / Image) -->
             <div id="scanImageSection" style="display: none; margin-bottom: 20px;">
                 <div class="scan-upload-dropzone" id="scanUploadDropzone">
-                    <input type="file" id="inputScanFile" accept="image/png, image/jpeg, image/webp" style="display: none;">
-                    <div class="dropzone-content">
+                    <input type="file" id="inputScanFile" accept="image/*" style="display: none;">
+                    <div style="cursor: pointer;" id="dropzoneContent">
                         <div class="dropzone-icon">
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/><path d="M14 14l3-3 3 3"/></svg>
                         </div>
@@ -109,13 +109,12 @@
                     </div>
                 </div>
 
-                
-                    <div id="scanPreviewWrapper" style="display: none; margin-top: 14px; text-align: center;">
-                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--gold-light); display: block; margin-bottom: 6px;">ẢNH BẢN VẼ GỐC ĐÃ TẢI LÊN:</span>
-                        <img id="scanPreviewImg" src="" alt="Ảnh Bản Vẽ" style="max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color); background: #000;">
-                    </div>
-    
-                <!-- Scan Analysis Dashboard (Hiển thị sau khi quét) -->
+                <div id="scanPreviewWrapper" style="display: none; margin-top: 14px; text-align: center;">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--gold-light); display: block; margin-bottom: 6px;">ẢNH BẢN VẼ GỐC ĐÃ TẢI LÊN:</span>
+                    <img id="scanPreviewImg" src="" alt="Ảnh Bản Vẽ" style="max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-color); background: #000;">
+                </div>
+
+                <!-- Scan Analysis Dashboard -->
                 <div id="scanAnalysisDashboard" style="display: none; margin-top: 14px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 158, 11, 0.25); padding-bottom: 8px; margin-bottom: 12px;">
                         <span style="font-size: 0.95rem; font-weight: 800; color: var(--gold-light);">KẾT QUẢ QUÉT VECTOR & TÂM NHÀ HÌNH HỌC</span>
@@ -166,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- Accordion 1: THÔNG TIN (Hình Dạng, Kích Thước, Hướng Nhà, Thời Gian, Bát Trạch) -->
+            <!-- Accordion 1: THÔNG TIN -->
             <div class="accordion-card" id="accordionCardInfo">
                 <div class="accordion-header" id="accordionHeaderInfo">
                     <div class="accordion-title">
@@ -180,7 +179,7 @@
                 <div class="accordion-body" id="accordionBodyInfo">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Hình Dạng Khu Đất / Nhà</label>
+                            <label class="form-label">Hình Dáng Khu Đất / Nhà</label>
                             <select id="inputShape" class="form-control">
                                 <option value="RECTANGLE" selected>Hình Chữ Nhật (Tiêu Chuẩn)</option>
                                 <option value="L_SHAPE">Nhà Chữ L (Sân Trước / Khuyết Góc)</option>
@@ -195,43 +194,45 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Chiều Dài (m)</label>
-                            <input type="number" id="inputLength" class="form-control" value="16.0" min="5.0" max="60.0" step="0.1">
+                            <input type="number" id="inputLength" class="form-control" value="16.0" min="4.0" max="50.0" step="0.1">
                         </div>
-                        <div class="form-group" id="groupFloors">
-                            <label class="form-label">Số Tầng Thiết Kế</label>
+                        <div class="form-group">
+                            <label class="form-label">Số Tầng</label>
                             <select id="inputFloors" class="form-control">
-                                <option value="1">1 Tầng (Trệt / Cấp 4 / Biệt thự vườn)</option>
+                                <option value="1">1 Tầng (Trệt)</option>
                                 <option value="2" selected>2 Tầng (Trệt + 1 Lầu)</option>
-                                <option value="3">3 Tầng (Trệt + 1 Lầu + Sân Thượng)</option>
-                                <option value="4">4 Tầng (Trệt + 2 Lầu + Sân Thượng)</option>
-                                <option value="5">5 Tầng (Trệt + 3 Lầu + Sân Thượng)</option>
-                                <option value="6">6 Tầng (Nhà Phố Thương Mại)</option>
-                                <option value="7">7 Tầng (Tòa Nhà Văn Phòng)</option>
+                                <option value="3">3 Tầng</option>
+                                <option value="4">4 Tầng</option>
                             </select>
                         </div>
+                    </div>
 
-                        <!-- Hướng Nhà (° Độ La Bàn & Phân Kim) -->
-                        <div class="form-group" style="grid-column: 1 / -1; background: rgba(15, 23, 42, 0.85); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.25);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <label class="form-label" style="margin: 0; font-size: 0.86rem; color: var(--gold-light);">HƯỚNG NHÀ (ĐỘ LA BÀN 0° - 360°):</label>
-                                <span id="mountainStatusBadge" class="audit-badge good">Chính Hướng (Hạ Quái)</span>
-                            </div>
-                            <div style="display: flex; gap: 12px; align-items: center;">
-                                <input type="range" id="inputFacingDegree" class="form-range" min="0" max="359.5" step="0.5" value="180" style="flex: 1;">
-                                <input type="number" id="inputFacingNumber" class="form-control" min="0" max="359.5" step="0.5" value="180" style="width: 85px; text-align: center; font-weight: 800; font-size: 1rem;">
-                            </div>
-                            <div id="mountainDisplay" style="color: var(--gold-light); font-weight: 700; font-size: 0.84rem; margin-top: 5px; text-align: center;">
-                                Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ · Quái Ly (Hỏa)
+                    <!-- HƯỚNG NHÀ (ĐỘ LA BÀN) -->
+                    <div class="form-group" style="margin-top: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label class="form-label" style="margin: 0; font-weight: 800; color: var(--gold-light);">HƯỚNG NHÀ (ĐỘ LA BÀN 0° - 360°):</label>
+                            <span id="labelFacingType" class="audit-badge good" style="font-size: 0.7rem;">Chính Hướng (Hạ Quái)</span>
+                        </div>
+                        <div class="facing-slider-wrapper">
+                            <input type="range" id="inputFacingDegree" class="facing-slider" min="0" max="359" value="180" step="1">
+                            <div class="facing-degree-badge">
+                                <input type="number" id="inputFacingNumber" value="180" min="0" max="359" style="width: 50px; background: transparent; border: none; color: #fff; font-weight: 800; font-size: 0.95rem; text-align: center; outline: none;">
                             </div>
                         </div>
+                        <div class="mountain-indicator" id="displayMountainInfo" style="margin-top: 8px; text-align: center; font-size: 0.85rem; font-weight: 800; color: var(--gold-light);">
+                            Hướng Ngọ (180°) — Tọa Tý Hướng Ngọ · Quái Ly (Hỏa)
+                        </div>
+                    </div>
 
+                    <!-- THỜI GIAN & THÔNG TIN GIA CHỦ -->
+                    <div class="form-grid" style="margin-top: 14px;">
                         <div class="form-group">
                             <label class="form-label">Năm Xây Dựng / Nhập Trạch</label>
-                            <input type="number" id="inputBuildYear" class="form-control" value="2025" min="1900" max="2050">
+                            <input type="number" id="inputBuildYear" class="form-control" value="2025" min="1984" max="2043">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Năm Xem (Dương Lịch)</label>
-                            <input type="number" id="inputCurrentYear" class="form-control" value="2026" min="1900" max="2100">
+                            <input type="number" id="inputCurrentYear" class="form-control" value="2026" min="2020" max="2050">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Tháng Xem (Dương)</label>
@@ -286,7 +287,7 @@
                 </div>
             </div>
 
-            <!-- Accordion 2: THIẾT KẾ (Công năng phòng ốc - Tab Đất) -->
+            <!-- Accordion 2: THIẾT KẾ -->
             <div class="accordion-card" id="accordionCardDesign">
                 <div class="accordion-header" id="accordionHeaderDesign">
                     <div class="accordion-title">
@@ -298,41 +299,39 @@
                     </div>
                 </div>
                 <div class="accordion-body" id="accordionBodyDesign">
-                    <div class="form-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;">
+                    <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Phòng Khách</label>
-                            <select id="inputLivingRoom" class="form-control">
-                                <option value="1" selected>1 Phòng Khách Lớn (Tiền Minh Đường)</option>
-                                <option value="0">Không bố trí riêng</option>
+                            <select id="inputLivingStyle" class="form-control">
+                                <option value="front_large" selected>1 Phòng Khách Lớn (Tiền Minh Đường)</option>
+                                <option value="combined">Phòng Khách Liền Bếp Hiện Đại</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Bếp & Phòng Ăn</label>
-                            <select id="inputKitchen" class="form-control">
-                                <option value="1" selected>Bếp & Bàn Ăn Liên Thông (Hậu Trạch)</option>
-                                <option value="2">Bếp Nấu Riêng Biệt</option>
+                            <select id="inputKitchenStyle" class="form-control">
+                                <option value="rear_open" selected>Bếp & Bàn Ăn Liền Thông (Hậu Cung)</option>
+                                <option value="separate">Phòng Bếp Kín Riêng Biệt</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Gara Ô Tô / Sân Đỗ Xe</label>
-                            <select id="inputGarage" class="form-control">
+                            <select id="inputHasGarage" class="form-control">
                                 <option value="0" selected>Không có Gara trong nhà</option>
-                                <option value="1">Có Gara Ô Tô Trong Nhà (Tầng Trệt)</option>
-                                <option value="2">Sân Để Xe Máy Phía Trước</option>
+                                <option value="1">Có Gara Ô tô Tầng Trệt</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Vị Trí Cầu Thang</label>
-                            <select id="inputStairsType" class="form-control">
+                            <select id="inputStairsPos" class="form-control">
                                 <option value="middle" selected>Cầu Thang Giữa Nhà (Kèm Giếng Trời)</option>
-                                <option value="side">Cầu Thang Dọc Tường (Tiết Kiệm Diện Tích)</option>
-                                <option value="rear">Cầu Thang Cuối Nhà</option>
+                                <option value="side">Cầu Thang Dọc Bên Hông</option>
+                                <option value="rear">Cầu Thang Phía Sau</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số Phòng Ngủ</label>
                             <select id="inputBedCount" class="form-control">
-                                <option value="1">1 Phòng Ngủ</option>
                                 <option value="2">2 Phòng Ngủ</option>
                                 <option value="3" selected>3 Phòng Ngủ (1 Master + 2 Phụ)</option>
                                 <option value="4">4 Phòng Ngủ</option>
@@ -383,7 +382,6 @@
                 </div>
             </div>
 
-            
             <!-- Accordion 3: NGOẠI CẢNH (Loan Đầu Xung Quanh Nhà) -->
             <div class="accordion-card" id="accordionCardLandscape">
                 <div class="accordion-header" id="accordionHeaderLandscape">
@@ -442,7 +440,13 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="dndPalacesGrid">
-                        <!-- Populated dynamically by script.js?v=1787285145818"button" class="btn-primary-action" id="btnCalculate" style="margin-top: 10px;">
+                        <!-- Populated dynamically by script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" class="btn-primary-action" id="btnCalculate" style="margin-top: 10px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                 <span>TRIỂN KHAI TẠO BẢN VẼ</span>
             </button>
@@ -453,7 +457,10 @@
             
             <!-- Floor Switcher Bar -->
             <div class="floor-navigator" id="floorNavigator">
-                <!-- Generated dynamically by script.js?v=1787285145818"cad-studio-container">
+                <!-- Generated dynamically by script.js -->
+            </div>
+
+            <div class="cad-studio-container">
                 <!-- Left Column: Drawing Tabs & CAD Workspace -->
                 <div class="cad-viewport-column">
                     <!-- 2 Main Drawing Layer Switchers -->
@@ -468,14 +475,14 @@
                         </button>
                     </div>
 
-                    <!-- CAD WORKSPACE (Chuẩn Native Fullscreen & Scale 100%) -->
+                    <!-- CAD WORKSPACE -->
                     <div id="cad-workspace" class="cad-workspace">
-                        <!-- SVG Stage chiếm 100% diện tích workspace -->
+                        <!-- SVG Stage -->
                         <div id="svgStage" class="svg-stage">
                             <!-- SVG element rendered dynamically -->
                         </div>
 
-                        <!-- Floating Movable Glassmorphism Toolbar (Tinh gọn, Di chuyển tự do, Chọn phòng nhanh) -->
+                        <!-- Floating Movable Glassmorphism Toolbar -->
                         <div class="cad-floating-toolbar" id="cadFloatingToolbar">
                             <!-- Header: Thanh Kéo Thả + Nút Cửa Sổ -->
                             <div class="hud-header" id="hudDragHeader" title="Giữ và kéo để di chuyển bảng công cụ">
@@ -491,7 +498,6 @@
 
                             <!-- Body Panel -->
                             <div class="hud-body" id="hudBody">
-                                <!-- Hàng 4 nút chính bố trí 2x2 siêu gọn và bằng nhau -->
                                 <div class="hud-actions-grid">
                                     <!-- 1. Thêm Cấu Trúc Trigger -->
                                     <div class="hud-popover-wrapper">
@@ -506,7 +512,7 @@
                                             </div>
                                             <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
                                                 <div style="font-size: 0.68rem; font-weight: 800; color: #38bdf8; margin-bottom: 4px; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 2px;">
-                                                    🏠 PHÒNG & KIẾN TRÚC TRONG NHÀ:
+                                                    PHÒNG & KIẾN TRÚC TRONG NHÀ:
                                                 </div>
                                                 <div class="popover-grid" style="margin-bottom: 10px;">
                                                     <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">P. Ngủ</button>
@@ -523,7 +529,7 @@
                                                 </div>
 
                                                 <div style="font-size: 0.68rem; font-weight: 800; color: #f59e0b; margin-bottom: 4px; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 2px;">
-                                                    🏔 NGOẠI CẢNH XUNG QUANH (13 LOẠI):
+                                                    NGOẠI CẢNH XUNG QUANH (13 LOẠI):
                                                 </div>
                                                 <div class="popover-grid">
                                                     <button type="button" class="hud-landscape-chip" data-type="temple" data-name="Chùa" data-w="6000" data-h="6000">Chùa / Đình</button>
@@ -559,7 +565,7 @@
                                         </div>
                                     </div>
 
-                                                                        <!-- 4. Ngoại Cảnh Trigger -->
+                                    <!-- 3. Ngoại Cảnh Trigger Trực Tiếp -->
                                     <div class="hud-popover-wrapper">
                                         <button type="button" class="hud-floating-btn" id="btnTriggerLandscapeDirect" title="Thêm ngoại cảnh xung quanh (Núi, Sông, Chùa...)">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M8 3l4 8 5-5 5 15H2L8 3z"/></svg>
@@ -587,7 +593,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- 2.1 Quản Lý Lớp Bản Vẽ (Layers) -->
+
+                                    <!-- 4. Quản Lý Lớp Bản Vẽ (Layers) -->
                                     <div class="hud-popover-wrapper">
                                         <button type="button" class="hud-floating-btn" id="btnTriggerLayers" title="Bật/tắt các lớp bản vẽ và độ mờ">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
@@ -599,92 +606,74 @@
                                                 <button type="button" class="btn-popover-close" id="btnClosePopoverLayers">×</button>
                                             </div>
                                             <div class="layer-toggles-list" style="display: flex; flex-direction: column; gap: 4px;">
-    <div style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
-            <span style="font-size: 0.65rem; color: #fbbf24; font-weight: 800;">Thu/Phóng La Kinh:</span>
-            <span id="lblLuopanScale" style="font-size: 0.65rem; color: #fff; font-weight: bold;">100%</span>
-        </div>
-        <input type="range" id="rngLuopanScale" min="50" max="220" value="100" style="width: 100%; accent-color: #f59e0b; cursor: pointer;">
-    </div>
+                                                <div style="margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                                                        <span style="font-size:0.68rem; font-weight:800; color:var(--gold-light);">THU/PHÓNG LA KINH:</span>
+                                                        <span id="lblLuopanScale" style="font-size:0.72rem; font-weight:900; color:#38bdf8;">100%</span>
+                                                    </div>
+                                                    <input type="range" id="rngLuopanScale" min="50" max="220" value="100" step="5" style="width:100%; accent-color:#f59e0b; cursor:pointer;">
+                                                </div>
                                                 <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLandscape" checked> Ngoại Cảnh (Loan Đầu)</label>
                                                 <label class="layer-toggle-item"><input type="checkbox" id="chkLayerWalls" checked> Tường & Cột</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerFurniture" checked> Nội Thất</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerDimensions" checked> Kích Thước</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLabels" checked> Tên Phòng</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerCenter" checked> Tâm Nhà</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerNinePalaces" checked> Cửu Cung</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLuoPan" checked> La Kinh</label>
-                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerSourceImg"> Ảnh Gốc So Sánh</label>
-                                                <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1);">
-                                                    <span style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 2px;">Độ mờ ảnh gốc:</span>
-                                                    <input type="range" id="rngSourceOpacity" min="10" max="90" value="35" style="width: 100%; accent-color: var(--gold-primary); cursor: pointer;">
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerFurniture" checked> Đồ Nội Thất</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerDimensions" checked> Kích Thước (CAD)</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerRoomLabels" checked> Nhãn Tên Phòng</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerNinePalaces" checked> Ô 9 Cung Phi Tinh</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLuoPan" checked> Vòng Tròn La Kinh</label>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerSourceImage"> Ảnh Bản Vẽ Gốc</label>
+                                                <div style="margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(255,255,255,0.15);">
+                                                    <span style="font-size: 0.68rem; color: #94a3b8;">Độ Mờ Ảnh Gốc:</span>
+                                                    <input type="range" id="rngSourceOpacity" min="10" max="100" value="40" style="width: 100%; accent-color: #f59e0b;">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- 3. Toàn Màn Hình (Kích cỡ giống nút Thêm & Cạnh Đất) -->
-                                    <button type="button" class="hud-floating-btn fs-btn" id="btnToggleFullscreen" title="Toàn Màn Hình (Fullscreen)">
-                                        <svg id="iconFullscreenOpen" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                                        <svg id="iconFullscreenExit" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-                                        <span id="txtFullscreen">Toàn Màn</span>
-                                    </button>
-
-                                    <!-- 4. Lưu Ảnh (Kích cỡ giống nút Thêm & Cạnh Đất) -->
-                                    <button type="button" class="hud-floating-btn" id="btnExportPng" title="Tải file ảnh bản vẽ chất lượng cao HD PNG">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                        <span>Lưu Ảnh</span>
-                                    </button>
                                 </div>
-
-                                <!-- Hàng nút Zoom Phóng To / Thu Nhỏ / Vừa Màn Hình -->
-                                <div style="display: flex; gap: 4px; margin-top: 6px;">
-                                    <button type="button" class="hud-floating-btn" id="btnZoomIn" title="Phóng to (+)" style="flex: 1; padding: 6px 2px;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-                                        <span>+ Phóng</span>
-                                    </button>
-                                    <button type="button" class="hud-floating-btn" id="btnZoomOut" title="Thu nhỏ (-)" style="flex: 1; padding: 6px 2px;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-                                        <span>− Thu</span>
-                                    </button>
-                                    <button type="button" class="hud-floating-btn" id="btnZoomFit" title="Vừa màn hình (100%)" style="flex: 1; padding: 6px 2px;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><polyline points="14 20 14 14 20 14"/><polyline points="10 4 10 10 4 10"/></svg>
-                                        <span>Vừa Khung</span>
-                                    </button>
-                                </div>
-
-                                <!-- Danh Sách Các Phòng Đang Có (Các nút mờ độc lập bấm chọn phòng trực tiếp) -->
-                                <div class="hud-rooms-section">
-                                    <div class="hud-section-label">CHỌN PHÒNG ĐỂ SỬA:</div>
-                                    <div class="hud-room-chips-list" id="hudRoomChipsList">
-                                        <!-- Rendered dynamically by script.js?v=1787285145818"button" class="hud-collapsed-pill" id="btnRestoreToolbar" style="display: none;" title="Mở thanh công cụ CAD">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                                <span>CAD</span>
-                            </button>
+                            </div>
                         </div>
 
-                        <!-- Smart Floating Popup (Hiện gọn nhẹ ở mép dưới khi chọn 1 phòng hoặc 1 cạnh) -->
-                        <div id="cadSmartPopup" class="cad-smart-popup" style="display: none;">
-                            <!-- Render dynamically by JavaScript -->
+                        <!-- Floating Smart Popup -->
+                        <div class="cad-smart-popup" id="cadSmartPopup" style="display: none;">
+                            <!-- Content injected dynamically -->
+                        </div>
+
+                        <!-- Floating Canvas Action Controls -->
+                        <div class="floating-cad-actions">
+                            <button type="button" class="floating-tool-btn" id="btnZoomIn" title="Phóng To">+</button>
+                            <button type="button" class="floating-tool-btn" id="btnZoomOut" title="Thu Nhỏ">−</button>
+                            <button type="button" class="floating-tool-btn" id="btnZoomFit" title="Vừa Khung">[]</button>
+                            <button type="button" class="floating-tool-btn" id="btnToggleFullscreen" title="Toàn Màn Hình">
+                                <svg id="iconFullscreenOpen" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                <svg id="iconFullscreenExit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                                <span id="txtFullscreen" style="font-size: 0.65rem; margin-left: 2px;">Toàn Màn</span>
+                            </button>
+                            <button type="button" class="floating-tool-btn primary" id="btnExportPng" title="Xuất Bản Vẽ PNG 4K">
+                                <span>Lưu Ảnh</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Flying Stars Matrix & Summary Panel -->
-                <div class="glass-card" style="margin-bottom: 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-size: 0.88rem; font-weight: 800; color: var(--gold-light);">TINH BÀN HUYỀN KHÔNG</span>
-                        <span id="chartTypeBadge" class="audit-badge good">Chính Hướng (Hạ Quái)</span>
+                <!-- Right Column: 9-Palace Reference Matrix Table -->
+                <div class="flying-stars-column">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(245, 158, 11, 0.3); padding-bottom: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 0.92rem; font-weight: 800; color: var(--gold-light);">TÍNH BÀN HUYỀN KHÔNG</span>
+                        <span class="audit-badge good" id="badgeFacingTypeSidebar">Chính Hướng (Hạ Quái)</span>
                     </div>
 
-                    <!-- Meta Information Tags -->
-                    <div class="chart-meta-tags">
-                        <div class="meta-tag" id="metaVan">Vận 9 (2024 - 2043)</div>
-                        <div class="meta-tag" id="metaToaHuong">Tọa Tý Hướng Ngọ</div>
-                        <div class="meta-tag" id="metaGua">Khảm (Thủy)</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <div class="stat-pill">
+                            <span class="stat-lbl">Vận 9 (2024 - 2043)</span>
+                        </div>
+                        <div class="stat-pill">
+                            <span class="stat-lbl" id="statHouseOrientation">Tọa Tý Hướng Ngọ</span>
+                        </div>
+                        <div class="stat-pill" style="grid-column: 1 / -1;">
+                            <span class="stat-lbl" id="statOwnerGua">Khảm (Thủy)</span>
+                        </div>
                     </div>
 
-                    <!-- Visual Legend (Chú Thích Màu Sắc & Vị Trí Sao) -->
+                    <!-- Visual Legend -->
                     <div class="star-legend-container" style="margin-bottom: 12px; padding: 10px; background: rgba(15, 23, 42, 0.7); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.25);">
                         <div style="font-size: 0.74rem; font-weight: 800; color: var(--gold-light); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between;">
                             <span>CHÚ THÍCH BỘ SAO HUYỀN KHÔNG</span>
@@ -724,7 +713,11 @@
 
                     <!-- 9-Palace Matrix (Lo Shu 3x3 Grid) -->
                     <div class="palace-grid" id="flyingStarsMatrix">
-                        <!-- Populated by script.js?v=1787285145818"margin-top: 14px; padding: 12px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                        <!-- Populated by script.js -->
+                    </div>
+
+                    <!-- Cách Cục Summary -->
+                    <div style="margin-top: 14px; padding: 12px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.2);">
                         <div style="font-size: 0.82rem; font-weight: 800; color: var(--gold-light); margin-bottom: 4px;" id="cachCucTitle">
                             VƯỢNG SƠN VƯỢNG HƯỚNG
                         </div>
@@ -743,11 +736,19 @@
                 </div>
 
                 <div id="detailedReportContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
-                    <!-- Populated dynamically by script.js?v=1787285145818"app-footer">
+                    <!-- Populated dynamically by script.js -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
         <p>Hệ Thống Thiết Kế Kiến Trúc & Cửu Cung Phong Thủy — Bản Quyền Thuộc Về Dịch Sư Nguyễn Huy Hoàng</p>
         <p style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Liên hệ tư vấn trực tiếp: 0933 116 860 · Vận 9 Hạ Nguyên (2024 - 2043)</p>
     </footer>
 
-    <script type="module" src="script.js?v=1787285145818"></script>
+    <script type="module" src="script.js?v=20260821_final"></script>
 </body>
 </html>

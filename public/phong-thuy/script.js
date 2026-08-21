@@ -585,8 +585,8 @@ function initDrawingTabs() {
 function initFacingDegreeControls() {
     const slider = document.getElementById('inputFacingDegree');
     const number = document.getElementById('inputFacingNumber');
-    const display = document.getElementById('mountainDisplay');
-    const mountainStatusBadge = document.getElementById('mountainStatusBadge');
+    const display = document.getElementById('displayMountainInfo') || document.getElementById('mountainDisplay');
+    const mountainStatusBadge = document.getElementById('labelFacingType') || document.getElementById('mountainStatusBadge');
 
     function updateFacing(deg, triggerCalculate = false) {
         let normalized = ((deg % 360) + 360) % 360;
@@ -925,11 +925,11 @@ function initFloatingToolbar() {
     const chkWalls = document.getElementById('chkLayerWalls');
     const chkFurn = document.getElementById('chkLayerFurniture');
     const chkDims = document.getElementById('chkLayerDimensions');
-    const chkLabels = document.getElementById('chkLayerLabels');
-    const chkCenter = document.getElementById('chkLayerCenter');
+    const chkLabels = document.getElementById('chkLayerRoomLabels') || document.getElementById('chkLayerLabels');
+    const chkCenter = document.getElementById('chkLayerAxes') || document.getElementById('chkLayerCenter');
     const chk9Pal = document.getElementById('chkLayerNinePalaces');
     const chkLuoPan = document.getElementById('chkLayerLuoPan');
-    const chkSrcImg = document.getElementById('chkLayerSourceImg');
+    const chkSrcImg = document.getElementById('chkLayerSourceImage') || document.getElementById('chkLayerSourceImg');
     const rngSrcOpacity = document.getElementById('rngSourceOpacity');
 
     if (chkWalls) chkWalls.addEventListener('change', (e) => { layerState.walls = e.target.checked; renderActiveDrawing(); });
