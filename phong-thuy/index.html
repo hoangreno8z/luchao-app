@@ -480,18 +480,42 @@
                                                 <span>THÊM CẤU TRÚC</span>
                                                 <button type="button" class="btn-popover-close" id="btnClosePopoverAdd">×</button>
                                             </div>
-                                            <div class="popover-grid">
-                                                <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">Phòng Ngủ</button>
-                                                <button type="button" class="hud-comp-chip" data-type="toilet" data-name="Vệ Sinh" data-w="1800" data-h="2500">WC</button>
-                                                <button type="button" class="hud-comp-chip" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">Bếp & Ăn</button>
-                                                <button type="button" class="hud-comp-chip" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">P. Khách</button>
-                                                <button type="button" class="hud-comp-chip" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">Cửa Chính</button>
-                                                <button type="button" class="hud-comp-chip" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">Cửa Đi</button>
-                                                <button type="button" class="hud-comp-chip" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">Cổng</button>
-                                                <button type="button" class="hud-comp-chip" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">Cầu Thang</button>
-                                                <button type="button" class="hud-comp-chip" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">P. Thờ</button>
-                                                <button type="button" class="hud-comp-chip" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">Gara Xe</button>
-                                                <button type="button" class="hud-comp-chip" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">Giếng Trời</button>
+                                            <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                                                <div style="font-size: 0.68rem; font-weight: 800; color: #38bdf8; margin-bottom: 4px; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 2px;">
+                                                    🏠 PHÒNG & KIẾN TRÚC TRONG NHÀ:
+                                                </div>
+                                                <div class="popover-grid" style="margin-bottom: 10px;">
+                                                    <button type="button" class="hud-comp-chip" data-type="bed_master" data-name="Phòng Ngủ" data-w="4000" data-h="4200">P. Ngủ</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="toilet" data-name="Vệ Sinh" data-w="1800" data-h="2500">WC</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="kitchen_dining" data-name="Bếp & Ăn" data-w="3500" data-h="5000">Bếp</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="living_room" data-name="Phòng Khách" data-w="4500" data-h="5000">P. Khách</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="main_door" data-name="Cửa Chính" data-w="2800" data-h="300">Cửa Chính</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="side_door" data-name="Cửa Phụ" data-w="900" data-h="250">Cửa Đi</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="gate" data-name="Cửa Cổng" data-w="3200" data-h="400">Cổng</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="stairs" data-name="Cầu Thang" data-w="2400" data-h="4200">Cầu Thang</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="altar" data-name="Phòng Thờ" data-w="3000" data-h="3500">P. Thờ</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="garage" data-name="Gara Xe" data-w="3500" data-h="5500">Gara</button>
+                                                    <button type="button" class="hud-comp-chip" data-type="skylight" data-name="Giếng Trời" data-w="1800" data-h="2000">Giếng Trời</button>
+                                                </div>
+
+                                                <div style="font-size: 0.68rem; font-weight: 800; color: #f59e0b; margin-bottom: 4px; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 2px;">
+                                                    🏔 NGOẠI CẢNH XUNG QUANH (13 LOẠI):
+                                                </div>
+                                                <div class="popover-grid">
+                                                    <button type="button" class="hud-landscape-chip" data-type="temple" data-name="Chùa" data-w="6000" data-h="6000">⛩ Chùa</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="t_junction" data-name="Ngã 3" data-w="8000" data-h="8000">🛣 Ngã 3</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="crossroad" data-name="Ngã 4" data-w="8000" data-h="8000">🚦 Ngã 4</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="river_lake" data-name="Sông/Hồ" data-w="10000" data-h="5000">🌊 Sông/Hồ</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="cemetery" data-name="Nghĩa Trang" data-w="7000" data-h="7000">🪦 Nghĩa Trang</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="park" data-name="Công Viên" data-w="8000" data-h="6000">🌳 Công Viên</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="substation" data-name="Trạm Điện" data-w="5000" data-h="5000">⚡ Trạm Điện</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="bus_station" data-name="Bến Xe" data-w="8000" data-h="6000">🚌 Bến Xe</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="seaport" data-name="Cảng" data-w="9000" data-h="6000">⚓ Cảng</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="airport" data-name="Sân Bay" data-w="12000" data-h="6000">✈ Sân Bay</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="railway" data-name="Đường Sắt" data-w="12000" data-h="3000">🚂 Đường Sắt</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="field" data-name="Ruộng" data-w="8000" data-h="6000">🌾 Ruộng</button>
+                                                    <button type="button" class="hud-landscape-chip" data-type="mountain" data-name="Núi" data-w="10000" data-h="6000">⛰ Núi</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -530,6 +554,7 @@
         </div>
         <input type="range" id="rngLuopanScale" min="50" max="220" value="100" style="width: 100%; accent-color: #f59e0b; cursor: pointer;">
     </div>
+                                                <label class="layer-toggle-item"><input type="checkbox" id="chkLayerLandscape" checked> Ngoại Cảnh (Loan Đầu)</label>
                                                 <label class="layer-toggle-item"><input type="checkbox" id="chkLayerWalls" checked> Tường & Cột</label>
                                                 <label class="layer-toggle-item"><input type="checkbox" id="chkLayerFurniture" checked> Nội Thất</label>
                                                 <label class="layer-toggle-item"><input type="checkbox" id="chkLayerDimensions" checked> Kích Thước</label>

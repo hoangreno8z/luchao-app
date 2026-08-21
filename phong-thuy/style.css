@@ -1416,3 +1416,26 @@ body {
     color: #000;
     transform: translateY(-1px);
 }
+
+
+.hud-landscape-chip {
+    padding: 6px 4px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 6px;
+    color: #fde68a;
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.hud-landscape-chip:hover {
+    background: #f59e0b;
+    color: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}

@@ -983,6 +983,237 @@ export class FloorplanVisionVectorizer {
 // 7. ARCHITECTURAL CAD RENDERER (100% PURE VECTOR CAD BLOCKS)
 // ------------------------------------------------------------
 
+
+// ------------------------------------------------------------
+// VECTOR SYMBOLS CHO 13 LOẠI NGOẠI CẢNH (LOAN ĐẦU PHONG THỦY)
+// 100% Thuần Code SVG — Không Emoji — Tỉ Lệ Chuẩn mm CAD
+// ------------------------------------------------------------
+export function renderLandscapeVectorSymbol(type, w, h) {
+    const cx = w / 2;
+    const cy = h / 2;
+
+    switch (type) {
+        case 'temple': // 1. Chùa / Đình (Mái ngói cong, tam quan, tháp chuông)
+            return `
+                <!-- Nền khuôn viên chùa màu vàng cam đất ấm áp -->
+                <rect width="${w}" height="${h}" fill="rgba(254, 243, 199, 0.6)" stroke="#b45309" stroke-width="16" rx="12"/>
+                <!-- Tường bao quanh -->
+                <rect x="${w * 0.08}" y="${h * 0.08}" width="${w * 0.84}" height="${h * 0.84}" fill="none" stroke="#d97706" stroke-width="10" stroke-dasharray="40,20"/>
+                <!-- Mái chùa cong ngói đỏ truyền thống -->
+                <path d="M ${w * 0.15} ${h * 0.45} Q ${cx} ${h * 0.22} ${w * 0.85} ${h * 0.45} L ${w * 0.75} ${h * 0.55} Q ${cx} ${h * 0.38} ${w * 0.25} ${h * 0.55} Z" fill="#dc2626" stroke="#991b1b" stroke-width="12"/>
+                <path d="M ${w * 0.22} ${h * 0.30} Q ${cx} ${h * 0.12} ${w * 0.78} ${h * 0.30} L ${w * 0.70} ${h * 0.38} Q ${cx} ${h * 0.24} ${w * 0.30} ${h * 0.38} Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="10"/>
+                <!-- Đỉnh tháp bảo -->
+                <polygon points="${cx},${h * 0.06} ${cx - 60},${h * 0.14} ${cx + 60},${h * 0.14}" fill="#f59e0b" stroke="#b45309" stroke-width="8"/>
+                <!-- Cột đình & Tam quan -->
+                <rect x="${w * 0.32}" y="${h * 0.55}" width="${w * 0.06}" height="${h * 0.32}" fill="#78350f" rx="4"/>
+                <rect x="${w * 0.62}" y="${h * 0.55}" width="${w * 0.06}" height="${h * 0.32}" fill="#78350f" rx="4"/>
+                <rect x="${w * 0.40}" y="${h * 0.62}" width="${w * 0.20}" height="${h * 0.25}" fill="rgba(180, 83, 9, 0.25)" stroke="#b45309" stroke-width="8" rx="6"/>
+                <!-- Lư hương trước chùa -->
+                <circle cx="${cx}" cy="${h * 0.75}" r="${Math.min(w, h) * 0.06}" fill="#78350f" stroke="#f59e0b" stroke-width="6"/>
+            `;
+
+        case 't_junction': // 2. Ngã 3 Đường (Giao lộ chữ T + vạch kẻ đường)
+            return `
+                <!-- Nền đường nhựa xám đậm -->
+                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#475569" stroke-width="16" rx="8"/>
+                <!-- Lòng đường chữ T xám sáng -->
+                <path d="M 0 ${h * 0.3} L ${w} ${h * 0.3} L ${w} ${h * 0.7} L ${w * 0.65} ${h * 0.7} L ${w * 0.65} ${h} L ${w * 0.35} ${h} L ${w * 0.35} ${h * 0.7} L 0 ${h * 0.7} Z" fill="#334155"/>
+                <!-- Vạch tim đường vàng nét đứt -->
+                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
+                <line x1="${cx}" y1="${h * 0.5}" x2="${cx}" y2="${h}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
+                <!-- Mũi tên chỉ hướng luồng khí giao thông -->
+                <polygon points="${w * 0.85},${h * 0.45} ${w * 0.95},${h * 0.5} ${w * 0.85},${h * 0.55}" fill="#ffffff"/>
+                <polygon points="${w * 0.15},${h * 0.55} ${w * 0.05},${h * 0.5} ${w * 0.15},${h * 0.45}" fill="#ffffff"/>
+                <polygon points="${cx - 40},${h * 0.88} ${cx},${h * 0.98} ${cx + 40},${h * 0.88}" fill="#ffffff"/>
+            `;
+
+        case 'crossroad': // 3. Ngã 4 Đường (Giao lộ chữ thập + vạch sang đường)
+            return `
+                <!-- Nền ngã tư nhựa xám -->
+                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#475569" stroke-width="16" rx="8"/>
+                <!-- Lòng đường chữ thập -->
+                <path d="M 0 ${h * 0.3} L ${w * 0.3} ${h * 0.3} L ${w * 0.3} 0 L ${w * 0.7} 0 L ${w * 0.7} ${h * 0.3} L ${w} ${h * 0.3} L ${w} ${h * 0.7} L ${w * 0.7} ${h * 0.7} L ${w * 0.7} ${h} L ${w * 0.3} ${h} L ${w * 0.3} ${h * 0.7} L 0 ${h * 0.7} Z" fill="#334155"/>
+                <!-- Vạch tim đường vàng nét đứt -->
+                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
+                <line x1="${cx}" y1="0" x2="${cx}" y2="${h}" stroke="#facc15" stroke-width="14" stroke-dasharray="60,40"/>
+                <!-- Vạch sang đường người đi bộ (Zebra Crossings) -->
+                <line x1="${w * 0.32}" y1="${h * 0.28}" x2="${w * 0.68}" y2="${h * 0.28}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.32}" y1="${h * 0.72}" x2="${w * 0.68}" y2="${h * 0.72}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.28}" y1="${h * 0.32}" x2="${w * 0.28}" y2="${h * 0.68}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
+                <line x1="${w * 0.72}" y1="${h * 0.32}" x2="${w * 0.72}" y2="${h * 0.68}" stroke="#ffffff" stroke-width="20" stroke-dasharray="25,20"/>
+            `;
+
+        case 'river_lake': // 4. Sông / Hồ (Mặt nước uốn lượn xanh ngọc + vân sóng)
+            return `
+                <!-- Nền nước xanh ngọc trong suốt -->
+                <rect width="${w}" height="${h}" fill="rgba(14, 165, 233, 0.45)" stroke="#0284c7" stroke-width="16" rx="20"/>
+                <!-- Dải sông uốn lượn dòng chảy tự nhiên -->
+                <path d="M 0 ${h * 0.35} Q ${w * 0.3} ${h * 0.15} ${w * 0.6} ${h * 0.5} T ${w} ${h * 0.4} L ${w} ${h * 0.8} Q ${w * 0.6} ${h * 0.9} ${w * 0.3} ${h * 0.6} T 0 ${h * 0.75} Z" fill="rgba(2, 132, 199, 0.55)"/>
+                <!-- Các đường gợn sóng nước mềm mại -->
+                <path d="M ${w * 0.1} ${h * 0.4} Q ${w * 0.2} ${h * 0.3} ${w * 0.3} ${h * 0.4}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.45} ${h * 0.55} Q ${w * 0.55} ${h * 0.45} ${w * 0.65} ${h * 0.55}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.7} ${h * 0.35} Q ${w * 0.8} ${h * 0.25} ${w * 0.9} ${h * 0.35}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+                <path d="M ${w * 0.25} ${h * 0.65} Q ${w * 0.35} ${h * 0.55} ${w * 0.45} ${h * 0.65}" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+            `;
+
+        case 'cemetery': // 5. Nghĩa Trang (Khu mộ chí + cây bách + bia mộ đá)
+            return `
+                <!-- Nền khuôn viên nghĩa trang xám xanh tĩnh mịch -->
+                <rect width="${w}" height="${h}" fill="rgba(71, 85, 105, 0.4)" stroke="#475569" stroke-width="16" rx="10"/>
+                <!-- Hàng rào cây bách bao quanh -->
+                <rect x="${w * 0.06}" y="${h * 0.06}" width="${w * 0.88}" height="${h * 0.88}" fill="none" stroke="#15803d" stroke-width="8" stroke-dasharray="30,15"/>
+                <!-- Các dãy bia mộ đá xếp đều đặn -->
+                ${[0.2, 0.5, 0.8].map(px => [0.25, 0.65].map(py => `
+                    <g transform="translate(${w * px}, ${h * py})">
+                        <path d="M -35 25 L -35 -15 A 35 35 0 0 1 35 -15 L 35 25 Z" fill="#cbd5e1" stroke="#334155" stroke-width="6"/>
+                        <line x1="0" y1="-10" x2="0" y2="10" stroke="#334155" stroke-width="4"/>
+                        <line x1="-12" y1="-2" x2="12" y2="-2" stroke="#334155" stroke-width="4"/>
+                        <rect x="-45" y="25" width="90" height="15" rx="3" fill="#64748b"/>
+                    </g>
+                `).join('')).join('')}
+            `;
+
+        case 'park': // 6. Công Viên Cây Xanh (Mảng cỏ tươi + tán cây + đường dạo bộ)
+            return `
+                <!-- Nền cỏ xanh sinh thái mát mẻ -->
+                <rect width="${w}" height="${h}" fill="rgba(34, 197, 94, 0.35)" stroke="#16a34a" stroke-width="16" rx="16"/>
+                <!-- Đường dạo bộ uốn lượn lát sỏi -->
+                <path d="M 0 ${h * 0.8} Q ${w * 0.4} ${h * 0.9} ${w * 0.5} ${h * 0.5} T ${w} ${h * 0.2}" fill="none" stroke="#fde047" stroke-width="35" stroke-linecap="round" opacity="0.75"/>
+                <!-- Cụm các tán cây cổ thụ bóng mát -->
+                ${[
+                    { x: 0.2, y: 0.3, r: 0.12, c: '#15803d' },
+                    { x: 0.35, y: 0.25, r: 0.10, c: '#16a34a' },
+                    { x: 0.75, y: 0.7, r: 0.14, c: '#15803d' },
+                    { x: 0.85, y: 0.55, r: 0.11, c: '#22c55e' },
+                    { x: 0.25, y: 0.75, r: 0.09, c: '#16a34a' }
+                ].map(tree => `
+                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r}" fill="${tree.c}" stroke="#065f46" stroke-width="8"/>
+                    <circle cx="${w * tree.x}" cy="${h * tree.y}" r="${Math.min(w, h) * tree.r * 0.4}" fill="#064e3b"/>
+                `).join('')}
+            `;
+
+        case 'substation': // 7. Trạm Điện / Cột Điện Cao Thế (Cột thép giàn + tia sét cảnh báo)
+            return `
+                <!-- Nền cảnh báo nguy hiểm sọc vàng đen -->
+                <rect width="${w}" height="${h}" fill="rgba(234, 88, 12, 0.25)" stroke="#ea580c" stroke-width="16" rx="10"/>
+                <!-- Hàng rào thép gai bảo vệ -->
+                <rect x="${w * 0.08}" y="${h * 0.08}" width="${w * 0.84}" height="${h * 0.84}" fill="none" stroke="#ea580c" stroke-width="10" stroke-dasharray="30,15"/>
+                <!-- Tháp giàn điện cao thế tam giác -->
+                <polygon points="${cx},${h * 0.15} ${w * 0.25},${h * 0.85} ${w * 0.75},${h * 0.85}" fill="none" stroke="#ea580c" stroke-width="14"/>
+                <line x1="${w * 0.32}" y1="${h * 0.65}" x2="${w * 0.68}" y2="${h * 0.65}" stroke="#ea580c" stroke-width="12"/>
+                <line x1="${w * 0.38}" y1="${h * 0.45}" x2="${w * 0.62}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="12"/>
+                <line x1="${w * 0.25}" y1="${h * 0.85}" x2="${w * 0.62}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="8"/>
+                <line x1="${w * 0.75}" y1="${h * 0.85}" x2="${w * 0.38}" y2="${h * 0.45}" stroke="#ea580c" stroke-width="8"/>
+                <!-- Cánh tay đòn xà đỡ sứ cách điện -->
+                <line x1="${w * 0.15}" y1="${h * 0.35}" x2="${w * 0.85}" y2="${h * 0.35}" stroke="#ea580c" stroke-width="14"/>
+                <line x1="${w * 0.20}" y1="${h * 0.50}" x2="${w * 0.80}" y2="${h * 0.50}" stroke="#ea580c" stroke-width="14"/>
+                <!-- Biểu tượng tia sét cảnh báo Hỏa Sát -->
+                <polygon points="${cx + 20},${h * 0.4} ${cx - 40},${h * 0.6} ${cx},${h * 0.6} ${cx - 20},${h * 0.8} ${cx + 40},${h * 0.55} ${cx},${h * 0.55}" fill="#facc15" stroke="#ca8a04" stroke-width="6"/>
+            `;
+
+        case 'bus_station': // 8. Bến Xe Khách (Nhà ga mái vòm + bãi đỗ xe bus)
+            return `
+                <!-- Nền nhà ga bến bãi -->
+                <rect width="${w}" height="${h}" fill="rgba(30, 58, 138, 0.3)" stroke="#1e3a8a" stroke-width="16" rx="10"/>
+                <!-- Nhà chờ ga bến xe trung tâm -->
+                <rect x="${w * 0.1}" y="${h * 0.12}" width="${w * 0.8}" height="${h * 0.35}" fill="#1e40af" rx="8" stroke="#3b82f6" stroke-width="8"/>
+                <text x="${cx}" y="${h * 0.32}" text-anchor="middle" font-size="${Math.min(w,h) * 0.12}" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">BẾN XE</text>
+                <!-- Các ô kẻ đỗ xe bus -->
+                ${[0.15, 0.42, 0.7].map(xOff => `
+                    <rect x="${w * xOff}" y="${h * 0.55}" width="${w * 0.22}" height="${h * 0.38}" fill="#334155" stroke="#facc15" stroke-width="8" rx="6"/>
+                    <!-- Kính xe & bánh xe bus -->
+                    <rect x="${w * xOff + 20}" y="${h * 0.58}" width="${w * 0.22 - 40}" height="${h * 0.1}" fill="#38bdf8" rx="4"/>
+                    <circle cx="${w * xOff + 40}" cy="${h * 0.88}" r="25" fill="#0f172a" stroke="#ffffff" stroke-width="4"/>
+                    <circle cx="${w * xOff + w * 0.22 - 40}" cy="${h * 0.88}" r="25" fill="#0f172a" stroke="#ffffff" stroke-width="4"/>
+                `).join('')}
+            `;
+
+        case 'seaport': // 9. Cảng Biển (Cầu cảng bê tông + cần cẩu + mỏ neo)
+            return `
+                <!-- Nền nước biển xanh thẫm -->
+                <rect width="${w}" height="${h}" fill="rgba(3, 105, 161, 0.4)" stroke="#0369a1" stroke-width="16" rx="10"/>
+                <!-- Cầu cảng bê tông vươn ra biển -->
+                <rect x="0" y="${h * 0.3}" width="${w * 0.65}" height="${h * 0.4}" fill="#64748b" stroke="#334155" stroke-width="12" rx="4"/>
+                <line x1="${w * 0.65}" y1="${h * 0.3}" x2="${w * 0.65}" y2="${h * 0.7}" stroke="#facc15" stroke-width="14" stroke-dasharray="30,20"/>
+                <!-- Cần cẩu bốc dỡ container cảng -->
+                <polygon points="${w * 0.2},${h * 0.35} ${w * 0.35},${h * 0.15} ${w * 0.55},${h * 0.15} ${w * 0.4},${h * 0.35}" fill="#dc2626" stroke="#991b1b" stroke-width="8"/>
+                <line x1="${w * 0.55}" y1="${h * 0.15}" x2="${w * 0.55}" y2="${h * 0.45}" stroke="#0f172a" stroke-width="6"/>
+                <!-- Biểu tượng Mỏ Neo lớn -->
+                <circle cx="${w * 0.82}" cy="${h * 0.35}" r="35" fill="none" stroke="#ffffff" stroke-width="10"/>
+                <line x1="${w * 0.82}" y1="${h * 0.35}" x2="${w * 0.82}" y2="${h * 0.75}" stroke="#ffffff" stroke-width="12"/>
+                <path d="M ${w * 0.72} ${h * 0.65} Q ${w * 0.82} ${h * 0.82} ${w * 0.92} ${h * 0.65}" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+            `;
+
+        case 'airport': // 10. Sân Bay (Đường băng cất hạ cánh + máy bay phản lực)
+            return `
+                <!-- Nền đường băng sân bay xám bê tông -->
+                <rect width="${w}" height="${h}" fill="#1e293b" stroke="#64748b" stroke-width="16" rx="10"/>
+                <!-- Dải đường băng cất hạ cánh chính (Runway) -->
+                <rect x="${w * 0.05}" y="${h * 0.3}" width="${w * 0.9}" height="${h * 0.4}" fill="#0f172a" stroke="#ffffff" stroke-width="8"/>
+                <!-- Vạch kẻ sơn tim đường băng & vạch ngưỡng cất cánh -->
+                <line x1="${w * 0.1}" y1="${h * 0.5}" x2="${w * 0.9}" y2="${h * 0.5}" stroke="#ffffff" stroke-width="16" stroke-dasharray="80,50"/>
+                <line x1="${w * 0.08}" y1="${h * 0.35}" x2="${w * 0.08}" y2="${h * 0.65}" stroke="#ffffff" stroke-width="20" stroke-dasharray="15,10"/>
+                <line x1="${w * 0.92}" y1="${h * 0.35}" x2="${w * 0.92}" y2="${h * 0.65}" stroke="#ffffff" stroke-width="20" stroke-dasharray="15,10"/>
+                <!-- Biểu tượng Máy Bay Phản Lực cất cánh -->
+                <g transform="translate(${cx}, ${cy}) rotate(-35)">
+                    <!-- Thân máy bay -->
+                    <path d="M 0 -80 C 15 -60 15 60 0 80 C -15 60 -15 -60 0 -80 Z" fill="#38bdf8" stroke="#ffffff" stroke-width="8"/>
+                    <!-- Cánh máy bay -->
+                    <polygon points="0,-20 90,30 80,45 0,10 -80,45 -90,30" fill="#0284c7" stroke="#ffffff" stroke-width="6"/>
+                    <!-- Đuôi máy bay -->
+                    <polygon points="0,50 35,75 30,85 0,75 -30,85 -35,75" fill="#0369a1"/>
+                </g>
+            `;
+
+        case 'railway': // 11. Tuyến Đường Sắt (Đường ray đôi song song + tà vẹt gỗ)
+            return `
+                <!-- Nền hành lang an toàn đường sắt rải đá ba lát -->
+                <rect width="${w}" height="${h}" fill="#334155" stroke="#475569" stroke-width="16" rx="6"/>
+                <!-- Các thanh tà vẹt gỗ xếp đều đặn -->
+                ${Array.from({ length: 16 }).map((_, i) => `
+                    <rect x="${(w / 16) * i + 10}" y="${h * 0.15}" width="${w / 28}" height="${h * 0.7}" fill="#78350f" rx="3" stroke="#451a03" stroke-width="4"/>
+                `).join('')}
+                <!-- 2 thanh ray thép song song sáng bóng -->
+                <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#e2e8f0" stroke-width="16"/>
+                <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#e2e8f0" stroke-width="16"/>
+                <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#64748b" stroke-width="6"/>
+                <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#64748b" stroke-width="6"/>
+            `;
+
+        case 'field': // 12. Ruộng Đồng / Đất Canh Tác (Bờ thửa ô cờ xanh mạ)
+            return `
+                <!-- Nền ruộng đất phù sa màu mỡ -->
+                <rect width="${w}" height="${h}" fill="rgba(101, 163, 13, 0.45)" stroke="#65a30d" stroke-width="16" rx="8"/>
+                <!-- Các ô bờ ruộng bàn cờ -->
+                <line x1="${w * 0.33}" y1="0" x2="${w * 0.33}" y2="${h}" stroke="#78350f" stroke-width="16"/>
+                <line x1="${w * 0.66}" y1="0" x2="${w * 0.66}" y2="${h}" stroke="#78350f" stroke-width="16"/>
+                <line x1="0" y1="${h * 0.5}" x2="${w}" y2="${h * 0.5}" stroke="#78350f" stroke-width="16"/>
+                <!-- Các hàng lúa mạ non gợn sóng -->
+                ${[0.15, 0.48, 0.82].map(px => [0.25, 0.75].map(py => `
+                    <path d="M ${w * px - 40} ${h * py} Q ${w * px} ${h * py - 30} ${w * px + 40} ${h * py}" fill="none" stroke="#4d7c0f" stroke-width="8" stroke-linecap="round"/>
+                `).join('')).join('')}
+            `;
+
+        case 'mountain': // 13. Núi Cao (3 đỉnh núi trùng điệp đổ bóng 3D)
+        default:
+            return `
+                <!-- Nền chân núi hùng vĩ -->
+                <rect width="${w}" height="${h}" fill="rgba(51, 65, 85, 0.35)" stroke="#475569" stroke-width="16" rx="16"/>
+                <!-- Đỉnh núi bên trái -->
+                <polygon points="${w * 0.25},${h * 0.25} ${w * 0.05},${h * 0.9} ${w * 0.5},${h * 0.9}" fill="#475569" stroke="#1e293b" stroke-width="12"/>
+                <polygon points="${w * 0.25},${h * 0.25} ${w * 0.05},${h * 0.9} ${w * 0.25},${h * 0.9}" fill="#64748b"/>
+                <!-- Đỉnh núi bên phải -->
+                <polygon points="${w * 0.75},${h * 0.30} ${w * 0.5},${h * 0.9} ${w * 0.95},${h * 0.9}" fill="#334155" stroke="#1e293b" stroke-width="12"/>
+                <polygon points="${w * 0.75},${h * 0.30} ${w * 0.5},${h * 0.9} ${w * 0.75},${h * 0.9}" fill="#475569"/>
+                <!-- Đỉnh núi trung tâm cao vút (Tọa Sơn Chủ Đỉnh) -->
+                <polygon points="${cx},${h * 0.1} ${w * 0.2},${h * 0.92} ${w * 0.8},${h * 0.92}" fill="#1e293b" stroke="#0f172a" stroke-width="14"/>
+                <polygon points="${cx},${h * 0.1} ${w * 0.2},${h * 0.92} ${cx},${h * 0.92}" fill="#334155"/>
+                <!-- Đỉnh tuyết phủ trắng hoặc mây phủ vượng khí -->
+                <polygon points="${cx},${h * 0.1} ${cx - 60},${h * 0.28} ${cx},${h * 0.24} ${cx + 60},${h * 0.28}" fill="#ffffff"/>
+            `;
+    }
+}
+
 export class ArchitecturalCADRenderer {
     constructor(options = {}) {
         this.theme = options.theme || 'white';
@@ -993,6 +1224,7 @@ export class ArchitecturalCADRenderer {
     renderLayers(geometry, options = {}) {
         const pts = geometry.footprintPoints || [];
         const selectedId = options.selectedRoomId || null;
+        const selectedLandscapeId = options.selectedLandscapeId || null;
         const selectedEdgeIdx = options.selectedEdgeIndex !== undefined ? options.selectedEdgeIndex : null;
 
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
@@ -1012,13 +1244,22 @@ export class ArchitecturalCADRenderer {
             });
         }
 
+        if (geometry.landscapes) {
+            geometry.landscapes.forEach(l => {
+                if (l.x < minX) minX = l.x;
+                if (l.x + l.w > maxX) maxX = l.x + l.w;
+                if (l.y < minY) minY = l.y;
+                if (l.y + l.h > maxY) maxY = l.y + l.h;
+            });
+        }
+
         const centroid = HouseCenterGeometryEngine.calculatePolygonCentroid(pts);
         const maxHouseW = Math.max(1000, maxX - minX);
         const maxHouseD = Math.max(1000, maxY - minY);
 
-        // Bán kính bao phủ toàn bộ vòng tròn La Kinh và ngôi nhà
-        const compassRadius = Math.max(2800, Math.max(maxHouseW, maxHouseD) * 0.62 + 1000);
-        const safeRadius = Math.max(compassRadius + 600, Math.max(maxHouseW, maxHouseD) / 2 + 1200);
+        // Bán kính bao phủ toàn bộ vòng tròn La Kinh, ngôi nhà và ngoại cảnh xung quanh
+        const compassRadius = Math.max(3800, Math.max(maxHouseW, maxHouseD) * 0.65 + 1500);
+        const safeRadius = Math.max(compassRadius + 800, Math.max(maxHouseW, maxHouseD) / 2 + 1500);
 
         const viewBox = {
             x: Math.round(centroid.x - safeRadius),
@@ -1037,35 +1278,93 @@ export class ArchitecturalCADRenderer {
             `;
 
             pts.forEach((p, idx) => {
-                const isEdgeSel = (selectedEdgeIdx === idx);
                 wallsSvg += `
-                    <rect x="${p.x - 110}" y="${p.y - 110}" width="220" height="220" fill="#0f172a" stroke="#000000" stroke-width="4"/>
-                `;
-
-                const pNext = pts[(idx + 1) % pts.length];
-                wallsSvg += `
-                    <line class="cad-edge-hitbox" data-edge-idx="${idx}" x1="${p.x}" y1="${p.y}" x2="${pNext.x}" y2="${pNext.y}" stroke="${isEdgeSel ? '#f59e0b' : 'transparent'}" stroke-width="${isEdgeSel ? 40 : 300}" stroke-linecap="round" style="cursor: pointer; pointer-events: all;"/>
+                    <rect x="${p.x - 110}" y="${p.y - 110}" width="220" height="220" fill="#000000" stroke="#ffffff" stroke-width="4"/>
                 `;
             });
         }
         wallsSvg += '</g>';
 
-        // 2. KHỐI NỘI THẤT PROCEDURAL VECTOR BLOCKS
-        const renderBedBlock = (x, y, w, h, name = 'P.NGỦ') => {
-            const scale = Math.min(1, Math.min((w * 0.75) / 2800, (h * 0.75) / 3200));
+        // 2. NGOẠI CẢNH (LOAN ĐẦU XUNG QUANH NHÀ)
+        let landscapesSvg = '<g class="layer-landscapes-interactive">';
+        if (geometry.landscapes) {
+            geometry.landscapes.forEach(l => {
+                const isSel = (selectedLandscapeId === l.id);
+                const sym = renderLandscapeVectorSymbol(l.type, l.w, l.h);
+
+                let handlesSvg = '';
+                if (isSel) {
+                    const hs = 120;
+                    const handlePoints = [
+                        { id: 'nw', cx: l.x, cy: l.y, cur: 'nwse-resize' },
+                        { id: 'n',  cx: l.x + l.w / 2, cy: l.y, cur: 'ns-resize' },
+                        { id: 'ne', cx: l.x + l.w, cy: l.y, cur: 'nesw-resize' },
+                        { id: 'e',  cx: l.x + l.w, cy: l.y + l.h / 2, cur: 'ew-resize' },
+                        { id: 'se', cx: l.x + l.w, cy: l.y + l.h, cur: 'nwse-resize' },
+                        { id: 's',  cx: l.x + l.w / 2, cy: l.y + l.h, cur: 'ns-resize' },
+                        { id: 'sw', cx: l.x, cy: l.y + l.h, cur: 'nesw-resize' },
+                        { id: 'w',  cx: l.x, cy: l.y + l.h / 2, cur: 'ew-resize' }
+                    ];
+
+                    handlesSvg = `
+                        ${handlePoints.map(hp => `
+                            <g class="cad-resize-handle-group" data-handle="${hp.id}" data-landscape-id="${l.id}" style="cursor: ${hp.cur};">
+                                <circle class="cad-resize-handle" data-handle="${hp.id}" data-landscape-id="${l.id}" cx="${hp.cx}" cy="${hp.cy}" r="380" fill="transparent" pointer-events="all" style="touch-action: none;"/>
+                                <rect x="${hp.cx - hs / 2}" y="${hp.cy - hs / 2}" width="${hs}" height="${hs}" fill="#f59e0b" stroke="#ffffff" stroke-width="12" rx="8" pointer-events="none"/>
+                            </g>
+                        `).join('')}
+
+                        <g class="cad-mini-action-bar" transform="translate(${l.x + l.w / 2}, ${l.y - 140})">
+                            <rect x="-260" y="-55" width="520" height="96" rx="18" fill="#0f172a" stroke="#f59e0b" stroke-width="4"/>
+                            <g class="btn-cad-mini-action" data-action="confirm_landscape" data-landscape-id="${l.id}" style="cursor: pointer;">
+                                <rect x="-240" y="-42" width="130" height="70" rx="10" fill="#16a34a"/>
+                                <text x="-175" y="4" text-anchor="middle" font-size="34" font-weight="900" fill="#ffffff">XONG</text>
+                            </g>
+                            <g class="btn-cad-mini-action" data-action="rotate_landscape" data-landscape-id="${l.id}" style="cursor: pointer;">
+                                <rect x="-95" y="-42" width="110" height="70" rx="10" fill="#0284c7"/>
+                                <text x="-40" y="4" text-anchor="middle" font-size="32" font-weight="800" fill="#ffffff">XOAY</text>
+                            </g>
+                            <g class="btn-cad-mini-action" data-action="delete_landscape" data-landscape-id="${l.id}" style="cursor: pointer;">
+                                <rect x="30" y="-42" width="100" height="70" rx="10" fill="#ef4444"/>
+                                <text x="80" y="4" text-anchor="middle" font-size="32" font-weight="800" fill="#ffffff">XÓA</text>
+                            </g>
+                        </g>
+                    `;
+                }
+
+                const rotStr = l.rot ? `rotate(${l.rot}, ${l.x + l.w / 2}, ${l.y + l.h / 2})` : '';
+
+                landscapesSvg += `
+                    <g class="cad-landscape-interactive ${isSel ? 'selected' : ''}" data-landscape-id="${l.id}" transform="${rotStr}" style="cursor: move;">
+                        <g transform="translate(${l.x}, ${l.y})">
+                            ${sym}
+                        </g>
+                        <g transform="translate(${l.x + l.w / 2}, ${l.y + l.h / 2})">
+                            <rect x="${-Math.min(l.w * 0.45, 900)}" y="-50" width="${Math.min(l.w * 0.9, 1800)}" height="100" rx="20" fill="rgba(15, 23, 42, 0.85)" stroke="#f59e0b" stroke-width="6"/>
+                            <text x="0" y="15" text-anchor="middle" font-size="65" font-weight="900" fill="#ffffff" font-family="'Inter', sans-serif">${l.name}</text>
+                        </g>
+                        ${handlesSvg}
+                    </g>
+                `;
+            });
+        }
+        landscapesSvg += '</g>';
+
+        // 2.8 BLOCK RENDERERS CHO PHÒNG
+        const renderBedBlock = (x, y, w, h, name = 'PHÒNG NGỦ') => {
+            const scale = Math.min(1, Math.min(w / 3500, h / 3500));
             const bedW = 1800 * scale;
             const bedH = 2000 * scale;
-            const pillowW = 550 * scale;
-            const pillowH = 350 * scale;
-            const pillowRx = 40 * scale;
-            const tabW = 450 * scale;
-            const tabH = 400 * scale;
-            const wardrobeW = Math.min(600 * scale, w * 0.22);
-            const wardrobeH = Math.min(1800 * scale, h * 0.6);
-            const doorR = Math.min(800 * scale, w * 0.28);
-
             const bx = x + (w - bedW) / 2;
             const by = y + 180 * scale;
+            const pillowW = 550 * scale;
+            const pillowH = 380 * scale;
+            const pillowRx = 20 * scale;
+            const tabW = 450 * scale;
+            const tabH = 450 * scale;
+            const wardrobeW = Math.min(w * 0.3, 1600);
+            const wardrobeH = Math.min(h * 0.45, 2200);
+            const doorR = Math.min(800, w * 0.35);
 
             return `
                 <g class="arch-block-bedroom">
@@ -1073,8 +1372,6 @@ export class ArchitecturalCADRenderer {
                         <rect width="${wardrobeW}" height="${wardrobeH}" fill="#ffffff" stroke="#1e293b" stroke-width="8" rx="8"/>
                         <line x1="0" y1="0" x2="${wardrobeW}" y2="${wardrobeH / 2}" stroke="#64748b" stroke-width="4"/>
                         <line x1="0" y1="${wardrobeH / 2}" x2="${wardrobeW}" y2="0" stroke="#64748b" stroke-width="4"/>
-                        <line x1="0" y1="${wardrobeH / 2}" x2="${wardrobeW}" y2="${wardrobeH}" stroke="#64748b" stroke-width="4"/>
-                        <line x1="0" y1="${wardrobeH}" x2="${wardrobeW}" y2="${wardrobeH / 2}" stroke="#64748b" stroke-width="4"/>
                     </g>
                     <g transform="translate(${bx}, ${by})">
                         <rect width="${bedW}" height="${bedH}" fill="#ffffff" stroke="#111827" stroke-width="12" rx="${20 * scale}"/>
@@ -1082,21 +1379,14 @@ export class ArchitecturalCADRenderer {
                         <rect x="${140 * scale}" y="${180 * scale}" width="${pillowW}" height="${pillowH}" rx="${pillowRx}" fill="#f8fafc" stroke="#334155" stroke-width="6"/>
                         <rect x="${bedW - pillowW - 140 * scale}" y="${180 * scale}" width="${pillowW}" height="${pillowH}" rx="${pillowRx}" fill="#f8fafc" stroke="#334155" stroke-width="6"/>
                         <line x1="0" y1="${850 * scale}" x2="${bedW}" y2="${850 * scale}" stroke="#475569" stroke-width="6"/>
-                        <rect x="${100 * scale}" y="${850 * scale}" width="${bedW - 200 * scale}" height="${bedH - 950 * scale}" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="4" stroke-dasharray="15,15"/>
                     </g>
                     <g transform="translate(${bx - tabW - 40 * scale}, ${by})">
                         <rect width="${tabW}" height="${tabH}" rx="10" fill="#ffffff" stroke="#111827" stroke-width="8"/>
                         <circle cx="${tabW / 2}" cy="${tabH / 2}" r="${100 * scale}" fill="#fef08a" stroke="#d97706" stroke-width="6"/>
-                        <circle cx="${tabW / 2}" cy="${tabH / 2}" r="${40 * scale}" fill="#d97706"/>
                     </g>
                     <g transform="translate(${bx + bedW + 40 * scale}, ${by})">
                         <rect width="${tabW}" height="${tabH}" rx="10" fill="#ffffff" stroke="#111827" stroke-width="8"/>
                         <circle cx="${tabW / 2}" cy="${tabH / 2}" r="${100 * scale}" fill="#fef08a" stroke="#d97706" stroke-width="6"/>
-                        <circle cx="${tabW / 2}" cy="${tabH / 2}" r="${40 * scale}" fill="#d97706"/>
-                    </g>
-                    <g transform="translate(${x + 60}, ${y + h - 60})">
-                        <line x1="0" y1="0" x2="0" y2="${-doorR}" stroke="#0f172a" stroke-width="12"/>
-                        <path d="M 0 0 A ${doorR} ${doorR} 0 0 1 ${doorR} ${-doorR}" fill="none" stroke="#64748b" stroke-width="6" stroke-dasharray="18,12"/>
                     </g>
                 </g>
             `;
@@ -1115,21 +1405,14 @@ export class ArchitecturalCADRenderer {
 
             return `
                 <g class="arch-block-wc">
-                    <pattern id="wcTile_${Math.round(x)}_${Math.round(y)}" width="150" height="150" patternUnits="userSpaceOnUse">
-                        <rect width="150" height="150" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-                    </pattern>
-                    <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="url(#wcTile_${Math.round(x)}_${Math.round(y)})" opacity="0.6"/>
+                    <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" opacity="0.6"/>
                     <g transform="translate(${toiletX}, ${toiletY})">
                         <rect width="${tankW}" height="${tankH}" fill="#ffffff" stroke="#111827" stroke-width="10" rx="8"/>
                         <ellipse cx="${tankW / 2}" cy="${tankH + bowlRy - 20 * scale}" rx="${bowlRx}" ry="${bowlRy}" fill="#ffffff" stroke="#111827" stroke-width="10"/>
-                        <ellipse cx="${tankW / 2}" cy="${tankH + bowlRy - 10 * scale}" rx="${bowlRx * 0.68}" ry="${bowlRy * 0.72}" fill="#e2e8f0" stroke="#475569" stroke-width="4"/>
-                        <circle cx="${tankW / 2}" cy="${tankH * 0.45}" r="${22 * scale}" fill="#64748b"/>
                     </g>
                     <g transform="translate(${x + w - lavaboW - 100 * scale}, ${y + 100 * scale})">
                         <rect width="${lavaboW}" height="${lavaboH}" fill="#ffffff" stroke="#111827" stroke-width="10" rx="14"/>
                         <ellipse cx="${lavaboW / 2}" cy="${lavaboH / 2}" rx="${lavaboW * 0.36}" ry="${lavaboH * 0.32}" fill="#f0f9ff" stroke="#0284c7" stroke-width="6"/>
-                        <circle cx="${lavaboW / 2}" cy="${lavaboH * 0.25}" r="${18 * scale}" fill="#0284c7"/>
-                        <line x1="${lavaboW / 2}" y1="${lavaboH * 0.25}" x2="${lavaboW / 2}" y2="${lavaboH * 0.45}" stroke="#0284c7" stroke-width="6"/>
                     </g>
                 </g>
             `;
@@ -1138,54 +1421,35 @@ export class ArchitecturalCADRenderer {
         const renderKitchenBlock = (x, y, w, h, name = 'P.BẾP + ĂN') => {
             const counterH = Math.min(650, h * 0.3);
             const sinkW = Math.min(900, w * 0.38);
-            const sinkH = counterH * 0.75;
             const stoveW = Math.min(750, w * 0.32);
-            const stoveH = counterH * 0.75;
-
             const tableW = Math.min(w * 0.55, 1600);
             const tableH = Math.min(h * 0.35, 900);
             const tx = x + (w - tableW) / 2;
             const ty = y + counterH + (h - counterH - tableH) / 2;
-            const chairW = tableW * 0.26;
-            const chairH = tableH * 0.22;
 
             return `
                 <g class="arch-block-kitchen">
-                    <rect x="${x}" y="${y}" width="${w}" height="${counterH}" fill="#f1f5f9" stroke="#111827" stroke-width="12"/>
-                    <g transform="translate(${x + 80}, ${y + (counterH - sinkH) / 2})">
-                        <rect width="${sinkW}" height="${sinkH}" rx="16" fill="#ffffff" stroke="#111827" stroke-width="8"/>
-                        <rect x="${20}" y="${15}" width="${sinkW * 0.44}" height="${sinkH - 30}" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="6"/>
-                        <rect x="${sinkW * 0.52}" y="${15}" width="${sinkW * 0.44}" height="${sinkH - 30}" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="6"/>
-                        <circle cx="${sinkW * 0.24}" cy="${sinkH / 2}" r="15" fill="#0284c7"/>
-                        <circle cx="${sinkW * 0.74}" cy="${sinkH / 2}" r="15" fill="#0284c7"/>
-                        <circle cx="${sinkW / 2}" cy="${sinkH * 0.2}" r="22" fill="#475569"/>
+                    <rect x="${x}" y="${y}" width="${w}" height="${counterH}" fill="#f1f5f9" stroke="#111827" stroke-width="10"/>
+                    <g transform="translate(${x + 80}, ${y + 60})">
+                        <rect width="${sinkW}" height="${counterH - 120}" rx="10" fill="#ffffff" stroke="#111827" stroke-width="8"/>
                     </g>
-                    <g transform="translate(${x + w - stoveW - 80}, ${y + (counterH - stoveH) / 2})">
-                        <rect width="${stoveW}" height="${stoveH}" rx="14" fill="#1e293b" stroke="#111827" stroke-width="8"/>
-                        <circle cx="${stoveW * 0.28}" cy="${stoveH * 0.3}" r="${stoveH * 0.2}" fill="#ffffff" stroke="#e2e8f0" stroke-width="6"/>
-                        <circle cx="${stoveW * 0.72}" cy="${stoveH * 0.3}" r="${stoveH * 0.2}" fill="#ffffff" stroke="#e2e8f0" stroke-width="6"/>
-                        <circle cx="${stoveW * 0.28}" cy="${stoveH * 0.7}" r="${stoveH * 0.2}" fill="#ffffff" stroke="#e2e8f0" stroke-width="6"/>
-                        <circle cx="${stoveW * 0.72}" cy="${stoveH * 0.7}" r="${stoveH * 0.2}" fill="#ffffff" stroke="#e2e8f0" stroke-width="6"/>
+                    <g transform="translate(${x + w - stoveW - 80}, ${y + 60})">
+                        <rect width="${stoveW}" height="${counterH - 120}" rx="10" fill="#1e293b" stroke="#111827" stroke-width="8"/>
+                        <circle cx="${stoveW * 0.3}" cy="${(counterH - 120) / 2}" r="${(counterH - 120) * 0.32}" fill="#334155" stroke="#ef4444" stroke-width="4"/>
+                        <circle cx="${stoveW * 0.7}" cy="${(counterH - 120) / 2}" r="${(counterH - 120) * 0.32}" fill="#334155" stroke="#ef4444" stroke-width="4"/>
                     </g>
-                    <g class="dining-set">
-                        <rect x="${tx + tableW * 0.18}" y="${ty - chairH - 20}" width="${chairW}" height="${chairH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-                        <rect x="${tx + tableW * 0.56}" y="${ty - chairH - 20}" width="${chairW}" height="${chairH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-                        <rect x="${tx}" y="${ty}" width="${tableW}" height="${tableH}" rx="18" fill="#ffffff" stroke="#111827" stroke-width="10"/>
-                        <rect x="${tx + 40}" y="${ty + 30}" width="${tableW - 80}" height="${tableH - 60}" rx="10" fill="none" stroke="#94a3b8" stroke-width="4" stroke-dasharray="15,10"/>
-                        <rect x="${tx + tableW * 0.18}" y="${ty + tableH + 20}" width="${chairW}" height="${chairH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-                        <rect x="${tx + tableW * 0.56}" y="${ty + tableH + 20}" width="${chairW}" height="${chairH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-                        <rect x="${tx - chairH - 20}" y="${ty + (tableH - chairW) / 2}" width="${chairH}" height="${chairW}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
-                        <rect x="${tx + tableW + 20}" y="${ty + (tableH - chairW) / 2}" width="${chairH}" height="${chairW}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+                    <g transform="translate(${tx}, ${ty})">
+                        <rect width="${tableW}" height="${tableH}" rx="16" fill="#ffffff" stroke="#111827" stroke-width="10"/>
                     </g>
                 </g>
             `;
         };
 
-        const renderLivingBlock = (x, y, w, h, name = 'P.KHÁCH') => {
-            const sofaW = Math.min(w * 0.8, 2600);
-            const sofaH = Math.min(h * 0.32, 950);
+        const renderLivingBlock = (x, y, w, h, name = 'PHÒNG KHÁCH') => {
+            const sofaW = Math.min(w * 0.8, 2400);
+            const sofaH = Math.min(h * 0.32, 900);
             const sofaX = x + (w - sofaW) / 2;
-            const sofaY = y + 150;
+            const sofaY = y + 100;
             const tableW = sofaW * 0.55;
             const tableH = Math.min(500, h * 0.2);
             const tableX = x + (w - tableW) / 2;
@@ -1195,27 +1459,9 @@ export class ArchitecturalCADRenderer {
                 <g class="arch-block-living">
                     <g transform="translate(${sofaX}, ${sofaY})">
                         <rect width="${sofaW}" height="${sofaH}" rx="18" fill="#ffffff" stroke="#111827" stroke-width="12"/>
-                        <rect x="0" y="0" width="${sofaW}" height="${sofaH * 0.28}" fill="#e2e8f0" stroke="#111827" stroke-width="6"/>
-                        <rect x="0" y="0" width="${sofaW * 0.12}" height="${sofaH}" fill="#e2e8f0" stroke="#111827" stroke-width="6"/>
-                        <rect x="${sofaW * 0.88}" y="0" width="${sofaW * 0.12}" height="${sofaH}" fill="#e2e8f0" stroke="#111827" stroke-width="6"/>
-                        <line x1="${sofaW * 0.38}" y1="${sofaH * 0.28}" x2="${sofaW * 0.38}" y2="${sofaH}" stroke="#64748b" stroke-width="4"/>
-                        <line x1="${sofaW * 0.62}" y1="${sofaH * 0.28}" x2="${sofaW * 0.62}" y2="${sofaH}" stroke="#64748b" stroke-width="4"/>
-                        <rect x="${sofaW * 0.14}" y="${sofaH * 0.35}" width="${sofaW * 0.1}" height="${sofaH * 0.45}" rx="8" fill="#f8fafc" stroke="#475569" stroke-width="4"/>
-                        <rect x="${sofaW * 0.76}" y="${sofaH * 0.35}" width="${sofaW * 0.1}" height="${sofaH * 0.45}" rx="8" fill="#f8fafc" stroke="#475569" stroke-width="4"/>
                     </g>
                     <g transform="translate(${tableX}, ${tableY})">
                         <rect width="${tableW}" height="${tableH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="10"/>
-                        <line x1="20" y1="20" x2="${tableW - 20}" y2="${tableH - 20}" stroke="#94a3b8" stroke-width="5"/>
-                        <line x1="${tableW - 20}" y1="20" x2="20" y2="${tableH - 20}" stroke="#94a3b8" stroke-width="5"/>
-                        <rect x="15" y="15" width="${tableW - 30}" height="${tableH - 30}" fill="none" stroke="#64748b" stroke-width="4"/>
-                    </g>
-                    <g transform="translate(${x + 80}, ${y + 80})">
-                        <circle cx="60" cy="60" r="50" fill="#dcfce7" stroke="#16a34a" stroke-width="8"/>
-                        <circle cx="60" cy="60" r="20" fill="#16a34a"/>
-                    </g>
-                    <g transform="translate(${x + w - 180}, ${y + 80})">
-                        <circle cx="60" cy="60" r="50" fill="#dcfce7" stroke="#16a34a" stroke-width="8"/>
-                        <circle cx="60" cy="60" r="20" fill="#16a34a"/>
                     </g>
                 </g>
             `;
@@ -1223,8 +1469,7 @@ export class ArchitecturalCADRenderer {
 
         const renderStairsBlock = (x, y, w, h, name = 'CẦU THANG (UP)') => {
             const steps = 15;
-            let st = `<g class="arch-block-stairs">
-                <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#111827" stroke-width="12"/>`;
+            let st = `<g class="arch-block-stairs"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#111827" stroke-width="12"/>`;
             for (let i = 1; i < steps; i++) {
                 const sy = y + (h / steps) * i;
                 st += `<line x1="${x}" y1="${sy}" x2="${x + w}" y2="${sy}" stroke="#334155" stroke-width="5"/>`;
@@ -1233,7 +1478,6 @@ export class ArchitecturalCADRenderer {
             st += `
                 <line x1="${arrowX}" y1="${y + h * 0.82}" x2="${arrowX}" y2="${y + h * 0.2}" stroke="#0284c7" stroke-width="14" stroke-linecap="round"/>
                 <polygon points="${arrowX},${y + h * 0.08} ${arrowX - 50},${y + h * 0.24} ${arrowX + 50},${y + h * 0.24}" fill="#0284c7"/>
-                <circle cx="${arrowX}" cy="${y + h * 0.82}" r="35" fill="#0284c7"/>
             </g>`;
             return st;
         };
@@ -1247,39 +1491,18 @@ export class ArchitecturalCADRenderer {
             return `
                 <g class="arch-block-altar">
                     <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fdfbf7" stroke="#b45309" stroke-width="10"/>
-                    <rect x="${ax}" y="${ay}" width="${altarW}" height="${altarH}" rx="14" fill="#fef3c7" stroke="#b45309" stroke-width="12"/>
-                    <circle cx="${ax + altarW / 2}" cy="${ay + altarH / 2}" r="75" fill="#b45309"/>
-                    <circle cx="${ax + altarW * 0.22}" cy="${ay + altarH / 2}" r="40" fill="#b45309"/>
-                    <circle cx="${ax + altarW * 0.78}" cy="${ay + altarH / 2}" r="40" fill="#b45309"/>
+                    <g transform="translate(${ax}, ${ay})">
+                        <rect width="${altarW}" height="${altarH}" rx="14" fill="#78350f" stroke="#b45309" stroke-width="12"/>
+                    </g>
                 </g>
             `;
         };
 
-        const renderDoorBlock = (x, y, w, h, name = 'CỬA CHÍNH') => {
-            const doorW = Math.min(w, Math.max(800, h));
-            const isFourLeaf = w >= 2200;
-
-            if (isFourLeaf) {
-                const leafW = w / 4;
-                return `
-                    <g class="arch-block-door-4leaf" transform="translate(${x}, ${y})">
-                        <line x1="0" y1="${h / 2}" x2="${w}" y2="${h / 2}" stroke="#111827" stroke-width="6" stroke-dasharray="15,10"/>
-                        <rect x="0" y="0" width="${leafW * 0.9}" height="${h}" fill="#f1f5f9" stroke="#111827" stroke-width="8" rx="4"/>
-                        <rect x="${leafW}" y="0" width="${leafW * 0.9}" height="${h}" fill="#f1f5f9" stroke="#111827" stroke-width="8" rx="4"/>
-                        <rect x="${leafW * 2}" y="0" width="${leafW * 0.9}" height="${h}" fill="#f1f5f9" stroke="#111827" stroke-width="8" rx="4"/>
-                        <rect x="${leafW * 3}" y="0" width="${leafW * 0.9}" height="${h}" fill="#f1f5f9" stroke="#111827" stroke-width="8" rx="4"/>
-                        <path d="M 0 ${h / 2} A ${leafW} ${leafW} 0 0 1 ${leafW} 0" fill="none" stroke="#64748b" stroke-width="6" stroke-dasharray="12,8"/>
-                        <path d="M ${w} ${h / 2} A ${leafW} ${leafW} 0 0 0 ${w - leafW} 0" fill="none" stroke="#64748b" stroke-width="6" stroke-dasharray="12,8"/>
-                    </g>
-                `;
-            }
-
+        const renderDoorBlock = (x, y, w, h, name = 'CỬA') => {
+            const r = Math.min(w, h * 3);
             return `
                 <g class="arch-block-door" transform="translate(${x}, ${y})">
-                    <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#111827" stroke-width="8" stroke-dasharray="25,15"/>
-                    <line x1="0" y1="${h / 2}" x2="${doorW * 0.85}" y2="${h / 2 - doorW * 0.85}" stroke="#111827" stroke-width="16"/>
-                    <path d="M 0 ${h / 2} A ${doorW * 0.85} ${doorW * 0.85} 0 0 1 ${doorW * 0.85} ${h / 2 - doorW * 0.85}" fill="none" stroke="#64748b" stroke-width="8" stroke-dasharray="18,12"/>
-                    <rect x="0" y="0" width="${Math.max(40, w * 0.08)}" height="${h}" fill="#111827"/>
+                    <rect x="0" y="0" width="${w}" height="${h}" fill="#ffffff" stroke="#111827" stroke-width="10"/>
                 </g>
             `;
         };
@@ -1288,74 +1511,24 @@ export class ArchitecturalCADRenderer {
             return `
                 <g class="arch-block-window" transform="translate(${x}, ${y})">
                     <rect x="0" y="0" width="${w}" height="${h}" fill="#ffffff" stroke="#111827" stroke-width="8"/>
-                    <line x1="0" y1="${h * 0.35}" x2="${w}" y2="${h * 0.35}" stroke="#0284c7" stroke-width="6"/>
-                    <line x1="0" y1="${h * 0.65}" x2="${w}" y2="${h * 0.65}" stroke="#0284c7" stroke-width="6"/>
-                    <line x1="${w / 2}" y1="0" x2="${w / 2}" y2="${h}" stroke="#111827" stroke-width="8"/>
                 </g>
             `;
         };
 
-        
         const renderOfficeBlock = (x, y, w, h, name = 'P.LÀM VIỆC') => {
-            const deskW = Math.min(w * 0.75, 1800);
-            const deskH = Math.min(h * 0.4, 800);
-            const dx = x + (w - deskW) / 2;
-            const dy = y + 140;
-            const chairR = Math.min(deskH * 0.45, 240);
-
-            return `
-                <g class="arch-block-office">
-                    <rect x="${dx}" y="${dy}" width="${deskW}" height="${deskH}" rx="12" fill="#ffffff" stroke="#111827" stroke-width="10"/>
-                    <rect x="${dx + (deskW - 550) / 2}" y="${dy + 120}" width="550" height="80" rx="6" fill="#1e293b" stroke="#0f172a" stroke-width="4"/>
-                    <rect x="${dx + (deskW - 200) / 2}" y="${dy + 220}" width="200" height="120" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="4"/>
-                    <circle cx="${dx + deskW / 2}" cy="${dy + deskH + chairR + 40}" r="${chairR}" fill="#ffffff" stroke="#111827" stroke-width="10"/>
-                    <path d="M ${dx + deskW / 2 - chairR * 0.7} ${dy + deskH + chairR + 40} Q ${dx + deskW / 2} ${dy + deskH + 40} ${dx + deskW / 2 + chairR * 0.7} ${dy + deskH + chairR + 40}" fill="none" stroke="#111827" stroke-width="8"/>
-                </g>
-            `;
+            return `<g class="arch-block-office"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffffff" stroke="#111827" stroke-width="8"/></g>`;
         };
 
         const renderGarageBlock = (x, y, w, h, name = 'GARA XE') => {
-            const carW = Math.min(w * 0.7, 1800);
-            const carH = Math.min(h * 0.8, 3800);
-            const cx = x + (w - carW) / 2;
-            const cy = y + (h - carH) / 2;
-
-            return `
-                <g class="arch-block-garage">
-                    <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="none" stroke="#94a3b8" stroke-width="6" stroke-dasharray="25,15"/>
-                    <g transform="translate(${cx}, ${cy})">
-                        <rect width="${carW}" height="${carH}" rx="80" fill="#ffffff" stroke="#111827" stroke-width="12"/>
-                        <path d="M 60 450 Q ${carW / 2} 320 ${carW - 60} 450 L ${carW - 100} 950 Q ${carW / 2} 900 100 950 Z" fill="#e2e8f0" stroke="#111827" stroke-width="8"/>
-                        <path d="M 80 ${carH - 450} Q ${carW / 2} ${carH - 320} ${carW - 80} ${carH - 450} L ${carW - 110} ${carH - 850} Q ${carW / 2} ${carH - 800} 110 ${carH - 850} Z" fill="#e2e8f0" stroke="#111827" stroke-width="8"/>
-                        <rect x="20" y="200" width="40" height="150" rx="8" fill="#111827"/>
-                        <rect x="${carW - 60}" y="200" width="40" height="150" rx="8" fill="#111827"/>
-                        <rect x="20" y="${carH - 350}" width="40" height="150" rx="8" fill="#111827"/>
-                        <rect x="${carW - 60}" y="${carH - 350}" width="40" height="150" rx="8" fill="#111827"/>
-                    </g>
-                </g>
-            `;
+            return `<g class="arch-block-garage"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffffff" stroke="#111827" stroke-width="8"/></g>`;
         };
 
         const renderSkylightBlock = (x, y, w, h, name = 'GIẾNG TRỜI') => {
-            return `
-                <g class="arch-block-skylight">
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f0f9ff" stroke="#0284c7" stroke-width="8"/>
-                    <line x1="${x}" y1="${y}" x2="${x + w}" y2="${y + h}" stroke="#0284c7" stroke-width="6" stroke-dasharray="20,15"/>
-                    <line x1="${x + w}" y1="${y}" x2="${x}" y2="${y + h}" stroke="#0284c7" stroke-width="6" stroke-dasharray="20,15"/>
-                </g>
-            `;
+            return `<g class="arch-block-skylight"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f0f9ff" stroke="#0284c7" stroke-width="8"/></g>`;
         };
 
         const renderYardBlock = (x, y, w, h, name = 'BAN CÔNG / SÂN') => {
-            return `
-                <g class="arch-block-yard">
-                    <pattern id="yardTile_${Math.round(x)}_${Math.round(y)}" width="200" height="200" patternUnits="userSpaceOnUse">
-                        <rect width="200" height="200" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
-                    </pattern>
-                    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#yardTile_${Math.round(x)}_${Math.round(y)})" stroke="#111827" stroke-width="10"/>
-                    <line x1="${x}" y1="${y + 30}" x2="${x + w}" y2="${y + 30}" stroke="#475569" stroke-width="6"/>
-                </g>
-            `;
+            return `<g class="arch-block-yard"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#111827" stroke-width="8"/></g>`;
         };
 
         // 3. RENDER CÁC PHÒNG NỘI THẤT TƯƠNG TÁC
@@ -1492,7 +1665,7 @@ export class ArchitecturalCADRenderer {
             </g>
         `;
 
-        // 6. DEDICATED HIGH-CONTRAST ROOM LABELS LAYER (Luôn nổi rõ ràng trên cùng)
+        // 6. DEDICATED HIGH-CONTRAST ROOM LABELS LAYER
         let roomLabelsSvg = '<g class="layer-room-labels" pointer-events="none">';
         if (geometry.rooms) {
             geometry.rooms.forEach(r => {
@@ -1516,6 +1689,7 @@ export class ArchitecturalCADRenderer {
             viewBox,
             wallsLayer: wallsSvg,
             roomsLayer: roomsSvg,
+            landscapesLayer: landscapesSvg,
             roomLabelsLayer: roomLabelsSvg,
             dimensionsLayer: dimsSvg,
             vertexLayer: handlesLayer,
@@ -2057,6 +2231,7 @@ export class SvgViewportController {
 export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, layerState = {}, options = {}) {
     const vb = cadLayers.viewBox;
 
+    const landscapesContent = layerState.landscapes !== false ? (cadLayers.landscapesLayer || '') : '';
     const wallsContent = layerState.walls !== false ? (cadLayers.wallsLayer || '') : '';
     const vertexContent = cadLayers.vertexLayer || '';
     const roomsContent = layerState.furniture !== false ? (cadLayers.roomsLayer || '') : '';
@@ -2087,6 +2262,7 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     <rect x="${vb.x}" y="${vb.y}" width="${vb.w}" height="${vb.h}" fill="url(#cadGridPattern)"/>
 
     ${sourceImageContent}
+    ${landscapesContent}
     ${wallsContent}
     ${roomsContent}
     ${dimsContent}
@@ -2099,6 +2275,88 @@ export function renderUnifiedSvg(cadLayers, luoPanOverlay, ninePalacesOverlay, l
     `.trim();
 }
 
+
+
+export const LANDSCAPE_FENG_SHUI_KNOWLEDGE = {
+    'mountain': {
+        title: 'NÚI CAO (Huyền Vũ / Tọa Sơn)',
+        evalFacing: { grade: 'HUNG', status: 'Án Sơn Bức Môn', desc: 'Núi chắn ngay trước cửa chính làm cản trở sinh khí lưu thông, tầm nhìn bị che khuất.', remedy: 'Giữ khoảng sân trước thông thoáng, mở thêm cửa phụ hoặc giếng trời lấy sáng.' },
+        evalSitting: { grade: 'ĐẠI CÁT', status: 'Tọa Sơn Đắc Vị', desc: 'Sau nhà có điểm tựa núi cao vững chãi (Huyền Vũ hộ trì). Chủ nhân đinh hưng vượng, sức khỏe dồi dào, quý nhân phò trợ.', remedy: 'Vị trí đắc địa nhất trong phong thủy Loan Đầu. Rất tốt!' },
+        evalSide: { grade: 'CÁT', status: 'Thanh Long / Bạch Hổ Hộ Vệ', desc: 'Núi ở hai bên sườn tạo thành thế tay ngai bao bọc tàng phong tụ khí.', remedy: 'Duy trì không gian xanh sạch sẽ.' }
+    },
+    'river_lake': {
+        title: 'SÔNG / HỒ (Minh Đường Tụ Thủy)',
+        evalFacing: { grade: 'ĐẠI CÁT', status: 'Minh Đường Tụ Thủy', desc: 'Trước cửa có dòng nước trong xanh uốn khúc bao bọc. Thủy quản tài lộc, gia chủ phát tài cực thịnh, tiền vào như nước.', remedy: 'Mở cửa chính đón gió mát lành từ mặt nước.' },
+        evalSitting: { grade: 'HUNG', status: 'Thủy Bối Hậu (Mất Tựa)', desc: 'Sau lưng nhà có sông hồ lớn, phía sau bị hẫng hụt không có chỗ dựa, dễ gây hao tán tài sản.', remedy: 'Xây tường rào kiên cố phía sau, trồng hàng cây xanh tạo điểm tựa.' },
+        evalSide: { grade: 'CÁT', status: 'Thủy Khí Nhuận Trạch', desc: 'Dòng nước bên hông nhà mang lại độ ẩm điều hòa vi khí hậu mát mẻ.', remedy: 'Không xả rác xuống nguồn nước.' }
+    },
+    't_junction': {
+        title: 'NGÃ 3 ĐƯỜNG (Thương Sát / Trực Xung Sát)',
+        evalFacing: { grade: 'ĐẠI HUNG', status: 'Thương Sát Trực Xung', desc: 'Con đường đâm thẳng vào mặt tiền nhà, xe cộ lao tới mang theo luồng sát khí mãnh liệt, dễ xảy ra tai ách bất ngờ, bất an.', remedy: 'BẮT BUỘC: Xây bức bình phong chắn trước cổng, treo Gương Bát Quái lồi, trồng hàng cây dày cản khí hoặc đặt cặp Kỳ Lân đá.' },
+        evalSitting: { grade: 'HUNG', status: 'Ám Tiễn Xung Lưng', desc: 'Đường đâm sau lưng nhà gây cảm giác bất an, dễ bị tiểu nhân hãm hại sau lưng.', remedy: 'Xây tường rào phía sau dày dặn, trồng cây xanh rậm rạp che chắn.' },
+        evalSide: { grade: 'BÌNH', status: 'Giao Lộ Kế Bên', desc: 'Giao thông thuận tiện nhưng cần chú ý bụi và tiếng ồn.', remedy: 'Lắp cửa kính cách âm.' }
+    },
+    'crossroad': {
+        title: 'NGÃ 4 ĐƯỜNG (Giao Lộ Động Khí)',
+        evalFacing: { grade: 'CÁT', status: 'Khí Khẩu Nạp Tài (Nếu xa) / Xung Khí (Nếu sát)', desc: 'Ngã tư đường là nơi giao thoa của các luồng giao thông. Kinh doanh buôn bán rất đắc lợi nhưng cần tránh bị các góc đường đâm trực diện.', remedy: 'Trồng bồn hoa cây cảnh ngăn bụi và điều hòa luồng khí.' },
+        evalSitting: { grade: 'BÌNH', status: 'Giao Thông Phía Sau', desc: 'Khí trường phía sau chuyển động liên tục.', remedy: 'Giữ tường rào phía sau chắc chắn.' },
+        evalSide: { grade: 'CÁT', status: 'Góc Phố 2 Mặt Tiền', desc: 'Vị trí góc phố thuận lợi mở cửa hàng kinh doanh, sinh tài lộc.', remedy: 'Bố trí biển hiệu và cửa hàng sáng sủa.' }
+    },
+    'temple': {
+        title: 'CHÙA / ĐÌNH (Âm Khí Hương Khói)',
+        evalFacing: { grade: 'HUNG', status: 'Đình Chùa Chiếu Môn', desc: 'Trước cửa nhìn thẳng vào chùa/đình thường chịu ảnh hưởng của trường khí âm linh và hương khói, dễ khiến người trong nhà cô đơn, khó lập gia đình.', remedy: 'Treo Gương Bát Quái gỗ đào hoặc gương lồi trước cửa, thắp đèn cổng sáng rực rỡ, đặt cặp Tỳ Hưu đá hướng ra ngoài.' },
+        evalSitting: { grade: 'HUNG', status: 'Tựa Lưng Đình Chùa', desc: 'Khí trường phía sau quá thanh tịnh, không phù hợp với nhà ở gia đình trần tục.', remedy: 'Tăng cường dương khí bằng ánh sáng và cây xanh.' },
+        evalSide: { grade: 'BÌNH', status: 'Lân Cận Đình Chùa', desc: 'Không gian tĩnh lặng.', remedy: 'Duy trì lối sống hòa nhã, thiện tâm.' }
+    },
+    'cemetery': {
+        title: 'NGHĨA TRANG (Đại Âm Sát Khí)',
+        evalFacing: { grade: 'ĐẠI HUNG', status: 'Âm Hàn Xâm Trực', desc: 'Nhà nhìn ra nghĩa trang chịu từ trường âm khí nặng nề, dễ sinh bệnh tật, trẻ nhỏ hay quấy khóc, người già mệt mỏi.', remedy: 'Trồng rặng cau hoặc hàng tre/trúc xanh ngăn cách, sử dụng đèn pha chiếu sáng mặt tiền, treo chuông gió kim loại và gương Bát Quái xua tà.' },
+        evalSitting: { grade: 'HUNG', status: 'Huyền Vũ Âm Sát', desc: 'Phía sau nhà có mồ mả nghĩa địa.', remedy: 'Xây tường cao, sơn màu ấm áp (vàng kem, trắng sáng).' },
+        evalSide: { grade: 'HUNG', status: 'Âm Khí Cận Kề', desc: 'Cần củng cố hàng rào che chắn.', remedy: 'Trồng cây xanh tốt quanh tường rào.' }
+    },
+    'park': {
+        title: 'CÔNG VIÊN CÂY XANH (Sinh Khí Đại Cát)',
+        evalFacing: { grade: 'ĐẠI CÁT', status: 'Minh Đường Sinh Khí', desc: 'Trước nhà là công viên cây xanh cung cấp dưỡng khí dồi dào, tầm nhìn thoáng đãng, gia đình mạnh khỏe, con cháu thông minh.', remedy: 'Mở rộng cửa đón trọn không khí trong lành.' },
+        evalSitting: { grade: 'CÁT', status: 'Hậu Hoa Viên', desc: 'Sau nhà có vườn hoa công viên tươi mát.', remedy: 'Rất tốt cho việc nghỉ ngơi thư giãn.' },
+        evalSide: { grade: 'CÁT', status: 'Môi Trường Sinh Thái', desc: 'Không gian sống lý tưởng.', remedy: 'Tận dụng ban công ngắm cảnh.' }
+    },
+    'substation': {
+        title: 'TRẠM ĐIỆN / CAO THẾ (Hỏa Sát & Từ Trường)',
+        evalFacing: { grade: 'ĐẠI HUNG', status: 'Hỏa Thiêu Sát Môn', desc: 'Cột điện cao thế và trạm biến áp tạo ra sóng từ trường mạnh và Hỏa khí cực thịnh, dễ gây đau đầu, bệnh tim mạch, tâm lý nóng nảy cáu gắt.', remedy: 'Dùng vật phẩm thuộc Thổ (đá Thạch Anh vàng, quả cầu thạch anh, chậu gốm sứ lớn) để tiết giảm Hỏa khí. Lắp rèm cách nhiệt chống bức xạ.' },
+        evalSitting: { grade: 'HUNG', status: 'Từ Trường Sau Lưng', desc: 'Ảnh hưởng đến giấc ngủ của các phòng phía sau.', remedy: 'Không kê đầu giường sát tường giáp trạm điện.' },
+        evalSide: { grade: 'HUNG', status: 'Bức Xạ Bên Hông', desc: 'Cần che chắn tường bên hông.', remedy: 'Trồng cây xanh thân gỗ hấp thụ từ trường.' }
+    },
+    'bus_station': {
+        title: 'BẾN XE (Động Khí Tạp Loạn)',
+        evalFacing: { grade: 'BÌNH', status: 'Giao Thương Thuận Tiện / Ồn Ào', desc: 'Vị trí sầm uất thích hợp kinh doanh buôn bán dịch vụ ăn uống, nhà nghỉ, nhưng không khí và tiếng ồn khá phức tạp.', remedy: 'Lắp cửa kính cách âm nhiều lớp, trồng cây xanh lọc bụi.' },
+        evalSitting: { grade: 'BÌNH', status: 'Hậu Trường Náo Nhiệt', desc: 'Phía sau ồn ào.', remedy: 'Tăng cường tường cách âm.' },
+        evalSide: { grade: 'BÌNH', status: 'Khu Vực Dịch Vụ', desc: 'Thích hợp thương mại.', remedy: 'Bố trí phòng ngủ lùi sâu vào bên trong.' }
+    },
+    'seaport': {
+        title: 'CẢNG BIỂN (Đại Thủy Tụ Hội)',
+        evalFacing: { grade: 'ĐẠI CÁT', status: 'Hải Cảng Nạp Tài', desc: 'Cảng biển lớn là nơi giao thương hàng hải quốc tế, tụ hội đại tài lộc.', remedy: 'Sơn chống ăn mòn muối biển, tận dụng đón tài vận.' },
+        evalSitting: { grade: 'CÁT', status: 'Tựa Lưng Cảng Biển', desc: 'Hoạt động giao thương sầm uất.', remedy: 'Bố trí kho bãi và giao thông hợp lý.' },
+        evalSide: { grade: 'CÁT', status: 'Kinh Tế Biển Phát Triển', desc: 'Tài chính hanh thông.', remedy: 'Khai thác tối đa thế mạnh thương mại.' }
+    },
+    'airport': {
+        title: 'SÂN BAY (Phi Trường Động Khí)',
+        evalFacing: { grade: 'BÌNH', status: 'Thanh Sát (Tiếng Ồn) / Không Gian Rộng', desc: 'Đường băng sân bay tạo ra không gian thoáng đãng nhưng chịu tiếng gầm rú của động cơ phản lực (Thanh sát).', remedy: 'Sử dụng hệ thống cửa kính cách âm chuyên dụng và điều hòa không khí khép kín.' },
+        evalSitting: { grade: 'BÌNH', status: 'Đường Bay Sau Lưng', desc: 'Cần chú ý tiếng ồn khi cất hạ cánh.', remedy: 'Cách âm phòng ngủ.' },
+        evalSide: { grade: 'BÌNH', status: 'Hành Lang An Toàn Bay', desc: 'Quy hoạch chiều cao công trình chặt chẽ.', remedy: 'Thiết kế độ cao đúng giấy phép.' }
+    },
+    'railway': {
+        title: 'ĐƯỜNG SẮT (Cát Cước Sát - Cắt Chân)',
+        evalFacing: { grade: 'HUNG', status: 'Cát Cước Sát (Cắt Chân)', desc: 'Tàu hỏa chạy với vận tốc cao và tải trọng lớn làm chấn động long mạch đất, tạo ra tiếng ồn và rung lắc mạnh.', remedy: 'Xây móng nhà kiên cố chống rung chấn, làm tường rào cách âm và trồng rặng cây xanh rậm rạp giảm chấn.' },
+        evalSitting: { grade: 'HUNG', status: 'Chấn Động Hậu Phương', desc: 'Rung lắc ảnh hưởng giấc ngủ phía sau.', remedy: 'Kê giường cách xa tường phía đường sắt.' },
+        evalSide: { grade: 'HUNG', status: 'Rung Động Bên Hông', desc: 'Cần chú ý kết cấu công trình.', remedy: 'Gia cố móng cọc bê tông.' }
+    },
+    'field': {
+        title: 'RUỘNG ĐỒNG (Minh Đường Khoáng Đạt)',
+        evalFacing: { grade: 'CÁT', status: 'Minh Đường Rộng Rãi', desc: 'Trước mặt là ruộng đồng mênh mông, tầm nhìn không bị che chắn, không khí mát mẻ trong lành, gia đạo yên bình tích lũy tài sản.', remedy: 'Mở ban công và cửa lớn đón gió thiên nhiên.' },
+        evalSitting: { grade: 'BÌNH', status: 'Đồng Ruộng Sau Nhà', desc: 'Không gian thoáng mát phía sau.', remedy: 'Trồng thêm cây bóng mát sau vườn.' },
+        evalSide: { grade: 'CÁT', status: 'Thanh Bình Thư Thái', desc: 'Vi khí hậu trong lành.', remedy: 'Thích hợp nhà vườn nghỉ dưỡng.' }
+    }
+};
 
 // ============================================================
 // HỆ THỐNG LUẬN GIẢI PHONG THỦY ĐỘC LẬP & TỰ ĐỘNG ĐỒNG BỘ
@@ -2395,6 +2653,11 @@ export class FengShuiInterpretationEngine {
     }
 
     renderReports(spatialResult, containerEl, filter = 'all') {
+        if (!containerEl || !spatialResult) return;
+
+        const landscapes = spatialResult.geometry?.landscapes || [];
+        const centroid = spatialResult.geometry?.footprintPoints ? HouseCenterGeometryEngine.calculatePolygonCentroid(spatialResult.geometry.footprintPoints) : { x: 2500, y: 8000 };
+        const facingDeg = spatialResult.stars?.facingDegree || 180;
         if (!containerEl || !spatialResult || !spatialResult.spatialPalaces) return;
 
         const palaces = Object.values(spatialResult.spatialPalaces);
@@ -2411,6 +2674,86 @@ export class FengShuiInterpretationEngine {
                 </div>
             </div>
         `;
+
+        
+        // Thêm các thẻ phân tích Ngoại Cảnh (Loan Đầu) nếu có
+        let landscapeHtml = '';
+        if (landscapes.length > 0) {
+            landscapeHtml = `
+                <div style="grid-column: 1 / -1; margin-top: 10px; margin-bottom: 4px; padding-top: 10px; border-top: 2px solid rgba(245, 158, 11, 0.4);">
+                    <div style="font-size: 0.92rem; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 6px;">
+                        <span>🏔 LUẬN GIẢI LOAN ĐẦU NGOẠI CẢNH XUNG QUANH (${landscapes.length} YẾU TỐ):</span>
+                    </div>
+                </div>
+            `;
+
+            landscapes.forEach(l => {
+                const lx = l.x + l.w / 2;
+                const ly = l.y + l.h / 2;
+                const dx = lx - centroid.x;
+                const dy = ly - centroid.y;
+                let angle = ((Math.atan2(dy, dx) * 180 / Math.PI) + 90 + 360) % 360;
+
+                // Xác định vị trí tương đối so với hướng nhà
+                let relAngle = (angle - facingDeg + 360) % 360;
+                let posType = 'evalSide';
+                let posName = 'Bên Hông Nhà';
+
+                if (relAngle <= 45 || relAngle >= 315) {
+                    posType = 'evalFacing';
+                    posName = 'Trước Mặt Tiền Nhà (Minh Đường)';
+                } else if (relAngle >= 135 && relAngle <= 225) {
+                    posType = 'evalSitting';
+                    posName = 'Sau Lưng Nhà (Huyền Vũ / Tọa)';
+                } else if (relAngle > 45 && relAngle < 135) {
+                    posType = 'evalSide';
+                    posName = 'Bên Tay Phải (Hữu Bạch Hổ)';
+                } else {
+                    posType = 'evalSide';
+                    posName = 'Bên Tay Trái (Tả Thanh Long)';
+                }
+
+                const kn = LANDSCAPE_FENG_SHUI_KNOWLEDGE[l.type] || LANDSCAPE_FENG_SHUI_KNOWLEDGE['mountain'];
+                const ev = kn[posType] || kn.evalSide;
+                const isGood = (ev.grade === 'ĐẠI CÁT' || ev.grade === 'CÁT');
+                const isBad = (ev.grade === 'ĐẠI HUNG' || ev.grade === 'HUNG');
+
+                if (filter === 'good' && !isGood) return;
+                if (filter === 'bad' && !isBad) return;
+
+                const badgeColor = isGood ? 'good' : (isBad ? 'bad' : 'neutral');
+                const distM = (Math.hypot(dx, dy) / 1000).toFixed(1);
+
+                landscapeHtml += `
+                    <div class="report-card ${isGood ? 'card-good' : (isBad ? 'card-bad' : '')}" style="background: rgba(30, 41, 59, 0.85); border: 2px solid ${isGood ? 'rgba(34, 197, 94, 0.5)' : (isBad ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)')}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div>
+                                    <span style="font-size: 0.95rem; font-weight: 900; color: #fde68a;">${l.name}</span>
+                                    <span style="font-size: 0.72rem; color: #38bdf8; margin-left: 6px;">[${posName}]</span>
+                                </div>
+                                <span class="audit-badge ${badgeColor}" style="font-size: 0.72rem; font-weight: 800; padding: 2px 8px;">${ev.grade}</span>
+                            </div>
+
+                            <div style="font-size: 0.73rem; color: #94a3b8; margin-bottom: 6px;">
+                                📐 Khoảng cách ước tính: <b>${distM} mét</b> · Góc phương vị: <b>${angle.toFixed(1)}°</b>
+                            </div>
+
+                            <div style="font-size: 0.82rem; font-weight: 800; color: ${isGood ? '#4ade80' : (isBad ? '#f87171' : '#fbbf24')}; margin-bottom: 4px;">
+                                ${ev.status}
+                            </div>
+                            <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 8px;">
+                                ${ev.desc}
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.73rem; color: var(--gold-light);">
+                            <b>💡 Pháp Hóa Giải / Tận Dụng:</b> ${ev.remedy}
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
         let visibleCount = 0;
 
@@ -2516,6 +2859,7 @@ export class FengShuiInterpretationEngine {
             `;
         }
 
+        html += landscapeHtml;
         containerEl.innerHTML = html;
 
         containerEl.querySelectorAll('.report-filter-chip').forEach(btn => {

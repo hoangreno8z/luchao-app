@@ -1,4 +1,64 @@
 
+function handleLandscapeMiniAction(action, landscapeId) {
+    if (!currentGeometry || !currentGeometry.landscapes) return;
+    const l = currentGeometry.landscapes.find(item => item.id === landscapeId);
+    if (!l) return;
+
+    if (action === 'confirm_landscape') {
+        selectedLandscapeId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+    } else if (action === 'rotate_landscape') {
+        l.rot = ((l.rot || 0) + 45) % 360;
+        renderActiveDrawing();
+        renderSmartPopup();
+        refreshSpatialFengShui();
+    } else if (action === 'delete_landscape') {
+        currentGeometry.landscapes = currentGeometry.landscapes.filter(item => item.id !== landscapeId);
+        selectedLandscapeId = null;
+        renderActiveDrawing();
+        renderSmartPopup();
+        refreshSpatialFengShui();
+    }
+}
+
+
+function handleAddLandscapeDirect(type, name, w, h) {
+    if (!currentGeometry) return;
+    if (!currentGeometry.landscapes) currentGeometry.landscapes = [];
+
+    const lCount = currentGeometry.landscapes.filter(l => l.type === type).length + 1;
+    const id = `landscape_${type}_${Date.now()}`;
+    const cleanName = lCount > 1 ? `${name} ${lCount}` : name;
+
+    const houseW = currentGeometry.widthMm || 5000;
+    const houseD = currentGeometry.depthMm || 16000;
+    const cx = (currentGeometry.widthMm ? currentGeometry.widthMm / 2 : 2500) - w / 2;
+    // Đặt mặc định ở phía trước hoặc bên ngoài nhà
+    const cy = -h - 1500;
+
+    const newLandscape = {
+        id,
+        name: cleanName.toUpperCase(),
+        type,
+        x: Math.round(cx),
+        y: Math.round(cy),
+        w,
+        h,
+        rot: 0
+    };
+
+    currentGeometry.landscapes.push(newLandscape);
+    selectedLandscapeId = id;
+    selectedRoomId = null;
+
+    renderActiveDrawing();
+    renderPopovers();
+    renderSmartPopup();
+    refreshSpatialFengShui();
+}
+
+
 function getRoomPalaceInfo(room) {
     if (!room || !currentGeometry) return null;
     const W = currentGeometry.widthMm || (currentGeometry.widthM * 1000) || 5000;
@@ -85,6 +145,7 @@ let luoPanRenderer = null;
 let viewportController = null;
 
 let selectedRoomId = null;
+let selectedLandscapeId = null;
 let selectedEdgeIndex = null;
 let lastScannedData = null;
 
@@ -105,6 +166,7 @@ const roomPositionCache = {};
 let uploadedSourceImageSrc = '';
 
 const layerState = {
+    landscapes: true,
     walls: true,
     furniture: true,
     dimensions: true,
@@ -881,6 +943,26 @@ function initFloatingToolbar() {
         btnCloseEdges.addEventListener('click', () => popEdges.style.display = 'none');
     }
 
+    document.querySelectorAll('.hud-landscape-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = chip.getAttribute('data-type');
+            const name = chip.getAttribute('data-name');
+            const w = parseInt(chip.getAttribute('data-w'), 10) || 8000;
+            const h = parseInt(chip.getAttribute('data-h'), 10) || 6000;
+            handleAddLandscapeDirect(type, name, w, h);
+            if (popAdd) popAdd.style.display = 'none';
+        });
+    });
+
+    const chkLayerLandscape = document.getElementById('chkLayerLandscape');
+    if (chkLayerLandscape) {
+        chkLayerLandscape.addEventListener('change', (e) => {
+            layerState.landscapes = e.target.checked;
+            renderActiveDrawing();
+        });
+    }
+
     document.querySelectorAll('.hud-comp-chip').forEach(chip => {
         chip.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -937,6 +1019,52 @@ function closeAllPopovers() {
 function renderSmartPopup() {
     const popup = document.getElementById('cadSmartPopup');
     if (!popup || !currentGeometry) return;
+
+    if (selectedLandscapeId) {
+        const l = currentGeometry.landscapes?.find(item => item.id === selectedLandscapeId);
+        if (l) {
+            popup.style.display = 'flex';
+            popup.innerHTML = `
+                <div class="popup-drag-header" id="popupDragHeader" style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding-bottom:3px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="font-size:0.68rem; font-weight:800; color:#f59e0b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:115px;">${l.name}</span>
+                    <button type="button" id="btnPopupCloseLandscape" title="Ẩn bảng" style="background:none; border:none; color:#94a3b8; font-weight:bold; cursor:pointer; font-size:0.85rem; padding:0 3px;">✕</button>
+                </div>
+                <div style="font-size:0.6rem; color:#38bdf8; margin-top:2px; font-weight:700;">
+                    🏔 Ngoại Cảnh (Loan Đầu) · Góc Xoay: ${l.rot || 0}°
+                </div>
+                <div style="display:flex; gap:3px; align-items:center; margin-top:2px;">
+                    <div style="flex:1; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px;">
+                        <span style="font-size:0.6rem; color:#94a3b8; font-weight:700;">R:</span>
+                        <input type="number" id="popupInputLandscapeW" value="${l.w}" min="500" step="100" style="width:100%; background:transparent; border:none; color:#fff; font-size:0.72rem; font-weight:800; font-family:monospace; outline:none; text-align:right;">
+                    </div>
+                    <div style="flex:1; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:2px 4px;">
+                        <span style="font-size:0.6rem; color:#94a3b8; font-weight:700;">D:</span>
+                        <input type="number" id="popupInputLandscapeH" value="${l.h}" min="500" step="100" style="width:100%; background:transparent; border:none; color:#fff; font-size:0.72rem; font-weight:800; font-family:monospace; outline:none; text-align:right;">
+                    </div>
+                </div>
+                <div style="display:flex; gap:3px; margin-top:2px;">
+                    <button type="button" class="popup-action-btn save" id="btnPopupSaveLandscape" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:800; background:#16a34a; color:#fff; border:none; border-radius:4px; cursor:pointer;">LƯU</button>
+                    <button type="button" class="popup-action-btn cancel" id="btnPopupRotateLandscape" style="flex:1; padding:3px 0; font-size:0.66rem; font-weight:700; background:#0284c7; color:#fff; border:none; border-radius:4px; cursor:pointer;">XOAY 45°</button>
+                </div>
+            `;
+
+            initDraggablePopup(popup);
+
+            document.getElementById('btnPopupSaveLandscape')?.addEventListener('click', () => {
+                l.w = Math.max(500, parseInt(document.getElementById('popupInputLandscapeW').value, 10) || l.w);
+                l.h = Math.max(500, parseInt(document.getElementById('popupInputLandscapeH').value, 10) || l.h);
+                renderActiveDrawing();
+            });
+            document.getElementById('btnPopupRotateLandscape')?.addEventListener('click', () => {
+                l.rot = ((l.rot || 0) + 45) % 360;
+                renderActiveDrawing();
+                refreshSpatialFengShui();
+            });
+            document.getElementById('btnPopupCloseLandscape')?.addEventListener('click', () => { popup.style.display = 'none'; });
+            return;
+        }
+    }
+
     const pts = currentGeometry.footprintPoints || [];
 
     if (selectedEdgeIndex !== null && pts.length > selectedEdgeIndex) {
@@ -1394,6 +1522,68 @@ function initCadInteractiveEngine() {
             e.stopPropagation();
             const action = miniActionBtn.getAttribute('data-action');
             const roomId = miniActionBtn.getAttribute('data-room-id');
+            const landscapeId = miniActionBtn.getAttribute('data-landscape-id');
+            if (landscapeId) {
+                handleLandscapeMiniAction(action, landscapeId);
+                return;
+            }
+            if (roomId) {
+                handleMiniAction(action, roomId);
+                return;
+            }
+        }
+
+        const landscapeResizeHandle = e.target.closest('.cad-resize-handle[data-landscape-id]') || e.target.closest('.cad-resize-handle-group[data-landscape-id]');
+        if (landscapeResizeHandle) {
+            e.stopPropagation();
+            const handleId = landscapeResizeHandle.getAttribute('data-handle');
+            const lId = landscapeResizeHandle.getAttribute('data-landscape-id');
+            const l = currentGeometry.landscapes?.find(item => item.id === lId);
+            if (!l) return;
+
+            pointerState.isInteracting = true;
+            pointerState.mode = 'resize_landscape';
+            pointerState.handle = handleId;
+            pointerState.targetLandscapeId = lId;
+            pointerState.startClientX = e.clientX;
+            pointerState.startClientY = e.clientY;
+            pointerState.origX = l.x;
+            pointerState.origY = l.y;
+            pointerState.origW = l.w;
+            pointerState.origH = l.h;
+
+            stage.setPointerCapture(e.pointerId);
+            return;
+        }
+
+        const landscapeEl = e.target.closest('.cad-landscape-interactive');
+        if (landscapeEl) {
+            e.stopPropagation();
+            const lId = landscapeEl.getAttribute('data-landscape-id');
+            selectedLandscapeId = lId;
+            selectedRoomId = null;
+            selectedEdgeIndex = null;
+
+            const l = currentGeometry.landscapes?.find(item => item.id === lId);
+            if (!l) return;
+
+            pointerState.isInteracting = true;
+            pointerState.mode = 'move_landscape';
+            pointerState.targetLandscapeId = lId;
+            pointerState.startClientX = e.clientX;
+            pointerState.startClientY = e.clientY;
+            pointerState.origX = l.x;
+            pointerState.origY = l.y;
+
+            renderActiveDrawing();
+            renderSmartPopup();
+            stage.setPointerCapture(e.pointerId);
+            return;
+        }
+        if (miniActionBtn) {
+            e.stopPropagation();
+            const action = miniActionBtn.getAttribute('data-action');
+            const roomId = miniActionBtn.getAttribute('data-room-id');
             handleMiniAction(action, roomId);
             return;
         }
@@ -1484,7 +1674,32 @@ function initCadInteractiveEngine() {
         const dx = (e.clientX - pointerState.startClientX) * scaleX;
         const dy = (e.clientY - pointerState.startClientY) * scaleY;
 
-        if (pointerState.mode === 'move') {
+        if (pointerState.mode === 'move_landscape') {
+            const l = currentGeometry.landscapes?.find(item => item.id === pointerState.targetLandscapeId);
+            if (l) {
+                l.x = snapToGrid(pointerState.origX + dx, 50);
+                l.y = snapToGrid(pointerState.origY + dy, 50);
+                renderActiveDrawing();
+            }
+        } else if (pointerState.mode === 'resize_landscape') {
+            const l = currentGeometry.landscapes?.find(item => item.id === pointerState.targetLandscapeId);
+            if (l) {
+                const hId = pointerState.handle;
+                if (hId.includes('e')) l.w = Math.max(1000, snapToGrid(pointerState.origW + dx, 50));
+                if (hId.includes('s')) l.h = Math.max(1000, snapToGrid(pointerState.origH + dy, 50));
+                if (hId.includes('w')) {
+                    const newW = Math.max(1000, snapToGrid(pointerState.origW - dx, 50));
+                    l.x = pointerState.origX + (pointerState.origW - newW);
+                    l.w = newW;
+                }
+                if (hId.includes('n')) {
+                    const newH = Math.max(1000, snapToGrid(pointerState.origH - dy, 50));
+                    l.y = pointerState.origY + (pointerState.origH - newH);
+                    l.h = newH;
+                }
+                renderActiveDrawing();
+            }
+        } else if (pointerState.mode === 'move') {
             const room = currentGeometry.rooms?.find(r => r.id === pointerState.targetRoomId);
             if (room) {
                 const rawX = pointerState.origX + dx;
@@ -1754,6 +1969,7 @@ function renderActiveDrawing() {
 
     const cadLayers = cadRenderer.renderLayers(currentGeometry, {
         selectedRoomId,
+        selectedLandscapeId,
         selectedEdgeIndex
     });
 
