@@ -1071,6 +1071,17 @@ function initActionButtons() {
         btnCalc.addEventListener('click', () => handleCalculate(true));
     }
 
+    // Auto recalculate and update Flying Stars & Luopan whenever inputs change
+    ['inputBuildYear', 'inputCurrentYear', 'inputCurrentMonth', 'inputCurrentDay', 'inputCurrentHour', 'inputOwnerYear', 'inputOwnerGender', 'inputShape', 'inputWidth', 'inputLength', 'inputFloors'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', () => handleCalculate(false));
+            if (el.tagName === 'INPUT' && el.type !== 'file') {
+                el.addEventListener('input', () => handleCalculate(false));
+            }
+        }
+    });
+
     if (btnToggleFs) {
         btnToggleFs.addEventListener('click', () => toggleCadFullscreen());
     }
