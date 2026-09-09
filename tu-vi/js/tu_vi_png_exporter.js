@@ -8,6 +8,63 @@ import { ELEMENT_COLORS, CAN_ELEMENTS } from './tu_vi_engine.js';
 
 export class TuViPngExporter {
 
+    // ── Matte Paper Noise Texture Generator ──────────────────────────────
+    // Generates a tileable grain noise ImageData tile (tileSize × tileSize).
+    // Uses a seeded Mulberry32 PRNG for determinism (no Math.random drift).
+    // Opacity range ~2.5–4% ensures the texture is invisible at arm's length
+    // but adds perceptible depth on close inspection. Gaussian-approximated
+    // distribution (sum of 3 uniform randoms) avoids harsh single-pixel spikes.
+    static _generateNoiseTile(tileSize = 180) {
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = tileSize;
+        offCanvas.height = tileSize;
+        const offCtx = offCanvas.getContext('2d');
+        const imgData = offCtx.createImageData(tileSize, tileSize);
+        const d = imgData.data;
+
+        // Mulberry32 PRNG (seeded, deterministic)
+        let seed = 0xDEAD_BEEF;
+        const rand = () => {
+            seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+
+        for (let i = 0; i < d.length; i += 4) {
+            // Gaussian-approximated grain (sum of 3 uniforms → smoother distribution)
+            const g = ((rand() + rand() + rand()) / 3);
+            // Map to subtle light/dark offset around neutral gray
+            const val = g < 0.5 ? 0 : 255;
+            d[i]     = val; // R
+            d[i + 1] = val; // G
+            d[i + 2] = val; // B
+            // Alpha 6–10 out of 255 ≈ 2.3–3.9% opacity
+            d[i + 3] = Math.floor(6 + rand() * 4);
+        }
+        offCtx.putImageData(imgData, 0, 0);
+        return offCanvas;
+    }
+
+    // ── Inset Shadow (Paper Depression) on a Cell ──────────────────────
+    // Draws extremely subtle top-inner shadow + bottom-inner highlight
+    // to simulate pressed / debossed paper surface.
+    static _drawCellInsetShadow(ctx, x, y, w, h) {
+        // Top inset shadow: dark warm tone
+        const topGrad = ctx.createLinearGradient(x, y, x, y + 6);
+        topGrad.addColorStop(0, 'rgba(80, 65, 45, 0.035)');
+        topGrad.addColorStop(1, 'rgba(80, 65, 45, 0)');
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(x, y, w, 6);
+
+        // Bottom inset highlight: warm white
+        const botGrad = ctx.createLinearGradient(x, y + h - 4, x, y + h);
+        botGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        botGrad.addColorStop(1, 'rgba(255, 255, 255, 0.35)');
+        ctx.fillStyle = botGrad;
+        ctx.fillRect(x, y + h - 4, w, 4);
+    }
+
     static renderToCanvas(horoscopeData) {
         const width = 2400;
         const height = 3200;
@@ -16,8 +73,15 @@ export class TuViPngExporter {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
 
-        // 1. Warm Traditional Paper Background (Màu kem ngà ấm áp)
-        ctx.fillStyle = '#faf6ee';
+        // ── Color Palette (Matte Paper / Giấy Mỹ Thuật Cao Cấp) ──────
+        const COL_BG_MAIN    = '#F3EFE6'; // Nền tổng
+        const COL_BG_PALACE  = '#F8F5EE'; // Nền 12 cung
+        const COL_BG_CENTER  = '#F6F1E8'; // Nền trung tâm
+        const COL_BORDER_PRI = '#C9C1B3'; // Viền chính
+        const COL_BORDER_SEC = '#DDD6C8'; // Viền phụ (đường chia nội bộ ô)
+
+        // 1. Fill entire canvas with main background
+        ctx.fillStyle = COL_BG_MAIN;
         ctx.fillRect(0, 0, width, height);
 
         const margin = 24;
@@ -46,14 +110,42 @@ export class TuViPngExporter {
             4:  { col: 0, row: 1 }  // Thìn
         };
 
-        // Draw Outer Border & Grid Lines
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 4;
+        // 2. Fill each of the 12 palace cells with palace background
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                if ((r === 1 || r === 2) && (c === 1 || c === 2)) continue; // skip center
+                const cx = margin + c * cellW;
+                const cy = margin + r * cellH;
+                ctx.fillStyle = COL_BG_PALACE;
+                ctx.fillRect(cx, cy, cellW, cellH);
+                // Subtle inset shadow per cell
+                this._drawCellInsetShadow(ctx, cx, cy, cellW, cellH);
+            }
+        }
+
+        // 3. Fill center 2×2 with center background
+        ctx.fillStyle = COL_BG_CENTER;
+        ctx.fillRect(margin + cellW, margin + cellH, cellW * 2, cellH * 2);
+        this._drawCellInsetShadow(ctx, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
+
+        // 4. Apply matte paper noise texture (tiled across entire canvas)
+        const noiseTile = this._generateNoiseTile(180);
+        const pattern = ctx.createPattern(noiseTile, 'repeat');
+        if (pattern) {
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = pattern;
+            ctx.fillRect(0, 0, width, height);
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // 5. Draw Outer Border (soft warm, not black)
+        ctx.strokeStyle = COL_BORDER_PRI;
+        ctx.lineWidth = 3.5;
         ctx.strokeRect(margin, margin, gridW, gridH);
 
-        // Draw all 16 cells borders
+        // 6. Draw all 12 palace cell borders (soft warm secondary)
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#cbd5e1';
+        ctx.strokeStyle = COL_BORDER_SEC;
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
                 if ((r === 1 || r === 2) && (c === 1 || c === 2)) continue;
@@ -134,7 +226,7 @@ export class TuViPngExporter {
         ctx.fillText(String(palace.daiHan), x + w - padding, y + 48);
 
         // Divider under header
-        ctx.strokeStyle = '#e2e8f0';
+        ctx.strokeStyle = '#DDD6C8';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x + 10, y + 66);
@@ -182,7 +274,7 @@ export class TuViPngExporter {
         });
 
         // 6. Bottom Bar (Chi Cung, Tràng Sinh, Nguyệt Hạn)
-        ctx.strokeStyle = '#e2e8f0';
+        ctx.strokeStyle = '#DDD6C8';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x + 10, y + h - 55);
@@ -318,12 +410,12 @@ export class TuViPngExporter {
     }
 
     static drawTrungCung(ctx, meta, x, y, w, h) {
-        // Background tint for Center Palace
-        ctx.fillStyle = '#f6f0e2';
+        // Background tint for Center Palace (matte paper center tone)
+        ctx.fillStyle = '#F6F1E8';
         ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
 
-        // Border for Center Box
-        ctx.strokeStyle = '#94a3b8';
+        // Border for Center Box (warm primary border)
+        ctx.strokeStyle = '#C9C1B3';
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, w, h);
 
@@ -376,7 +468,7 @@ export class TuViPngExporter {
             ctx.fillText(item.value, valX, curY);
 
             // Subtle dashed divider line
-            ctx.strokeStyle = '#e2e8f0';
+            ctx.strokeStyle = '#DDD6C8';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(labelX, curY + 16);
@@ -387,7 +479,7 @@ export class TuViPngExporter {
         });
 
         // Seal & Contact Footer
-        ctx.strokeStyle = '#cbd5e1';
+        ctx.strokeStyle = '#C9C1B3';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x + 60, y + h - 110);
