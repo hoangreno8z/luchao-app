@@ -5,6 +5,79 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     let liveClockTimer = null;
+    let currentStep = 0;
+    let userAnswers = ['', '', '', '', '', ''];
+    let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
+
+    // =========================================================================
+    // ĐẠI DIỄN THỆ PHÁP — DIRECT HUMAN SPLIT (Phép Bốc Cỏ Thi Chu Hy)
+    // =========================================================================
+    const YARROW_MODEL = Object.freeze({
+        version: 'dayan-zhu-xi-three-hangings-v1',
+        sessionBiasSD: 0.75,
+        motorScale: 0.08,
+        startStalks: 49,
+        passesPerLine: 3,
+        linesPerHexagram: 6
+    });
+
+    function cryptoUnitOpen() {
+        const a = new Uint32Array(1);
+        (globalThis.crypto || crypto).getRandomValues(a);
+        return (a[0] + 0.5) / 4294967296;
+    }
+
+    function getCryptoNormal() {
+        const u1 = cryptoUnitOpen();
+        const u2 = cryptoUnitOpen();
+        return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    }
+
+    function simulateDirectHumanYarrowPass(N, hand) {
+        const sigma = N * hand.motorScale;
+        const motorNoise = getCryptoNormal() * sigma;
+        let left = Math.round(N / 2 + hand.sessionBiasStalks + motorNoise);
+        left = Math.max(1, Math.min(N - 2, left));
+        const right = N - left;
+        const rightRemaining = right - 1;
+        const leftMod = left % 4;
+        const rightMod = rightRemaining % 4;
+        const remLeft = leftMod === 0 ? 4 : leftMod;
+        const remRight = rightMod === 0 ? 4 : rightMod;
+        const removed = 1 + remLeft + remRight;
+        const remaining = N - removed;
+        if (remaining % 4 !== 0) {
+            throw new Error('Yarrow invariant violated: remaining=' + remaining);
+        }
+        return { remaining, stepLog: { N, left, right, rightRemaining, remLeft, remRight, removed } };
+    }
+
+    function generateOneYarrowLine(hand) {
+        let N = YARROW_MODEL.startStalks;
+        const passLogs = [];
+        for (let pass = 0; pass < YARROW_MODEL.passesPerLine; pass++) {
+            const res = simulateDirectHumanYarrowPass(N, hand);
+            passLogs.push(res.stepLog);
+            N = res.remaining;
+        }
+        const yarrowNum = N / 4;
+        let lineValue;
+        if (yarrowNum === 6) lineValue = 0;
+        else if (yarrowNum === 7) lineValue = 1;
+        else if (yarrowNum === 8) lineValue = 2;
+        else if (yarrowNum === 9) lineValue = 3;
+        else throw new Error('Yarrow result invalid: ' + yarrowNum);
+        return { lineValue, yarrowNum, passLogs };
+    }
+
+    let yarrowHand = null;
+    function initYarrowSession() {
+        yarrowHand = {
+            sessionBiasStalks: getCryptoNormal() * YARROW_MODEL.sessionBiasSD,
+            motorScale: YARROW_MODEL.motorScale
+        };
+    }
+    let castInProgress = false;
 
     // -------------------------------------------------------------------------
     // 1. QUẢN LÝ ĐIỀU KHOẢN VÀ ĐỒNG Ý (DISCLAIMER)
@@ -205,6 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStep = 0;
         userAnswers = [];
         hexLines = [];
+        castInProgress = false;
+        initYarrowSession();
         const progressText = document.getElementById('progress-text');
         if (progressText) {
             progressText.innerText = `Lần gieo: 0/6`;
@@ -1150,10 +1225,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let currentStep = 0;
-    let userAnswers = [];
-    let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
-
     const progressText = document.getElementById('progress-text');
     const finishContainer = document.getElementById('finish-container');
     const tossTriggerBtn = document.getElementById('toss-trigger-btn');
@@ -1162,27 +1233,30 @@ document.addEventListener('DOMContentLoaded', () => {
         tossTriggerBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentStep >= 6) return;
+            if (castInProgress) return;
+            castInProgress = true;
 
-            // Kích hoạt hiệu ứng toàn cảnh sấm sét chớp nháy nhẹ
+            if (!yarrowHand) initYarrowSession();
+
+            const yarrowResult = generateOneYarrowLine(yarrowHand);
+            hexLines.push(yarrowResult.lineValue);
+
             const lightningOverlay = document.getElementById('lightning-strike-overlay');
             if (lightningOverlay) {
                 lightningOverlay.classList.remove('lightning-flash-active');
-                void lightningOverlay.offsetWidth; // Trigger reflow to restart css animation
+                void lightningOverlay.offsetWidth;
                 lightningOverlay.classList.add('lightning-flash-active');
-                
-                // Gỡ class sau khi kết thúc animation (1.5 giây)
                 setTimeout(() => {
                     lightningOverlay.classList.remove('lightning-flash-active');
                 }, 1500);
             }
 
-            // Vô hiệu hoá nút để chờ tung xu
             tossTriggerBtn.disabled = true;
             tossTriggerBtn.innerText = "ĐANG TUNG XU...";
 
-            performCoinToss(() => {
+            performCoinAnimation(yarrowResult.lineValue, () => {
                 currentStep++;
-                const lastLineVal = hexLines[hexLines.length - 1];
+                const lastLineVal = yarrowResult.lineValue;
                 const lineDiv = document.getElementById(`progress-line-${currentStep}`);
 
                 if (lineDiv) {
@@ -1202,17 +1276,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     progressText.innerText = `Lần gieo: ${currentStep}/6`;
                 }
 
+                castInProgress = false;
                 tossTriggerBtn.disabled = false;
                 tossTriggerBtn.innerText = "TUNG ĐỒNG XU";
 
                 if (currentStep === 6) {
                     tossTriggerBtn.style.display = 'none';
-                    
-                    // Gán userAnswers mặc định cho flow tung xu tự động
                     userAnswers = ['', '', '', '', '', ''];
-                    
-                    // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ:
-                    // Không cần người dùng bấm thêm nút Hoàn tất nào nữa
                     const autoFinishBtn = document.getElementById('finish-btn');
                     if (autoFinishBtn) {
                         autoFinishBtn.click();
@@ -1223,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // 4. HIỆU ỨNG TUNG XU
+    // 4. HIỆU ỨNG TUNG XU (THUẦN COSMETIC — KHÔNG SINH KẾT QUẢ)
     // -------------------------------------------------------------------------
     const coins = [
         document.getElementById('coin-1'),
@@ -1231,7 +1301,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('coin-3')
     ];
 
-    // Hàm reset ngẫu nhiên mặt sấp ngửa của 3 đồng xu lúc khởi tạo hoặc back về
     function randomizeCoinsInitialState() {
         coins.forEach(coin => {
             if (!coin) return;
@@ -1243,70 +1312,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Thực hiện reset ngẫu nhiên ngay khi tải trang
     randomizeCoinsInitialState();
 
-    function performCoinToss(callback) {
-        // Tắt nút tung xu của giao diện
+    function performCoinAnimation(lineValue, callback) {
         if (tossTriggerBtn) tossTriggerBtn.disabled = true;
 
-        const coinResults = [false, false, false];
+        let coinFaces;
+        if (lineValue === 0) {
+            coinFaces = [false, false, false];
+        } else if (lineValue === 3) {
+            coinFaces = [true, true, true];
+        } else if (lineValue === 1) {
+            const yangPos = Math.floor(Math.random() * 3);
+            coinFaces = [yangPos === 0, yangPos === 1, yangPos === 2];
+        } else {
+            const yinPos = Math.floor(Math.random() * 3);
+            coinFaces = [yinPos !== 0, yinPos !== 1, yinPos !== 2];
+        }
+
         let coinsFinished = 0;
 
-        // Cho mỗi đồng xu quay độc lập với thời gian ngẫu nhiên từ 1 giây đến 2.5 giây (1000ms - 2500ms)
         coins.forEach((coin, idx) => {
             if (!coin) return;
 
-            // Kích hoạt class quay siêu tốc trên .coin-inner (chứa 2 mặt xu)
             const innerEl = coin.querySelector('.coin-inner');
             if (innerEl) {
-                innerEl.style.transition = 'none'; // Tắt transition để animation mượt
+                innerEl.style.transition = 'none';
+                innerEl.classList.remove('spinning-fast');
+                void innerEl.offsetWidth;
                 innerEl.classList.add('spinning-fast');
             }
 
-            const coinSpinDuration = Math.floor(Math.random() * 1500) + 1000;
+            const coinSpinDuration = 1250 + (idx * 250) + Math.floor(Math.random() * 80);
 
             setTimeout(() => {
-                // Tắt quay siêu tốc
                 if (innerEl) {
                     innerEl.classList.remove('spinning-fast');
-                    innerEl.style.transition = 'transform 0.5s ease-in-out'; // Phục hồi transition
-                }
-
-                // Quyết định mặt ngửa (true/Dương) hay sấp (false/Âm)
-                const isYang = Math.random() < 0.5;
-                coinResults[idx] = isYang;
-
-                // Cập nhật góc quay Y tương ứng trên .coin-inner
-                if (innerEl) {
-                    innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
+                    innerEl.style.transition = 'transform 0.4s cubic-bezier(0.15, 0.85, 0.35, 1)';
+                    innerEl.style.transform = coinFaces[idx] ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
 
                 coinsFinished++;
-
-                // Khi cả 3 đồng xu đã dừng hẳn
                 if (coinsFinished === 3) {
-                    const yangCount = coinResults.filter(r => r).length;
-
-                    // Tính hào dịch:
-                    // 0 Dương (3 Âm): Lão Âm (Âm Động, value = 0)
-                    // 1 Dương (2 Âm): Thiếu Dương (Dương Tĩnh, value = 1)
-                    // 2 Dương (1 Âm): Thiếu Âm (Âm Tĩnh, value = 2)
-                    // 3 Dương (0 Âm): Lão Dương (Dương Động, value = 3)
-                    let lineValue;
-                    if (yangCount === 0) {
-                        lineValue = 0;
-                    } else if (yangCount === 1) {
-                        lineValue = 1;
-                    } else if (yangCount === 2) {
-                        lineValue = 2;
-                    } else {
-                        lineValue = 3;
-                    }
-
-                    hexLines.push(lineValue);
-
-                    // Kích hoạt lại nút và chạy callback
                     if (tossTriggerBtn) tossTriggerBtn.disabled = false;
                     if (callback) callback();
                 }

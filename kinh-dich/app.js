@@ -9,6 +9,109 @@ document.addEventListener('DOMContentLoaded', () => {
     let userAnswers = ['', '', '', '', '', ''];
     let hexLines = []; // Lưu 6 hào: 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
 
+    // =========================================================================
+    // ĐẠI DIỄN THỆ PHÁP — DIRECT HUMAN SPLIT (Phép Bốc Cỏ Thi Chu Hy)
+    // Mô phỏng chuỗi nhân quả vật lý: bàn tay → điểm chia L/R → modulo 4 →
+    // Quải Nhất → Điệt Tứ → Quy Kỳ → 3 biến → hào 6/7/8/9.
+    // Kết quả hào phát sinh từ 18 lần "bốc cỏ ảo", không hề chọn trước.
+    // =========================================================================
+    const YARROW_MODEL = Object.freeze({
+        version: 'dayan-zhu-xi-three-hangings-v1',
+        // Các tham số mô phỏng tạm chuẩn, có thể hiệu chỉnh bằng dữ liệu
+        // chia cỏ thực nghiệm. Chúng tạo được hình thái chia gần giữa hợp lý
+        // và đồng thời tái hiện rất sát phân bố hào của phép Chu Hy.
+        sessionBiasSD: 0.75,  // Độ lệch chuẩn thiên lệch tay giữa các phiên
+        motorScale: 0.08,     // sigma(N) = N * motorScale
+        startStalks: 49,      // Đại Diễn 50, dùng 49 (1 que Thái Cực để riêng)
+        passesPerLine: 3,     // Tam Biến thành hào
+        linesPerHexagram: 6   // Lục Hào thành quẻ
+    });
+
+    // --- CSPRNG nền tảng (browser + Node tương thích) ---
+    function cryptoUnitOpen() {
+        const a = new Uint32Array(1);
+        (globalThis.crypto || crypto).getRandomValues(a);
+        // +0.5 đưa mỗi số nguyên vào giữa ô xác suất, đảm bảo ∉ {0, 1}
+        return (a[0] + 0.5) / 4294967296;
+    }
+
+    function getCryptoNormal() {
+        const u1 = cryptoUnitOpen();
+        const u2 = cryptoUnitOpen();
+        return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    }
+
+    // --- Core: Mô phỏng 1 biến chia cỏ (Direct Human Split) ---
+    function simulateDirectHumanYarrowPass(N, hand) {
+        const sigma = N * hand.motorScale;
+        const motorNoise = getCryptoNormal() * sigma;
+
+        let left = Math.round(N / 2 + hand.sessionBiasStalks + motorNoise);
+        // Bảo đảm nắm phải vẫn còn cọng sau Quải Nhất (right >= 2)
+        left = Math.max(1, Math.min(N - 2, left));
+        const right = N - left;
+
+        // Quải nhất: Rút 1 cọng bên phải kẹp ngón
+        const rightRemaining = right - 1;
+
+        // Điệt chi dĩ tứ: Modulo 4 tự nhiên từ điểm chia vật lý
+        const leftMod = left % 4;
+        const rightMod = rightRemaining % 4;
+        const remLeft = leftMod === 0 ? 4 : leftMod;
+        const remRight = rightMod === 0 ? 4 : rightMod;
+
+        // Quy kỳ: Tổng que gác ra ngoài
+        const removed = 1 + remLeft + remRight;
+        const remaining = N - removed;
+
+        // Invariant bắt lỗi code ngay lập tức
+        if (remaining % 4 !== 0) {
+            throw new Error('Yarrow invariant violated: remaining=' + remaining + ' is not divisible by 4');
+        }
+
+        return {
+            remaining,
+            stepLog: { N, left, right, rightRemaining, remLeft, remRight, removed }
+        };
+    }
+
+    // --- Lập 1 Hào qua Tam Biến ---
+    function generateOneYarrowLine(hand) {
+        let N = YARROW_MODEL.startStalks;
+        const passLogs = [];
+
+        for (let pass = 0; pass < YARROW_MODEL.passesPerLine; pass++) {
+            const res = simulateDirectHumanYarrowPass(N, hand);
+            passLogs.push(res.stepLog);
+            N = res.remaining;
+        }
+
+        const yarrowNum = N / 4; // 6, 7, 8 hoặc 9
+
+        // Ánh xạ sang lineValue hệ thống (0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương)
+        let lineValue;
+        if (yarrowNum === 6) lineValue = 0;       // Lão Âm (Âm Động)
+        else if (yarrowNum === 7) lineValue = 1;   // Thiếu Dương (Dương Tĩnh)
+        else if (yarrowNum === 8) lineValue = 2;   // Thiếu Âm (Âm Tĩnh)
+        else if (yarrowNum === 9) lineValue = 3;   // Lão Dương (Dương Động)
+        else throw new Error('Yarrow result invalid: ' + yarrowNum);
+
+        return { lineValue, yarrowNum, passLogs };
+    }
+
+    // --- Session state: "Bàn tay ảo" cho cả quẻ ---
+    let yarrowHand = null;
+
+    function initYarrowSession() {
+        yarrowHand = {
+            sessionBiasStalks: getCryptoNormal() * YARROW_MODEL.sessionBiasSD,
+            motorScale: YARROW_MODEL.motorScale
+        };
+    }
+
+    // Cờ chặn gieo trùng lặp (debounce cơ học)
+    let castInProgress = false;
+
     // -------------------------------------------------------------------------
     // 1. QUẢN LÝ ĐIỀU KHOẢN VÀ ĐỒNG Ý (DISCLAIMER)
     // -------------------------------------------------------------------------
@@ -215,6 +318,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStep = 0;
         userAnswers = [];
         hexLines = [];
+        castInProgress = false;
+        initYarrowSession(); // Tạo "bàn tay ảo" mới cho quẻ mới
         const progressText = document.getElementById('progress-text');
         if (progressText) {
             progressText.innerText = `Lần gieo: 0/6`;
@@ -1147,15 +1252,27 @@ document.addEventListener('DOMContentLoaded', () => {
         tossTriggerBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentStep >= 6) return;
+            if (castInProgress) return; // Chặn bấm trùng tuyệt đối
+            castInProgress = true;
+
+            // Khởi tạo session nếu chưa có (lần gieo đầu tiên)
+            if (!yarrowHand) initYarrowSession();
+
+            // ═══════════════════════════════════════════════════════════════
+            // BƯỚC 1: SINH VÀ KHÓA KẾT QUẢ HÀO TRƯỚC KHI ANIMATION CHẠY
+            // Đây là nguyên tắc tối thượng: kết quả quẻ phải được commit
+            // trước mọi hiệu ứng đồ họa. Không lag, FPS, render nào thay
+            // đổi được kết quả hào sau dòng lệnh này.
+            // ═══════════════════════════════════════════════════════════════
+            const yarrowResult = generateOneYarrowLine(yarrowHand);
+            hexLines.push(yarrowResult.lineValue);
 
             // Kích hoạt hiệu ứng toàn cảnh sấm sét chớp nháy nhẹ
             const lightningOverlay = document.getElementById('lightning-strike-overlay');
             if (lightningOverlay) {
                 lightningOverlay.classList.remove('lightning-flash-active');
-                void lightningOverlay.offsetWidth; // Trigger reflow to restart css animation
+                void lightningOverlay.offsetWidth;
                 lightningOverlay.classList.add('lightning-flash-active');
-                
-                // Gỡ class sau khi kết thúc animation (1.5 giây)
                 setTimeout(() => {
                     lightningOverlay.classList.remove('lightning-flash-active');
                 }, 1500);
@@ -1165,9 +1282,13 @@ document.addEventListener('DOMContentLoaded', () => {
             tossTriggerBtn.disabled = true;
             tossTriggerBtn.innerText = "ĐANG TUNG XU...";
 
-            performCoinToss(() => {
+            // ═══════════════════════════════════════════════════════════════
+            // BƯỚC 2: ANIMATION THUẦN COSMETIC — chỉ hiển thị kết quả đã
+            // commit ở trên. Đồng xu không quyết định quẻ.
+            // ═══════════════════════════════════════════════════════════════
+            performCoinAnimation(yarrowResult.lineValue, () => {
                 currentStep++;
-                const lastLineVal = hexLines[hexLines.length - 1];
+                const lastLineVal = yarrowResult.lineValue;
                 const lineDiv = document.getElementById(`progress-line-${currentStep}`);
 
                 if (lineDiv) {
@@ -1187,17 +1308,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     progressText.innerText = `Lần gieo: ${currentStep}/6`;
                 }
 
+                castInProgress = false; // Mở khóa cho lần gieo tiếp theo
                 tossTriggerBtn.disabled = false;
                 tossTriggerBtn.innerText = "TUNG ĐỒNG XU";
 
                 if (currentStep === 6) {
                     tossTriggerBtn.style.display = 'none';
-                    
+
                     // Gán userAnswers mặc định cho flow tung xu tự động
                     userAnswers = ['', '', '', '', '', ''];
-                    
-                    // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ:
-                    // Không cần người dùng bấm thêm nút Hoàn tất nào nữa
+
+                    // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ
                     const autoFinishBtn = document.getElementById('finish-btn');
                     if (autoFinishBtn) {
                         autoFinishBtn.click();
@@ -1208,7 +1329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // 4. HIỆU ỨNG TUNG XU
+    // 4. HIỆU ỨNG TUNG XU (THUẦN COSMETIC — KHÔNG SINH KẾT QUẢ)
+    // Animation 3 đồng xu nảy xoay vật lý rồi đáp xuống hiển thị mặt
+    // tương ứng với lineValue đã được commit từ thuật toán Cỏ Thi.
     // -------------------------------------------------------------------------
     const coins = [
         document.getElementById('coin-1'),
@@ -1231,91 +1354,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Thực hiện reset ngẫu nhiên ngay khi tải trang
     randomizeCoinsInitialState();
 
-    function performCoinToss(callback) {
-        // Tắt nút tung xu của giao diện
+    /**
+     * performCoinAnimation — Hiệu ứng thuần đồ họa cho 3 đồng xu.
+     * @param {number} lineValue - Kết quả hào đã commit (0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương)
+     * @param {Function} callback - Gọi sau khi cả 3 xu đáp xuống xong
+     *
+     * Đồng xu KHÔNG tham gia sinh kết quả. Chỉ hiển thị mặt sấp/ngửa
+     * khớp với lineValue đã có sẵn.
+     */
+    function performCoinAnimation(lineValue, callback) {
         if (tossTriggerBtn) tossTriggerBtn.disabled = true;
 
-        const coinResults = [false, false, false];
-        let coinsFinished = 0;
+        // Ánh xạ lineValue → trạng thái 3 đồng xu hiển thị
+        // 0 (Lão Âm = 6):  0 Dương → [false, false, false]
+        // 1 (Thiếu Dương = 7): 1 Dương → [true, false, false] (vị trí Dương ngẫu nhiên)
+        // 2 (Thiếu Âm = 8):   2 Dương → [true, true, false]  (vị trí Âm ngẫu nhiên)
+        // 3 (Lão Dương = 9):   3 Dương → [true, true, true]
+        let coinFaces;
+        if (lineValue === 0) {
+            coinFaces = [false, false, false];
+        } else if (lineValue === 3) {
+            coinFaces = [true, true, true];
+        } else if (lineValue === 1) {
+            // 1 Dương: chọn ngẫu nhiên 1 trong 3 vị trí để ngửa
+            const yangPos = Math.floor(Math.random() * 3);
+            coinFaces = [yangPos === 0, yangPos === 1, yangPos === 2];
+        } else {
+            // 2 Dương: chọn ngẫu nhiên 1 trong 3 vị trí để sấp
+            const yinPos = Math.floor(Math.random() * 3);
+            coinFaces = [yinPos !== 0, yinPos !== 1, yinPos !== 2];
+        }
 
-        // BẬT CƠ CHẾ DAO ĐỘNG NHỊ PHÂN CAO TẦN (50 - 100 lần/giây) CHO MỖI ĐỒNG XU
-        // Trong 1s - 2s xu bay, tốc độ chuyển đổi âm/dương được lấy mẫu ngẫu nhiên liên tục
-        const coinBitPool = [false, false, false];
-        const highFrequencySamplers = [];
+        let coinsFinished = 0;
 
         coins.forEach((coin, idx) => {
             if (!coin) return;
-
-            // Tần số chuyển đổi âm/dương ngẫu nhiên từ 50Hz đến 100Hz (10ms - 20ms / chu kỳ)
-            const sampleRateMs = Math.floor(Math.random() * 10) + 10;
-            const samplerId = setInterval(() => {
-                let randomBit = false;
-                if (window.crypto && window.crypto.getRandomValues) {
-                    const randBuf = new Uint8Array(1);
-                    window.crypto.getRandomValues(randBuf);
-                    randomBit = (randBuf[0] % 2 === 1);
-                } else {
-                    randomBit = Math.random() < 0.5;
-                }
-                coinBitPool[idx] = randomBit;
-            }, sampleRateMs);
-            highFrequencySamplers.push(samplerId);
 
             // Kích hoạt nảy quán tính tắt dần (Harmonic Metal Bounce)
             const innerEl = coin.querySelector('.coin-inner');
             if (innerEl) {
                 innerEl.style.transition = 'none';
                 innerEl.classList.remove('spinning-fast');
-                // Force reflow để animation kích hoạt hoàn toàn mới
                 void innerEl.offsetWidth;
                 innerEl.classList.add('spinning-fast');
             }
 
-            // Thời gian dao động vật lý độc lập (1.2s - 1.8s)
-            // Đồng xu 1 đáp trước (~1.25s), đồng xu 2 đáp sau (~1.5s), đồng xu 3 đáp sau cùng (~1.75s)
+            // Thời gian dao động vật lý độc lập
+            // Đồng xu 1 đáp trước (~1.25s), xu 2 (~1.5s), xu 3 (~1.75s)
             const coinSpinDuration = 1250 + (idx * 250) + Math.floor(Math.random() * 80);
 
             setTimeout(() => {
-                // ĐỒNG XU ĐÁP XUỐNG YÊN TĨNH:
-                // 1. Khóa và đóng băng trạng thái nhị phân tại đúng micro-giây tiếp đất
-                clearInterval(highFrequencySamplers[idx]);
-                const isYang = coinBitPool[idx];
-                coinResults[idx] = isYang;
-
-                // 2. Dừng hiệu ứng bay, cố định mặt âm/dương đã chốt
+                // Dừng hiệu ứng bay, cố định mặt đã chốt từ coinFaces
                 if (innerEl) {
                     innerEl.classList.remove('spinning-fast');
                     innerEl.style.transition = 'transform 0.4s cubic-bezier(0.15, 0.85, 0.35, 1)';
-                    // isYang: Mặt Dương (2 chữ Mãn) -> rotateY(0deg)
-                    // !isYang: Mặt Âm (4 chữ Hán) -> rotateY(180deg)
-                    innerEl.style.transform = isYang ? 'rotateY(0deg)' : 'rotateY(180deg)';
+                    innerEl.style.transform = coinFaces[idx] ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
 
                 coinsFinished++;
-
-                // Khi cả 3 đồng xu đã đáp xuống yên tĩnh hoàn toàn
                 if (coinsFinished === 3) {
-                    const yangCount = coinResults.filter(r => r).length;
-
-                    // Tính hào Dịch Lục Hào Cổ Bốc:
-                    // 0 Dương (3 Âm): Lão Âm (Âm Động, value = 0, dấu X)
-                    // 1 Dương (2 Âm): Thiếu Dương (Dương Tĩnh, value = 1, vạch liền)
-                    // 2 Dương (1 Âm): Thiếu Âm (Âm Tĩnh, value = 2, vạch đứt)
-                    // 3 Dương (0 Âm): Lão Dương (Dương Động, value = 3, dấu O)
-                    let lineValue;
-                    if (yangCount === 0) {
-                        lineValue = 0;
-                    } else if (yangCount === 1) {
-                        lineValue = 1;
-                    } else if (yangCount === 2) {
-                        lineValue = 2;
-                    } else {
-                        lineValue = 3;
-                    }
-
-                    hexLines.push(lineValue);
-
-                    // Kích hoạt lại nút và chạy callback cập nhật giao diện hào
                     if (tossTriggerBtn) tossTriggerBtn.disabled = false;
                     if (callback) callback();
                 }
