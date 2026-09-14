@@ -22,9 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function cryptoUnitOpen() {
-        const a = new Uint32Array(1);
-        (globalThis.crypto || crypto).getRandomValues(a);
-        return (a[0] + 0.5) / 4294967296;
+        try {
+            const c = globalThis.crypto || (typeof window !== 'undefined' ? window.crypto : null);
+            if (c && c.getRandomValues) {
+                const a = new Uint32Array(1);
+                c.getRandomValues(a);
+                return (a[0] + 0.5) / 4294967296;
+            }
+        } catch (e) {}
+        return (Math.random() * 4294967295 + 0.5) / 4294967296;
     }
 
     function getCryptoNormal() {

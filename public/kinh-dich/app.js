@@ -27,12 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
         linesPerHexagram: 6   // Lục Hào thành quẻ
     });
 
-    // --- CSPRNG nền tảng (browser + Node tương thích) ---
+    // --- CSPRNG nền tảng (browser + Node tương thích, phòng thủ đa tầng) ---
     function cryptoUnitOpen() {
-        const a = new Uint32Array(1);
-        (globalThis.crypto || crypto).getRandomValues(a);
-        // +0.5 đưa mỗi số nguyên vào giữa ô xác suất, đảm bảo ∉ {0, 1}
-        return (a[0] + 0.5) / 4294967296;
+        try {
+            const c = globalThis.crypto || (typeof window !== 'undefined' ? window.crypto : null);
+            if (c && c.getRandomValues) {
+                const a = new Uint32Array(1);
+                c.getRandomValues(a);
+                return (a[0] + 0.5) / 4294967296;
+            }
+        } catch (e) {}
+        return (Math.random() * 4294967295 + 0.5) / 4294967296;
     }
 
     function getCryptoNormal() {
