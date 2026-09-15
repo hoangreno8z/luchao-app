@@ -13,35 +13,35 @@
     --gold-light: #fbbf24;
     --border-dark: #374151;
 
-    /* Ngũ Hành Phong Thủy */
-    --color-kim: #4A4F4E;
-    --color-moc: #35643C;
-    --color-thuy: #353875;
-    --color-hoa: #9C4844;
-    --color-tho: #8A5C3A;
+    /* Ngũ Hành Phong Thủy Chuẩn tuvivietnam.vn */
+    --color-kim: #708090;
+    --color-moc: #15803D;
+    --color-thuy: #000000;
+    --color-hoa: #DC2626;
+    --color-tho: #CB9E2B;
 
-    /* Hệ thống màu lá số Tử Vi & Bát Tự — Matte Paper Xám-Ngà */
-    --tuvi-bg: #E7E8E2;
-    --tuvi-cell-bg: #E9EAE4;
-    --tuvi-center-bg: #ECECE6;
-    --tuvi-secondary-bg: #E3E5DF;
+    /* Hệ thống màu lá số Tử Vi & Bát Tự — Chuẩn tuvivietnam.vn */
+    --tuvi-bg: #E8E8E0;
+    --tuvi-cell-bg: #E8E8E0;
+    --tuvi-center-bg: #E8E8E0;
+    --tuvi-secondary-bg: #E8E8E0;
 
-    --tuvi-border: #9EA39D;
-    --tuvi-border-light: #BEC1BB;
-    --tuvi-divider: #8A8F89;
+    --tuvi-border: #000000;
+    --tuvi-border-light: #000000;
+    --tuvi-divider: #000000;
 
-    --tuvi-text: #272A27;
-    --tuvi-text-secondary: #666B66;
-    --tuvi-text-muted: #8A8F89;
+    --tuvi-text: #000000;
+    --tuvi-text-secondary: #475569;
+    --tuvi-text-muted: #64748B;
 
-    --tuvi-red: #9C4844;
-    --tuvi-red-secondary: #B95D56;
-    --tuvi-green: #35643C;
-    --tuvi-green-secondary: #56805C;
-    --tuvi-blue: #353875;
-    --tuvi-blue-secondary: #59639A;
-    --tuvi-brown: #8A5C3A;
-    --tuvi-gold: #B89A55;
+    --tuvi-red: #DC2626;
+    --tuvi-red-secondary: #B91C1C;
+    --tuvi-green: #15803D;
+    --tuvi-green-secondary: #16A34A;
+    --tuvi-blue: #1D4ED8;
+    --tuvi-blue-secondary: #2563EB;
+    --tuvi-brown: #CB9E2B;
+    --tuvi-gold: #CB9E2B;
     --tuvi-hover: #D9DDD5;
 }
 
@@ -441,7 +441,7 @@ body {
     display: block;
     border-radius: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    border: 1px solid #9EA39D;
+    border: 1px solid #000000;
     user-select: auto;
     -webkit-user-select: auto;
     -webkit-touch-callout: default;

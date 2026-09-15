@@ -25,13 +25,13 @@ export const CHI_ELEMENTS = {
     "Thân": "Kim", "Dậu": "Kim", "Tuất": "Thổ", "Hợi": "Thủy"
 };
 
-// Bảng màu chuẩn Ngũ Hành - Phong Cách Giấy Mỹ Thuật Xám-Ngà (Muted / Giảm Chói)
+// Bảng màu chuẩn Ngũ Hành theo chuẩn tuvivietnam.vn
 export const ELEMENT_COLORS = {
-    "Kim": "#4A4F4E",   // Xám trung tính hơi xanh / Khí Kim
-    "Mộc": "#35643C",   // Xanh lục trầm / Khí Mộc
-    "Thủy": "#353875",  // Xanh lam chàm / Khí Thủy
-    "Hỏa": "#9C4844",   // Đỏ trầm / Khí Hỏa
-    "Thổ": "#8A5C3A"    // Nâu đất trầm / Khí Thổ
+    "Kim": "#708090",   // Xám bạc kim loại / Khí Kim
+    "Mộc": "#15803D",   // Xanh lá cây đậm / Khí Mộc
+    "Thủy": "#000000",  // Đen tuyền / Khí Thủy (chuẩn Huyền Vũ cổ truyền)
+    "Hỏa": "#DC2626",   // Đỏ tươi / Khí Hỏa
+    "Thổ": "#CB9E2B"    // Vàng cam mật ong / Khí Thổ
 };
 
 // 60 Hoa Giáp Nạp Âm

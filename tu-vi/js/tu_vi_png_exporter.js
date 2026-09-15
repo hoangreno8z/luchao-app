@@ -73,15 +73,12 @@ export class TuViPngExporter {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
 
-        // ── Color Palette (Xám-Ngà Dịu Mắt / Giấy Truyền Thống) ─────
-        const COL_BG_MAIN    = '#E7E8E2'; // Nền tổng (xám-ngà hơi xanh)
-        const COL_BG_PALACE  = '#E9EAE4'; // Nền 12 cung
-        const COL_BG_CENTER  = '#ECECE6'; // Nền trung tâm
-        const COL_BORDER_PRI = '#9EA39D'; // Viền chính
-        const COL_BORDER_SEC = '#BEC1BB'; // Viền phụ (đường chia nội bộ ô)
+        // ── Color Palette (Chuẩn tuvivietnam.vn / Giấy in xám-ngà cổ truyền) ─────
+        const COL_BG     = '#E8E8E0'; // Nền giấy đồng nhất toàn bộ lá số
+        const COL_BORDER = '#000000'; // Khung viền và lưới kẻ đen tuyền sắc nét
 
-        // 1. Fill entire canvas with main background
-        ctx.fillStyle = COL_BG_MAIN;
+        // 1. Fill entire canvas with uniform background
+        ctx.fillStyle = COL_BG;
         ctx.fillRect(0, 0, width, height);
 
         const margin = 24;
@@ -110,42 +107,14 @@ export class TuViPngExporter {
             4:  { col: 0, row: 1 }  // Thìn
         };
 
-        // 2. Fill each of the 12 palace cells with palace background
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
-                if ((r === 1 || r === 2) && (c === 1 || c === 2)) continue; // skip center
-                const cx = margin + c * cellW;
-                const cy = margin + r * cellH;
-                ctx.fillStyle = COL_BG_PALACE;
-                ctx.fillRect(cx, cy, cellW, cellH);
-                // Subtle inset shadow per cell
-                this._drawCellInsetShadow(ctx, cx, cy, cellW, cellH);
-            }
-        }
-
-        // 3. Fill center 2×2 with center background
-        ctx.fillStyle = COL_BG_CENTER;
-        ctx.fillRect(margin + cellW, margin + cellH, cellW * 2, cellH * 2);
-        this._drawCellInsetShadow(ctx, margin + cellW, margin + cellH, cellW * 2, cellH * 2);
-
-        // 4. Apply matte paper noise texture (tiled across entire canvas)
-        const noiseTile = this._generateNoiseTile(180);
-        const pattern = ctx.createPattern(noiseTile, 'repeat');
-        if (pattern) {
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.fillStyle = pattern;
-            ctx.fillRect(0, 0, width, height);
-            ctx.globalCompositeOperation = 'source-over';
-        }
-
-        // 5. Draw Outer Border (soft warm, not black)
-        ctx.strokeStyle = COL_BORDER_PRI;
+        // 2. Draw Outer Border (Solid Black 3.5px)
+        ctx.strokeStyle = COL_BORDER;
         ctx.lineWidth = 3.5;
         ctx.strokeRect(margin, margin, gridW, gridH);
 
-        // 6. Draw all 12 palace cell borders (soft warm secondary)
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = COL_BORDER_SEC;
+        // 3. Draw all 12 palace cell borders & grid lines (Solid Black 2px)
+        ctx.lineWidth = 2.0;
+        ctx.strokeStyle = COL_BORDER;
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
                 if ((r === 1 || r === 2) && (c === 1 || c === 2)) continue;
@@ -208,43 +177,35 @@ export class TuViPngExporter {
 
         // 1. Can Cung (Top Left)
         ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = ELEMENT_COLORS[palace.canElement] || '#272A27';
+        ctx.fillStyle = ELEMENT_COLORS[palace.canElement] || '#000000';
         ctx.textAlign = 'left';
         ctx.fillText(palace.canName, x + padding, y + 48);
 
         // 2. Cung Name (Top Center)
         ctx.font = '700 40px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = palace.cungName === 'MỆNH' ? '#9C4844' : '#272A27';
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         const cungTitle = palace.isThan ? `${palace.cungName} <THÂN>` : palace.cungName;
         ctx.fillText(cungTitle, x + w / 2, y + 48);
 
         // 3. Đại Hạn (Top Right)
         ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#272A27';
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'right';
         ctx.fillText(String(palace.daiHan), x + w - padding, y + 48);
-
-        // Divider under header
-        ctx.strokeStyle = '#BEC1BB';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(x + 10, y + 66);
-        ctx.lineTo(x + w - 10, y + 66);
-        ctx.stroke();
 
         // 4. Chính Tinh (Center Top of Palace)
         let mainY = y + 118;
         palace.mainStars.forEach(star => {
             ctx.font = '700 46px "Inter", "Be Vietnam Pro", sans-serif';
-            ctx.fillStyle = ELEMENT_COLORS[star.element] || '#272A27';
+            ctx.fillStyle = ELEMENT_COLORS[star.element] || '#000000';
             ctx.textAlign = 'center';
             const starText = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
             ctx.fillText(starText, x + w / 2, mainY);
             mainY += 54;
         });
 
-        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - GIẢM ĐỘ DÀY NÉT (FONT WEIGHT 400), TO RÕ, NÉT GẦY SẮC SẢO
+        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - RÕ RÀNG, SẮC SẢO
         const colLeftX = x + padding + 4;
         const colRightX = x + w - padding - 4;
         let starYLeft = mainY + 20;
@@ -254,7 +215,7 @@ export class TuViPngExporter {
         palace.goodStars.forEach(star => {
             if (starYLeft < y + h - 65) {
                 ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
-                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#35643C';
+                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803D';
                 ctx.textAlign = 'left';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
                 ctx.fillText(text, colLeftX, starYLeft);
@@ -265,7 +226,7 @@ export class TuViPngExporter {
         palace.badStars.forEach(star => {
             if (starYRight < y + h - 65) {
                 ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
-                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#9C4844';
+                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#DC2626';
                 ctx.textAlign = 'right';
                 const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
                 ctx.fillText(text, colRightX, starYRight);
@@ -274,15 +235,8 @@ export class TuViPngExporter {
         });
 
         // 6. Bottom Bar (Chi Cung, Tràng Sinh, Nguyệt Hạn)
-        ctx.strokeStyle = '#BEC1BB';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(x + 10, y + h - 55);
-        ctx.lineTo(x + w - 10, y + h - 55);
-        ctx.stroke();
-
-        ctx.font = '500 32px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#666B66';
+        ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
+        ctx.fillStyle = '#000000';
 
         // Chi Cung (Left)
         ctx.textAlign = 'left';
@@ -338,13 +292,12 @@ export class TuViPngExporter {
         ctx.fillStyle = '#000000';
         ctx.fillRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
-        const isTuan = label === 'Tuần';
-        ctx.strokeStyle = isTuan ? '#fbbf24' : '#ffffff';
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.2;
         ctx.strokeRect(midX - bw / 2, midY - bh / 2, bw, bh);
 
         ctx.font = 'bold 18px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = isTuan ? '#fbbf24' : '#ffffff';
+        ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(label, midX, midY);
@@ -380,20 +333,20 @@ export class TuViPngExporter {
         const bh = 28;
         const offset = (bw / 2) + 3;
 
-        // 1. Badge Tuần (Bên trái)
+        // 1. Badge Tuần (Bên trái) - Nền đen chữ trắng viền trắng
         const tuanX = midX - offset;
         ctx.fillStyle = '#000000';
         ctx.fillRect(tuanX - bw / 2, midY - bh / 2, bw, bh);
-        ctx.strokeStyle = '#fbbf24';
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.2;
         ctx.strokeRect(tuanX - bw / 2, midY - bh / 2, bw, bh);
         ctx.font = 'bold 18px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#fbbf24';
+        ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('Tuần', tuanX, midY);
 
-        // 2. Badge Triệt (Bên phải)
+        // 2. Badge Triệt (Bên phải) - Nền đen chữ trắng viền trắng
         const trietX = midX + offset;
         ctx.fillStyle = '#000000';
         ctx.fillRect(trietX - bw / 2, midY - bh / 2, bw, bh);
@@ -410,23 +363,19 @@ export class TuViPngExporter {
     }
 
     static drawTrungCung(ctx, meta, x, y, w, h) {
-        // Background tint for Center Palace (matte paper center tone)
-        ctx.fillStyle = '#ECECE6';
-        ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
-
-        // Border for Center Box (grey-ivory primary border)
-        ctx.strokeStyle = '#9EA39D';
-        ctx.lineWidth = 2;
+        // Border for Center Box (Solid Black 2px)
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2.0;
         ctx.strokeRect(x, y, w, h);
 
         // Header Title (Không tăng kích thước)
         ctx.font = '700 46px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#9C4844';
+        ctx.fillStyle = '#1D4ED8';
         ctx.textAlign = 'center';
         ctx.fillText('DỊCH SƯ NGUYỄN HUY HOÀNG', x + w / 2, y + 80);
 
         // Line under title
-        ctx.strokeStyle = '#9C4844';
+        ctx.strokeStyle = '#DC2626';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.moveTo(x + w / 2 - 240, y + 104);
@@ -441,45 +390,39 @@ export class TuViPngExporter {
         const stepY = 70;
 
         const infoList = [
-            { label: 'Họ tên:', value: meta.name, color: '#353875' },
-            { label: 'Âm Dương:', value: `${meta.amDuongNamNu} (${meta.amDuongLy})`, color: '#272A27' },
-            { label: 'Năm sinh:', value: `${meta.solarDate.split('/')[2]} (${meta.lunarYearCanChi})`, color: '#272A27' },
-            { label: 'Tháng sinh:', value: `${meta.solarDate.split('/')[1]} (${meta.lunarMonthCanChi})`, color: '#272A27' },
-            { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (Ngày ${meta.lunarDay} ${meta.lunarDayCanChi})`, color: '#272A27' },
-            { label: 'Giờ sinh:', value: `Giờ ${meta.hourName} (${meta.lunarHourCanChi})`, color: '#272A27' },
-            { label: 'Bản Mệnh:', value: meta.banMenh, color: ELEMENT_COLORS[meta.banMenhElement] || '#8A5C3A' },
-            { label: 'Cục:', value: `${meta.cucInfo.name} (${meta.cucMenhTuongTac})`, color: ELEMENT_COLORS[meta.cucInfo.element] || '#353875' },
-            { label: 'Chủ Mệnh:', value: meta.chuMenh, color: '#272A27' },
-            { label: 'Chủ Thân:', value: meta.chuThan, color: '#272A27' },
-            { label: 'Thân cư:', value: `Thân cư ${meta.thanCungName}`, color: '#9C4844' },
-            { label: 'Năm xem:', value: `${meta.viewYear} (${meta.viewYearCanChi}) — ${meta.age} tuổi`, color: '#272A27' }
+            { label: 'Họ tên:', value: meta.name, color: '#1D4ED8' },
+            { label: 'Âm Dương:', value: `${meta.amDuongNamNu} (${meta.amDuongLy})`, color: '#1D4ED8' },
+            { label: 'Năm sinh:', value: `${meta.solarDate.split('/')[2]} (${meta.lunarYearCanChi})`, color: '#1D4ED8' },
+            { label: 'Tháng sinh:', value: `${meta.solarDate.split('/')[1]} (${meta.lunarMonthCanChi})`, color: '#1D4ED8' },
+            { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (Ngày ${meta.lunarDay} ${meta.lunarDayCanChi})`, color: '#1D4ED8' },
+            { label: 'Giờ sinh:', value: `Giờ ${meta.hourName} (${meta.lunarHourCanChi})`, color: '#1D4ED8' },
+            { label: 'Bản Mệnh:', value: meta.banMenh, color: ELEMENT_COLORS[meta.banMenhElement] || '#CB9E2B' },
+            { label: 'Cục:', value: `${meta.cucInfo.name} (${meta.cucMenhTuongTac})`, color: ELEMENT_COLORS[meta.cucInfo.element] || '#1D4ED8' },
+            { label: 'Chủ Mệnh:', value: meta.chuMenh, color: '#1D4ED8' },
+            { label: 'Chủ Thân:', value: meta.chuThan, color: '#1D4ED8' },
+            { label: 'Thân cư:', value: `Thân cư ${meta.thanCungName}`, color: '#DC2626' },
+            { label: 'Năm xem:', value: `${meta.viewYear} (${meta.viewYearCanChi}) — ${meta.age} tuổi`, color: '#1D4ED8' }
         ];
 
         infoList.forEach(item => {
-            // Label
-            ctx.font = '400 32px "Inter", "Be Vietnam Pro", sans-serif';
-            ctx.fillStyle = '#666B66';
+            // Label: Đen Bold
+            ctx.font = '700 32px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = '#000000';
             ctx.textAlign = 'left';
             ctx.fillText(item.label, labelX, curY);
 
-            // Value
+            // Value: Xanh Dương / Ngũ Hành
             ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = item.color;
             ctx.fillText(item.value, valX, curY);
 
-            // Subtle dashed divider line
-            ctx.strokeStyle = '#BEC1BB';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(labelX, curY + 16);
-            ctx.lineTo(x + w - 70, curY + 16);
-            ctx.stroke();
+            // Không vẽ đường kẻ đứt ngang - giữ nền thoáng đãng như tuvivietnam.vn
 
             curY += stepY;
         });
 
         // Seal & Contact Footer
-        ctx.strokeStyle = '#9EA39D';
+        ctx.strokeStyle = '#000000';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x + 60, y + h - 110);
@@ -487,12 +430,12 @@ export class TuViPngExporter {
         ctx.stroke();
 
         ctx.font = '700 32px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#272A27';
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.fillText('Zalo: 0933 116 860  •  Facebook: Hoàng ngủ mơ', x + w / 2, y + h - 68);
 
         ctx.font = 'italic 500 24px "Inter", "Be Vietnam Pro", sans-serif';
-        ctx.fillStyle = '#8A8F89';
+        ctx.fillStyle = '#475569';
         ctx.fillText('“Gìn giữ tri thức cổ • Ứng dụng vào đời sống • Hướng tới minh triết và an tâm”', x + w / 2, y + h - 28);
     }
 }
