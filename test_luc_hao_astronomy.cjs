@@ -161,28 +161,28 @@ it('Hà Nội lúc 23:11 giờ dân dụng: Mặt Trời đã vượt 23:00 -> c
 });
 
 // -----------------------------------------------------------------------------
-// NHÓM 5: KHÓA BẢNG 14 THẦN SÁT CHU THẦN BÂN
+// NHÓM 5: BẢNG THẦN SÁT LỤC HÀO (QUÝ NHÂN THIÊN ẤT CỔ, HUYẾT CHI & THIÊN Y)
 // -----------------------------------------------------------------------------
-console.log('\n--- NHÓM 5: KHÓA BẢNG 14 THẦN SÁT CHU THẦN BÂN ---');
+console.log('\n--- NHÓM 5: BẢNG THẦN SÁT LỤC HÀO (QUÝ NHÂN THIÊN ẤT CỔ, HUYẾT CHI & THIÊN Y) ---');
 
-it('Quý Nhân ngày Canh PHẢI LÀ Ngọ, Dần (khớp với Tân & Chu Thần Bân)', () => {
+it('Quý Nhân ngày Canh PHẢI LÀ Sửu, Mùi (theo nguyên lý Thiên Ất cổ Giáp Mậu Canh ngưu dương)', () => {
     const ssCanh = ICHING.calculateShenSha('Canh', 'Thân', 'Dần');
     const quyNhanCanh = ssCanh.find(s => s.includes('Quý Nhân'));
     assert.ok(quyNhanCanh, 'Có Quý Nhân');
-    assert.ok(quyNhanCanh.includes('Ngọ, Dần'), 'Quý Nhân ngày Canh phải là Ngọ, Dần. Thực tế: ' + quyNhanCanh);
-    assert.ok(!quyNhanCanh.includes('Sửu, Mùi'), 'Quý Nhân ngày Canh KHÔNG được là Sửu, Mùi');
+    assert.ok(quyNhanCanh.includes('Sửu, Mùi'), 'Quý Nhân ngày Canh phải là Sửu, Mùi. Thực tế: ' + quyNhanCanh);
+    assert.ok(!quyNhanCanh.includes('Ngọ, Dần'), 'Quý Nhân ngày Canh KHÔNG dùng dị bản Ngọ, Dần');
 });
 
-it('Khẩu quyết Quý Nhân chuẩn mực đủ 10 Thiên Can theo Chu Thần Bân', () => {
+it('Khẩu quyết Quý Nhân chuẩn mực Thiên Ất cổ đủ 10 Thiên Can', () => {
     const expected = {
         'Giáp': ['Sửu', 'Mùi'],
+        'Mậu': ['Sửu', 'Mùi'],
+        'Canh': ['Sửu', 'Mùi'],
         'Ất': ['Tý', 'Thân'],
+        'Kỷ': ['Tý', 'Thân'],
         'Bính': ['Hợi', 'Dậu'],
         'Đinh': ['Hợi', 'Dậu'],
-        'Mậu': ['Sửu', 'Mùi'],
-        'Kỷ': ['Tý', 'Thân'],
-        'Canh': ['Ngọ', 'Dần'],
-        'Tân': ['Ngọ', 'Dần'],
+        'Tân': ['Dần', 'Ngọ'],
         'Nhâm': ['Mão', 'Tỵ'],
         'Quý': ['Mão', 'Tỵ']
     };
@@ -196,14 +196,30 @@ it('Khẩu quyết Quý Nhân chuẩn mực đủ 10 Thiên Can theo Chu Thần 
     }
 });
 
-it('Thiên Y: Lùi 1 ngôi so với Nguyệt Chi cho đủ 12 tháng', () => {
+it('Huyết Chi: Lùi 1 ngôi so với Nguyệt Chi cho đủ 12 tháng (Chu Thần Bân)', () => {
     const chiList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
     chiList.forEach((mChi, idx) => {
-        const expectedTy = chiList[(idx - 1 + 12) % 12];
+        const expectedHc = chiList[(idx - 1 + 12) % 12];
+        const ss = ICHING.calculateShenSha('Giáp', 'Tý', mChi);
+        const hc = ss.find(s => s.includes('Huyết Chi'));
+        assert.ok(hc.includes(expectedHc), 'Tháng ' + mChi + ' Huyết Chi phải là ' + expectedHc);
+    });
+});
+
+it('Thiên Y: Tam Hợp hậu thần / Thành nhật (Dần->Tuất, Mão->Hợi, Thìn->Tý...)', () => {
+    const expectedTyMap = {
+        'Dần': 'Tuất', 'Mão': 'Hợi', 'Thìn': 'Tý',
+        'Tỵ': 'Sửu', 'Ngọ': 'Dần', 'Mùi': 'Mão',
+        'Thân': 'Thìn', 'Dậu': 'Tỵ', 'Tuất': 'Ngọ',
+        'Hợi': 'Mùi', 'Tý': 'Thân', 'Sửu': 'Dậu'
+    };
+
+    for (const [mChi, tyChi] of Object.entries(expectedTyMap)) {
         const ss = ICHING.calculateShenSha('Giáp', 'Tý', mChi);
         const ty = ss.find(s => s.includes('Thiên Y'));
-        assert.ok(ty.includes(expectedTy), 'Tháng ' + mChi + ' Thiên Y phải là ' + expectedTy);
-    });
+        assert.ok(ty, 'Tháng ' + mChi + ' phải có thần sát Thiên Y');
+        assert.ok(ty.includes(tyChi), 'Tháng ' + mChi + ' Thiên Y phải là ' + tyChi + '. Thực tế: ' + ty);
+    }
 });
 
 it('Thiên Hỉ: Đúng quy luật 4 mùa (Xuân Tuất, Hạ Sửu, Thu Thìn, Đông Mùi)', () => {
@@ -223,15 +239,15 @@ it('Thiên Hỉ: Đúng quy luật 4 mùa (Xuân Tuất, Hạ Sửu, Thu Thìn, 
     });
 });
 
-it('Đầy đủ 14 Thần Sát kinh điển Chu Thần Bân + Vong Thần', () => {
+it('Đầy đủ 15 Thần Sát kinh điển Lục Hào (bao gồm Huyết Chi và Thiên Y riêng biệt)', () => {
     const ss = ICHING.calculateShenSha('Giáp', 'Tý', 'Dần');
-    assert.strictEqual(ss.length, 14, 'Phải có chính xác 14 Thần Sát');
+    assert.strictEqual(ss.length, 15, 'Phải có chính xác 15 Thần Sát');
 
     const names = [
         'Quý Nhân', 'Lộc Thần', 'Dương Nhận', 'Văn Xương',
         'Dịch Mã', 'Đào Hoa', 'Tướng Tinh', 'Kiếp Sát',
         'Hoa Cái', 'Mưu Tinh', 'Tai Sát', 'Vong Thần',
-        'Thiên Y', 'Thiên Hỉ'
+        'Huyết Chi', 'Thiên Y', 'Thiên Hỉ'
     ];
 
     names.forEach(name => {

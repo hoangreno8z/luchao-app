@@ -188,11 +188,11 @@ const ICHING = (function () {
         };
 
         const quy = {
-            'Giáp': ['Sửu', 'Mùi'], 'Mậu': ['Sửu', 'Mùi'],
+            'Giáp': ['Sửu', 'Mùi'], 'Mậu': ['Sửu', 'Mùi'], 'Canh': ['Sửu', 'Mùi'],
             'Ất': ['Tý', 'Thân'], 'Kỷ': ['Tý', 'Thân'],
             'Bính': ['Hợi', 'Dậu'], 'Đinh': ['Hợi', 'Dậu'],
-            'Nhâm': ['Mão', 'Tỵ'], 'Quý': ['Mão', 'Tỵ'],
-            'Canh': ['Ngọ', 'Dần'], 'Tân': ['Ngọ', 'Dần']
+            'Tân': ['Dần', 'Ngọ'],
+            'Nhâm': ['Mão', 'Tỵ'], 'Quý': ['Mão', 'Tỵ']
         };
         add('Quý Nhân', quy[dCan]);
 
@@ -241,13 +241,23 @@ const ICHING = (function () {
             for (let i = 0; i < 8; i++) add('', '');
         }
 
+        // Huyết Chi (Chu Thần Bân — Nguyệt Chi lùi 1 Chi)
         const mIdx = CALENDAR.CHI.indexOf(mChi);
         if (mIdx !== -1) {
-            const ty = CALENDAR.CHI[(mIdx - 1 + 12) % 12];
-            add('Thiên Y', ty);
+            const hc = CALENDAR.CHI[(mIdx - 1 + 12) % 12];
+            add('Huyết Chi', hc);
         } else {
-            add('Thiên Y', '-');
+            add('Huyết Chi', '-');
         }
+
+        // Thiên Y (Tam Hợp hậu thần / Thành nhật — tổn phục ích, tử phục sinh)
+        const thienYMap = {
+            'Dần': 'Tuất', 'Mão': 'Hợi', 'Thìn': 'Tý',
+            'Tỵ': 'Sửu', 'Ngọ': 'Dần', 'Mùi': 'Mão',
+            'Thân': 'Thìn', 'Dậu': 'Tỵ', 'Tuất': 'Ngọ',
+            'Hợi': 'Mùi', 'Tý': 'Thân', 'Sửu': 'Dậu'
+        };
+        add('Thiên Y', thienYMap[mChi] || '-');
 
         const muaMap = {
             'Dần': 'Tuất', 'Mão': 'Tuất', 'Thìn': 'Tuất',
