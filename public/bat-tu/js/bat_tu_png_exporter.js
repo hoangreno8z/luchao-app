@@ -48,7 +48,7 @@
         if (!ctx) return null;
 
         // 1. Nền xám-ngà cổ truyền đồng nhất
-        ctx.fillStyle = "#E8E8E0";
+        ctx.fillStyle = "#e7e8e2";
         ctx.fillRect(0, 0, width, height);
 
         const margin = 24;
@@ -177,7 +177,7 @@
 
         // 3.1. Hàng Tiêu Đề Cột
         const headRowH = !is100Years ? 80 : 65;
-        ctx.fillStyle = "#E8E8E0";
+        ctx.fillStyle = "#e7e8e2";
         ctx.fillRect(tblX, tblY, tblW, headRowH);
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1.5;
@@ -212,7 +212,7 @@
 
         rows.forEach(r => {
             // Label Cell
-            ctx.fillStyle = "#E8E8E0";
+            ctx.fillStyle = "#e7e8e2";
             ctx.fillRect(tblX, curY, colLabelW, r.h);
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 1.5;
@@ -226,7 +226,7 @@
             // 4 Cột Trụ
             pillars.forEach((p, cIdx) => {
                 const cX = tblX + colLabelW + cIdx * colW;
-                ctx.fillStyle = "#E8E8E0";
+                ctx.fillStyle = "#e7e8e2";
                 ctx.fillRect(cX, curY, colW, r.h);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = 1.2;
@@ -299,7 +299,7 @@
 
         // Header info bar
         const infoBarH = !is100Years ? 68 : 60;
-        ctx.fillStyle = "#E8E8E0";
+        ctx.fillStyle = "#e7e8e2";
         ctx.fillRect(tblX, curY, tblW, infoBarH);
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1.5;
@@ -331,7 +331,7 @@
             const dyH = 500;
 
             // Header Cột Label 10 Đại Vận
-            ctx.fillStyle = "#E8E8E0";
+            ctx.fillStyle = "#e7e8e2";
             ctx.fillRect(tblX, curY, colLabelW, dyH);
             ctx.strokeStyle = "#000000";
             ctx.strokeRect(tblX, curY, colLabelW, dyH);
@@ -348,7 +348,7 @@
                 const endAge = startAge + 9;
                 const isActive = (currentAge >= startAge && currentAge <= endAge);
 
-                ctx.fillStyle = isActive ? "#DDDED4" : "#E8E8E0";
+                ctx.fillStyle = isActive ? "#DDDED4" : "#e7e8e2";
                 ctx.fillRect(dyX, curY, col10W, dyH);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = isActive ? 2.5 : 1;
@@ -403,7 +403,7 @@
             const lnH = 500;
 
             lnGroups.forEach(group => {
-                ctx.fillStyle = "#E8E8E0";
+                ctx.fillStyle = "#e7e8e2";
                 ctx.fillRect(tblX, curY, colLabelW, lnH);
                 ctx.strokeStyle = "#000000";
                 ctx.strokeRect(tblX, curY, colLabelW, lnH);
@@ -422,7 +422,7 @@
                     const lnYear = parseInt(lnList[i]?.year, 10) || (parseInt(group.dy?.startYear || birthYear, 10) + i);
                     const isCur = (lnYear === currentYear);
 
-                    ctx.fillStyle = isCur ? "#DDDED4" : "#E8E8E0";
+                    ctx.fillStyle = isCur ? "#DDDED4" : "#e7e8e2";
                     ctx.fillRect(lnX, curY, col10W, lnH);
                     ctx.strokeStyle = "#000000";
                     ctx.lineWidth = isCur ? 2.5 : 1;
@@ -478,7 +478,7 @@
                 const gY = curY + gIdx * (dyRowH + 20);
 
                 // Label Cột Bên Trái (Gọn Gàng)
-                ctx.fillStyle = "#E8E8E0";
+                ctx.fillStyle = "#e7e8e2";
                 ctx.fillRect(tblX, gY, smallLabelW, dyRowH);
                 ctx.strokeStyle = "#000000";
                 ctx.strokeRect(tblX, gY, smallLabelW, dyRowH);
@@ -496,13 +496,13 @@
                     const startYear = parseInt(dy.startYear, 10);
                     const startAge = Math.max(1, startYear - birthYear + 1);
 
-                    ctx.fillStyle = "#E8E8E0";
+                    ctx.fillStyle = "#e7e8e2";
                     ctx.fillRect(dyX, gY, dyColW, dyRowH);
                     ctx.strokeStyle = "#000000";
                     ctx.strokeRect(dyX, gY, dyColW, dyRowH);
 
                     // Header Đại Vận Box
-                    ctx.fillStyle = "#E8E8E0";
+                    ctx.fillStyle = "#e7e8e2";
                     ctx.fillRect(dyX, gY, dyColW, 95);
                     ctx.strokeStyle = "#000000";
                     ctx.strokeRect(dyX, gY, dyColW, 95);

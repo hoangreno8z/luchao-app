@@ -74,7 +74,7 @@ export class TuViPngExporter {
         const ctx = canvas.getContext('2d');
 
         // ── Color Palette (Chuẩn tuvivietnam.vn / Giấy in xám-ngà cổ truyền) ─────
-        const COL_BG     = '#E8E8E0'; // Nền giấy đồng nhất toàn bộ lá số
+        const COL_BG     = '#e7e8e2'; // Nền giấy đồng nhất toàn bộ lá số
         const COL_BORDER = '#000000'; // Khung viền và lưới kẻ đen tuyền sắc nét
 
         // 1. Fill entire canvas with uniform background

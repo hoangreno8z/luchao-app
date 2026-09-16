@@ -497,7 +497,7 @@ header p {
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     border-radius: 8px;
     overflow: hidden;
-    background: #fdfaf2;
+    background: #e7e8e2;
     position: relative;
 }
 
@@ -658,7 +658,7 @@ footer a:hover {
 #captureTarget {
     position: relative;
     width: 1000px;
-    background-color: #fefee5;
+    background-color: #e7e8e2;
     padding: 20px;
     font-family: 'Inter', sans-serif;
     font-size: 17px;
@@ -703,7 +703,7 @@ footer a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fefee5;
+    background: #e7e8e2;
     border-bottom: 2px solid #888;
     padding: 5px 10px 5px 150px !important; /* Đẩy lề trái vừa đủ cho chiếc ấn 125px */
     margin-bottom: 10px;
@@ -804,7 +804,7 @@ footer a:hover {
     width: 100%;
     border-collapse: collapse;
     font-size: 19px; /* Tăng size chữ bảng */
-    background: #fefee5;
+    background: #e7e8e2;
     margin-bottom: 15px;
 }
 #captureTarget th,

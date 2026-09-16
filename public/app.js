@@ -724,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0f0a05',
+                    backgroundColor: '#e7e8e2',
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -858,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0f0a05',
+                    backgroundColor: '#e7e8e2',
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -1272,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0f0a05',
+                    backgroundColor: '#e7e8e2',
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -1530,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#fefee5',
+                    backgroundColor: '#e7e8e2',
                     width: 1000,
                     windowWidth: 1000,
                     logging: false
