@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "build": "node compiler/compile.js"
+    "test": "node test_luc_hao_astronomy.cjs",
+    "build": "node test_luc_hao_astronomy.cjs && node compiler/compile.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",

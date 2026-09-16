@@ -224,8 +224,9 @@ const CALENDAR = (function () {
         const tz = options.timezone || (typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : '');
         const civil = getCivilParts(castInstantUtc, tz);
 
-        // 1. TÍNH CHÂN THÁI DƯƠNG THỜI (LOCAL APPARENT SOLAR TIME)
-        let solarHourDecimal = civil.hour + civil.minute / 60 + civil.second / 3600;
+        // 1. TÍNH CHÂN THÁI DƯƠNG THỜI & NGÀY THÁI DƯƠNG (LOCAL APPARENT SOLAR TIME & DATE)
+        const civilHourDecimal = civil.hour + civil.minute / 60 + civil.second / 3600;
+        let solarHourDecimal = civilHourDecimal;
         let isSolarAdjusted = false;
 
         const hasGeo = (typeof options.latitude === 'number' && !isNaN(options.latitude)) &&
@@ -244,15 +245,27 @@ const CALENDAR = (function () {
             }
         }
 
-        const sTotalSeconds = Math.round(solarHourDecimal * 3600);
-        const sHour = Math.floor(sTotalSeconds / 3600) % 24;
-        const sMinute = Math.floor((sTotalSeconds % 3600) / 60);
-        const sSecond = sTotalSeconds % 60;
+        // Xác định độ lệch giữa giờ Mặt Trời và giờ dân dụng để tính đúng Ngày Chân Thái Dương (apparentSolarDate)
+        let diffHours = solarHourDecimal - civilHourDecimal;
+        while (diffHours > 12) diffHours -= 24;
+        while (diffHours < -12) diffHours += 24;
+
+        const civilLocalMs = Date.UTC(civil.year, civil.month - 1, civil.day, civil.hour, civil.minute, civil.second);
+        const solarInstantMs = civilLocalMs + Math.round(diffHours * 3600 * 1000);
+        const solarDateObj = new Date(solarInstantMs);
+
+        const appSolarYear = solarDateObj.getUTCFullYear();
+        const appSolarMonth = solarDateObj.getUTCMonth() + 1;
+        const appSolarDay = solarDateObj.getUTCDate();
+        const sHour = solarDateObj.getUTCHours();
+        const sMinute = solarDateObj.getUTCMinutes();
+        const sSecond = solarDateObj.getUTCSeconds();
 
         // 2. QUY TẮC TÝ SƠ (23:00) CHUYỂN NGÀY CAN CHI
-        // Nếu giờ Thái Dương >= 23:00 thì sang ngày mới (chỉ áp dụng cho Nhật Can Chi)
+        // Nền tảng là ngày Chân Thái Dương (appSolarYear/appSolarMonth/appSolarDay).
+        // Nếu giờ Chân Thái Dương sHour >= 23:00 (Tý Sơ) thì sang ngày Can Chi tiếp theo (+1 ngày).
         const isDayShifted = (sHour >= 23);
-        const dayPillarDate = new Date(Date.UTC(civil.year, civil.month - 1, civil.day + (isDayShifted ? 1 : 0)));
+        const dayPillarDate = new Date(Date.UTC(appSolarYear, appSolarMonth - 1, appSolarDay + (isDayShifted ? 1 : 0)));
 
         const dpYear = dayPillarDate.getUTCFullYear();
         const dpMonth = dayPillarDate.getUTCMonth() + 1;
@@ -365,6 +378,7 @@ const CALENDAR = (function () {
 
         const p = n => (n < 10 ? '0' + n : '' + n);
         const solarTimeFormatted = p(sHour) + ':' + p(sMinute) + ':' + p(sSecond);
+        const solarDateFormatted = `${appSolarYear}-${p(appSolarMonth)}-${p(appSolarDay)}`;
 
         return {
             nam: { can: CAN[canNamIdx], chi: CHI[chiNamIdx], napAm: getNapAm(CAN[canNamIdx], CHI[chiNamIdx]) },
@@ -377,6 +391,7 @@ const CALENDAR = (function () {
                 currentTerm: currentTerm.name,
                 termLongitude: currentTerm.lon,
                 instantUtc: castInstantUtc.toISOString(),
+                apparentSolarDate: solarDateFormatted,
                 apparentSolarTime: solarTimeFormatted,
                 solarHour: solarHourDecimal,
                 isSolarAdjusted: isSolarAdjusted,

@@ -5,8 +5,20 @@
 
 const assert = require('assert');
 
+const fs = require('fs');
+
 // 1. Nạp Astronomy Engine & Calendar / IChing
-require('./vendor/astronomy.browser.min.js');
+if (typeof globalThis.Astronomy === 'undefined') {
+    try {
+        const code = fs.readFileSync(__dirname + '/vendor/astronomy.browser.min.js', 'utf8');
+        const fn = new Function('require', 'module', 'exports', code);
+        const m = { exports: {} };
+        fn(require, m, m.exports);
+        globalThis.Astronomy = m.exports;
+    } catch (e) {
+        require('./vendor/astronomy.browser.min.js');
+    }
+}
 require('./kinh-dich/calendar.js');
 require('./kinh-dich/iching_core.js');
 const CALENDAR = globalThis.CALENDAR;
@@ -158,6 +170,39 @@ it('Hà Nội lúc 23:11 giờ dân dụng: Mặt Trời đã vượt 23:00 -> c
     assert.strictEqual(res.gio.chi, 'Tý', 'Giờ đã sang Tý');
     assert.strictEqual(res.ngay.can, 'Giáp');
     assert.strictEqual(res.ngay.chi, 'Thìn');
+});
+
+it('Hà Nội 00:05 ngày 04/02 dân dụng: giờ Mặt Trời 23:54 ngày 03/02 -> Can Chi Ngày là Giáp Thìn (04/02), KHÔNG nhảy thừa sang Ất Tỵ (05/02)', () => {
+    // 00:05:00 UTC+7 ngày 04/02/2025 = 17:05:00Z ngày 03/02/2025
+    const res = CALENDAR.calculateCanChi('2025-02-03T17:05:00Z', {
+        latitude: 21.0285,
+        longitude: 105.8542,
+        timezone: 'Asia/Ho_Chi_Minh'
+    });
+
+    assert.strictEqual(res.solarDetails.isSolarAdjusted, true);
+    assert.strictEqual(res.solarDetails.apparentSolarDate, '2025-02-03', 'Ngày Mặt Trời thực vẫn là 03/02');
+    assert.strictEqual(res.solarDetails.isDayShifted, true, 'Giờ Mặt Trời ~23:54 là Tý Sơ');
+    assert.strictEqual(res.gio.chi, 'Tý', 'Giờ là Tý');
+    assert.strictEqual(res.gio.can, 'Giáp', 'Giờ là Giáp Tý');
+    assert.strictEqual(res.ngay.can, 'Giáp', 'Can Ngày là Giáp (ngày 04/02), KHÔNG bị nhảy sang Ất (05/02)');
+    assert.strictEqual(res.ngay.chi, 'Thìn', 'Chi Ngày là Thìn (ngày 04/02), KHÔNG bị nhảy sang Tỵ (05/02)');
+});
+
+it('Nha Trang (109.20°E) 23:45 ngày 03/11: giờ Mặt Trời 00:18 ngày 04/11 -> Can Chi Ngày là Đinh Sửu (04/11), KHÔNG kẹt lại 03/11', () => {
+    // 23:45:00 UTC+7 ngày 03/11/2025 = 16:45:00Z ngày 03/11/2025
+    const res = CALENDAR.calculateCanChi('2025-11-03T16:45:00Z', {
+        latitude: 12.2388,
+        longitude: 109.1967,
+        timezone: 'Asia/Ho_Chi_Minh'
+    });
+
+    assert.strictEqual(res.solarDetails.isSolarAdjusted, true);
+    assert.strictEqual(res.solarDetails.apparentSolarDate, '2025-11-04', 'Ngày Mặt Trời thực đã sang 04/11');
+    assert.strictEqual(res.solarDetails.isDayShifted, false, 'Giờ Mặt Trời ~00:18 là Tý Chính (<23:00) của ngày 04/11');
+    assert.strictEqual(res.gio.chi, 'Tý', 'Giờ là Tý');
+    assert.strictEqual(res.ngay.can, 'Đinh', 'Can Ngày phải là Đinh (ngày 04/11)');
+    assert.strictEqual(res.ngay.chi, 'Sửu', 'Chi Ngày phải là Sửu (ngày 04/11)');
 });
 
 // -----------------------------------------------------------------------------
