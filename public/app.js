@@ -11,16 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================================
     // ĐẠI DIỄN THỆ PHÁP — DIRECT HUMAN SPLIT (Phép Bốc Cỏ Thi Chu Hy)
+    // Mô phỏng chuỗi nhân quả vật lý: bàn tay → điểm chia L/R → modulo 4 →
+    // Quải Nhất → Điệt Tứ → Quy Kỳ → 3 biến → hào 6/7/8/9.
+    // Kết quả hào phát sinh từ 18 lần "bốc cỏ ảo", không hề chọn trước.
     // =========================================================================
     const YARROW_MODEL = Object.freeze({
         version: 'dayan-zhu-xi-three-hangings-v1',
-        sessionBiasSD: 0.75,
-        motorScale: 0.08,
-        startStalks: 49,
-        passesPerLine: 3,
-        linesPerHexagram: 6
+        // Các tham số mô phỏng tạm chuẩn, có thể hiệu chỉnh bằng dữ liệu
+        // chia cỏ thực nghiệm. Chúng tạo được hình thái chia gần giữa hợp lý
+        // và đồng thời tái hiện rất sát phân bố hào của phép Chu Hy.
+        sessionBiasSD: 0.75,  // Độ lệch chuẩn thiên lệch tay giữa các phiên
+        motorScale: 0.08,     // sigma(N) = N * motorScale
+        startStalks: 49,      // Đại Diễn 50, dùng 49 (1 que Thái Cực để riêng)
+        passesPerLine: 3,     // Tam Biến thành hào
+        linesPerHexagram: 6   // Lục Hào thành quẻ
     });
 
+    // --- CSPRNG nền tảng (browser + Node tương thích, phòng thủ đa tầng) ---
     function cryptoUnitOpen() {
         try {
             const c = globalThis.crypto || (typeof window !== 'undefined' ? window.crypto : null);
@@ -39,50 +46,75 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
     }
 
+    // --- Core: Mô phỏng 1 biến chia cỏ (Direct Human Split) ---
     function simulateDirectHumanYarrowPass(N, hand) {
         const sigma = N * hand.motorScale;
         const motorNoise = getCryptoNormal() * sigma;
+
         let left = Math.round(N / 2 + hand.sessionBiasStalks + motorNoise);
+        // Bảo đảm nắm phải vẫn còn cọng sau Quải Nhất (right >= 2)
         left = Math.max(1, Math.min(N - 2, left));
         const right = N - left;
+
+        // Quải nhất: Rút 1 cọng bên phải kẹp ngón
         const rightRemaining = right - 1;
+
+        // Điệt chi dĩ tứ: Modulo 4 tự nhiên từ điểm chia vật lý
         const leftMod = left % 4;
         const rightMod = rightRemaining % 4;
         const remLeft = leftMod === 0 ? 4 : leftMod;
         const remRight = rightMod === 0 ? 4 : rightMod;
+
+        // Quy kỳ: Tổng que gác ra ngoài
         const removed = 1 + remLeft + remRight;
         const remaining = N - removed;
+
+        // Invariant bắt lỗi code ngay lập tức
         if (remaining % 4 !== 0) {
-            throw new Error('Yarrow invariant violated: remaining=' + remaining);
+            throw new Error('Yarrow invariant violated: remaining=' + remaining + ' is not divisible by 4');
         }
-        return { remaining, stepLog: { N, left, right, rightRemaining, remLeft, remRight, removed } };
+
+        return {
+            remaining,
+            stepLog: { N, left, right, rightRemaining, remLeft, remRight, removed }
+        };
     }
 
+    // --- Lập 1 Hào qua Tam Biến ---
     function generateOneYarrowLine(hand) {
         let N = YARROW_MODEL.startStalks;
         const passLogs = [];
+
         for (let pass = 0; pass < YARROW_MODEL.passesPerLine; pass++) {
             const res = simulateDirectHumanYarrowPass(N, hand);
             passLogs.push(res.stepLog);
             N = res.remaining;
         }
-        const yarrowNum = N / 4;
+
+        const yarrowNum = N / 4; // 6, 7, 8 hoặc 9
+
+        // Ánh xạ sang lineValue hệ thống (0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương)
         let lineValue;
-        if (yarrowNum === 6) lineValue = 0;
-        else if (yarrowNum === 7) lineValue = 1;
-        else if (yarrowNum === 8) lineValue = 2;
-        else if (yarrowNum === 9) lineValue = 3;
+        if (yarrowNum === 6) lineValue = 0;       // Lão Âm (Âm Động)
+        else if (yarrowNum === 7) lineValue = 1;   // Thiếu Dương (Dương Tĩnh)
+        else if (yarrowNum === 8) lineValue = 2;   // Thiếu Âm (Âm Tĩnh)
+        else if (yarrowNum === 9) lineValue = 3;   // Lão Dương (Dương Động)
         else throw new Error('Yarrow result invalid: ' + yarrowNum);
+
         return { lineValue, yarrowNum, passLogs };
     }
 
+    // --- Session state: "Bàn tay ảo" cho cả quẻ ---
     let yarrowHand = null;
+
     function initYarrowSession() {
         yarrowHand = {
             sessionBiasStalks: getCryptoNormal() * YARROW_MODEL.sessionBiasSD,
             motorScale: YARROW_MODEL.motorScale
         };
     }
+
+    // Cờ chặn gieo trùng lặp (debounce cơ học)
     let castInProgress = false;
 
     // -------------------------------------------------------------------------
@@ -98,9 +130,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const hexagramImg = document.getElementById('hexagram-img');
     const downloadBtn = document.getElementById('download-btn');
 
-    disclaimerCheckbox.addEventListener('change', () => {
-        proceedBtn.disabled = !disclaimerCheckbox.checked;
-    });
+    if (disclaimerCheckbox && proceedBtn) {
+        disclaimerCheckbox.addEventListener('change', () => {
+            proceedBtn.disabled = !disclaimerCheckbox.checked;
+        });
+    }
+
+    // Biến lưu tọa độ vị trí thực của người dùng phục vụ Chân Thái Dương Thời
+    let userLocation = null;
+    let isGeoRequested = false;
+
+    function initGeolocation() {
+        if (isGeoRequested) return;
+        isGeoRequested = true;
+        if (typeof navigator !== 'undefined' && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userLocation = {
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude
+                    };
+                    updateClock();
+                },
+                (err) => {
+                    // Người dùng từ chối hoặc không có GPS -> Fallback về giờ dân dụng
+                    updateClock();
+                },
+                { timeout: 6000, maximumAge: 300000 }
+            );
+        }
+    }
 
     // Khởi động đồng hồ live và gán ngày giờ hiện tại ngay lập tức khi tải trang
     const nowInit = new Date();
@@ -109,14 +168,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) {
         dateInput.value = nowInit.toISOString().slice(0, 16);
     }
+    initGeolocation();
     updateClock();
     liveClockTimer = setInterval(updateClock, 1000);
+    initMainFlow();
 
-    proceedBtn.addEventListener('click', () => {
-        disclaimerScreen.classList.add('hidden');
-        mainScreen.classList.remove('hidden');
-        initMainFlow();
-    });
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', () => {
+            if (disclaimerScreen) disclaimerScreen.classList.add('hidden');
+            if (mainScreen) mainScreen.classList.remove('hidden');
+            initGeolocation();
+            initMainFlow();
+        });
+    }
 
     // -------------------------------------------------------------------------
     // 2. KHỞI TẠO LUỒNG CHÍNH VÀ ĐỒNG HỒ
@@ -129,10 +193,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateClock() {
         const liveClockSpan = document.getElementById('live-clock');
+        const tzDisplay = document.getElementById('tz-display');
+        const solarStatus = document.getElementById('solar-status');
         if (!liveClockSpan) return;
+
         const now = new Date();
         const p = n => n < 10 ? '0' + n : n;
         liveClockSpan.innerHTML = `<span class="live-clock-time">${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}</span> (Ngày ${p(now.getDate())}/${p(now.getMonth() + 1)}/${now.getFullYear()})`;
+
+        let tzName = 'Local';
+        try {
+            tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local';
+        } catch (e) {}
+
+        const offsetMin = -now.getTimezoneOffset();
+        const offsetHours = offsetMin / 60;
+        const offsetSign = offsetHours >= 0 ? '+' : '';
+        const offsetStr = `GMT${offsetSign}${offsetHours}`;
+
+        if (tzDisplay) {
+            tzDisplay.textContent = `${tzName} (${offsetStr})`;
+        }
+
+        if (solarStatus) {
+            if (userLocation && typeof CALENDAR !== 'undefined') {
+                const calData = CALENDAR.calculateCanChi(now, {
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
+                    timezone: tzName
+                });
+                const lonStr = Math.abs(userLocation.longitude).toFixed(2) + '°' + (userLocation.longitude >= 0 ? 'Đ' : 'T');
+                solarStatus.innerHTML = `Chân Thái Dương Thời (${lonStr}): <span class="solar-highlight">${calData.solarDetails.apparentSolarTime}</span> — Tiết: <span class="solar-highlight">${calData.tietKhi}</span>`;
+            } else {
+                const mins = now.getMinutes();
+                const nearBoundary = (mins >= 40 || mins <= 20);
+                let warnHtml = '';
+                if (nearBoundary) {
+                    warnHtml = ` <span class="solar-warning" title="Thời điểm gần ranh giới đổi giờ Can Chi">⚠️ Gần mốc đổi giờ</span>`;
+                }
+                solarStatus.innerHTML = `Giờ thiết bị (Chưa hiệu chỉnh giờ Mặt Trời)${warnHtml}`;
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -275,17 +376,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return TOPIC_QUESTIONS[selectedTopic] || TOPIC_QUESTIONS['công việc'];
     }
 
-    // Thiết lập listener reset trạng thái gieo xu trực tuyến khi đổi chủ đề
-    document.getElementById('topic-select').addEventListener('change', () => {
-        resetTossState();
-    });
+    const topicSelectEl = document.getElementById('topic-select');
+    if (topicSelectEl) {
+        topicSelectEl.addEventListener('change', () => {
+            resetTossState();
+        });
+    }
 
     function resetTossState() {
         currentStep = 0;
         userAnswers = [];
         hexLines = [];
         castInProgress = false;
-        initYarrowSession();
+        initYarrowSession(); // Tạo "bàn tay ảo" mới cho quẻ mới
         const progressText = document.getElementById('progress-text');
         if (progressText) {
             progressText.innerText = `Lần gieo: 0/6`;
@@ -331,34 +434,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const methodNumberAreaEl = document.getElementById('method-number-area');
         const methodIntentAreaEl = document.getElementById('method-intent-area');
 
-        if (tabTossEl) {
-            tabTossEl.style.background = (activeTab === 'toss') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabTossEl.style.borderColor = (activeTab === 'toss') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabTossEl.style.color = (activeTab === 'toss') ? '#110c03' : 'var(--text-muted)';
-            tabTossEl.style.fontWeight = (activeTab === 'toss') ? '800' : '600';
-            tabTossEl.style.boxShadow = (activeTab === 'toss') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabManualEl) {
-            tabManualEl.style.background = (activeTab === 'manual') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabManualEl.style.borderColor = (activeTab === 'manual') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabManualEl.style.color = (activeTab === 'manual') ? '#110c03' : 'var(--text-muted)';
-            tabManualEl.style.fontWeight = (activeTab === 'manual') ? '800' : '600';
-            tabManualEl.style.boxShadow = (activeTab === 'manual') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabNumberEl) {
-            tabNumberEl.style.background = (activeTab === 'number') ? 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' : 'rgba(255,255,255,0.06)';
-            tabNumberEl.style.borderColor = (activeTab === 'number') ? '#fbbf24' : 'rgba(168,85,247,0.3)';
-            tabNumberEl.style.color = (activeTab === 'number') ? '#110c03' : '#fbbf24';
-            tabNumberEl.style.fontWeight = (activeTab === 'number') ? '800' : '600';
-            tabNumberEl.style.boxShadow = (activeTab === 'number') ? '0 4px 15px rgba(245,158,11,0.45)' : 'none';
-        }
-        if (tabIntentEl) {
-            tabIntentEl.style.background = (activeTab === 'intent') ? 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' : 'rgba(255,255,255,0.06)';
-            tabIntentEl.style.borderColor = (activeTab === 'intent') ? '#ec4899' : 'rgba(168,85,247,0.3)';
-            tabIntentEl.style.color = (activeTab === 'intent') ? '#ffffff' : '#e9d5ff';
-            tabIntentEl.style.fontWeight = (activeTab === 'intent') ? '800' : '600';
-            tabIntentEl.style.boxShadow = (activeTab === 'intent') ? '0 4px 18px rgba(168,85,247,0.55)' : 'none';
-        }
+        const tabs = [
+            { el: tabTossEl, id: 'toss' },
+            { el: tabManualEl, id: 'manual' },
+            { el: tabNumberEl, id: 'number' },
+            { el: tabIntentEl, id: 'intent' }
+        ];
+
+        tabs.forEach(t => {
+            if (t.el) {
+                t.el.classList.toggle('active-tab-btn', t.id === activeTab);
+                t.el.classList.toggle('active', t.id === activeTab);
+                // Clear any inline overrides
+                t.el.style.background = '';
+                t.el.style.borderColor = '';
+                t.el.style.color = '';
+                t.el.style.fontWeight = '';
+                t.el.style.boxShadow = '';
+            }
+        });
 
         if (methodTossAreaEl) {
             methodTossAreaEl.classList.toggle('hidden', activeTab !== 'toss');
@@ -387,22 +481,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.switchMethodTab = switchMethodTab;
 
-    if (tabToss) {
-        tabToss.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('toss'); });
-        tabToss.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('toss'); });
-    }
-    if (tabManual) {
-        tabManual.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('manual'); });
-        tabManual.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('manual'); });
-    }
-    if (tabNumber) {
-        tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
-        tabNumber.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('number'); });
-    }
-    if (tabIntent) {
-        tabIntent.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('intent'); });
-        tabIntent.addEventListener('touchend', (e) => { e.preventDefault(); switchMethodTab('intent'); });
-    }
+    if (tabToss) tabToss.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('toss'); });
+    if (tabManual) tabManual.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('manual'); });
+    if (tabNumber) tabNumber.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('number'); });
+    if (tabIntent) tabIntent.addEventListener('click', (e) => { e.preventDefault(); switchMethodTab('intent'); });
 
     // -------------------------------------------------------------------------
     // BẢNG TIÊN THIÊN BÁT QUÁI & THUẬT TOÁN LẬP QUẺ BẰNG SỐ
@@ -617,7 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Nhập hào"
@@ -750,7 +833,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Nhập số)"
@@ -1163,7 +1247,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Gieo ý niệm)"
@@ -1239,14 +1324,22 @@ document.addEventListener('DOMContentLoaded', () => {
         tossTriggerBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentStep >= 6) return;
-            if (castInProgress) return;
+            if (castInProgress) return; // Chặn bấm trùng tuyệt đối
             castInProgress = true;
 
+            // Khởi tạo session nếu chưa có (lần gieo đầu tiên)
             if (!yarrowHand) initYarrowSession();
 
+            // ═══════════════════════════════════════════════════════════════
+            // BƯỚC 1: SINH VÀ KHÓA KẾT QUẢ HÀO TRƯỚC KHI ANIMATION CHẠY
+            // Đây là nguyên tắc tối thượng: kết quả quẻ phải được commit
+            // trước mọi hiệu ứng đồ họa. Không lag, FPS, render nào thay
+            // đổi được kết quả hào sau dòng lệnh này.
+            // ═══════════════════════════════════════════════════════════════
             const yarrowResult = generateOneYarrowLine(yarrowHand);
             hexLines.push(yarrowResult.lineValue);
 
+            // Kích hoạt hiệu ứng toàn cảnh sấm sét chớp nháy nhẹ
             const lightningOverlay = document.getElementById('lightning-strike-overlay');
             if (lightningOverlay) {
                 lightningOverlay.classList.remove('lightning-flash-active');
@@ -1257,9 +1350,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 1500);
             }
 
+            // Vô hiệu hoá nút để chờ tung xu
             tossTriggerBtn.disabled = true;
             tossTriggerBtn.innerText = "ĐANG TUNG XU...";
 
+            // ═══════════════════════════════════════════════════════════════
+            // BƯỚC 2: ANIMATION THUẦN COSMETIC — chỉ hiển thị kết quả đã
+            // commit ở trên. Đồng xu không quyết định quẻ.
+            // ═══════════════════════════════════════════════════════════════
             performCoinAnimation(yarrowResult.lineValue, () => {
                 currentStep++;
                 const lastLineVal = yarrowResult.lineValue;
@@ -1282,13 +1380,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     progressText.innerText = `Lần gieo: ${currentStep}/6`;
                 }
 
-                castInProgress = false;
+                castInProgress = false; // Mở khóa cho lần gieo tiếp theo
                 tossTriggerBtn.disabled = false;
                 tossTriggerBtn.innerText = "TUNG ĐỒNG XU";
 
                 if (currentStep === 6) {
                     tossTriggerBtn.style.display = 'none';
+
+                    // Gán userAnswers mặc định cho flow tung xu tự động
                     userAnswers = ['', '', '', '', '', ''];
+
+                    // TỰ ĐỘNG CHUYỂN HẲN SANG QUẺ
                     const autoFinishBtn = document.getElementById('finish-btn');
                     if (autoFinishBtn) {
                         autoFinishBtn.click();
@@ -1300,6 +1402,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -------------------------------------------------------------------------
     // 4. HIỆU ỨNG TUNG XU (THUẦN COSMETIC — KHÔNG SINH KẾT QUẢ)
+    // Animation 3 đồng xu nảy xoay vật lý rồi đáp xuống hiển thị mặt
+    // tương ứng với lineValue đã được commit từ thuật toán Cỏ Thi.
     // -------------------------------------------------------------------------
     const coins = [
         document.getElementById('coin-1'),
@@ -1307,6 +1411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('coin-3')
     ];
 
+    // Hàm reset ngẫu nhiên mặt sấp ngửa của 3 đồng xu lúc khởi tạo hoặc back về
     function randomizeCoinsInitialState() {
         coins.forEach(coin => {
             if (!coin) return;
@@ -1318,20 +1423,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Thực hiện reset ngẫu nhiên ngay khi tải trang
     randomizeCoinsInitialState();
 
+    /**
+     * performCoinAnimation — Hiệu ứng thuần đồ họa cho 3 đồng xu.
+     * @param {number} lineValue - Kết quả hào đã commit (0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương)
+     * @param {Function} callback - Gọi sau khi cả 3 xu đáp xuống xong
+     *
+     * Đồng xu KHÔNG tham gia sinh kết quả. Chỉ hiển thị mặt sấp/ngửa
+     * khớp với lineValue đã có sẵn.
+     */
     function performCoinAnimation(lineValue, callback) {
         if (tossTriggerBtn) tossTriggerBtn.disabled = true;
 
+        // Ánh xạ lineValue → trạng thái 3 đồng xu hiển thị
+        // 0 (Lão Âm = 6):  0 Dương → [false, false, false]
+        // 1 (Thiếu Dương = 7): 1 Dương → [true, false, false] (vị trí Dương ngẫu nhiên)
+        // 2 (Thiếu Âm = 8):   2 Dương → [true, true, false]  (vị trí Âm ngẫu nhiên)
+        // 3 (Lão Dương = 9):   3 Dương → [true, true, true]
         let coinFaces;
         if (lineValue === 0) {
             coinFaces = [false, false, false];
         } else if (lineValue === 3) {
             coinFaces = [true, true, true];
         } else if (lineValue === 1) {
+            // 1 Dương: chọn ngẫu nhiên 1 trong 3 vị trí để ngửa
             const yangPos = Math.floor(Math.random() * 3);
             coinFaces = [yangPos === 0, yangPos === 1, yangPos === 2];
         } else {
+            // 2 Dương: chọn ngẫu nhiên 1 trong 3 vị trí để sấp
             const yinPos = Math.floor(Math.random() * 3);
             coinFaces = [yinPos !== 0, yinPos !== 1, yinPos !== 2];
         }
@@ -1341,6 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         coins.forEach((coin, idx) => {
             if (!coin) return;
 
+            // Kích hoạt nảy quán tính tắt dần (Harmonic Metal Bounce)
             const innerEl = coin.querySelector('.coin-inner');
             if (innerEl) {
                 innerEl.style.transition = 'none';
@@ -1349,9 +1471,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 innerEl.classList.add('spinning-fast');
             }
 
+            // Thời gian dao động vật lý độc lập
+            // Đồng xu 1 đáp trước (~1.25s), xu 2 (~1.5s), xu 3 (~1.75s)
             const coinSpinDuration = 1250 + (idx * 250) + Math.floor(Math.random() * 80);
 
             setTimeout(() => {
+                // Dừng hiệu ứng bay, cố định mặt đã chốt từ coinFaces
                 if (innerEl) {
                     innerEl.classList.remove('spinning-fast');
                     innerEl.style.transition = 'transform 0.4s cubic-bezier(0.15, 0.85, 0.35, 1)';
@@ -1380,7 +1505,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value || new Date().toISOString().slice(0, 16);
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch
@@ -1401,10 +1527,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 captureArea.style.opacity = '0.01';
 
                 html2canvas(target, {
-                    scale: Math.min(Math.max((window.devicePixelRatio || 2) * 1.5, 2.5), 3),
+                    scale: 2,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#0f0a05',
+                    backgroundColor: '#fefee5',
+                    width: 1000,
+                    windowWidth: 1000,
                     logging: false
                 }).then(canvas => {
                     captureArea.style.position = 'absolute';
@@ -1563,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" />
             <div class="info-header">
                 <div class="info-content">
-                    <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span></div>
+                    <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tiết khí:</strong> <span class="highlight">${dateInfo.tietKhi}</span></div>
                     <div class="info-line"><strong>Ngày âm:</strong> <span>${dateInfo.fullCanChi}</span></div>
                     <div class="info-line"><strong>Tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
                     <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>

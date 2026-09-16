@@ -192,7 +192,7 @@ const ICHING = (function () {
             'Ất': ['Tý', 'Thân'], 'Kỷ': ['Tý', 'Thân'],
             'Bính': ['Hợi', 'Dậu'], 'Đinh': ['Hợi', 'Dậu'],
             'Nhâm': ['Mão', 'Tỵ'], 'Quý': ['Mão', 'Tỵ'],
-            'Canh': ['Sửu', 'Mùi'], 'Tân': ['Ngọ', 'Dần']
+            'Canh': ['Ngọ', 'Dần'], 'Tân': ['Ngọ', 'Dần']
         };
         add('Quý Nhân', quy[dCan]);
 
@@ -486,3 +486,13 @@ const ICHING = (function () {
         TEN_QUE
     };
 })();
+
+if (typeof globalThis !== 'undefined') {
+    globalThis.ICHING = ICHING;
+}
+if (typeof window !== 'undefined') {
+    window.ICHING = ICHING;
+}
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = ICHING;
+}

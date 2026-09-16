@@ -327,9 +327,13 @@
 
         <!-- MÀN HÌNH 2: KHU VỰC ĐÀN LẬP QUẺ CHÍNH (HIỂN THỊ TỨC THÌ TRÊN FIRST PAINT) -->
         <div id="main-screen" class="card">
-            <!-- Đồng hồ thời gian thực của hệ thống -->
+            <!-- Đồng hồ thời gian thực & thông tin múi giờ / thiên văn -->
             <div class="live-clock-container">
-                <span>Thời gian lập quẻ (Giờ chuẩn Việt Nam GMT+7): <span id="live-clock">--:--:--</span></span>
+                <div class="live-clock-main">
+                    <span>Thời gian lập quẻ: <span id="live-clock">--:--:--</span></span>
+                    <span id="tz-display" class="tz-badge"></span>
+                </div>
+                <div id="solar-status" class="solar-status-badge"></div>
             </div>
 
             <!-- Khởi tạo thiết lập Đàn Lập Quẻ -->
@@ -1028,9 +1032,10 @@
     <div id="lightning-strike-overlay"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="calendar.js?v=6.0.0"></script>
-    <script src="iching_core.js?v=6.0.0"></script>
-    <script src="app.js?v=6.0.0"></script>
+    <script src="vendor/astronomy.browser.min.js"></script>
+    <script src="calendar.js?v=6.1.0"></script>
+    <script src="iching_core.js?v=6.1.0"></script>
+    <script src="app.js?v=6.1.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('menu-btn');

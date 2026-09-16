@@ -297,6 +297,42 @@ header p {
     font-weight: 700;
 }
 
+.live-clock-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tz-badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    color: var(--gold);
+    font-size: 0.78rem;
+    padding: 1px 7px;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.solar-status-badge {
+    margin-top: 5px;
+    font-size: 0.82rem;
+    color: rgba(235, 217, 197, 0.75);
+}
+
+.solar-status-badge .solar-highlight {
+    color: #f0d575;
+    font-weight: 600;
+}
+
+.solar-status-badge .solar-warning {
+    color: #fca5a5;
+    font-size: 0.78rem;
+    margin-left: 6px;
+}
+
 /* Coin Toss Stage */
 .coin-stage {
     display: flex;

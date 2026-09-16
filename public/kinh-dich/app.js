@@ -136,6 +136,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Biến lưu tọa độ vị trí thực của người dùng phục vụ Chân Thái Dương Thời
+    let userLocation = null;
+    let isGeoRequested = false;
+
+    function initGeolocation() {
+        if (isGeoRequested) return;
+        isGeoRequested = true;
+        if (typeof navigator !== 'undefined' && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userLocation = {
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude
+                    };
+                    updateClock();
+                },
+                (err) => {
+                    // Người dùng từ chối hoặc không có GPS -> Fallback về giờ dân dụng
+                    updateClock();
+                },
+                { timeout: 6000, maximumAge: 300000 }
+            );
+        }
+    }
+
     // Khởi động đồng hồ live và gán ngày giờ hiện tại ngay lập tức khi tải trang
     const nowInit = new Date();
     nowInit.setMinutes(nowInit.getMinutes() - nowInit.getTimezoneOffset());
@@ -143,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) {
         dateInput.value = nowInit.toISOString().slice(0, 16);
     }
+    initGeolocation();
     updateClock();
     liveClockTimer = setInterval(updateClock, 1000);
     initMainFlow();
@@ -151,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         proceedBtn.addEventListener('click', () => {
             if (disclaimerScreen) disclaimerScreen.classList.add('hidden');
             if (mainScreen) mainScreen.classList.remove('hidden');
+            initGeolocation();
             initMainFlow();
         });
     }
@@ -166,10 +193,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateClock() {
         const liveClockSpan = document.getElementById('live-clock');
+        const tzDisplay = document.getElementById('tz-display');
+        const solarStatus = document.getElementById('solar-status');
         if (!liveClockSpan) return;
+
         const now = new Date();
         const p = n => n < 10 ? '0' + n : n;
         liveClockSpan.innerHTML = `<span class="live-clock-time">${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}</span> (Ngày ${p(now.getDate())}/${p(now.getMonth() + 1)}/${now.getFullYear()})`;
+
+        let tzName = 'Local';
+        try {
+            tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local';
+        } catch (e) {}
+
+        const offsetMin = -now.getTimezoneOffset();
+        const offsetHours = offsetMin / 60;
+        const offsetSign = offsetHours >= 0 ? '+' : '';
+        const offsetStr = `GMT${offsetSign}${offsetHours}`;
+
+        if (tzDisplay) {
+            tzDisplay.textContent = `${tzName} (${offsetStr})`;
+        }
+
+        if (solarStatus) {
+            if (userLocation && typeof CALENDAR !== 'undefined') {
+                const calData = CALENDAR.calculateCanChi(now, {
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
+                    timezone: tzName
+                });
+                const lonStr = Math.abs(userLocation.longitude).toFixed(2) + '°' + (userLocation.longitude >= 0 ? 'Đ' : 'T');
+                solarStatus.innerHTML = `Chân Thái Dương Thời (${lonStr}): <span class="solar-highlight">${calData.solarDetails.apparentSolarTime}</span> — Tiết: <span class="solar-highlight">${calData.tietKhi}</span>`;
+            } else {
+                const mins = now.getMinutes();
+                const nearBoundary = (mins >= 40 || mins <= 20);
+                let warnHtml = '';
+                if (nearBoundary) {
+                    warnHtml = ` <span class="solar-warning" title="Thời điểm gần ranh giới đổi giờ Can Chi">⚠️ Gần mốc đổi giờ</span>`;
+                }
+                solarStatus.innerHTML = `Giờ thiết bị (Chưa hiệu chỉnh giờ Mặt Trời)${warnHtml}`;
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -635,7 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Nhập hào"
@@ -768,7 +833,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Nhập số)"
@@ -1181,7 +1247,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value;
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch với phương pháp "Mai hoa (Gieo ý niệm)"
@@ -1438,7 +1505,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.classList.add('visible');
 
             const dVal = document.getElementById('current-date-time').value || new Date().toISOString().slice(0, 16);
-            const calendarData = CALENDAR.calculateCanChi(dVal);
+            const geoOpts = userLocation ? { latitude: userLocation.latitude, longitude: userLocation.longitude } : {};
+            const calendarData = CALENDAR.calculateCanChi(dVal, geoOpts);
             const formattedDate = formatDate(dVal);
 
             // Gọi logic tính quẻ dịch
@@ -1623,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="/seal_stamp.jpg" alt="Ấn Nguyễn Huy Hoàng" class="seal-stamp-capture" />
             <div class="info-header">
                 <div class="info-content">
-                    <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span></div>
+                    <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tiết khí:</strong> <span class="highlight">${dateInfo.tietKhi}</span></div>
                     <div class="info-line"><strong>Ngày âm:</strong> <span>${dateInfo.fullCanChi}</span></div>
                     <div class="info-line"><strong>Tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
                     <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>

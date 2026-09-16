@@ -145,6 +145,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied lib directory recursively to public/lib!');
     }
 
+    // Sao chép đệ quy thư mục vendor sang public/vendor
+    const srcVendor = path.join(projectRoot, 'vendor');
+    const destVendor = path.join(publicDir, 'vendor');
+    if (fs.existsSync(srcVendor)) {
+        copyDirRecursiveSync(srcVendor, destVendor);
+        console.log('Successfully copied vendor directory recursively to public/vendor!');
+    }
+
     // Nếu tồn tại thư mục .vercel/output/static thì đồng bộ hóa luôn
     const vercelStaticDir = path.join(projectRoot, '.vercel', 'output', 'static');
     if (fs.existsSync(vercelStaticDir)) {
