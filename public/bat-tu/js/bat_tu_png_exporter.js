@@ -348,7 +348,7 @@
                 const endAge = startAge + 9;
                 const isActive = (currentAge >= startAge && currentAge <= endAge);
 
-                ctx.fillStyle = isActive ? "#DDDED4" : "#e7e8e2";
+                ctx.fillStyle = isActive ? "#c8cdc0" : "#e7e8e2";
                 ctx.fillRect(dyX, curY, col10W, dyH);
                 ctx.strokeStyle = "#000000";
                 ctx.lineWidth = isActive ? 2.5 : 1;
@@ -422,7 +422,7 @@
                     const lnYear = parseInt(lnList[i]?.year, 10) || (parseInt(group.dy?.startYear || birthYear, 10) + i);
                     const isCur = (lnYear === currentYear);
 
-                    ctx.fillStyle = isCur ? "#DDDED4" : "#e7e8e2";
+                    ctx.fillStyle = isCur ? "#c8cdc0" : "#e7e8e2";
                     ctx.fillRect(lnX, curY, col10W, lnH);
                     ctx.strokeStyle = "#000000";
                     ctx.lineWidth = isCur ? 2.5 : 1;
@@ -531,7 +531,7 @@
                         const isCurYear = (lnYear === currentYear);
 
                         if (isCurYear) {
-                            ctx.fillStyle = "#DDDED4";
+                            ctx.fillStyle = "#c8cdc0";
                             ctx.fillRect(dyX + 4, lny - 30, dyColW - 8, 62);
                             ctx.strokeStyle = "#000000";
                             ctx.lineWidth = 1.5;

@@ -66,24 +66,29 @@ const CALENDAR = (function () {
 
         const Astro = getAstroEngine();
         if (Astro && typeof Astro.SearchSunLongitude === 'function') {
-            const list = [];
-            let searchDate = new Date(Date.UTC(year, 0, 1));
-            for (let i = 0; i < 24; i++) {
-                const def = SOLAR_TERMS_DEF[i];
-                const res = Astro.SearchSunLongitude(def.lon, searchDate, 20);
-                const termDate = res.date;
-                list.push({
-                    id: i,
-                    name: def.name,
-                    lon: def.lon,
-                    isJie: def.isJie,
-                    monthChi: def.monthChi || null,
-                    date: termDate
-                });
-                searchDate = new Date(termDate.getTime() + 13 * 86400000);
+            try {
+                const list = [];
+                let searchDate = new Date(Date.UTC(year, 0, 1));
+                for (let i = 0; i < 24; i++) {
+                    const def = SOLAR_TERMS_DEF[i];
+                    const res = Astro.SearchSunLongitude(def.lon, searchDate, 20);
+                    if (!res || !res.date) throw new Error('SearchSunLongitude returned invalid result');
+                    const termDate = res.date;
+                    list.push({
+                        id: i,
+                        name: def.name,
+                        lon: def.lon,
+                        isJie: def.isJie,
+                        monthChi: def.monthChi || null,
+                        date: termDate
+                    });
+                    searchDate = new Date(termDate.getTime() + 13 * 86400000);
+                }
+                solarTermCache[year] = list;
+                return list;
+            } catch (err) {
+                console.warn('Lỗi tính toán thiên văn SearchSunLongitude, chuyển sang thuật toán dự phòng:', err);
             }
-            solarTermCache[year] = list;
-            return list;
         }
 
         // Fallback giải thuật nếu môi trường không có Astronomy

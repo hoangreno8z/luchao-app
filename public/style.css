@@ -833,7 +833,7 @@ footer a:hover {
     color: #000000; /* Mặc định là màu đen */
 }
 #captureTarget th {
-    background: #e2e2cc;
+    background: #dadbd3;
     font-weight: 700;
     color: #1a1a1a;
     font-size: 16px; /* Tăng size tiêu đề th */

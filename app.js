@@ -1738,7 +1738,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="shensha-title">Thần Sát</div>
                 <div class="shensha-grid">
                     ${(() => {
-                        const movingBranches = linesData.filter(l => l.isMoving).flatMap(l => [l.chi, l.changed.branch]);
+                        const movingBranches = [...new Set(linesData.filter(l => l.isMoving).flatMap(l => [l.chi, l.changed.branch]))];
                         return shensha.map(s => {
                             let parts = s.split('</strong> ');
                             if (parts.length > 1) {
