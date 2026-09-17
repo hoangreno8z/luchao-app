@@ -1,9 +1,7 @@
 {
   "framework": null,
-  "buildCommand": "node test_luc_hao_astronomy.cjs && node compiler/compile.js",
+  "buildCommand": "node compiler/compile.js",
   "outputDirectory": "public",
-  "analytics": { "id": true },
-  "speedInsights": { "id": true },
   "cleanUrls": true,
   "rewrites": [
     { "source": "/kinh-dich", "destination": "/kinh-dich/index.html" },
