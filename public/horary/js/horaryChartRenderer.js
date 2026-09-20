@@ -3,15 +3,19 @@
  * ZERO EMOJIS - Tất cả ký hiệu hoàng đạo, hành tinh, góc chiếu và chuyển động
  * được vẽ hoàn toàn bằng vector path SVG.
  *
- * ĐẶC TẢ HÌNH HỌC:
+ * ĐẶC TẢ HÌNH HỌC & THIÊN VĂN:
  * - Canvas cố định: 1200 x 1200 px.
  * - Nền vuông <rect width="1200" height="1200" ... /> bao bọc.
- * - Vòng tròn lá số trung tâm tâm tại (600, 600).
- * - 4 Góc chú thích: 12 cung, 7 hành tinh, ký hiệu chuyển động.
- * - Trọng tâm ở giữa: "Huy Hoàng - Zalo 0933116860".
- * - 4 Trục ASC, DSC, MC, IC nổi bật.
- * - Chống đè chữ: So le bán kính và vẽ đường gióng leader line khi hành tinh kề sát.
- * - Xuất PNG vuông sắc nét (1200x1200px hoặc 2400x2400px).
+ * - Trục ASC (Ascendant): Nằm chính xác tại hướng 9 giờ (mép trái, x = cx - R, y = cy).
+ * - Trục DSC (Descendant): Nằm chính xác tại hướng 3 giờ (mép phải, x = cx + R, y = cy).
+ * - Trục MC (Midheaven): Hướng lên trên (x = cx, y = cy - R).
+ * - Trục IC (Imum Coeli): Hướng xuống dưới (x = cx, y = cy + R).
+ * - Chiều di chuyển hoàng đạo: Ngược chiều kim đồng hồ (Counter-Clockwise).
+ * - Công thức chuyển đổi chuẩn:
+ *     theta = (eclipticLon - ascAngle) * PI / 180
+ *     x = centerX - radius * cos(theta)
+ *     y = centerY + radius * sin(theta)
+ * - Xuất PNG vuông sắc nét qua thẻ <img> hỗ trợ click chuột phải tải trên PC và giữ ngón tay lưu trên mobile.
  */
 
 import { GLYPH_PATHS, getGlyphGroupXml } from './svgGlyphs.js';
@@ -41,6 +45,20 @@ export class HoraryChartRenderer {
     }
 
     /**
+     * Hàm chuyển đổi tọa độ kinh độ hoàng đạo sang tọa độ phẳng (x, y) trên SVG.
+     * Quy ước thiên văn cổ điển:
+     * - ASC (Ascendant) tại hướng 9 giờ (mép trái, theta = 0).
+     * - DSC (Descendant) tại hướng 3 giờ (mép phải, theta = 180°).
+     * - Hoàng đạo tăng dần theo chiều ngược chiều kim đồng hồ.
+     */
+    eclipticToSvg(eclipticLon, ascAngle, radius, centerX = this.options.centerX, centerY = this.options.centerY) {
+        const thetaRad = ((eclipticLon - ascAngle) % 360 + 360) % 360 * Math.PI / 180;
+        const x = centerX - radius * Math.cos(thetaRad);
+        const y = centerY + radius * Math.sin(thetaRad);
+        return { x, y, thetaRad };
+    }
+
+    /**
      * Cập nhật dữ liệu lá số và tiến hành vẽ
      * Kết xuất ra thẻ <img> với Data URL PNG để hỗ trợ:
      * 1. Click chuột phải "Save image as..." trên PC
@@ -53,19 +71,21 @@ export class HoraryChartRenderer {
         if (!this.container) return;
 
         const svgXml = this.generateSvgXml();
-        
-        // Hiển thị ngay SVG ban đầu
-        this.container.innerHTML = svgXml;
 
         // Chuyển đổi sang thẻ <img> định dạng PNG data URL
         try {
-            const pngDataUrl = await this.svgToPngDataUrl(svgXml, 1);
+            const imgDataUrl = await this.svgToPngDataUrl(svgXml, 1);
             this.container.innerHTML = `
-                <img id="horary-chart-img" src="${pngDataUrl}" alt="Lá số Horary Chiêm Tinh - Huy Hoàng" style="width:100%; height:auto; display:block; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.05); -webkit-touch-callout:default; user-select:auto; pointer-events:auto;" />
+                <img id="horary-chart-img"
+                     src="${imgDataUrl}"
+                     alt="Lá số Horary Chiêm Tinh - Huy Hoàng"
+                     draggable="true"
+                     style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important; pointer-events: auto !important; touch-action: auto !important;" />
                 <div id="horary-svg-hidden" style="display:none;">${svgXml}</div>
             `;
         } catch (e) {
             console.warn('Fallback sang hiển thị SVG trực tiếp:', e);
+            this.container.innerHTML = svgXml;
         }
     }
 
@@ -92,22 +112,8 @@ export class HoraryChartRenderer {
         const houses = this.chartData?.houses;
         const planets = this.chartData?.planets || [];
 
-        // Góc ASC (Ascendant): Trong chiêm tinh học truyền thống, trục ASC luôn nằm ở vị trí 9 giờ (góc 180° hình học)
+        // Góc ASC (Ascendant): Trong chiêm tinh học truyền thống, trục ASC luôn nằm ở vị trí 9 giờ (mép trái)
         const ascAngle = houses ? houses.ascendant : 0;
-
-        /**
-         * Hàm chuyển đổi kinh độ hoàng đạo (0-360°) sang tọa độ hình học (x, y) trên SVG
-         * Với 0° Aries và trục ASC cố định tại hướng 9 giờ (180° trên màn hình)
-         * Chiều ngược chiều kim đồng hồ (Counter-clockwise)
-         */
-        const toSvgCoord = (eclipticLon, radius) => {
-            // Tọa độ góc chiêm tinh: ASC ở hướng 180° (bên trái)
-            // Các độ tăng dần theo chiều ngược chiều kim đồng hồ
-            const chartAngleRad = ((eclipticLon - ascAngle) + 180) * Math.PI / 180;
-            const x = centerX - radius * Math.cos(chartAngleRad);
-            const y = centerY + radius * Math.sin(chartAngleRad);
-            return { x, y, chartAngleRad };
-        };
 
         let svg = `<svg id="horary-main-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="background:${bgColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             <defs>
@@ -264,7 +270,7 @@ export class HoraryChartRenderer {
      * Vẽ vành 12 cung hoàng đạo xung quanh
      */
     renderZodiacWheel(ascAngle) {
-        const { centerX, centerY, radiusOuter, radiusZodiacRing } = this.options;
+        const { radiusOuter, radiusZodiacRing } = this.options;
         const signKeys = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
         const signColors = ['#dc2626', '#15803d', '#d97706', '#0284c7', '#dc2626', '#15803d', '#d97706', '#0284c7', '#dc2626', '#15803d', '#d97706', '#0284c7'];
 
@@ -272,28 +278,19 @@ export class HoraryChartRenderer {
 
         for (let i = 0; i < 12; i++) {
             const startEcliptic = i * 30;
-            const endEcliptic = (i + 1) * 30;
             const midEcliptic = startEcliptic + 15;
 
-            // Chuyển sang góc SVG theo trục ASC
-            const startAngRad = ((startEcliptic - ascAngle) + 180) * Math.PI / 180;
-            const endAngRad = ((endEcliptic - ascAngle) + 180) * Math.PI / 180;
-            const midAngRad = ((midEcliptic - ascAngle) + 180) * Math.PI / 180;
-
             // Tọa độ vạch chia cung
-            const x1 = centerX - radiusOuter * Math.cos(startAngRad);
-            const y1 = centerY + radiusOuter * Math.sin(startAngRad);
-            const x2 = centerX - radiusZodiacRing * Math.cos(startAngRad);
-            const y2 = centerY + radiusZodiacRing * Math.sin(startAngRad);
+            const pt1 = this.eclipticToSvg(startEcliptic, ascAngle, radiusOuter);
+            const pt2 = this.eclipticToSvg(startEcliptic, ascAngle, radiusZodiacRing);
 
-            s += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="#b0b5a5" stroke-width="1.5" />`;
+            s += `<line x1="${pt1.x.toFixed(2)}" y1="${pt1.y.toFixed(2)}" x2="${pt2.x.toFixed(2)}" y2="${pt2.y.toFixed(2)}" stroke="#b0b5a5" stroke-width="1.5" />`;
 
             // Ký hiệu vector cung hoàng đạo tại tâm cung
             const midRadius = (radiusOuter + radiusZodiacRing) / 2;
-            const glyphX = centerX - midRadius * Math.cos(midAngRad);
-            const glyphY = centerY + midRadius * Math.sin(midAngRad);
+            const glyphPt = this.eclipticToSvg(midEcliptic, ascAngle, midRadius);
 
-            const glyphXml = getGlyphGroupXml(signKeys[i], glyphX, glyphY, 0.95, signColors[i], 2.2);
+            const glyphXml = getGlyphGroupXml(signKeys[i], glyphPt.x, glyphPt.y, 0.95, signColors[i], 2.2);
             s += glyphXml;
         }
 
@@ -305,7 +302,7 @@ export class HoraryChartRenderer {
      * Vẽ 12 đỉnh nhà Regiomontanus và các trục chính ASC, DSC, MC, IC
      */
     renderHouseSpokes(houses, ascAngle) {
-        const { centerX, centerY, radiusZodiacRing, radiusInner, accentColor } = this.options;
+        const { centerX, centerY, radiusZodiacRing, radiusInner } = this.options;
         let s = `<g id="house-cusps">`;
 
         const cusps = houses.cusps || [];
@@ -315,33 +312,26 @@ export class HoraryChartRenderer {
             const cuspLon = cusps[i];
             if (cuspLon === undefined) continue;
 
-            const angRad = ((cuspLon - ascAngle) + 180) * Math.PI / 180;
-
             const isAngular = (houseNum === 1 || houseNum === 4 || houseNum === 7 || houseNum === 10);
             const strokeColor = isAngular ? '#8a4b18' : '#cbd5e1';
             const strokeWidth = isAngular ? 3.0 : 1.2;
 
-            const x1 = centerX - radiusZodiacRing * Math.cos(angRad);
-            const y1 = centerY + radiusZodiacRing * Math.sin(angRad);
-            const x2 = centerX - radiusInner * Math.cos(angRad);
-            const y2 = centerY + radiusInner * Math.sin(angRad);
+            const pt1 = this.eclipticToSvg(cuspLon, ascAngle, radiusZodiacRing);
+            const pt2 = this.eclipticToSvg(cuspLon, ascAngle, radiusInner);
 
-            s += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${strokeColor}" stroke-width="${strokeWidth}" />`;
+            s += `<line x1="${pt1.x.toFixed(2)}" y1="${pt1.y.toFixed(2)}" x2="${pt2.x.toFixed(2)}" y2="${pt2.y.toFixed(2)}" stroke="${strokeColor}" stroke-width="${strokeWidth}" />`;
 
             // Nhãn số nhà ở khoang giữa
             const nextCuspLon = cusps[(i + 1) % 12];
             let midHouseLon = (cuspLon + (nextCuspLon < cuspLon ? nextCuspLon + 360 : nextCuspLon)) / 2 % 360;
-            const midAngRad = ((midHouseLon - ascAngle) + 180) * Math.PI / 180;
-
             const labelR = radiusInner + 30;
-            const labelX = centerX - labelR * Math.cos(midAngRad);
-            const labelY = centerY + labelR * Math.sin(midAngRad);
+            const labelPt = this.eclipticToSvg(midHouseLon, ascAngle, labelR);
 
-            s += `<text x="${labelX.toFixed(2)}" y="${(labelY + 5).toFixed(2)}" font-size="14" font-weight="700" fill="#64748b" text-anchor="middle">${houseNum}</text>`;
+            s += `<text x="${labelPt.x.toFixed(2)}" y="${(labelPt.y + 5).toFixed(2)}" font-size="14" font-weight="700" fill="#64748b" text-anchor="middle">${houseNum}</text>`;
         }
 
         // =========================================================================
-        // NHÃN TRỤC NỔI BẬT: ASC, DSC, MC, IC
+        // NHÃN TRỤC NỔI BẬT: ASC, DSC, MC, IC (DÙNG ĐÚNG ECLIPTICTOSVG)
         // =========================================================================
         const formatCuspLabel = (degVal) => {
             const d = Math.floor(degVal % 30);
@@ -349,37 +339,33 @@ export class HoraryChartRenderer {
             return `${d}°${String(m).padStart(2, '0')}′`;
         };
 
-        // ASC (Nhà 1) - Luôn tại mép trái
+        // ASC (Nhà 1) - Tọa độ mép trái (9 giờ)
+        const ascPt = this.eclipticToSvg(houses.ascendant, ascAngle, radiusZodiacRing + 12);
         s += `
-        <g id="axis-asc" transform="translate(${centerX - radiusZodiacRing - 12}, ${centerY})">
+        <g id="axis-asc" transform="translate(${ascPt.x.toFixed(2)}, ${ascPt.y.toFixed(2)})">
             <rect x="-105" y="-14" width="105" height="28" rx="6" fill="#8a4b18" />
             <text x="-52" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">ASC ${formatCuspLabel(houses.ascendant)}</text>
         </g>`;
 
-        // DSC (Nhà 7) - Luôn tại mép phải
+        // DSC (Nhà 7) - Tọa độ mép phải (3 giờ)
+        const dscPt = this.eclipticToSvg(houses.descendant, ascAngle, radiusZodiacRing + 12);
         s += `
-        <g id="axis-dsc" transform="translate(${centerX + radiusZodiacRing + 12}, ${centerY})">
+        <g id="axis-dsc" transform="translate(${dscPt.x.toFixed(2)}, ${dscPt.y.toFixed(2)})">
             <rect x="0" y="-14" width="105" height="28" rx="6" fill="#8a4b18" />
             <text x="52" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">DSC ${formatCuspLabel(houses.descendant)}</text>
         </g>`;
 
         // MC (Nhà 10) & IC (Nhà 4)
-        const mcRad = ((houses.midheaven - ascAngle) + 180) * Math.PI / 180;
-        const mcX = centerX - (radiusZodiacRing + 25) * Math.cos(mcRad);
-        const mcY = centerY + (radiusZodiacRing + 25) * Math.sin(mcRad);
-
+        const mcPt = this.eclipticToSvg(houses.midheaven, ascAngle, radiusZodiacRing + 25);
         s += `
-        <g id="axis-mc" transform="translate(${mcX.toFixed(2)}, ${mcY.toFixed(2)})">
+        <g id="axis-mc" transform="translate(${mcPt.x.toFixed(2)}, ${mcPt.y.toFixed(2)})">
             <rect x="-45" y="-13" width="90" height="26" rx="6" fill="#8a4b18" />
             <text x="0" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">MC ${formatCuspLabel(houses.midheaven)}</text>
         </g>`;
 
-        const icRad = ((houses.imumCoeli - ascAngle) + 180) * Math.PI / 180;
-        const icX = centerX - (radiusZodiacRing + 25) * Math.cos(icRad);
-        const icY = centerY + (radiusZodiacRing + 25) * Math.sin(icRad);
-
+        const icPt = this.eclipticToSvg(houses.imumCoeli, ascAngle, radiusZodiacRing + 25);
         s += `
-        <g id="axis-ic" transform="translate(${icX.toFixed(2)}, ${icY.toFixed(2)})">
+        <g id="axis-ic" transform="translate(${icPt.x.toFixed(2)}, ${icPt.y.toFixed(2)})">
             <rect x="-45" y="-13" width="90" height="26" rx="6" fill="#8a4b18" />
             <text x="0" y="5" font-size="12" font-weight="800" fill="#ffffff" text-anchor="middle">IC ${formatCuspLabel(houses.imumCoeli)}</text>
         </g>`;
@@ -392,7 +378,7 @@ export class HoraryChartRenderer {
      * Vẽ các đường nối góc chiếu (Aspect Lines)
      */
     renderAspectLines(planets, ascAngle) {
-        const { centerX, centerY, radiusInner } = this.options;
+        const { radiusInner } = this.options;
         let s = `<g id="aspect-lines" opacity="0.65">`;
 
         const aspectColors = {
@@ -416,20 +402,15 @@ export class HoraryChartRenderer {
             const pB = planets.find(p => p.id === asp.planetB.id);
             if (!pA || !pB) continue;
 
-            const angA = ((pA.longitude - ascAngle) + 180) * Math.PI / 180;
-            const angB = ((pB.longitude - ascAngle) + 180) * Math.PI / 180;
-
             const r = radiusInner - 5;
-            const x1 = centerX - r * Math.cos(angA);
-            const y1 = centerY + r * Math.sin(angA);
-            const x2 = centerX - r * Math.cos(angB);
-            const y2 = centerY + r * Math.sin(angB);
+            const ptA = this.eclipticToSvg(pA.longitude, ascAngle, r);
+            const ptB = this.eclipticToSvg(pB.longitude, ascAngle, r);
 
             const color = aspectColors[asp.aspectId] || '#94a3b8';
             const width = aspectStrokeWidths[asp.aspectId] || 1.2;
             const dash = asp.state === 'APPLYING' ? 'none' : '4 3';
 
-            s += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${color}" stroke-width="${width}" stroke-dasharray="${dash}" />`;
+            s += `<line x1="${ptA.x.toFixed(2)}" y1="${ptA.y.toFixed(2)}" x2="${ptB.x.toFixed(2)}" y2="${ptB.y.toFixed(2)}" stroke="${color}" stroke-width="${width}" stroke-dasharray="${dash}" />`;
         }
 
         s += `</g>`;
@@ -440,13 +421,13 @@ export class HoraryChartRenderer {
      * Vẽ các hành tinh với thuật toán so le bán kính (Collision Avoidance)
      */
     renderPlanetsOnWheel(planets, ascAngle) {
-        const { centerX, centerY, radiusPlanets } = this.options;
+        const { radiusPlanets } = this.options;
         let s = `<g id="planets-on-wheel">`;
 
         // Sắp xếp các hành tinh theo kinh độ góc để xử lý va chạm
         const sorted = [...planets].sort((a, b) => a.longitude - b.longitude);
 
-        // Thuật toán so le bán kính: Khi hai hành tinh cách nhau < 6°, đẩy lệch bán kính
+        // Thuật toán so le bán kính: Khi hai hành tinh cách nhau < 6.5°, đẩy lệch bán kính
         const radiiLayers = [radiusPlanets, radiusPlanets + 35, radiusPlanets - 35, radiusPlanets + 65];
 
         for (let i = 0; i < sorted.length; i++) {
@@ -465,37 +446,31 @@ export class HoraryChartRenderer {
             p.assignedLayer = layerIndex;
             const currentR = radiiLayers[layerIndex];
 
-            const angRad = ((p.longitude - ascAngle) + 180) * Math.PI / 180;
-
-            // Tọa độ thực trên vòng vành
-            const realX = centerX - radiusPlanets * Math.cos(angRad);
-            const realY = centerY + radiusPlanets * Math.sin(angRad);
-
-            // Tọa độ hiển thị sau khi so le bán kính
-            const dispX = centerX - currentR * Math.cos(angRad);
-            const dispY = centerY + currentR * Math.sin(angRad);
+            // Tọa độ thực trên vành và tọa độ sau khi so le
+            const realPt = this.eclipticToSvg(p.longitude, ascAngle, radiusPlanets);
+            const dispPt = this.eclipticToSvg(p.longitude, ascAngle, currentR);
 
             // Nếu bị đẩy lệch bán kính, vẽ đường leader line trỏ về tọa độ thực
             if (layerIndex !== 0) {
-                s += `<line x1="${realX.toFixed(2)}" y1="${realY.toFixed(2)}" x2="${dispX.toFixed(2)}" y2="${dispY.toFixed(2)}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2 2" />`;
-                s += `<circle cx="${realX.toFixed(2)}" cy="${realY.toFixed(2)}" r="2" fill="#8a4b18" />`;
+                s += `<line x1="${realPt.x.toFixed(2)}" y1="${realPt.y.toFixed(2)}" x2="${dispPt.x.toFixed(2)}" y2="${dispPt.y.toFixed(2)}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2 2" />`;
+                s += `<circle cx="${realPt.x.toFixed(2)}" cy="${realPt.y.toFixed(2)}" r="2" fill="#8a4b18" />`;
             }
 
             // Vẽ glyph hành tinh (Vector SVG thuần)
-            const glyphXml = getGlyphGroupXml(p.glyphKey, dispX, dispY - 8, 1.1, '#1e293b', 2.2);
+            const glyphXml = getGlyphGroupXml(p.glyphKey, dispPt.x, dispPt.y - 8, 1.1, '#1e293b', 2.2);
             s += glyphXml;
 
             // Kèm ký hiệu nghịch hành ℞ nếu có
             if (p.isRetrograde) {
-                const rxXml = getGlyphGroupXml('retrograde', dispX + 16, dispY - 12, 0.65, '#dc2626', 2.0);
+                const rxXml = getGlyphGroupXml('retrograde', dispPt.x + 16, dispPt.y - 12, 0.65, '#dc2626', 2.0);
                 s += rxXml;
             } else if (p.isStationary) {
-                const sXml = getGlyphGroupXml('stationary', dispX + 16, dispY - 12, 0.65, '#d97706', 2.0);
+                const sXml = getGlyphGroupXml('stationary', dispPt.x + 16, dispPt.y - 12, 0.65, '#d97706', 2.0);
                 s += sXml;
             }
 
             // Nhãn độ phút (ví dụ 13°11′)
-            s += `<text x="${dispX.toFixed(2)}" y="${(dispY + 16).toFixed(2)}" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">${p.formatted}</text>`;
+            s += `<text x="${dispPt.x.toFixed(2)}" y="${(dispPt.y + 16).toFixed(2)}" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">${p.formatted}</text>`;
         }
 
         s += `</g>`;
@@ -503,51 +478,50 @@ export class HoraryChartRenderer {
     }
 
     /**
-     * Chuyển đổi chuỗi XML SVG sang Data URL ảnh PNG
+     * Chuyển đổi chuỗi XML SVG sang Data URL ảnh PNG (tương thích 100% Safari, WebKit, iOS & Android)
      */
     async svgToPngDataUrl(svgXml, scale = 1) {
-        if (document.fonts) {
-            await document.fonts.ready;
+        if (typeof document !== 'undefined' && document.fonts) {
+            try {
+                await document.fonts.ready;
+            } catch (_) {}
         }
 
-        const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-        const URL = window.URL || window.webkitURL || window;
-        const blobUrl = URL.createObjectURL(svgBlob);
+        const dataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const image = new Image();
+            image.crossOrigin = 'anonymous';
             image.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 1200 * scale;
-                canvas.height = 1200 * scale;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                URL.revokeObjectURL(blobUrl);
-                resolve(canvas.toDataURL('image/png'));
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1200 * scale;
+                    canvas.height = 1200 * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    const pngUrl = canvas.toDataURL('image/png');
+                    resolve(pngUrl);
+                } catch (canvasErr) {
+                    console.warn('Canvas toDataURL failed/tainted, falling back to SVG data URI:', canvasErr);
+                    resolve(dataUri);
+                }
             };
-            image.onerror = err => {
-                URL.revokeObjectURL(blobUrl);
-                reject(err);
+            image.onerror = (err) => {
+                console.warn('Image onload error, falling back to SVG data URI:', err);
+                resolve(dataUri);
             };
-            image.src = blobUrl;
+            image.src = dataUri;
         });
     }
 
     /**
-     * Xuất lá số ra ảnh PNG hình vuông sắc nét (1200x1200px hoặc 2400x2400px)
+     * Xuất lá số ra file ảnh PNG hình vuông sắc nét (1200x1200px hoặc 2400x2400px)
      * Đảm bảo giữ nguyên toàn bộ nền vuông và 4 góc chú thích
      */
     async exportToPng(scale = 1) {
-        const img = this.container.querySelector('#horary-chart-img');
         const fileName = `horary-${new Date().toISOString().slice(0, 10)}.png`;
-
-        let dataUrl = '';
-        if (img && img.src && img.src.startsWith('data:image/png') && scale === 1) {
-            dataUrl = img.src;
-        } else {
-            const svgXml = this.generateSvgXml();
-            dataUrl = await this.svgToPngDataUrl(svgXml, scale);
-        }
+        const svgXml = this.generateSvgXml();
+        const dataUrl = await this.svgToPngDataUrl(svgXml, scale);
 
         const a = document.createElement('a');
         a.download = fileName;

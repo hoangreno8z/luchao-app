@@ -205,36 +205,48 @@ export const PLANETS_INFO = [
 ];
 
 /**
+ * Định dạng kinh độ thành độ, phút, giây cung theo chuẩn thiên văn duy nhất
+ * Đảm bảo độ [0, 29], phút [0, 59], giây [0, 59], triệt tiêu 100% lỗi 29°60′ hay 30°
+ * @param {number} longitude - Kinh độ hoàng đạo [0, 360)
+ * @returns {object} { signIndex, deg, min, sec, formatted, formattedWithSec }
+ */
+export function formatZodiacDms(longitude) {
+    let norm = (longitude % 360 + 360) % 360;
+    // Làm tròn tới arcsecond gần nhất trên vòng tròn 360° (1,296,000 arcseconds)
+    const totalSecCircle = (Math.round(norm * 3600) % 1296000 + 1296000) % 1296000;
+    const signIndex = Math.floor(totalSecCircle / 108000) % 12;
+    const secInSign = totalSecCircle % 108000;
+
+    const deg = Math.floor(secInSign / 3600);
+    const min = Math.floor((secInSign % 3600) / 60);
+    const sec = secInSign % 60;
+
+    return {
+        signIndex,
+        deg,
+        min,
+        sec,
+        formatted: `${deg}°${String(min).padStart(2, '0')}′`,
+        formattedWithSec: `${deg}°${String(min).padStart(2, '0')}′${String(sec).padStart(2, '0')}″`
+    };
+}
+
+/**
  * Lấy thông tin cung hoàng đạo và độ/phút/giây từ kinh độ hoàng đạo thực [0, 360)
+ * Tách biệt hoàn toàn: TỌA ĐỘ VẬT LÝ THỰC (Raw Longitude) quyết định Cung hoàng đạo logic,
+ * và BỘ ĐỊNH DẠNG HIỂN THỊ (Display Formatter) chuyển đổi thành chuỗi không làm sai lệch cung.
  * @param {number} longitude - Kinh độ hoàng đạo (độ)
  * @returns {object} Thông tin chi tiết vị trí cung
  */
 export function getZodiacPosition(longitude) {
-    let norm = longitude % 360;
-    if (norm < 0) norm += 360;
-
-    // Chuyển toàn bộ kinh độ sang đơn vị giây cung nguyên (arcseconds) [0, 1295999]
-    // 360 độ = 1,296,000 giây cung. Đảm bảo triệt để 100% không bao giờ có lỗi làm tròn 60 giây hay 30 độ
-    const totalSecCircle = 360 * 3600; // 1296000
-    let totalSec = Math.round(norm * 3600);
-    totalSec = ((totalSec % totalSecCircle) + totalSecCircle) % totalSecCircle;
-
-    const secPerSign = 30 * 3600; // 108000
-    const signIndex = Math.floor(totalSec / secPerSign) % 12;
-    const sign = ZODIAC_SIGNS[signIndex];
-
-    const secInSign = totalSec % secPerSign;
-    const degree = Math.floor(secInSign / 3600);
-    const minute = Math.floor((secInSign % 3600) / 60);
-    const second = secInSign % 60;
-    const degreeDecimal = secInSign / 3600;
-
-    const formatted = `${degree}°${String(minute).padStart(2, '0')}′`;
-    const formattedWithSec = `${degree}°${String(minute).padStart(2, '0')}′${String(second).padStart(2, '0')}″`;
+    let norm = (longitude % 360 + 360) % 360;
+    const dms = formatZodiacDms(norm);
+    const sign = ZODIAC_SIGNS[dms.signIndex];
+    const degreeDecimal = norm - dms.signIndex * 30;
 
     return {
         longitude: norm,
-        signIndex,
+        signIndex: dms.signIndex,
         signId: sign.id,
         signNameVi: sign.nameVi,
         signNameEn: sign.nameEn,
@@ -242,12 +254,12 @@ export function getZodiacPosition(longitude) {
         rulerId: sign.rulerId,
         rulerNameVi: sign.rulerNameVi,
         degreeDecimal,
-        degree,
-        minute,
-        second,
-        formatted,
-        formattedWithSec,
-        fullDisplay: `${formatted} ${sign.nameVi}`
+        degree: dms.deg,
+        minute: dms.min,
+        second: dms.sec,
+        formatted: dms.formatted,
+        formattedWithSec: dms.formattedWithSec,
+        fullDisplay: `${dms.formatted} ${sign.nameVi}`
     };
 }
 

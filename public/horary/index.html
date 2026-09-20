@@ -19,7 +19,7 @@
     <!-- Local Astronomy Engine (VSOP87/NOVAS) -->
     <script src="../vendor/astronomy.browser.min.js"></script>
 
-    <link rel="stylesheet" href="horary.css?v=1.0.0">
+    <link rel="stylesheet" href="horary.css?v=1.1.0">
 </head>
 <body>
     <div class="horary-container">
@@ -97,7 +97,7 @@
 
         <!-- Khung Vẽ SVG Lá Số Khung Vuông 1200x1200px -->
         <div class="chart-wrapper" style="flex-direction: column;">
-            <div id="horary-chart-container">
+            <div id="horary-chart-container" style="user-select: auto; -webkit-touch-callout: default;">
                 <!-- Lá số sẽ được vẽ động bằng JavaScript tại đây -->
             </div>
             <p style="text-align: center; font-size: 0.82rem; color: #64748b; margin-top: 12px; line-height: 1.4;">
@@ -105,124 +105,133 @@
             </p>
         </div>
 
-        <!-- Khung Cố Định: Cách Đọc Lá Số Này (8 Bước Cốt Lõi) -->
-        <section class="how-to-read-box">
-            <h3>CÁCH ĐỌC LÁ SỐ NÀY (QUY TRÌNH LUẬN GIẢI HORARY 8 BƯỚC)</h3>
-            <div class="how-to-read-list">
-                <div class="read-step">
-                    <strong>1. NHÀ CHO BIẾT VAI TRÒ</strong>
-                    Nhà 1 đại diện cho người hỏi. Nhà của vấn đề (Nhà 7: đối tác/tình cảm, Nhà 10: sự nghiệp/sếp, Nhà 2: tiền bạc...) đại diện cho việc được hỏi.
-                </div>
-                <div class="read-step">
-                    <strong>2. CHỦ TINH LÀ TÁC NHÂN</strong>
-                    Cung nằm trên đỉnh mỗi nhà quyết định hành tinh chủ quản. Hành tinh đó chính là "nhân vật đại diện" cho vai trò tương ứng.
-                </div>
-                <div class="read-step">
-                    <strong>3. PHẨM GIÁ = THỰC LỰC NỘI TẠI</strong>
-                    Xét Domicile, Exaltation (+), hay Detriment, Fall (-). Cho biết tác nhân đang ở vị thế quyền lực, đắc thế hay bất an, suy nhược.
-                </div>
-                <div class="read-step">
-                    <strong>4. NHÀ & CHUYỂN ĐỘNG = NĂNG LỰC</strong>
-                    Hành tinh ngụ tại nhà góc (1, 4, 7, 10) hành động mạnh nhất. Thuận hành (D) tiến bước thuận lợi; Nghịch hành (℞) bị trì hoãn hoặc đổi ý.
-                </div>
-                <div class="read-step">
-                    <strong>5. APPLYING / SEPARATING = THỜI THÁI</strong>
-                    Góc đang tiến tới (Applying) cho biết sự việc sắp xảy ra. Góc đã rời (Separating) cho biết mối quan hệ hoặc sự việc đã qua đi.
-                </div>
-                <div class="read-step">
-                    <strong>6. ASPECT = CÁCH THỨC GẶP NHAU</strong>
-                    Tam hợp (120°) và Lục hợp (60°) diễn ra thuận lợi, dễ dàng; Vuông góc (90°) cần nỗ lực, thử thách lớn; Đối xung (180°) gặp trở ngại, khó hòa hợp.
-                </div>
-                <div class="read-step">
-                    <strong>7. RECEPTION = THIỆN CHÍ & CHẤP THUẬN</strong>
-                    Hành tinh này có nằm trong phẩm giá của hành tinh kia không? Có tiếp nhận tương hỗ (Mutual Reception) không? Quyết định hai bên có sẵn lòng hợp tác.
-                </div>
-                <div class="read-step">
-                    <strong>8. PERFECTION = KẾT QUẢ CUỐI CÙNG</strong>
-                    Hai chủ tinh có hoàn thành góc chiếu trước khi đổi cung hay bị chặn (Refranation / Prohibition) không? Quyết định việc có thành hay bại.
+        <!-- Mục 1: Cách Đọc Lá Số (8 Bước) -->
+        <details class="horary-accordion reading-card" open id="accordion-how-to-read">
+            <summary class="accordion-header">
+                <h3>CÁCH ĐỌC LÁ SỐ (8 BƯỚC)</h3>
+                <span class="accordion-arrow">▾</span>
+            </summary>
+            <div class="accordion-content">
+                <div class="how-to-read-list">
+                    <div class="read-step">
+                        <strong>1. NHÀ CHO BIẾT VAI TRÒ</strong>
+                        Nhà 1 đại diện cho người hỏi. Nhà của vấn đề (Nhà 7: đối tác/tình cảm, Nhà 10: sự nghiệp/sếp, Nhà 2: tiền bạc...) đại diện cho việc được hỏi.
+                    </div>
+                    <div class="read-step">
+                        <strong>2. CHỦ TINH LÀ TÁC NHÂN</strong>
+                        Cung nằm trên đỉnh mỗi nhà quyết định hành tinh chủ quản. Hành tinh đó chính là "nhân vật đại diện" cho vai trò tương ứng.
+                    </div>
+                    <div class="read-step">
+                        <strong>3. PHẨM GIÁ = THỰC LỰC NỘI TẠI</strong>
+                        Xét Domicile, Exaltation (+), hay Detriment, Fall (-). Cho biết tác nhân đang ở vị thế quyền lực, đắc thế hay bất an, suy nhược.
+                    </div>
+                    <div class="read-step">
+                        <strong>4. NHÀ & CHUYỂN ĐỘNG = NĂNG LỰC</strong>
+                        Hành tinh ngụ tại nhà góc (1, 4, 7, 10) hành động mạnh nhất. Thuận hành (D) tiến bước thuận lợi; Nghịch hành (℞) bị trì hoãn hoặc đổi ý.
+                    </div>
+                    <div class="read-step">
+                        <strong>5. APPLYING / SEPARATING = THỜI THÁI</strong>
+                        Góc đang tiến tới (Applying) cho biết sự việc sắp xảy ra. Góc đã rời (Separating) cho biết mối quan hệ hoặc sự việc đã qua đi.
+                    </div>
+                    <div class="read-step">
+                        <strong>6. ASPECT = CÁCH THỨC GẶP NHAU</strong>
+                        Tam hợp (120°) và Lục hợp (60°) diễn ra thuận lợi, dễ dàng; Vuông góc (90°) cần nỗ lực, thử thách lớn; Đối xung (180°) gặp trở ngại, khó hòa hợp.
+                    </div>
+                    <div class="read-step">
+                        <strong>7. RECEPTION = THIỆN CHÍ & CHẤP THUẬN</strong>
+                        Hành tinh này có nằm trong phẩm giá của hành tinh kia không? Có tiếp nhận tương hỗ (Mutual Reception) không? Quyết định hai bên có sẵn lòng hợp tác.
+                    </div>
+                    <div class="read-step">
+                        <strong>8. PERFECTION = KẾT QUẢ CUỐI CÙNG</strong>
+                        Hai chủ tinh có hoàn thành góc chiếu trước khi đổi cung hay bị chặn (Refranation / Prohibition) không? Quyết định việc có thành hay bại.
+                    </div>
                 </div>
             </div>
-        </section>
+        </details>
 
-        <!-- Bảng 12 Nhà -->
+        <!-- Mục 2: Bảng 12 Nhà & Chủ Tinh -->
         <section id="houses-table-container"></section>
 
-        <!-- Bảng Hành Tinh & Phẩm Giá -->
+        <!-- Mục 3: Bảng Tọa Độ & Phẩm Giá -->
         <section id="planets-table-container"></section>
 
-        <!-- Bảng Aspect & Chuyển Động -->
+        <!-- Mục 4: Bảng Góc Chiếu Ptolemaic -->
         <section id="aspects-table-container"></section>
 
-        <!-- Bảng Tiếp Nhận Hai Chiều -->
+        <!-- Mục 5: Bảng Tiếp Nhận Hai Chiều -->
         <section id="receptions-table-container"></section>
 
-        <!-- 4 Bảng Tra Cứu Nhanh Cố Định Cho Người Học (Zero Emojis - Vector SVG) -->
-        <section class="reading-card">
-            <h3>4 BẢNG TRA CỨU NHANH KÝ HIỆU & QUY TẮC HORARY</h3>
-            <p class="section-desc">Hệ thống ký hiệu thiên văn và quy chuẩn học thuật William Lilly để người mới tra cứu trực tiếp.</p>
-            
-            <div class="quick-ref-grid">
-                <!-- Bảng 1: 12 Cung & Chủ Tinh Cổ Điển -->
-                <div class="ref-box">
-                    <h4>12 CUNG & CHỦ TINH</h4>
-                    <ul class="ref-list">
-                        <li><strong>♈ Bạch Dương:</strong> Hỏa Tinh (♂)</li>
-                        <li><strong>♉ Kim Ngưu:</strong> Kim Tinh (♀)</li>
-                        <li><strong>♊ Song Tử:</strong> Thủy Tinh (☿)</li>
-                        <li><strong>♋ Cự Giải:</strong> Mặt Trăng (☽)</li>
-                        <li><strong>♌ Sư Tử:</strong> Mặt Trời (☉)</li>
-                        <li><strong>♍ Xử Nữ:</strong> Thủy Tinh (☿)</li>
-                        <li><strong>♎ Thiên Bình:</strong> Kim Tinh (♀)</li>
-                        <li><strong>♏ Bọ Cạp:</strong> Hỏa Tinh (♂)</li>
-                        <li><strong>♐ Nhân Mã:</strong> Mộc Tinh (♃)</li>
-                        <li><strong>♑ Ma Kết:</strong> Thổ Tinh (♄)</li>
-                        <li><strong>♒ Bảo Bình:</strong> Thổ Tinh (♄)</li>
-                        <li><strong>♓ Song Ngư:</strong> Mộc Tinh (♃)</li>
-                    </ul>
-                </div>
+        <!-- Mục 6: Tra Cứu Ký Hiệu Horary -->
+        <details class="horary-accordion reading-card" open id="accordion-quick-ref">
+            <summary class="accordion-header">
+                <h3>TRA CỨU KÝ HIỆU HORARY</h3>
+                <span class="accordion-arrow">▾</span>
+            </summary>
+            <div class="accordion-content">
+                <p class="section-desc">Hệ thống ký hiệu thiên văn và quy chuẩn học thuật William Lilly để người mới tra cứu trực tiếp.</p>
+                <div class="quick-ref-grid">
+                    <!-- Bảng 1: 12 Cung & Chủ Tinh Cổ Điển -->
+                    <div class="ref-box">
+                        <h4>12 CUNG & CHỦ TINH</h4>
+                        <ul class="ref-list">
+                            <li><strong>♈ Bạch Dương:</strong> Hỏa Tinh (♂)</li>
+                            <li><strong>♉ Kim Ngưu:</strong> Kim Tinh (♀)</li>
+                            <li><strong>♊ Song Tử:</strong> Thủy Tinh (☿)</li>
+                            <li><strong>♋ Cự Giải:</strong> Mặt Trăng (☽)</li>
+                            <li><strong>♌ Sư Tử:</strong> Mặt Trời (☉)</li>
+                            <li><strong>♍ Xử Nữ:</strong> Thủy Tinh (☿)</li>
+                            <li><strong>♎ Thiên Bình:</strong> Kim Tinh (♀)</li>
+                            <li><strong>♏ Bọ Cạp:</strong> Hỏa Tinh (♂)</li>
+                            <li><strong>♐ Nhân Mã:</strong> Mộc Tinh (♃)</li>
+                            <li><strong>♑ Ma Kết:</strong> Thổ Tinh (♄)</li>
+                            <li><strong>♒ Bảo Bình:</strong> Thổ Tinh (♄)</li>
+                            <li><strong>♓ Song Ngư:</strong> Mộc Tinh (♃)</li>
+                        </ul>
+                    </div>
 
-                <!-- Bảng 2: 7 Hành Tinh Truyền Thống -->
-                <div class="ref-box">
-                    <h4>7 HÀNH TINH TRUYỀN THỐNG</h4>
-                    <ul class="ref-list">
-                        <li><strong>☉ Mặt Trời:</strong> Chủ thể, sự sống, quyền uy</li>
-                        <li><strong>☽ Mặt Trăng:</strong> Diễn tiến sự việc, cảm xúc</li>
-                        <li><strong>☿ Thủy Tinh:</strong> Trí tuệ, tin tức, giao dịch</li>
-                        <li><strong>♀ Kim Tinh:</strong> Tình cảm, cái đẹp, tiền tài</li>
-                        <li><strong>♂ Hỏa Tinh:</strong> Năng lượng, xung đột, hành động</li>
-                        <li><strong>♃ Mộc Tinh:</strong> May mắn, mở rộng, đạo đức</li>
-                        <li><strong>♄ Thổ Tinh:</strong> Kỷ luật, thời gian, giới hạn</li>
-                        <li><strong>☊ La Hầu:</strong> Mở rộng, tăng trưởng</li>
-                        <li><strong>☋ Kế Đô:</strong> Thu hẹp, giải phóng, hao tổn</li>
-                    </ul>
-                </div>
+                    <!-- Bảng 2: 7 Hành Tinh Truyền Thống -->
+                    <div class="ref-box">
+                        <h4>7 HÀNH TINH TRUYỀN THỐNG</h4>
+                        <ul class="ref-list">
+                            <li><strong>☉ Mặt Trời:</strong> Chủ thể, sự sống, quyền uy</li>
+                            <li><strong>☽ Mặt Trăng:</strong> Diễn tiến sự việc, cảm xúc</li>
+                            <li><strong>☿ Thủy Tinh:</strong> Trí tuệ, tin tức, giao dịch</li>
+                            <li><strong>♀ Kim Tinh:</strong> Tình cảm, cái đẹp, tiền tài</li>
+                            <li><strong>♂ Hỏa Tinh:</strong> Năng lượng, xung đột, hành động</li>
+                            <li><strong>♃ Mộc Tinh:</strong> May mắn, mở rộng, đạo đức</li>
+                            <li><strong>♄ Thổ Tinh:</strong> Kỷ luật, thời gian, giới hạn</li>
+                            <li><strong>☊ La Hầu:</strong> Mở rộng, tăng trưởng</li>
+                            <li><strong>☋ Kế Đô:</strong> Thu hẹp, giải phóng, hao tổn</li>
+                        </ul>
+                    </div>
 
-                <!-- Bảng 3: 5 Góc Chiếu Ptolemaic -->
-                <div class="ref-box">
-                    <h4>5 GÓC CHIẾU CHÍNH (ASPECTS)</h4>
-                    <ul class="ref-list">
-                        <li><strong>☌ 0° Đồng cung:</strong> Hòa trộn bản chất, gắn kết tối đa</li>
-                        <li><strong>⚹ 60° Lục hợp:</strong> Cơ hội thuận lợi, hỗ trợ nhẹ nhàng</li>
-                        <li><strong>□ 90° Vuông góc:</strong> Căng thẳng, thử thách, cần nỗ lực</li>
-                        <li><strong>△ 120° Tam hợp:</strong> Hòa hợp hoàn hảo, kết quả mỹ mãn</li>
-                        <li><strong>☍ 180° Đối xung:</strong> Xung đột, khó dung hòa, phân ly</li>
-                    </ul>
-                </div>
+                    <!-- Bảng 3: 5 Góc Chiếu Ptolemaic -->
+                    <div class="ref-box">
+                        <h4>5 GÓC CHIẾU CHÍNH (ASPECTS)</h4>
+                        <ul class="ref-list">
+                            <li><strong>☌ 0° Đồng cung:</strong> Hòa trộn bản chất, gắn kết tối đa</li>
+                            <li><strong>⚹ 60° Lục hợp:</strong> Cơ hội thuận lợi, hỗ trợ nhẹ nhàng</li>
+                            <li><strong>□ 90° Vuông góc:</strong> Căng thẳng, thử thách, cần nỗ lực</li>
+                            <li><strong>△ 120° Tam hợp:</strong> Hòa hợp hoàn hảo, kết quả mỹ mãn</li>
+                            <li><strong>☍ 180° Đối xung:</strong> Xung đột, khó dung hòa, phân ly</li>
+                        </ul>
+                    </div>
 
-                <!-- Bảng 4: Trạng Thái Động Học -->
-                <div class="ref-box">
-                    <h4>TRẠNG THÁI ĐỘNG HỌC</h4>
-                    <ul class="ref-list">
-                        <li><strong>D (Thuận hành):</strong> Tốc độ dương, tiến bước bình thường</li>
-                        <li><strong>℞ (Nghịch hành):</strong> Tốc độ âm, trì hoãn, hồi tâm chuyển ý</li>
-                        <li><strong>S (Đứng / Trạm):</strong> Tốc độ tiệm cận 0, điểm đảo chiều</li>
-                        <li><strong>Applying:</strong> Khoảng sai tới góc đang giảm (sắp tới)</li>
-                        <li><strong>Exact:</strong> Góc đạt chính xác tại thời điểm hiện tại</li>
-                        <li><strong>Separating:</strong> Khoảng sai đang tăng dần (đã qua đi)</li>
-                    </ul>
+                    <!-- Bảng 4: Trạng Thái Động Học -->
+                    <div class="ref-box">
+                        <h4>TRẠNG THÁI ĐỘNG HỌC</h4>
+                        <ul class="ref-list">
+                            <li><strong>D (Thuận hành):</strong> Tốc độ dương, tiến bước bình thường</li>
+                            <li><strong>℞ (Nghịch hành):</strong> Tốc độ âm, trì hoãn, hồi tâm chuyển ý</li>
+                            <li><strong>S (Đứng / Trạm):</strong> Tốc độ tiệm cận 0, điểm đảo chiều</li>
+                            <li><strong>Applying:</strong> Khoảng sai tới góc đang giảm (sắp tới)</li>
+                            <li><strong>Exact:</strong> Góc đạt chính xác tại thời điểm hiện tại</li>
+                            <li><strong>Separating:</strong> Khoảng sai đang tăng dần (đã qua đi)</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </section>
+        </details>
 
         <!-- Accordion Dữ Liệu Thiên Văn Gốc -->
         <div id="raw-astronomy-accordion"></div>
@@ -235,6 +244,6 @@
     </div>
 
     <!-- Script Chạy Module -->
-    <script type="module" src="js/horaryApp.js?v=1.0.0"></script>
+    <script type="module" src="js/horaryApp.js?v=1.1.0"></script>
 </body>
 </html>

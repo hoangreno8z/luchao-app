@@ -36,23 +36,79 @@ export function getTimezoneOffsetHours(timeZone, dateObj) {
 }
 
 /**
- * Chuyển đổi giờ dân dụng địa phương (Wall-Time) sang UTC chính xác,
- * xử lý triệt để bước nhảy giờ DST (Daylight Saving Time).
+ * Giải quyết giờ dân dụng địa phương (Wall-Time) sang UTC chính xác,
+ * phát hiện và xử lý triệt để bước nhảy giờ DST:
+ * - NON_EXISTENT_TIME (DST Gap: giờ bị bỏ qua khi đồng hồ nhảy tới)
+ * - AMBIGUOUS_TIME (DST Fold: giờ bị lặp lại khi đồng hồ lùi lại)
+ * - VALID (giờ hợp lệ)
+ */
+export function resolveWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh') {
+    const targetWallMs = Date.UTC(year, month - 1, day, hour, minute, second);
+    const offApprox = getTimezoneOffsetHours(timeZone, new Date(targetWallMs));
+
+    // Lấy các offset tiềm năng trong khoảng +/- 2 giờ xung quanh
+    const offsets = new Set();
+    for (let deltaH = -2; deltaH <= 2; deltaH++) {
+        const testDate = new Date(targetWallMs - (offApprox + deltaH) * 3600000);
+        offsets.add(getTimezoneOffsetHours(timeZone, testDate));
+    }
+
+    const validInstants = [];
+    for (const off of offsets) {
+        const candidateUtc = new Date(targetWallMs - off * 3600000);
+        const offCheck = getTimezoneOffsetHours(timeZone, candidateUtc);
+        if (Math.abs(offCheck - off) < 1e-4) {
+            validInstants.push({ utcDate: candidateUtc, offset: off });
+        }
+    }
+
+    if (validInstants.length === 0) {
+        // DST Gap
+        return {
+            status: 'NON_EXISTENT_TIME',
+            error: 'Giờ nhập không tồn tại trong múi giờ do bước nhảy mùa hè (DST gap).'
+        };
+    } else if (validInstants.length > 1) {
+        // DST Fold
+        return {
+            status: 'AMBIGUOUS_TIME',
+            instants: validInstants,
+            utcDate: validInstants[0].utcDate, // default to earlier
+            offset: validInstants[0].offset
+        };
+    } else {
+        return {
+            status: 'VALID',
+            utcDate: validInstants[0].utcDate,
+            offset: validInstants[0].offset
+        };
+    }
+}
+
+/**
+ * Chuyển đổi giờ dân dụng địa phương (Wall-Time) sang UTC cho ephemeris
  */
 export function localWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh') {
-    const initialUtc = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
-    const off1 = getTimezoneOffsetHours(timeZone, initialUtc);
-    const correctedMs = initialUtc.getTime() - off1 * 3600000;
-    const off2 = getTimezoneOffsetHours(timeZone, new Date(correctedMs));
-    return new Date(initialUtc.getTime() - off2 * 3600000);
+    const res = resolveWallTimeToUtc(year, month, day, hour, minute, second, timeZone);
+    if (res.status === 'NON_EXISTENT_TIME') {
+        // Tự động tịnh tiến 1 giờ qua gap
+        const shiftedMs = Date.UTC(year, month - 1, day, hour + 1, minute, second);
+        const offShift = getTimezoneOffsetHours(timeZone, new Date(shiftedMs));
+        return new Date(shiftedMs - offShift * 3600000);
+    }
+    return res.utcDate;
 }
 
 /**
  * Lấy UTC Offset chính xác cho giờ địa phương nhập liệu
  */
 export function getTimezoneOffsetForWallTime(timeZone, year, month, day, hour, minute, second = 0) {
-    const utcDate = localWallTimeToUtc(year, month, day, hour, minute, second, timeZone);
-    return getTimezoneOffsetHours(timeZone, utcDate);
+    const res = resolveWallTimeToUtc(year, month, day, hour, minute, second, timeZone);
+    if (res.status === 'NON_EXISTENT_TIME') {
+        const shiftedMs = Date.UTC(year, month - 1, day, hour + 1, minute, second);
+        return getTimezoneOffsetHours(timeZone, new Date(shiftedMs));
+    }
+    return res.offset;
 }
 
 class HoraryApp {
@@ -123,6 +179,11 @@ class HoraryApp {
         const h = parseInt(document.getElementById('input-hour')?.value || 12, 10);
         const min = parseInt(document.getElementById('input-minute')?.value || 0, 10);
         const sec = parseInt(document.getElementById('input-second')?.value || 0, 10);
+
+        const res = resolveWallTimeToUtc(y, m, d, h, min, sec, city.timeZone);
+        if (res.status === 'NON_EXISTENT_TIME') {
+            console.warn(`[DST Gap] ${city.name} ${y}-${m}-${d} ${h}:${min} không tồn tại trong giờ dân sự.`);
+        }
         const offset = getTimezoneOffsetForWallTime(city.timeZone, y, m, d, h, min, sec);
         const offsetInput = document.getElementById('input-offset');
         if (offsetInput) offsetInput.value = offset;
@@ -194,24 +255,39 @@ class HoraryApp {
         }
 
         // Nút Bật/Tắt Chế Độ Người Mới Học
-        const toggleBeginner = document.getElementById('toggle-beginner');
-        if (toggleBeginner) {
-            toggleBeginner.addEventListener('change', (e) => {
-                this.beginnerMode = e.target.checked;
+        const btnBeginner = document.getElementById('btn-beginner-mode');
+        if (btnBeginner) {
+            btnBeginner.addEventListener('click', () => {
+                this.beginnerMode = !this.beginnerMode;
+                btnBeginner.classList.toggle('active', this.beginnerMode);
+                btnBeginner.innerText = this.beginnerMode ? 'Tắt Chế Độ Người Mới' : 'Bật Chế Độ Người Mới';
                 this.renderDetailedReading();
             });
         }
 
-        // Modal Giải Thích Vì Sao
-        const modalClose = document.getElementById('modal-close');
-        const modal = document.getElementById('why-modal');
-        if (modalClose && modal) {
-            modalClose.addEventListener('click', () => {
-                modal.classList.remove('modal-active');
+        // Nút Ẩn/Hiện Đường Góc Chiếu
+        const btnAspects = document.getElementById('btn-toggle-aspects');
+        if (btnAspects) {
+            btnAspects.addEventListener('click', () => {
+                const isShown = this.renderer.toggleAspectLines();
+                btnAspects.classList.toggle('active', isShown);
+                btnAspects.innerText = isShown ? 'Ẩn Đường Góc Chiếu' : 'Hiện Đường Góc Chiếu';
             });
-            window.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('modal-active');
+        }
+
+        // Nút Tải Ảnh Lá Số PNG
+        const btnExport = document.getElementById('btn-export-png');
+        if (btnExport) {
+            btnExport.addEventListener('click', async () => {
+                try {
+                    btnExport.disabled = true;
+                    btnExport.innerText = 'Đang xuất PNG...';
+                    await this.renderer.exportToPng(1);
+                } catch (err) {
+                    alert('Lỗi xuất file ảnh: ' + err.message);
+                } finally {
+                    btnExport.disabled = false;
+                    btnExport.innerText = 'Tải Ảnh Lá Số PNG';
                 }
             });
         }
@@ -234,7 +310,7 @@ class HoraryApp {
         const citySelect = document.getElementById('select-city');
         const locationName = citySelect && citySelect.value !== 'custom' ? citySelect.value : 'Tọa độ tùy chỉnh';
 
-        // 1. Tính toán thiên văn & Hệ nhà Regiomontanus
+        // 1. Tính toán thiên văn & Hệ nhà Regiomontanus chuẩn
         this.currentChart = await calculateHoraryChart({
             year, month, day, hour, minute, second,
             latitude, longitude, utcOffset, locationName
@@ -245,17 +321,25 @@ class HoraryApp {
             p.dignity = calculateEssentialDignities(p.id, p.longitude, this.currentChart.isDayChart);
         }
 
-        // 3. Quét các góc chiếu (Aspects) trong phạm vi Moieties kèm timeline giải nghiệm ephemeris thật
-        this.currentAspects = await scanAllAspectsTimeline(this.currentChart.planets, this.currentChart.julianDayUT, { inOrbOnly: true });
+        // 3. TÁCH RỜI LUỒNG: Quét nhanh các góc chiếu tức thời tại t0 để HIỂN THỊ NGAY LẬP TỨC
+        this.currentAspects = scanAllAspects(this.currentChart.planets);
 
-        // 4. Quét các cặp tiếp nhận (Receptions) có đối chiếu với Aspects thực tế
+        // 4. Quét các cặp tiếp nhận (Receptions) có đối chiếu với Aspects tức thời
         this.currentReceptions = scanAllReceptions(this.currentChart.planets, this.currentChart.isDayChart, this.currentAspects);
 
-        // 5. Vẽ lá số bằng SVG
-        this.renderer.render(this.currentChart, this.currentAspects);
-
-        // 6. Hiển thị báo cáo diễn giải bên dưới
+        // 5. Kết xuất ngay lá số SVG/PNG và các bảng thông tin mà không chờ giải nghiệm tương lai
+        await this.renderer.render(this.currentChart, this.currentAspects);
         this.renderDetailedReading();
+
+        // 6. GIẢI NGHIỆM TƯƠNG LAI ASYNC: Chạy solver ephemeris 14 ngày nền để cập nhật perfection & refranation
+        scanAllAspectsTimeline(this.currentChart.planets, this.currentChart.julianDayUT, { inOrbOnly: true })
+            .then(timelineAspects => {
+                this.currentAspects = timelineAspects;
+                this.renderAspectsSection();
+            })
+            .catch(err => {
+                console.warn('Lỗi giải nghiệm tương lai:', err);
+            });
     }
 
     renderDetailedReading() {
@@ -293,20 +377,24 @@ class HoraryApp {
 
         const cusps = this.currentChart.houses.cusps;
         let html = `
-            <div class="reading-card">
-                <h3>BẢNG 12 NHÀ & VAI TRÒ CHỦ TINH ĐẠI DIỆN</h3>
-                <p class="section-desc">Cung nằm trên đỉnh mỗi nhà quyết định hành tinh chủ quản theo William Lilly CA pp.50–56. Đây là tác nhân chính biểu thị các vai trò trong câu hỏi.</p>
-                <div class="table-responsive">
-                    <table class="horary-table">
-                        <thead>
-                            <tr>
-                                <th style="width:70px">Nhà</th>
-                                <th style="width:140px">Đỉnh Nhà</th>
-                                <th style="width:130px">Chủ Quản</th>
-                                <th>Ý Nghĩa Truyền Thống & Câu Giải Nghĩa Tự Động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <details class="horary-accordion reading-card" open>
+                <summary class="accordion-header">
+                    <h3>BẢNG 12 NHÀ & CHỦ TINH</h3>
+                    <span class="accordion-arrow">▾</span>
+                </summary>
+                <div class="accordion-content">
+                    <p class="section-desc">Cung nằm trên đỉnh mỗi nhà quyết định hành tinh chủ quản theo William Lilly CA pp.50–56. Đây là tác nhân chính biểu thị các vai trò trong câu hỏi.</p>
+                    <div class="table-responsive">
+                        <table class="horary-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:70px">Nhà</th>
+                                    <th style="width:140px">Đỉnh Nhà</th>
+                                    <th style="width:130px">Chủ Quản</th>
+                                    <th>Ý Nghĩa Truyền Thống & Câu Giải Nghĩa Tự Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
         `;
 
         for (let i = 0; i < 12; i++) {
@@ -339,9 +427,10 @@ class HoraryApp {
             const cuspFormatted = `${deg}°${String(min).padStart(2, '0')}′`;
             const explanation = generateHouseExplanation(houseNum, signId, rulerId, cuspFormatted, rulerPlanet);
 
-            const fiveDegPlanets = this.currentChart.planets.filter(p => p.traditionalHouseNumber === houseNum && p.isWithinFiveDegreeCusp);
+            // Quy tắc 5° Lilly: Cung cấp ảnh hưởng cuspInfluence mà không ghi đè houseNumber gốc
+            const fiveDegPlanets = this.currentChart.planets.filter(p => p.cuspInfluence && p.cuspInfluence.withinFiveDegreeRule && p.cuspInfluence.nextHouse === houseNum);
             const fiveDegNote = fiveDegPlanets.length > 0 ?
-                `<div class="house-5deg-note" style="font-size:0.75rem; color:#b45309; margin-top:4px; font-weight:600;">★ Quy tắc 5° Lilly: ${fiveDegPlanets.map(p => `${p.nameVi} (cách đỉnh ${p.distanceToNextCusp}°) được tính thuộc Nhà ${houseNum}`).join(', ')}</div>` : '';
+                `<div class="house-5deg-note" style="font-size:0.75rem; color:#b45309; margin-top:4px; font-weight:600;">★ Quy tắc 5° Lilly: ${fiveDegPlanets.map(p => `${p.nameVi} (cách đỉnh ${p.cuspInfluence.distanceDeg.toFixed(1)}°) có ảnh hưởng mạnh sang Nhà ${houseNum}`).join(', ')}</div>` : '';
 
             html += `
                 <tr class="${rowClass}">
@@ -366,7 +455,7 @@ class HoraryApp {
             `;
         }
 
-        html += `</tbody></table></div></div>`;
+        html += `</tbody></table></div></div></details>`;
         container.innerHTML = html;
     }
 
@@ -375,23 +464,27 @@ class HoraryApp {
         if (!container) return;
 
         let html = `
-            <div class="reading-card">
-                <h3>BẢNG TỌA ĐỘ, VẬN TỐC & PHẨM GIÁ BẢN CHẤT</h3>
-                <p class="section-desc">Phẩm giá bản chất xác định năng lực, tư cách và thiện chí thực sự của từng hành tinh theo chuẩn mực William Lilly (1647).</p>
-                <div class="table-responsive">
-                    <table class="horary-table">
-                        <thead>
-                            <tr>
-                                <th>Hành Tinh</th>
-                                <th>Tọa Độ Hoàng Đạo</th>
-                                <th>Nhà</th>
-                                <th>Chuyển Động</th>
-                                <th>Tốc Độ Thực</th>
-                                <th>Phẩm Giá Bản Chất</th>
-                                <th style="width:100px">Giải Thích</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <details class="horary-accordion reading-card" open>
+                <summary class="accordion-header">
+                    <h3>BẢNG TỌA ĐỘ & PHẨM GIÁ</h3>
+                    <span class="accordion-arrow">▾</span>
+                </summary>
+                <div class="accordion-content">
+                    <p class="section-desc">Phẩm giá bản chất xác định năng lực, tư cách và thiện chí thực sự của từng hành tinh theo chuẩn mực William Lilly (1647).</p>
+                    <div class="table-responsive">
+                        <table class="horary-table">
+                            <thead>
+                                <tr>
+                                    <th>Hành Tinh</th>
+                                    <th>Tọa Độ Hoàng Đạo</th>
+                                    <th>Nhà</th>
+                                    <th>Chuyển Động</th>
+                                    <th>Tốc Độ Thực</th>
+                                    <th>Phẩm Giá Bản Chất</th>
+                                    <th style="width:100px">Giải Thích</th>
+                                </tr>
+                            </thead>
+                            <tbody>
         `;
 
         for (const p of this.currentChart.planets) {
@@ -411,11 +504,14 @@ class HoraryApp {
                 `${renderGlyphSvg(p.signGlyphKey, 16)} ${p.formatted} ${p.signNameVi} (${p.signNameEn})` :
                 `${renderGlyphSvg(p.signGlyphKey, 16)} ${p.formatted} ${p.signNameVi}`;
 
+            const houseNote = p.cuspInfluence && p.cuspInfluence.withinFiveDegreeRule ?
+                `<br><small style="color:#b45309; font-size:0.75rem;">(Sát đỉnh Nhà ${p.cuspInfluence.nextHouse})</small>` : '';
+
             html += `
                 <tr>
                     <td>${planetDisplay}</td>
                     <td>${signDisplay}</td>
-                    <td class="text-center"><strong>Nhà ${p.houseNumber}</strong></td>
+                    <td class="text-center"><strong>Nhà ${p.houseNumber}</strong>${houseNote}</td>
                     <td><span class="badge ${motionClass}">${motionText}</span></td>
                     <td><code>${p.formattedSpeed}</code></td>
                     <td>
@@ -429,7 +525,7 @@ class HoraryApp {
             `;
         }
 
-        html += `</tbody></table></div></div>`;
+        html += `</tbody></table></div></div></details>`;
         container.innerHTML = html;
     }
 
@@ -439,36 +535,45 @@ class HoraryApp {
 
         if (this.currentAspects.length === 0) {
             container.innerHTML = `
-                <div class="reading-card">
-                    <h3>BẢNG GÓC CHIẾU (ASPECTS) & CHUYỂN ĐỘNG THỰC</h3>
-                    <p>Không có góc chiếu Ptolemaic nào nằm trong phạm vi Orb Moieties của các thiên thể.</p>
-                </div>`;
+                <details class="horary-accordion reading-card" open>
+                    <summary class="accordion-header">
+                        <h3>BẢNG GÓC CHIẾU PTOLEMAIC</h3>
+                        <span class="accordion-arrow">▾</span>
+                    </summary>
+                    <div class="accordion-content">
+                        <p>Không có góc chiếu Ptolemaic nào nằm trong phạm vi Orb Moieties của các thiên thể.</p>
+                    </div>
+                </details>`;
             return;
         }
 
         let html = `
-            <div class="reading-card">
-                <h3>BẢNG GÓC CHIẾU (ASPECTS) & ĐỘNG HỌC TIẾN TỚI / RỜI XA</h3>
-                <p class="section-desc">Trong Horary, chỉ những góc <strong>Đang tiến tới (Applying)</strong> mới biểu thị sự việc sẽ xảy ra trong tương lai. Góc <strong>Đã rời xa (Separating)</strong> biểu thị việc đã qua.</p>
-                <div class="table-responsive">
-                    <table class="horary-table">
-                        <thead>
-                            <tr>
-                                <th>Hành Tinh A</th>
-                                <th>Góc Chiếu</th>
-                                <th>Hành Tinh B</th>
-                                <th>Sai Số (Orb)</th>
-                                <th>Trạng Thái Động Học</th>
-                                <th>Bảng Chuyển Động Kiểm Chứng (-6h → Hiện tại → +6h)</th>
-                                <th>Dự Báo Hoàn Thành (Perfection)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <details class="horary-accordion reading-card" open>
+                <summary class="accordion-header">
+                    <h3>BẢNG GÓC CHIẾU PTOLEMAIC</h3>
+                    <span class="accordion-arrow">▾</span>
+                </summary>
+                <div class="accordion-content">
+                    <p class="section-desc">Trong Horary, chỉ những góc <strong>Đang tiến tới (Applying)</strong> mới biểu thị sự việc sẽ xảy ra trong tương lai. Góc <strong>Đã rời xa (Separating)</strong> biểu thị việc đã qua.</p>
+                    <div class="table-responsive">
+                        <table class="horary-table">
+                            <thead>
+                                <tr>
+                                    <th>Hành Tinh A</th>
+                                    <th>Góc Chiếu</th>
+                                    <th>Hành Tinh B</th>
+                                    <th>Sai Số (Orb)</th>
+                                    <th>Trạng Thái Động Học</th>
+                                    <th>Bảng Chuyển Động Kiểm Chứng (-6h → Hiện tại → +6h)</th>
+                                    <th>Dự Báo Hoàn Thành (Perfection)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
         `;
 
         for (const asp of this.currentAspects) {
             const stateClass = `badge-${asp.stateClass}`;
-            const motionStr = asp.motionSteps.map(m => `<span>${m.label}: <strong>${m.separation}</strong></span>`).join(' → ');
+            const motionStr = asp.motionSteps ? asp.motionSteps.map(m => `<span>${m.label}: <strong>${m.separation}</strong></span>`).join(' → ') : '—';
 
             let perfHtml = '<em>Đã qua đỉnh</em>';
             if (asp.perfectionInfo) {
@@ -479,6 +584,8 @@ class HoraryApp {
                 } else {
                     perfHtml = `<span class="badge-perfection">${asp.perfectionInfo.description}</span>`;
                 }
+            } else if (asp.state === 'APPLYING') {
+                perfHtml = `<span style="font-size:0.8rem; color:#64748b;">Đang tính timeline...</span>`;
             }
 
             html += `
@@ -501,7 +608,7 @@ class HoraryApp {
             `;
         }
 
-        html += `</tbody></table></div></div>`;
+        html += `</tbody></table></div></div></details>`;
         container.innerHTML = html;
     }
 
@@ -511,18 +618,27 @@ class HoraryApp {
 
         if (this.currentReceptions.length === 0) {
             container.innerHTML = `
-                <div class="reading-card">
-                    <h3>BẢNG TIẾP NHẬN (RECEPTION) HAI CHIỀU</h3>
-                    <p>Hiện không có tiếp nhận đáng kể nào giữa các hành tinh chính.</p>
-                </div>`;
+                <details class="horary-accordion reading-card" open>
+                    <summary class="accordion-header">
+                        <h3>BẢNG TIẾP NHẬN HAI CHIỀU</h3>
+                        <span class="accordion-arrow">▾</span>
+                    </summary>
+                    <div class="accordion-content">
+                        <p>Hiện không có tiếp nhận đáng kể nào giữa các hành tinh chính.</p>
+                    </div>
+                </details>`;
             return;
         }
 
         let html = `
-            <div class="reading-card">
-                <h3>BẢNG TIẾP NHẬN (RECEPTION) HAI CHIỀU ĐỘC LẬP (CHUẨN SAHL IBN BISHR)</h3>
-                <p class="section-desc">Theo Sahl ibn Bishr, tiếp nhận chỉ có giá trị khi qua Domicile/Exaltation hoặc kết hợp ít nhất 2 phẩm giá nhỏ. Tiếp nhận được kích hoạt (Active) khi hai bên có Aspect kết nối.</p>
-                <div class="reception-cards-grid">
+            <details class="horary-accordion reading-card" open>
+                <summary class="accordion-header">
+                    <h3>BẢNG TIẾP NHẬN HAI CHIỀU</h3>
+                    <span class="accordion-arrow">▾</span>
+                </summary>
+                <div class="accordion-content">
+                    <p class="section-desc">Theo Sahl ibn Bishr, tiếp nhận chỉ có giá trị khi qua Domicile/Exaltation hoặc kết hợp ít nhất 2 phẩm giá nhỏ. Tiếp nhận được kích hoạt (Active) khi hai bên có Aspect kết nối.</p>
+                    <div class="reception-cards-grid">
         `;
 
         for (const pair of this.currentReceptions) {
@@ -564,7 +680,7 @@ class HoraryApp {
             `;
         }
 
-        html += `</div></div>`;
+        html += `</div></div></details>`;
         container.innerHTML = html;
     }
 
@@ -590,13 +706,14 @@ class HoraryApp {
                 motion: p.motion,
                 sign: p.signNameVi,
                 degreeInSign: p.degreeDecimal,
-                house: p.houseNumber
+                house: p.houseNumber,
+                cuspInfluence: p.cuspInfluence
             }))
         }, null, 2);
 
         container.innerHTML = `
             <details class="raw-data-details">
-                <summary><strong>DỮ LIỆU THIÊN VĂN GỐC (ASTRONOMICAL RAW DATA)</strong> — Xem minh bạch tọa độ số thực, JD và đỉnh nhà</summary>
+                <summary><strong>DỮ LIỆU THIÊN VĂN GỐC</strong> — Tọa độ số thực, JD và đỉnh nhà</summary>
                 <pre class="raw-json-block"><code>${rawJson}</code></pre>
             </details>
         `;

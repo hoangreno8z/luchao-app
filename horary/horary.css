@@ -26,6 +26,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
     padding: 20px;
+    -webkit-font-smoothing: antialiased;
 }
 
 .horary-container {
@@ -152,51 +153,64 @@ body {
 }
 
 .btn-toggle {
-    background: #ffffff;
+    background: #f1f5f9;
+    color: #475569;
     border: 1px solid var(--border-color);
-    color: var(--text-main);
 }
 
 .btn-toggle.active {
-    background: var(--primary-color);
-    color: #ffffff;
-    border-color: var(--primary-color);
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #93c5fd;
 }
 
 .btn-export {
-    background: #1e293b;
+    background: #0f172a;
     color: #ffffff;
     margin-left: auto;
 }
 
 .btn-export:hover {
-    background: #0f172a;
+    background: #1e293b;
 }
 
-/* Khung Vẽ Chart Lá Số */
+/* Khung Vẽ Lá Số Khung Vuông 1200x1200px */
 .chart-wrapper {
-    background: var(--bg-main);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 #horary-chart-container {
     width: 100%;
-    max-width: 1000px;
-    aspect-ratio: 1 / 1;
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    user-select: auto;
+    -webkit-touch-callout: default;
 }
 
-#horary-chart-container svg {
+#horary-chart-img {
     width: 100%;
-    height: 100%;
+    height: auto;
     display: block;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -webkit-touch-callout: default !important;
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    cursor: pointer;
 }
 
 /* Thẻ Thông Tin Lá Số */
@@ -224,7 +238,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Card Báo Cáo */
+/* Card Báo Cáo & Accordion Dropdown */
 .reading-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -234,11 +248,45 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
-.reading-card h3 {
+.horary-accordion {
+    transition: all 0.2s ease;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    padding: 4px 0;
+}
+
+.accordion-header::-webkit-details-marker {
+    display: none;
+}
+
+.accordion-header h3 {
     font-size: 1.25rem;
     font-weight: 800;
     color: var(--primary-color);
-    margin-bottom: 6px;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.accordion-arrow {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    padding-left: 8px;
+}
+
+details[open] > .accordion-header .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    margin-top: 14px;
 }
 
 .section-desc {
@@ -250,6 +298,7 @@ body {
 /* Bảng Dữ Liệu */
 .table-responsive {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .horary-table {
@@ -428,21 +477,6 @@ body {
 }
 
 /* Khung Cách Đọc Lá Số Này */
-.how-to-read-box {
-    background: #fdf8f4;
-    border: 2px solid #ea580c;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.how-to-read-box h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #c2410c;
-    margin-bottom: 14px;
-}
-
 .how-to-read-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -468,7 +502,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 .ref-box {
@@ -535,9 +569,147 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
+/* =========================================================================
+   TỐI ƯU GIAO DIỆN ĐIỆN THOẠI (MOBILE RESPONSIVE):
+   - Giảm 1 nửa kích thước toàn bộ tiêu đề (từ 1.25rem - 1.9rem -> 0.75rem - 0.95rem)
+   - Menu xổ xuống (details/summary) tiết kiệm tối đa không gian màn hình
+   - Đảm bảo nhấn giữ lưu ảnh trên mobile & click chuột phải trên PC hoạt động 100%
+   ========================================================================= */
 @media (max-width: 768px) {
-    body { padding: 10px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .horary-table th, .horary-table td { padding: 8px 10px; }
-    .btn-export { margin-left: 0; width: 100%; }
+    body {
+        padding: 10px 8px;
+    }
+
+    .horary-header {
+        padding: 16px 12px;
+        margin-bottom: 16px;
+    }
+
+    .horary-header h1 {
+        font-size: 0.95rem; /* Giảm 1 nửa kích thước tiêu đề header */
+        letter-spacing: 0.2px;
+        line-height: 1.35;
+    }
+
+    .horary-header p {
+        font-size: 0.75rem;
+    }
+
+    .branding-tag {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+    }
+
+    .control-panel {
+        padding: 14px 12px;
+        margin-bottom: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        font-size: 0.75rem;
+    }
+
+    .form-group input, .form-group select {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    .form-actions {
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        flex: 1 1 calc(50% - 8px);
+    }
+
+    .btn-export {
+        margin-left: 0;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .chart-wrapper {
+        padding: 12px 8px;
+        margin-bottom: 16px;
+    }
+
+    /* Tiêu đề các phần: Rút gọn & Giảm 1 nửa kích thước */
+    .reading-card {
+        padding: 14px 12px;
+        margin-bottom: 14px;
+        border-radius: 8px;
+    }
+
+    .accordion-header h3 {
+        font-size: 0.8rem !important; /* Giảm 1 nửa kích thước tiêu đề mục */
+        letter-spacing: 0.2px;
+    }
+
+    .accordion-arrow {
+        font-size: 0.95rem;
+    }
+
+    .section-desc {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+    }
+
+    /* Bảng dữ liệu co giãn trên mobile */
+    .horary-table th, .horary-table td {
+        padding: 8px 6px;
+        font-size: 0.78rem;
+    }
+
+    .how-to-read-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .read-step {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .quick-ref-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .ref-box {
+        padding: 12px;
+    }
+
+    .ref-box h4 {
+        font-size: 0.75rem;
+    }
+
+    .ref-list {
+        font-size: 0.78rem;
+    }
+
+    .reception-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reception-card {
+        padding: 12px;
+    }
+
+    .reception-header h4 {
+        font-size: 0.8rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        font-size: 0.8rem;
+    }
 }

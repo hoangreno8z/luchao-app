@@ -40,14 +40,15 @@ async function runTests() {
     }
 
     // Nạp các module ES động
-    const { getZodiacPosition, getTraditionalRuler, ZODIAC_SIGNS } = await import('./horary/js/traditionalRulers.js');
+    const { getZodiacPosition, getTraditionalRuler, ZODIAC_SIGNS, formatZodiacDms } = await import('./horary/js/traditionalRulers.js');
     const { calculateEssentialDignities, getWhyDignityExplanation, DOMICILES, EXALTATIONS } = await import('./horary/js/traditionalDignities.js');
     const { getAngularDistance, calculateAspectBetween, scanAllAspects, scanAllAspectsTimeline, MOIETY_OF_ORBS, MOIETY_PRESETS, MAJOR_ASPECTS } = await import('./horary/js/aspectEngine.js');
     const { evaluateSingleReception, analyzePairReception, scanAllReceptions } = await import('./horary/js/receptionEngine.js');
     const { generateHouseExplanation, turnedHouse, describeTurnedHouse, HOUSE_DEFINITIONS } = await import('./horary/js/houseMeanings.js');
     const { calculateHoraryChart, getHouseOfLongitude, getJulianDayUT, calcBodyPositionAtJD, getAstronomyEngine } = await import('./horary/js/ephemerisEngine.js');
-    const { getTimezoneOffsetHours, localWallTimeToUtc, getTimezoneOffsetForWallTime } = await import('./horary/js/horaryApp.js');
+    const { getTimezoneOffsetHours, localWallTimeToUtc, getTimezoneOffsetForWallTime, resolveWallTimeToUtc } = await import('./horary/js/horaryApp.js');
     const { bisectAspectRoot, bisectStationRoot, solveAspectTimeline } = await import('./horary/js/futureEventSolver.js');
+    const { HoraryChartRenderer } = await import('./horary/js/horaryChartRenderer.js');
 
     // =========================================================================
     // NHÓM 1: CHUYỂN ĐỔI KINH ĐỘ & CUNG HOÀNG ĐẠO (ARCSECOND INTEGER FORMATTER)
@@ -597,6 +598,91 @@ async function runTests() {
         }
         const isAll45 = diffs.every(d => Math.abs(d - 45) < 0.001);
         assert.strictEqual(isAll45, false, 'Tuyệt đối không được có dữ liệu giả cách đều 45°');
+    });
+
+    // =========================================================================
+    // NHÓM 14: HÌNH HỌC TỌA ĐỘ VẼ SVG, DST RESOLVER, CANONICAL HOUSES & LILLY CA I CH VII
+    // =========================================================================
+    console.log('\n--- NHÓM 14: HÌNH HỌC SVG, DST RESOLVER & LILLY CA I CH VII ---');
+
+    test('Hình học SVG: eclipticToSvg đặt ASC tại hướng 9 giờ (mép trái, x = cx - R, y = cy)', () => {
+        const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
+        const ascCoord = renderer.eclipticToSvg(15.5, 15.5, 400);
+        assert.ok(Math.abs(ascCoord.x - (600 - 400)) < 1e-4, 'x phải nằm ở mép trái (200)');
+        assert.ok(Math.abs(ascCoord.y - 600) < 1e-4, 'y phải bằng tâm cy (600)');
+    });
+
+    test('Hình học SVG: eclipticToSvg đặt DSC tại hướng 3 giờ (mép phải, x = cx + R, y = cy)', () => {
+        const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
+        const dscCoord = renderer.eclipticToSvg((15.5 + 180) % 360, 15.5, 400);
+        assert.ok(Math.abs(dscCoord.x - (600 + 400)) < 1e-4, 'x phải nằm ở mép phải (1000)');
+        assert.ok(Math.abs(dscCoord.y - 600) < 1e-4, 'y phải bằng tâm cy (600)');
+    });
+
+    test('Hình học SVG: eclipticToSvg đặt MC tại hướng 12 giờ (đỉnh trên, x = cx, y = cy - R)', () => {
+        const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
+        // MC cách ASC khoảng -90° (270°)
+        const mcCoord = renderer.eclipticToSvg((15.5 + 270) % 360, 15.5, 400);
+        assert.ok(Math.abs(mcCoord.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
+        assert.ok(Math.abs(mcCoord.y - (600 - 400)) < 1e-4, 'y phải ở đỉnh trên (200)');
+    });
+
+    test('Hình học SVG: eclipticToSvg đặt IC tại hướng 6 giờ (đáy dưới, x = cx, y = cy + R)', () => {
+        const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
+        // IC cách ASC khoảng +90°
+        const icCoord = renderer.eclipticToSvg((15.5 + 90) % 360, 15.5, 400);
+        assert.ok(Math.abs(icCoord.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
+        assert.ok(Math.abs(icCoord.y - (600 + 400)) < 1e-4, 'y phải ở đáy dưới (1000)');
+    });
+
+    test('DST Resolver: London 29/03/2026 01:30 phát hiện NON_EXISTENT_TIME (DST gap)', () => {
+        const res = resolveWallTimeToUtc(2026, 3, 29, 1, 30, 0, 'Europe/London');
+        assert.strictEqual(res.status, 'NON_EXISTENT_TIME');
+    });
+
+    test('DST Resolver: London 25/10/2026 01:30 phát hiện AMBIGUOUS_TIME (DST fold)', () => {
+        const res = resolveWallTimeToUtc(2026, 10, 25, 1, 30, 0, 'Europe/London');
+        assert.strictEqual(res.status, 'AMBIGUOUS_TIME');
+        assert.strictEqual(res.instants.length, 2);
+    });
+
+    test('Lilly CA I Ch VII: Bác sĩ thuộc Nhà 7 (không thuộc Nhà 6), Nợ nần không thuộc Nhà 8 gốc', () => {
+        const h6 = HOUSE_DEFINITIONS.find(h => h.number === 6);
+        const h7 = HOUSE_DEFINITIONS.find(h => h.number === 7);
+        const h8 = HOUSE_DEFINITIONS.find(h => h.number === 8);
+
+        assert.ok(!h6.keyword.toLowerCase().includes('bác sĩ') && !h6.keyword.toLowerCase().includes('thầy thuốc'), 'Nhà 6 không chứa bác sĩ/thầy thuốc trong keyword');
+        assert.ok(h7.keyword.toLowerCase().includes('thầy thuốc') || h7.description.toLowerCase().includes('thầy thuốc'), 'Nhà 7 chứa thầy thuốc theo Lilly CA Book I Ch. VII p.54');
+        assert.ok(!h8.keyword.toLowerCase().includes('nợ nần') && !h8.description.toLowerCase().includes('nợ nần'), 'Nhà 8 không chứa nợ nần trong định nghĩa gốc');
+    });
+
+    test('Lilly CA I Ch VII: Đầy đủ metadata kinh điển trên 12 nhà (Joy, Cosignifiers, Cardinality, Strength)', () => {
+        for (let i = 1; i <= 12; i++) {
+            const h = HOUSE_DEFINITIONS.find(def => def.number === i);
+            assert.ok(h, `Không tìm thấy Nhà ${i}`);
+            assert.ok(h.masculineOrFeminine, `Nhà ${i} thiếu masculineOrFeminine`);
+            assert.ok(h.cardinality, `Nhà ${i} thiếu cardinality`);
+            assert.ok(h.cosignifyingSign, `Nhà ${i} thiếu cosignifyingSign`);
+            assert.ok(h.cosignifyingPlanet, `Nhà ${i} thiếu cosignifyingPlanet`);
+            assert.ok(typeof h.strengthOrder === 'number', `Nhà ${i} thiếu strengthOrder`);
+        }
+    });
+
+    await testAsync('Lilly 5° Cusp Rule: Không ghi đè houseNumber gốc, lưu thông tin vào cuspInfluence', async () => {
+        const chart = await calculateHoraryChart({
+            year: 2026, month: 9, day: 20,
+            hour: 15, minute: 30, second: 0,
+            latitude: 21.0285, longitude: 105.8542,
+            utcOffset: 7, locationName: 'Hà Nội'
+        });
+
+        for (const p of chart.planets) {
+            assert.strictEqual(typeof p.houseNumber, 'number');
+            assert.ok(p.houseNumber >= 1 && p.houseNumber <= 12);
+            assert.ok(p.cuspInfluence, `${p.nameVi} phải có đối tượng cuspInfluence`);
+            assert.strictEqual(typeof p.cuspInfluence.distanceDeg, 'number');
+            assert.strictEqual(typeof p.cuspInfluence.withinFiveDegreeRule, 'boolean');
+        }
     });
 
     console.log('\n================================================================');
