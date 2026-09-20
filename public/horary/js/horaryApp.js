@@ -132,6 +132,10 @@ class HoraryApp {
         ];
     }
 
+    getAccordionOpenAttr() {
+        return (typeof window !== 'undefined' && window.innerWidth <= 768) ? '' : 'open';
+    }
+
     init() {
         this.renderer = new HoraryChartRenderer('horary-chart-container', {
             width: 1200,
@@ -139,6 +143,12 @@ class HoraryApp {
             bgColor: '#e7e8e2',
             cardBgColor: '#f5f6f0'
         });
+
+        if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+            document.querySelectorAll('details.horary-accordion').forEach(d => {
+                d.removeAttribute('open');
+            });
+        }
 
         this.bindEvents();
         this.populateDefaultDateTime();
@@ -377,7 +387,7 @@ class HoraryApp {
 
         const cusps = this.currentChart.houses.cusps;
         let html = `
-            <details class="horary-accordion reading-card" open>
+            <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                 <summary class="accordion-header">
                     <h3>BẢNG 12 NHÀ & CHỦ TINH</h3>
                     <span class="accordion-arrow">▾</span>
@@ -464,7 +474,7 @@ class HoraryApp {
         if (!container) return;
 
         let html = `
-            <details class="horary-accordion reading-card" open>
+            <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                 <summary class="accordion-header">
                     <h3>BẢNG TỌA ĐỘ & PHẨM GIÁ</h3>
                     <span class="accordion-arrow">▾</span>
@@ -535,7 +545,7 @@ class HoraryApp {
 
         if (this.currentAspects.length === 0) {
             container.innerHTML = `
-                <details class="horary-accordion reading-card" open>
+                <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                     <summary class="accordion-header">
                         <h3>BẢNG GÓC CHIẾU PTOLEMAIC</h3>
                         <span class="accordion-arrow">▾</span>
@@ -548,7 +558,7 @@ class HoraryApp {
         }
 
         let html = `
-            <details class="horary-accordion reading-card" open>
+            <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                 <summary class="accordion-header">
                     <h3>BẢNG GÓC CHIẾU PTOLEMAIC</h3>
                     <span class="accordion-arrow">▾</span>
@@ -618,7 +628,7 @@ class HoraryApp {
 
         if (this.currentReceptions.length === 0) {
             container.innerHTML = `
-                <details class="horary-accordion reading-card" open>
+                <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                     <summary class="accordion-header">
                         <h3>BẢNG TIẾP NHẬN HAI CHIỀU</h3>
                         <span class="accordion-arrow">▾</span>
@@ -631,7 +641,7 @@ class HoraryApp {
         }
 
         let html = `
-            <details class="horary-accordion reading-card" open>
+            <details class="horary-accordion reading-card" ${this.getAccordionOpenAttr()}>
                 <summary class="accordion-header">
                     <h3>BẢNG TIẾP NHẬN HAI CHIỀU</h3>
                     <span class="accordion-arrow">▾</span>

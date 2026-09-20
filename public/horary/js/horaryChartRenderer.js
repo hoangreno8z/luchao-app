@@ -257,7 +257,7 @@ export class HoraryChartRenderer {
         s += `
         <g transform="translate(935, 965)">
             <rect width="${boxW}" height="${boxH}" rx="10" fill="${cardBgColor}" stroke="#cfd3c7" stroke-width="1.5" />
-            <text x="16" y="26" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HÀNH TINH CHẬM & VẬN ĐỘNG</text>
+            <text x="16" y="26" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HÀNH TINH CHẬM &amp; VẬN ĐỘNG</text>
             <line x1="16" y1="34" x2="${boxW - 16}" y2="34" stroke="#cfd3c7" stroke-width="1" />
             
             ${this.renderCornerItem('mars', 'Hỏa Tinh (Mars)', 16, 56)}
@@ -506,12 +506,10 @@ export class HoraryChartRenderer {
             preparedXml = preparedXml.replace('width="100%"', 'width="1200"').replace('height="100%"', 'height="1200"');
         }
 
-        const svgBlob = new Blob([preparedXml], { type: 'image/svg+xml;charset=utf-8' });
-        const URL = window.URL || window.webkitURL || window;
-        const blobUrl = URL.createObjectURL(svgBlob);
-
         return new Promise((resolve, reject) => {
             const image = new Image();
+            let blobUrl = null;
+
             image.onload = () => {
                 try {
                     const canvas = document.createElement('canvas');
@@ -519,18 +517,33 @@ export class HoraryChartRenderer {
                     canvas.height = 1200 * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                    URL.revokeObjectURL(blobUrl);
+                    if (blobUrl && window.URL && window.URL.revokeObjectURL) {
+                        window.URL.revokeObjectURL(blobUrl);
+                    }
                     resolve(canvas.toDataURL('image/png'));
                 } catch (canvasErr) {
-                    URL.revokeObjectURL(blobUrl);
+                    if (blobUrl && window.URL && window.URL.revokeObjectURL) {
+                        window.URL.revokeObjectURL(blobUrl);
+                    }
                     reject(canvasErr);
                 }
             };
+
             image.onerror = (err) => {
-                URL.revokeObjectURL(blobUrl);
+                if (blobUrl && window.URL && window.URL.revokeObjectURL) {
+                    window.URL.revokeObjectURL(blobUrl);
+                }
                 reject(err);
             };
-            image.src = blobUrl;
+
+            try {
+                const b64 = btoa(unescape(encodeURIComponent(preparedXml)));
+                image.src = 'data:image/svg+xml;base64,' + b64;
+            } catch (_) {
+                const svgBlob = new Blob([preparedXml], { type: 'image/svg+xml;charset=utf-8' });
+                blobUrl = (window.URL || window.webkitURL || window).createObjectURL(svgBlob);
+                image.src = blobUrl;
+            }
         });
     }
 
