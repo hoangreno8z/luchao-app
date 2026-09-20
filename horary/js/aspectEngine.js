@@ -1,21 +1,17 @@
 /**
- * aspectEngine.js - Lõi Động Học Tính Góc Chiếu & Điểm Hoàn Thành (Perfection)
- * Source: William Lilly, Christian Astrology (1647), Chapter XXIII & XXIV; Sahl ibn Bishr.
+ * aspectEngine.js - Lõi Động Học Tính Góc Chiếu & Trạng Thái Tiếp Cận
+ * Source: William Lilly, Christian Astrology (1647), Chapters XXIII & XXIV; Sahl ibn Bishr.
  *
  * NGUYÊN TẮC HORARY CỔ ĐIỂN:
- * 1. 5 aspect Horary chính: 0° (Trùng tụ), 60° (Lục hợp), 90° (Vuông góc), 120° (Tam hợp), 180° (Đối xung).
- * 2. TUYỆT ĐỐI KHÔNG dùng giới hạn Orb cố định theo aspect (bỏ defaultMaxOrb).
- *    Dùng hoàn toàn tổng bán kính ánh sáng (Moiety of Bodies): Max Orb = Moiety_A + Moiety_B.
- * 3. Phân định trạng thái động học bằng ĐẠO HÀM GIẢI TÍCH dE/dt tức thời,
- *    không dùng bước tiến cố định để tránh nhảy qua góc đối với Mặt Trăng.
- * 4. 5 trạng thái động học tường minh:
- *    - APPROACHING_OUT_OF_ORB: Đang tiến tới nhưng ngoài Orb
- *    - APPLYING: Đang tiến tới trong Orb
- *    - EXACT: Đạt góc chính xác tiệm cận 0
- *    - SEPARATING: Đã rời xa trong Orb
- *    - SEPARATED_OUT_OF_ORB: Đã rời xa ngoài Orb
- * 5. Bộ giải nghiệm thời gian Perfection và phát hiện Refranation (quay đầu trước khi thành góc), Ingress.
+ * 1. 5 aspect Ptolemaic chính: 0° (Trùng tụ), 60° (Lục hợp), 90° (Vuông góc), 120° (Tam hợp), 180° (Đối xung).
+ * 2. Orb dựa trên tổng bán kính ánh sáng (Moiety of Bodies): Max Orb = Moiety_A + Moiety_B.
+ * 3. Hỗ trợ các Named Orb Presets: LILLY_AL_BIRUNI, LILLY_CA_P107 (mặc định), SAHL_ARABIC.
+ * 4. Phân định trạng thái động học bằng ĐẠO HÀM GIẢI TÍCH dE/dt tức thời.
+ * 5. Giải quyết điểm phân đôi 75° (giữa Sextile 60° và Square 90°) dựa trên dấu đạo hàm dS/dt.
+ * 6. Tích hợp tương thích với futureEventSolver cho giải nghiệm thiên văn thật.
  */
+
+import { solveAspectTimeline } from './futureEventSolver.js';
 
 export const MAJOR_ASPECTS = [
     { id: 'conjunction', nameVi: 'Đồng cung / Trùng tụ', nameEn: 'Conjunction', angle: 0, glyphKey: 'conjunction' },
@@ -25,16 +21,53 @@ export const MAJOR_ASPECTS = [
     { id: 'opposition', nameVi: 'Đối xung', nameEn: 'Opposition', angle: 180, glyphKey: 'opposition' }
 ];
 
-// Bán kính ánh sáng (Moiety of Orb) chuẩn kinh điển theo William Lilly (Christian Astrology p.107)
-export const MOIETY_OF_ORBS = {
-    sun: 8.5,       // Toàn vòng 17° -> Bán phần 8.5°
-    moon: 6.25,     // Toàn vòng 12.5° -> Bán phần 6.25°
-    mercury: 3.5,   // Toàn vòng 7° -> Bán phần 3.5°
-    venus: 4.0,     // Toàn vòng 8° -> Bán phần 4.0°
-    mars: 3.75,     // Toàn vòng 7.5° -> Bán phần 3.75°
-    jupiter: 4.5,   // Toàn vòng 9° -> Bán phần 4.5°
-    saturn: 4.5     // Toàn vòng 9° -> Bán phần 4.5°
+/**
+ * Danh mục Named Moiety Presets chuẩn mực cổ điển
+ */
+export const MOIETY_PRESETS = {
+    LILLY_CA_P107: {
+        id: 'LILLY_CA_P107',
+        name: 'William Lilly (Christian Astrology p.107)',
+        moieties: {
+            sun: 8.5,
+            moon: 6.25,
+            mercury: 3.5,
+            venus: 4.0,
+            mars: 3.75,
+            jupiter: 4.5,
+            saturn: 4.5
+        }
+    },
+    LILLY_AL_BIRUNI: {
+        id: 'LILLY_AL_BIRUNI',
+        name: 'Al-Biruni / Lilly General',
+        moieties: {
+            sun: 7.5,
+            moon: 6.0,
+            mercury: 3.5,
+            venus: 3.5,
+            mars: 4.0,
+            jupiter: 4.5,
+            saturn: 4.5
+        }
+    },
+    SAHL_ARABIC: {
+        id: 'SAHL_ARABIC',
+        name: 'Sahl ibn Bishr / Arabic Classical',
+        moieties: {
+            sun: 7.5,
+            moon: 6.0,
+            mercury: 3.5,
+            venus: 3.5,
+            mars: 4.0,
+            jupiter: 4.5,
+            saturn: 4.5
+        }
+    }
 };
+
+// Mặc định sử dụng bảng Lilly CA p.107
+export const MOIETY_OF_ORBS = MOIETY_PRESETS.LILLY_CA_P107.moieties;
 
 /**
  * Tính khoảng cách góc ngắn nhất giữa hai kinh độ trên vòng tròn 360° [0, 180]
@@ -50,9 +83,10 @@ export function getAngularDistance(lon1, lon2) {
 /**
  * Tính góc chiếu giữa hai hành tinh và xác định trạng thái Applying/Separating động
  * sử dụng đạo hàm giải tích dE/dt tức thời.
+ *
  * @param {object} pA - { id, nameVi, longitude, speedLongitude, ... }
  * @param {object} pB - { id, nameVi, longitude, speedLongitude, ... }
- * @param {object} options - { inOrbOnly: boolean }
+ * @param {object} options - { inOrbOnly: boolean, presetKey: string }
  * @returns {object|null}
  */
 export function calculateAspectBetween(pA, pB, options = {}) {
@@ -63,7 +97,7 @@ export function calculateAspectBetween(pA, pB, options = {}) {
     const vA = pA.speedLongitude !== undefined ? pA.speedLongitude : 0;
     const vB = pB.speedLongitude !== undefined ? pB.speedLongitude : 0;
 
-    // Khoảng cách góc có dấu từ B đến A
+    // Khoảng cách góc có dấu từ B đến A [0, 360)
     let deltaLon = (lonA - lonB) % 360;
     if (deltaLon < 0) deltaLon += 360;
 
@@ -78,20 +112,37 @@ export function calculateAspectBetween(pA, pB, options = {}) {
         dS_dt = -(vA - vB); // tương đương vB - vA
     }
 
-    // Tính Orb tối đa cho phép = Tổng Moieties của hai thiên thể (Lilly CA p.107)
-    const moietyA = MOIETY_OF_ORBS[pA.id] || 4.0;
-    const moietyB = MOIETY_OF_ORBS[pB.id] || 4.0;
+    // Chọn bảng Moiety theo preset được chỉ định
+    const presetKey = options.presetKey || 'LILLY_CA_P107';
+    const activeMoietyTable = (MOIETY_PRESETS[presetKey] && MOIETY_PRESETS[presetKey].moieties) || MOIETY_OF_ORBS;
+
+    const moietyA = activeMoietyTable[pA.id] || 4.0;
+    const moietyB = activeMoietyTable[pB.id] || 4.0;
     const maxOrbAllowed = moietyA + moietyB;
 
-    // Tìm góc chiếu Ptolemaic gần nhất
+    // Tìm góc chiếu Ptolemaic gần nhất:
+    // XỬ LÝ ĐẶC BIỆT ĐIỂM PHÂN ĐÔI 75° (giữa Sextile 60° và Square 90°):
+    // Nếu S = 75°:
+    // dS/dt > 0: khoảng cách đang nở rộng -> Đang hướng tới Square 90°
+    // dS/dt < 0: khoảng cách đang thu hẹp -> Đang hướng tới Sextile 60°
     let closestAspect = null;
     let minError = Infinity;
 
-    for (const asp of MAJOR_ASPECTS) {
-        const err = Math.abs(S - asp.angle);
-        if (err < minError) {
-            minError = err;
-            closestAspect = asp;
+    if (Math.abs(S - 75.0) < 1e-5) {
+        if (dS_dt > 0) {
+            closestAspect = MAJOR_ASPECTS.find(a => a.angle === 90);
+            minError = 15.0;
+        } else {
+            closestAspect = MAJOR_ASPECTS.find(a => a.angle === 60);
+            minError = 15.0;
+        }
+    } else {
+        for (const asp of MAJOR_ASPECTS) {
+            const err = Math.abs(S - asp.angle);
+            if (err < minError) {
+                minError = err;
+                closestAspect = asp;
+            }
         }
     }
 
@@ -107,8 +158,6 @@ export function calculateAspectBetween(pA, pB, options = {}) {
     // E = |S - alpha|
     // Khi S > alpha: dE/dt = dS/dt
     // Khi S < alpha: dE/dt = -dS/dt
-    // dE/dt < 0: Khoảng sai đang giảm -> Tiến tới (Applying / Approaching)
-    // dE/dt > 0: Khoảng sai đang tăng -> Rời xa (Separating / Separated)
     // =========================================================================
     const diffFromAspect = S - closestAspect.angle;
     let dE_dt = 0;
@@ -154,7 +203,6 @@ export function calculateAspectBetween(pA, pB, options = {}) {
             explanation = 'Vận tốc tương đối giữa hai hành tinh tiệm cận 0 tại thời điểm hiện tại.';
         }
     } else {
-        // Ngoài phạm vi Orb
         if (dE_dt < -1e-6) {
             state = 'APPROACHING_OUT_OF_ORB';
             stateVi = 'Tiến tới (ngoài Orb)';
@@ -187,27 +235,22 @@ export function calculateAspectBetween(pA, pB, options = {}) {
         { label: 'Exact chuẩn', separation: closestAspect.angle + '°' }
     ];
 
-    // =========================================================================
-    // BỘ GIẢI NGHIỆM THỜI GIAN PERFECTION & KIỂM TRA REFRANATION / INGRESS
-    // =========================================================================
+    // Dự báo tức thời ban đầu (nếu chưa giải nghiệm ephemeris tương lai)
     let perfectionInfo = null;
     if (dE_dt < -1e-6) {
-        const rateOfApproach = -dE_dt; // Tốc độ thu hẹp khoảng sai (độ/ngày)
+        const rateOfApproach = -dE_dt;
         const daysUntilExact = minError / rateOfApproach;
         const hoursUntilExact = daysUntilExact * 24;
 
         if (daysUntilExact > 0 && daysUntilExact <= 30) {
-            // Kiểm tra Ingress trước khi đạt exact
             const degInSignA = lonA % 30;
             const degInSignB = lonB % 30;
             const daysToIngressA = vA > 0 ? (30 - degInSignA) / vA : (vA < 0 ? degInSignA / Math.abs(vA) : Infinity);
             const daysToIngressB = vB > 0 ? (30 - degInSignB) / vB : (vB < 0 ? degInSignB / Math.abs(vB) : Infinity);
             const ingressBeforeAspect = (daysToIngressA < daysUntilExact) || (daysToIngressB < daysUntilExact);
 
-            // Kiểm tra Refranation (quay đầu trước khi thành góc)
             let refranation = false;
             let refranationReason = '';
-
             if (pA.turnsRetrogradeBeforeExact || pB.turnsRetrogradeBeforeExact) {
                 refranation = true;
                 refranationReason = 'Hành tinh quay đầu nghịch hành trước khi hoàn thành góc (Refranation).';
@@ -271,17 +314,13 @@ export function calculateAspectBetween(pA, pB, options = {}) {
 }
 
 /**
- * Quét toàn bộ aspect giữa danh sách các hành tinh
- * Mặc định trả về các góc trong Orb; hỗ trợ tùy chọn bao gồm góc approaching ngoài orb.
- * @param {Array<object>} planetsList
- * @param {object} options - { includeOutOfOrb: boolean }
- * @returns {Array<object>} Danh sách các góc chiếu
+ * Quét toàn bộ aspect giữa danh sách các hành tinh (đồng bộ)
  */
 export function scanAllAspects(planetsList, options = {}) {
     const aspects = [];
     for (let i = 0; i < planetsList.length; i++) {
         for (let j = i + 1; j < planetsList.length; j++) {
-            const asp = calculateAspectBetween(planetsList[i], planetsList[j]);
+            const asp = calculateAspectBetween(planetsList[i], planetsList[j], options);
             if (asp) {
                 if (asp.inOrb || options.includeOutOfOrb) {
                     aspects.push(asp);
@@ -289,7 +328,43 @@ export function scanAllAspects(planetsList, options = {}) {
             }
         }
     }
-    // Sắp xếp theo Orb nhỏ nhất lên đầu
     aspects.sort((a, b) => a.orb - b.orb);
+    return aspects;
+}
+
+/**
+ * Quét toàn bộ aspect kèm giải nghiệm thiên văn tương lai bằng ephemeris thực (bất đồng bộ)
+ * Tự động tính toán perfection, refranation thật và timeline sự kiện
+ *
+ * @param {Array<object>} planetsList 
+ * @param {number} jdUT 
+ * @param {object} options 
+ * @returns {Promise<Array<object>>}
+ */
+export async function scanAllAspectsTimeline(planetsList, jdUT, options = {}) {
+    const aspects = scanAllAspects(planetsList, options);
+
+    for (const asp of aspects) {
+        if (asp.state === 'APPLYING') {
+            try {
+                const timeline = await solveAspectTimeline(asp.planetA, asp.planetB, { angle: asp.aspectAngle, nameVi: asp.aspectNameVi }, jdUT, options);
+                asp.timeline = timeline;
+                asp.perfectionInfo = {
+                    perfects: timeline.perfects,
+                    isOutOfSign: timeline.isOutOfSign,
+                    hoursUntilExact: timeline.hoursUntilExact,
+                    daysUntilExact: timeline.daysUntilExact,
+                    refranation: timeline.refranation,
+                    refranationReason: timeline.refranationReason,
+                    ingressBeforeAspect: timeline.isOutOfSign,
+                    events: timeline.events,
+                    description: timeline.description
+                };
+            } catch (err) {
+                console.warn(`Không thể giải timeline cho cặp ${asp.planetA.id} - ${asp.planetB.id}:`, err);
+            }
+        }
+    }
+
     return aspects;
 }

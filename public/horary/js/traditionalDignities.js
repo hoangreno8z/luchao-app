@@ -246,12 +246,15 @@ export function calculateEssentialDignities(planetId, longitude, isDayChart = tr
         }
     }
 
-    // 6. Peregrine (Lãng tử / Vô gia cư)
-    const hasAnyDignity = isDomicile || isExaltation || isTriplicity || isTerm || isFace;
-    const isPeregrine = !hasAnyDignity && !isDetriment && !isFall;
+    // 6. Peregrine (Lãng tử / Vô gia cư) theo William Lilly CA p.112:
+    // "A Planet is then said to be Peregrine, when he is in the degrees of any Signe
+    // wherein he hath no essentiall dignity, viz. neither House, Exaltation, Triplicity, Term, nor Face..."
+    // Detriment và Fall là debility (suy thoái), không phải phẩm giá bản chất dương; do đó chúng không thể cứu hành tinh khỏi Peregrine.
+    const hasPositiveDignity = isDomicile || isExaltation || isTriplicity || isTerm || isFace;
+    const isPeregrine = !hasPositiveDignity;
     if (isPeregrine) {
         score -= 5;
-        explanations.push(`Lãng tử (Peregrine): Không có bất kỳ phẩm giá bản chất nào trong cung (-5 điểm)`);
+        explanations.push(`Lãng tử (Peregrine): Không có bất kỳ phẩm giá bản chất dương nào trong cung (-5 điểm)`);
     }
 
     // Xác định phẩm giá nổi bật nhất
@@ -263,8 +266,14 @@ export function calculateEssentialDignities(planetId, longitude, isDayChart = tr
     } else if (isExaltation) {
         primaryStatus = 'Tôn quý (Đắc địa)';
         primaryStatusClass = 'positive';
+    } else if (isDetriment && isPeregrine) {
+        primaryStatus = 'Hãm / Suy cung (Lãng tử)';
+        primaryStatusClass = 'negative';
     } else if (isDetriment) {
         primaryStatus = 'Hãm / Suy cung';
+        primaryStatusClass = 'negative';
+    } else if (isFall && isPeregrine) {
+        primaryStatus = 'Rơi đài / Tổn thương (Lãng tử)';
         primaryStatusClass = 'negative';
     } else if (isFall) {
         primaryStatus = 'Rơi đài / Tổn thương';

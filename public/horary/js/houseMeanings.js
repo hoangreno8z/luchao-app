@@ -1,133 +1,204 @@
 /**
- * houseMeanings.js - Ý Nghĩa 12 Nhà Chiêm Tinh Học Giờ Hỏi (Horary Astrology)
- * Source: William Lilly, Christian Astrology (1647), Chapters VII - XVIII.
+ * houseMeanings.js - Ý Nghĩa Cổ Điển 12 Nhà & Hệ Nhà Phái Sinh (Turned Houses)
+ * Source: William Lilly, Christian Astrology (1647), Book II, Chapter VII, pp.50–56; Claude Dariot (1557).
  *
- * Chứa định nghĩa cốt lõi, từ khóa quan trọng và bộ sinh câu giải nghĩa tự động
- * giúp người mới hiểu ngay lập tức vai trò của từng nhà và chủ tinh đại diện.
+ * TUYỆT ĐỐI TUÂN THỦ NGUYÊN TẮC HORARY CỔ ĐIỂN:
+ * 1. Không dùng tâm lý học hiện đại hay phân tâm học thế kỷ 20.
+ * 2. Giữ nguyên trật tự biểu thị kinh điển:
+ *    - Nhà 4: Người Cha (Father), đất đai, nhà cửa, kết cuộc sự việc ("The End of all things").
+ *    - Nhà 10: Người Mẹ (Mother), địa vị, chức tước, sếp, quan tòa, danh dự.
+ *    - Nhà 7: Hôn nhân, tình yêu, vợ/chồng, đối tác làm ăn, kẻ thù công khai, trộm cắp.
+ *    - Nhà 8: Cái chết, di chúc, của hồi môn / tiền bạc của người khác (Nhà 2 của Nhà 7), nỗi sợ hãi tâm trí.
+ * 3. Hỗ trợ hệ nhà phái sinh (Turned Houses / Derived Houses) theo Claude Dariot.
  */
 
 export const HOUSE_DEFINITIONS = [
     {
         number: 1,
         nameVi: 'Nhà 1 — Bản Thân & Người Hỏi (Querent)',
-        nameShort: 'Bản thân / Người hỏi',
-        keyword: 'Người hỏi, bản thân, thân thể, điều kiện chung',
-        description: 'Trong Horary, Nhà 1 luôn đại diện cho người đặt câu hỏi (Querent), tình trạng sức khỏe, tâm trí và trạng thái khởi đầu của vấn đề.',
-        roleFormula: 'Người đặt câu hỏi (Querent)'
+        nameShort: 'Người hỏi / Bản thân',
+        keyword: 'Người hỏi, sinh mệnh, thân thể, hình thể, tính khí, trạng thái khởi đầu',
+        description: 'Đại diện cho chính người đặt câu hỏi (Querent), sinh mạng, thể trạng sức khỏe, thể chất và điều kiện khởi phát của sự việc (Lilly CA p.50).',
+        roleFormula: 'Người đặt câu hỏi (Querent) và thân mệnh của họ'
     },
     {
         number: 2,
-        nameVi: 'Nhà 2 — Tài Chính & Nguồn Lực (Possessions)',
-        nameShort: 'Tiền bạc / Nguồn lực',
-        keyword: 'Tiền bạc, tài sản lưu động, nguồn thu nhập, khả năng thanh toán',
-        description: 'Nhà 2 biểu thị túi tiền, tài sản cá nhân, của cải di động, nguồn vốn và sự hỗ trợ vật chất của người hỏi.',
-        roleFormula: 'Tài sản & nguồn lực tài chính của người hỏi'
+        nameVi: 'Nhà 2 — Tài Sản Di Động & Của Cải (Estate & Fortune)',
+        nameShort: 'Của cải / Tiền bạc',
+        keyword: 'Tài sản di động, tiền của, đồ đạc có giá trị, tiền cho vay, lãi lỗ buôn bán',
+        description: 'Đại diện cho gia sản, tiền bạc, của cải lưu động, hàng hóa, nguồn lực vật chất, tiền cho vay và khả năng chi trả của người hỏi (Lilly CA p.51).',
+        roleFormula: 'Tài sản, tiền bạc và nguồn lực của người hỏi'
     },
     {
         number: 3,
-        nameVi: 'Nhà 3 — Giao Tiếp & Di Chuyển Ngắn (Communications)',
-        nameShort: 'Tin tức / Chuyến đi ngắn',
-        keyword: 'Anh chị em, hàng xóm, tin nhắn, thư từ, hợp đồng sơ bộ, hành trình ngắn',
-        description: 'Nhà 3 cai quản các luồng thông tin, tin đồn, tin tức, hợp đồng, các chuyến đi lại gần và mối quan hệ với anh chị em hoặc đồng nghiệp kề cận.',
-        roleFormula: 'Thông tin, thư từ và sự liên lạc'
+        nameVi: 'Nhà 3 — Anh Chị Em, Láng Giềng & Thư Tín (Brethren & Messages)',
+        nameShort: 'Anh em / Tin tức / Đi gần',
+        keyword: 'Anh chị em, họ hàng gần, hàng xóm, thư từ, tin đồn, sứ giả, chuyến đi ngắn nội địa',
+        description: 'Cai quản anh chị em ruột, anh em họ, láng giềng, các chuyến đi ngắn trong hạt/vùng, thư tín, tin tức truyền khẩu và người đưa tin (Lilly CA p.52).',
+        roleFormula: 'Anh chị em, láng giềng, thư từ hoặc các chuyến đi ngắn'
     },
     {
         number: 4,
-        nameVi: 'Nhà 4 — Nhà Đất, Gốc Rễ & Đoạn Kết (End of the Matter)',
-        nameShort: 'Nhà đất / Kết cuộc sự việc',
-        keyword: 'Bất động sản, nhà cửa, đất đai, cha mẹ, tổ tiên, đoạn kết chung cuộc',
-        description: 'Nhà 4 đại diện cho bất động sản, nhà ở, gốc gác gia đình, và ĐẶC BIỆT trong Horary là "Đoạn Kết Chung Cuộc" của toàn bộ sự việc đang hỏi.',
-        roleFormula: 'Bất động sản hoặc Kết quả cuối cùng của việc hỏi'
+        nameVi: 'Nhà 4 — Người Cha, Đất Đai & Đoạn Kết (Fathers, Lands & End of Matters)',
+        nameShort: 'Người Cha / Đất đai / Đoạn kết',
+        keyword: 'Người cha, đất đai, bất động sản, nhà cửa, kho báu ẩn giấu, kết cuộc sau cùng',
+        description: 'Đại diện cho người cha, đất đai thừa kế, nhà đất, nông trại, lâu đài, mỏ khoáng sản hoặc kho báu dưới lòng đất. ĐẶC BIỆT trong Horary, đây là "Đoạn Kết Chung Cuộc của mọi vấn đề" (Lilly CA p.52).',
+        roleFormula: 'Người cha, bất động sản hoặc Kết quả chung cuộc của việc hỏi'
     },
     {
         number: 5,
-        nameVi: 'Nhà 5 — Con Cái, Tình Cảm & May Rủi (Pleasure & Children)',
-        nameShort: 'Con cái / Tình vui',
-        keyword: 'Con cái, mang thai, tình yêu hẹn hò, vui chơi, đầu tư mạo hiểm, tiệc tùng',
-        description: 'Nhà 5 cai quản chuyện con cái, thai sản, chuyện tình cảm lãng mạn không ràng buộc hôn nhân, các trò giải trí và các khoản đầu tư sinh lời nhanh.',
-        roleFormula: 'Con cái, tình ái hoặc thú vui đầu tư'
+        nameVi: 'Nhà 5 — Con Cái, Thai Sản & Sứ Giả (Children & Pleasures)',
+        nameShort: 'Con cái / Vui chơi',
+        keyword: 'Con cái, mang thai, sứ thần, tiệc tùng, quán rượu, yến tiệc, y phục lộng lẫy',
+        description: 'Cai quản con cái, chuyện thai nghén, sứ giả đại diện quốc gia, sự hưởng thụ, tiệc tùng, quán rượu và những niềm vui trần thế (Lilly CA p.53).',
+        roleFormula: 'Con cái, chuyện thai sản hoặc sự hưởng thụ'
     },
     {
         number: 6,
-        nameVi: 'Nhà 6 — Bệnh Tật, Công Việc Hàng Ngày & Lao Dịch (Servants & Health)',
-        nameShort: 'Bệnh tật / Cấp dưới',
-        keyword: 'Bệnh tật, sức khỏe suy giảm, công việc làm thuê, cấp dưới, vật nuôi nhỏ',
-        description: 'Nhà 6 biểu thị bệnh tật, đau ốm, nhân viên, người làm công, người cung cấp dịch vụ và những gánh nặng công nhật khó nhọc.',
-        roleFormula: 'Bệnh tật, sức khỏe hoặc cấp dưới / nhân viên'
+        nameVi: 'Nhà 6 — Bệnh Tật, Gia Nhân & Gia Súc Nhỏ (Sickness & Servants)',
+        nameShort: 'Bệnh tật / Người làm công',
+        keyword: 'Bệnh tật, thầy thuốc chữa bệnh, người làm thuê, tá điền, gia súc nhỏ (cừu, dê, lợn)',
+        description: 'Biểu thị bệnh tật, căn nguyên và phương thuốc chữa trị; người giúp việc, người làm công nhật, tá điền thuê đất và các loài gia súc nhỏ (Lilly CA p.53).',
+        roleFormula: 'Bệnh tật, thể trạng đau ốm hoặc người làm thuê / cấp dưới'
     },
     {
         number: 7,
-        nameVi: 'Nhà 7 — Đối Phương, Đối Tác & Người Được Hỏi (Quesited)',
-        nameShort: 'Đối tác / Đối phương',
-        keyword: 'Vợ/chồng, người yêu chính thức, đối tác làm ăn, đối thủ tranh tụng, bên kia của giao dịch',
-        description: 'Nhà 7 đối diện trực tiếp Nhà 1, đại diện cho bất kỳ đối tượng nào mà người hỏi đang hướng tới: người phối ngẫu, đối tác ký hợp đồng, kẻ thù công khai, người bán/mua hàng.',
-        roleFormula: 'Đối phương / Đối tác / Người được hỏi (Quesited)'
+        nameVi: 'Nhà 7 — Hôn Nhân, Đối Tác & Đối Thủ Công Khai (Marriage & Quesited)',
+        nameShort: 'Hôn nhân / Đối tác / Đối phương',
+        keyword: 'Vợ/chồng, tình yêu đôi lứa, đối tác giao kèo, đối thủ kiện tụng, kẻ trộm, người được hỏi',
+        description: 'Đại diện cho hôn nhân và mọi câu hỏi tình yêu; người phối ngẫu, đối tác ký kết hiệp ước, kẻ thù công khai đối đầu trên tòa án, kẻ trộm cắp và người được hỏi (Quesited) (Lilly CA p.54).',
+        roleFormula: 'Người được hỏi (Quesited), vợ/chồng, đối tác hoặc kẻ thù công khai'
     },
     {
         number: 8,
-        nameVi: 'Nhà 8 — Tiền Người Khác & Khủng Hoảng (Death & Other’s Money)',
-        nameShort: 'Tiền đối phương / Nợ nần',
-        keyword: 'Tài sản của nhà 7 (tiền đối phương), nợ nần, thuế, thừa kế, khủng hoảng, mất mát',
-        description: 'Nhà 8 là nhà 2 của nhà 7 (tức tiền bạc của đối phương), đại diện cho các khoản vay, nợ phải trả, thuế má, tài sản thừa kế và sự biến động tâm lý sâu sắc.',
-        roleFormula: 'Tài chính của đối phương hoặc Nợ nần / Khủng hoảng'
+        nameVi: 'Nhà 8 — Cái Chết, Di Sản & Tiền Người Khác (Death & Dowry)',
+        nameShort: 'Cái chết / Của hồi môn / Tiền đối phương',
+        keyword: 'Cái chết, di chúc, tài sản thừa kế, của hồi môn/tiền bạc của người phối ngẫu, nỗi sợ hãi',
+        description: 'Biểu thị cái chết, bản chất cái chết, di chúc, quyền thừa kế; của cải và tiền bạc của đối phương/vợ chồng (Nhà 2 của Nhà 7); các khoản nợ và sự sợ hãi tinh thần (Lilly CA p.54).',
+        roleFormula: 'Tiền bạc của đối phương, tài sản thừa kế, nợ nần hoặc sự khủng hoảng'
     },
     {
         number: 9,
-        nameVi: 'Nhà 9 — Tri Thức, Tôn Giáo & Đi Xa (Long Journeys & Higher Mind)',
-        nameShort: 'Học vấn / Đi xa',
-        keyword: 'Học vấn đại học/thạc sĩ, triết học, tôn giáo, du lịch nước ngoài, xuất nhập khẩu, pháp luật',
-        description: 'Nhà 9 biểu thị học vấn bậc cao, sự thông thái, tôn giáo, các chuyến xuất ngoại, hành trình xa xôi và việc mở rộng tầm nhìn nhận thức.',
-        roleFormula: 'Học vấn cao, hành trình đi xa hoặc vấn đề tôn giáo/tri thức'
+        nameVi: 'Nhà 9 — Đi Xa Vượt Biển, Tôn Giáo & Tri Thức (Long Journeys & Religion)',
+        nameShort: 'Hành trình xa / Tôn giáo',
+        keyword: 'Chuyến đi xa vượt biển, tôn giáo, giáo sĩ, sách vở, tri thức học thuật, giấc mơ',
+        description: 'Cai quản những chuyến viễn du hải ngoại, tôn giáo, giới tăng lữ, triết học, học thuật uyên bác, sách vở và điềm báo giấc mơ (Lilly CA p.55).',
+        roleFormula: 'Chuyến đi xa vượt biển, học vấn cao hoặc tôn giáo'
     },
     {
         number: 10,
-        nameVi: 'Nhà 10 — Sự Nghiệp, Danh Dự & Quyền Quyết Định (Career & Honor)',
-        nameShort: 'Sự nghiệp / Quyền lực',
-        keyword: 'Chức vụ, sự nghiệp, thăng tiến, danh dự, cấp trên, sếp, quan tòa/thẩm phán',
-        description: 'Nhà 10 là đỉnh trời (MC), biểu thị đỉnh cao sự nghiệp, địa vị xã hội, cấp trên trực tiếp có quyền ban chức tước, hoặc thẩm phán trong vụ kiện tụng.',
-        roleFormula: 'Sự nghiệp, chức vụ, cơ quan quyền lực hoặc sếp'
+        nameVi: 'Nhà 10 — Người Mẹ, Danh Dự, Chức Tước & Quan Tòa (Honor & Mothers)',
+        nameShort: 'Người Mẹ / Chức tước / Thẩm phán',
+        keyword: 'Người mẹ, vua chúa, quan tòa, sếp lớn, danh dự, chức vụ công quyền, nghề nghiệp',
+        description: 'Đỉnh trời (MC), biểu thị người mẹ, các vị vua, thẩm phán ban phát phán quyết, quan chức có thẩm quyền, danh dự, phẩm hàm và sự nghiệp chính thức (Lilly CA p.55).',
+        roleFormula: 'Người mẹ, quan tòa, cấp trên có quyền định đoạt hoặc sự nghiệp'
     },
     {
         number: 11,
-        nameVi: 'Nhà 11 — Bạn Bè, Hy Vọng & Quý Nhân Hỗ Trợ (Friends & Hopes)',
-        nameShort: 'Bạn bè / Hy vọng',
-        keyword: 'Bạn bè, mạng lưới đồng minh, người bảo trợ, ước mơ, hy vọng thành tựu',
-        description: 'Nhà 11 là "Good Fortune" (May Mắn Tốt Lành), biểu thị bạn bè chân thành, cộng đồng hỗ trợ, nguồn tài trợ và sự hiện thực hóa những kỳ vọng.',
-        roleFormula: 'Bạn bè, đồng minh và hy vọng của người hỏi'
+        nameVi: 'Nhà 11 — Bạn Bè, Hy Vọng & Quý Nhân (Friends & Hopes)',
+        nameShort: 'Bạn hữu / Hy vọng',
+        keyword: 'Bạn bè chân thành, sự che chở, hy vọng, lòng tin, quốc khố của vua chúa',
+        description: 'Nhà của May Mắn Tốt Lành (Good Fortune), biểu thị bạn hữu trung thành, sự ủng hộ của triều đình, người bảo trợ và những ước vọng thành tựu (Lilly CA p.56).',
+        roleFormula: 'Bạn bè thân hữu, sự bảo trợ và niềm hy vọng'
     },
     {
         number: 12,
-        nameVi: 'Nhà 12 — Kẻ Thù Kín, Trở Ngại Ngầm & Giam Hãm (Secret Enemies & Isolation)',
-        nameShort: 'Trở ngại ngầm / Tiểu nhân',
-        keyword: 'Kẻ thù giấu mặt, âm mưu sau lưng, bệnh viện, nhà tù, sự cô lập, tự hại bản thân',
-        description: 'Nhà 12 biểu thị những điều bị che khuất, kẻ tiểu nhân ngầm hãm hại, sự tự giới hạn bản thân, các không gian giam giữ hoặc cô lập bí mật.',
-        roleFormula: 'Trở ngại kín đáo hoặc kẻ thù ngầm sau lưng'
+        nameVi: 'Nhà 12 — Kẻ Thù Kín, Sự Giam Hãm & Gia Súc Lớn (Secret Enemies & Prison)',
+        nameShort: 'Kẻ thù ngầm / Giam cầm',
+        keyword: 'Kẻ thù giấu mặt, âm mưu hãm hại, phù thủy, tù ngục, sự giam hãm, gia súc lớn (ngựa, voi)',
+        description: 'Cai quản kẻ thù giấu mặt ngầm hãm hại, sự phản trắc, ngục tù giam hãm, nỗi khổ đau tự chuốc lấy, và các loài đại gia súc như ngựa, bò, voi (Lilly CA p.56).',
+        roleFormula: 'Kẻ thù ngầm kín, tai họa giấu mặt hoặc sự giam hãm'
     }
 ];
 
 /**
+ * Bản đồ quy đổi tên tiếng Việt của 12 cung hoàng đạo và 7 hành tinh
+ */
+const SIGN_NAME_MAP = {
+    aries: 'Bạch Dương', taurus: 'Kim Ngưu', gemini: 'Song Tử', cancer: 'Cự Giải',
+    leo: 'Sư Tử', virgo: 'Xử Nữ', libra: 'Thiên Bình', scorpio: 'Bọ Cạp',
+    sagittarius: 'Nhân Mã', capricorn: 'Ma Kết', aquarius: 'Bảo Bình', pisces: 'Song Ngư'
+};
+
+const PLANET_NAME_MAP = {
+    sun: 'Mặt Trời', moon: 'Mặt Trăng', mercury: 'Thủy Tinh',
+    venus: 'Kim Tinh', mars: 'Hỏa Tinh', jupiter: 'Mộc Tinh', saturn: 'Thổ Tinh',
+    northNode: 'Bắc Giao Điểm', southNode: 'Nam Giao Điểm'
+};
+
+/**
+ * Tính nhà phái sinh (Turned Houses / Derived Houses) theo Claude Dariot (1557) & William Lilly.
+ * Công thức: ((baseHouse + relativeHouse - 2) % 12) + 1
+ *
+ * Ví dụ:
+ * - Tiền bạc của đối tác: base = 7, relative = 2 -> ((7 + 2 - 2) % 12) + 1 = Nhà 8
+ * - Con cái của đối tác: base = 7, relative = 5 -> ((7 + 5 - 2) % 12) + 1 = Nhà 11
+ * - Cha của người phối ngẫu: base = 7, relative = 4 -> ((7 + 4 - 2) % 12) + 1 = Nhà 10
+ * - Bệnh tật của anh em: base = 3, relative = 6 -> ((3 + 6 - 2) % 12) + 1 = Nhà 8
+ *
+ * @param {number} baseHouse - Nhà cơ sở (1 đến 12)
+ * @param {number} relativeHouse - Nhà tương đối cần xét (1 đến 12)
+ * @returns {number} Số thứ tự nhà trong lá số (1 đến 12)
+ */
+export function turnedHouse(baseHouse, relativeHouse) {
+    const b = parseInt(baseHouse, 10);
+    const r = parseInt(relativeHouse, 10);
+    if (isNaN(b) || isNaN(r) || b < 1 || b > 12 || r < 1 || r > 12) {
+        throw new Error(`Nhà không hợp lệ: baseHouse=${baseHouse}, relativeHouse=${relativeHouse}. Phải nằm trong [1, 12].`);
+    }
+    return ((b + r - 2) % 12) + 1;
+}
+
+/**
+ * Mô tả diễn giải nhà phái sinh dạng văn bản học thuật
+ * @param {number} baseHouse 
+ * @param {number} relativeHouse 
+ * @returns {string}
+ */
+export function describeTurnedHouse(baseHouse, relativeHouse) {
+    const resultingHouse = turnedHouse(baseHouse, relativeHouse);
+    const baseDef = HOUSE_DEFINITIONS.find(h => h.number === baseHouse);
+    const relDef = HOUSE_DEFINITIONS.find(h => h.number === relativeHouse);
+    return `Nhà ${resultingHouse} trong lá số là Nhà ${relativeHouse} (${relDef.nameShort}) của Nhà ${baseHouse} (${baseDef.nameShort}).`;
+}
+
+/**
  * Sinh câu diễn giải hoàn chỉnh cho một đỉnh nhà
+ * Hỗ trợ linh hoạt cả mã ID ('aries', 'mars') lẫn tên tiếng Việt ('Bạch Dương', 'Hỏa Tinh')
+ * và đối tượng hành tinh đầy đủ.
+ *
  * @param {number} houseNum - 1 đến 12
- * @param {string} signNameVi - Tên tiếng Việt của cung đỉnh nhà
- * @param {string} rulerNameVi - Tên tiếng Việt của hành tinh chủ quản
+ * @param {string} signNameOrId - Tên tiếng Việt hoặc id của cung hoàng đạo đỉnh nhà
+ * @param {string} rulerNameOrId - Tên tiếng Việt hoặc id của hành tinh chủ quản
  * @param {string} cuspFormatted - Tọa độ đỉnh nhà (ví dụ: '03°17′')
+ * @param {object|null} rulerPlanetObj - Đối tượng hành tinh (nếu có)
  * @returns {object} Câu diễn giải tự động
  */
-export function generateHouseExplanation(houseNum, signNameVi, rulerNameVi, cuspFormatted = '') {
+export function generateHouseExplanation(houseNum, signNameOrId, rulerNameOrId, cuspFormatted = '', rulerPlanetObj = null) {
     const def = HOUSE_DEFINITIONS.find(h => h.number === houseNum);
     if (!def) return null;
 
+    const signVi = SIGN_NAME_MAP[signNameOrId] || signNameOrId;
+    let rulerVi = rulerNameOrId;
+    if (rulerPlanetObj && rulerPlanetObj.nameVi) {
+        rulerVi = rulerPlanetObj.nameVi;
+    } else if (PLANET_NAME_MAP[rulerNameOrId]) {
+        rulerVi = PLANET_NAME_MAP[rulerNameOrId];
+    }
+
     const cuspText = cuspFormatted ? ` tại ${cuspFormatted}` : '';
-    const explanationText = `Đỉnh Nhà ${houseNum}${cuspText} nằm ở cung ${signNameVi}. Cung ${signNameVi} do ${rulerNameVi} cai quản bản vị. Vì vậy trong câu hỏi này, ${rulerNameVi} chính là chủ tinh đại diện cho ${def.roleFormula}.`;
+    const explanationText = `Đỉnh Nhà ${houseNum}${cuspText} nằm ở cung ${signVi}. Cung ${signVi} do ${rulerVi} cai quản bản vị. Vì vậy trong câu hỏi này, ${rulerVi} chính là chủ tinh đại diện cho ${def.roleFormula}.`;
 
     return {
         houseNumber: houseNum,
         title: def.nameVi,
         shortTitle: def.nameShort,
-        cuspSign: signNameVi,
-        rulerPlanet: rulerNameVi,
+        cuspSign: signVi,
+        rulerPlanet: rulerVi,
         sentence: explanationText,
         fullMeaning: def.description,
-        keyword: def.keyword
+        traditionalMeaning: def.description, // Alias đảm bảo tương thích ngược
+        keyword: def.keyword,
+        roleFormula: def.roleFormula
     };
 }

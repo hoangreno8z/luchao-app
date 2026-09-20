@@ -213,29 +213,24 @@ export function getZodiacPosition(longitude) {
     let norm = longitude % 360;
     if (norm < 0) norm += 360;
 
-    const signIndex = Math.floor(norm / 30) % 12;
+    // Chuyển toàn bộ kinh độ sang đơn vị giây cung nguyên (arcseconds) [0, 1295999]
+    // 360 độ = 1,296,000 giây cung. Đảm bảo triệt để 100% không bao giờ có lỗi làm tròn 60 giây hay 30 độ
+    const totalSecCircle = 360 * 3600; // 1296000
+    let totalSec = Math.round(norm * 3600);
+    totalSec = ((totalSec % totalSecCircle) + totalSecCircle) % totalSecCircle;
+
+    const secPerSign = 30 * 3600; // 108000
+    const signIndex = Math.floor(totalSec / secPerSign) % 12;
     const sign = ZODIAC_SIGNS[signIndex];
-    const degreeDecimal = norm - signIndex * 30;
-    const degree = Math.floor(degreeDecimal);
-    const minuteDecimal = (degreeDecimal - degree) * 60;
-    const minute = Math.floor(minuteDecimal);
-    const second = Math.round((minuteDecimal - minute) * 60);
 
-    // Xử lý làm tròn biên 60 giây
-    let finalDegree = degree;
-    let finalMinute = minute;
-    let finalSecond = second;
-    if (finalSecond === 60) {
-        finalSecond = 0;
-        finalMinute += 1;
-    }
-    if (finalMinute === 60) {
-        finalMinute = 0;
-        finalDegree += 1;
-    }
+    const secInSign = totalSec % secPerSign;
+    const degree = Math.floor(secInSign / 3600);
+    const minute = Math.floor((secInSign % 3600) / 60);
+    const second = secInSign % 60;
+    const degreeDecimal = secInSign / 3600;
 
-    const formatted = `${finalDegree}°${String(finalMinute).padStart(2, '0')}′`;
-    const formattedWithSec = `${finalDegree}°${String(finalMinute).padStart(2, '0')}′${String(finalSecond).padStart(2, '0')}″`;
+    const formatted = `${degree}°${String(minute).padStart(2, '0')}′`;
+    const formattedWithSec = `${degree}°${String(minute).padStart(2, '0')}′${String(second).padStart(2, '0')}″`;
 
     return {
         longitude: norm,
@@ -247,9 +242,9 @@ export function getZodiacPosition(longitude) {
         rulerId: sign.rulerId,
         rulerNameVi: sign.rulerNameVi,
         degreeDecimal,
-        degree: finalDegree,
-        minute: finalMinute,
-        second: finalSecond,
+        degree,
+        minute,
+        second,
         formatted,
         formattedWithSec,
         fullDisplay: `${formatted} ${sign.nameVi}`

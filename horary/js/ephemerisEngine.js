@@ -1,16 +1,18 @@
 /**
- * ephemerisEngine.js - Lõi Tính Toán Thiên Văn Horary Đa Tầng
+ * ephemerisEngine.js - Lõi Tính Toán Thiên Văn Horary Đa Tầng Chuẩn Xác
  * Ưu tiên: Swiss Ephemeris 2.10.03 qua WebAssembly (@kuntay/swisseph) nạp cục bộ
  * Dự phòng minh bạch: Astronomy Engine (VSOP87/NOVAS) & Analytical Regiomontanus
  *
  * NGUYÊN TẮC BẤT DI BẤT DỊCH:
  * 1. Tropical Zodiac, Geocentric positions.
- * 2. Hệ nhà: Regiomontanus (mã 'R').
- * 3. 7 hành tinh truyền thống + La Hầu / Kế Đô.
- * 4. Nam Giao Điểm (South Node) có vận tốc cùng chiều Bắc Giao Điểm: d(sn)/dt = d(nn)/dt.
+ * 2. Hệ nhà: Regiomontanus (mã 'R') từ Swiss Ephemeris làm nguồn duy nhất.
+ * 3. 7 hành tinh truyền thống + La Hầu / Kế Đô (Mean Node IAU theo William Lilly).
+ * 4. Nam Giao Điểm (South Node): d(sn)/dt = d(nn)/dt, kinh độ (nn + 180) % 360.
  * 5. Tuyệt đối KHÔNG BAO GIỜ sinh dữ liệu giả trong bất kỳ trường hợp nào.
- *    Nếu cả Swiss Ephemeris và Astronomy Engine đều lỗi, throw Error và dừng hẳn.
- * 6. Xác định Day/Night Sect dựa trên True Solar Altitude (>= -0.833° bao gồm khúc xạ và bán kính).
+ * 6. Sect: True Unrefracted Solar Altitude (ngưỡng 0°, có cờ borderline < 1°).
+ * 7. Pars Fortunae (Điểm May Mắn): William Lilly CA p.143 (ASC + Moon - Sun cho cả Ngày và Đêm).
+ * 8. Quy tắc 5° Đỉnh Nhà (Lilly CA pp.33, 151): Tách bạch geometricHouse và traditionalHouse.
+ * 9. Hỗ trợ Calendar Mode: 'GREGORIAN' (hiện đại) và 'JULIAN' (tái hiện lịch sử Lilly).
  */
 
 import { getZodiacPosition, PLANETS_INFO } from './traditionalRulers.js';
@@ -19,7 +21,7 @@ let sweInstance = null;
 let currentEphemerisSource = 'Chưa khởi tạo';
 
 /**
- * Lấy đối tượng Astronomy Engine (hỗ trợ cả Node.js và Trình duyệt)
+ * Lấy đối tượng Astronomy Engine (hỗ trợ cả Node.js ESM/CJS và Trình duyệt)
  */
 export async function getAstronomyEngine() {
     if (typeof globalThis !== 'undefined' && globalThis.Astronomy) {
@@ -29,16 +31,17 @@ export async function getAstronomyEngine() {
         return window.Astronomy;
     }
 
-    // Môi trường Node.js: nạp tệp vendor cục bộ
+    // Môi trường Node.js: nạp tệp vendor cục bộ không dùng __dirname (tương thích 100% ESM)
     const isNode = typeof process !== 'undefined' && process.versions && process.versions.node;
     if (isNode) {
         try {
             const fs = await import('fs');
             const path = await import('path');
+            const cwd = process.cwd();
             const possiblePaths = [
-                path.resolve('vendor/astronomy.browser.min.js'),
-                path.resolve(__dirname, '../../vendor/astronomy.browser.min.js'),
-                path.resolve(__dirname, '../vendor/astronomy.browser.min.js')
+                path.resolve(cwd, 'vendor/astronomy.browser.min.js'),
+                path.resolve(cwd, 'public/vendor/astronomy.browser.min.js'),
+                path.resolve(cwd, '../vendor/astronomy.browser.min.js')
             ];
             for (const p of possiblePaths) {
                 if (fs.existsSync(p)) {
@@ -81,11 +84,10 @@ export async function initEphemerisEngine() {
 
             sweInstance = await swisseph.createSwissEph();
 
-            // Cố gắng mount data nếu có ở local node
             try {
                 const fs = await import('fs');
                 const path = await import('path');
-                const ephePath = path.resolve('node_modules/@kuntay/swisseph-data/ephe');
+                const ephePath = path.resolve(process.cwd(), 'node_modules/@kuntay/swisseph-data/ephe');
                 if (fs.existsSync(ephePath)) {
                     sweInstance.mountEphemerisDirectory(ephePath);
                     currentEphemerisSource = 'Swiss Ephemeris 2.10.03 (DE441 Full Precision)';
@@ -96,9 +98,8 @@ export async function initEphemerisEngine() {
                 currentEphemerisSource = 'Swiss Ephemeris 2.10.03 (Moshier Engine WASM)';
             }
         } else {
-            // Môi trường trình duyệt: nạp từ thư mục tĩnh cục bộ /vendor/swisseph/
+            // Môi trường trình duyệt
             try {
-                // Thử các đường dẫn tương đối và tuyệt đối cục bộ
                 let swisseph = null;
                 try {
                     swisseph = await import('../../vendor/swisseph/dist/index.js');
@@ -125,8 +126,19 @@ export async function initEphemerisEngine() {
 
 /**
  * Chuyển đổi ngày giờ địa phương thành Julian Day (UT)
+ * Hỗ trợ Calendar Mode: 'GREGORIAN' (mặc định) và 'JULIAN' (lịch Julian trước 15/10/1582 hoặc nghiên cứu William Lilly)
+ *
+ * @param {number} year 
+ * @param {number} month 
+ * @param {number} day 
+ * @param {number} hour 
+ * @param {number} minute 
+ * @param {number} second 
+ * @param {number} utcOffsetHours 
+ * @param {string} calendar - 'GREGORIAN' | 'JULIAN'
+ * @returns {number} Julian Day UT
  */
-export function getJulianDayUT(year, month, day, hour, minute, second, utcOffsetHours = 7) {
+export function getJulianDayUT(year, month, day, hour, minute, second, utcOffsetHours = 7, calendar = 'GREGORIAN') {
     const decimalLocalHour = hour + minute / 60 + second / 3600;
     const decimalUTHour = decimalLocalHour - utcOffsetHours;
 
@@ -139,25 +151,158 @@ export function getJulianDayUT(year, month, day, hour, minute, second, utcOffset
         m += 12;
     }
 
-    const A = Math.floor(y / 100);
-    const B = 2 - A + Math.floor(A / 4);
+    let B = 0;
+    if (String(calendar).toUpperCase() === 'GREGORIAN') {
+        const A = Math.floor(y / 100);
+        B = 2 - A + Math.floor(A / 4);
+    }
 
     const jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
     return jd;
 }
 
 /**
- * Tính toán toàn bộ lá số Horary (Hành tinh, Nhà Regiomontanus, Tốc độ, Trạng thái)
+ * Tính tọa độ kinh độ và vận tốc của một thiên thể tại thời điểm Julian Day bất kỳ (tương lai hoặc quá khứ)
+ * Hàm chuẩn dùng cho bộ giải nghiệm tương lai futureEventSolver.
+ *
+ * @param {string} bodyId - 'sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'northNode', 'southNode'
+ * @param {number} jdUT - Julian Day UT
+ * @param {object} options - { preferredEngine: 'swiss'|'astronomy', nodeType: 'MEAN'|'TRUE' }
+ * @returns {Promise<{ longitude: number, speedLongitude: number, latitude: number, distance: number }>}
+ */
+export async function calcBodyPositionAtJD(bodyId, jdUT, options = {}) {
+    if (!sweInstance && options.preferredEngine !== 'astronomy') {
+        await initEphemerisEngine();
+    }
+
+    if (bodyId === 'southNode') {
+        const nn = await calcBodyPositionAtJD('northNode', jdUT, options);
+        return {
+            longitude: (nn.longitude + 180) % 360,
+            speedLongitude: nn.speedLongitude,
+            latitude: -nn.latitude,
+            distance: nn.distance
+        };
+    }
+
+    const nodeType = options.nodeType || 'MEAN';
+    // Swiss Body IDs:
+    // 0: Sun, 1: Moon, 2: Mercury, 3: Venus, 4: Mars, 5: Jupiter, 6: Saturn, 10: MeanNode, 11: TrueNode
+    const swissBodyMap = {
+        sun: 0,
+        moon: 1,
+        mercury: 2,
+        venus: 3,
+        mars: 4,
+        jupiter: 5,
+        saturn: 6,
+        northNode: nodeType === 'TRUE' ? 11 : 10
+    };
+
+    if (sweInstance && options.preferredEngine !== 'astronomy') {
+        try {
+            const bodyCode = swissBodyMap[bodyId];
+            if (bodyCode !== undefined) {
+                const pos = sweInstance.calc(jdUT, bodyCode);
+                return {
+                    longitude: (pos.longitude % 360 + 360) % 360,
+                    speedLongitude: pos.longitudeSpeed,
+                    latitude: pos.latitude,
+                    distance: pos.distance
+                };
+            }
+        } catch (e) {
+            // Chuyển tiếp sang Astronomy Engine nếu Swiss lỗi cục bộ
+        }
+    }
+
+    // Astronomy Engine Fallback (VSOP87 / NOVAS)
+    const ast = await getAstronomyEngine();
+    if (!ast) {
+        throw new Error(`Không thể tính tọa độ thiên văn cho ${bodyId} tại JD=${jdUT}: Không có engine khả dụng.`);
+    }
+
+    const dateMs = (jdUT - 2440587.5) * 86400000;
+    const time = ast.MakeTime(new Date(dateMs));
+    const dt = 0.0005; // ~43.2 giây cho sai số đạo hàm < 0.001%
+    const timePlus = ast.MakeTime(new Date(dateMs + dt * 86400000));
+
+    if (bodyId === 'northNode') {
+        const calcNodeLon = (jd) => {
+            const tVal = (jd - 2451545.0) / 36525.0;
+            let omega = 125.04452 - 1934.136261 * tVal + 0.0020708 * tVal * tVal + (tVal * tVal * tVal) / 450000;
+            return ((omega % 360) + 360) % 360;
+        };
+        const lon1 = calcNodeLon(jdUT);
+        const lon2 = calcNodeLon(jdUT + dt);
+        let dLon = lon2 - lon1;
+        while (dLon > 180) dLon -= 360;
+        while (dLon < -180) dLon += 360;
+        return {
+            longitude: lon1,
+            speedLongitude: dLon / dt,
+            latitude: 0,
+            distance: 1
+        };
+    }
+
+    function getCoords(bId, t) {
+        if (bId === 'sun') {
+            const pos = ast.SunPosition(t);
+            return { lon: pos.elon, lat: pos.elat, dist: pos.vec.Length() };
+        }
+        if (bId === 'moon') {
+            const vMoon = ast.GeoMoon(t);
+            const ecl = ast.Ecliptic(vMoon);
+            return { lon: ecl.elon, lat: ecl.elat, dist: ecl.vec ? ecl.vec.Length() : 0.00257 };
+        }
+        const nameMap = {
+            mercury: 'Mercury',
+            venus: 'Venus',
+            mars: 'Mars',
+            jupiter: 'Jupiter',
+            saturn: 'Saturn'
+        };
+        const astName = nameMap[bId];
+        if (!astName) return null;
+        const vec = ast.GeoVector(astName, t, true);
+        const ecl = ast.Ecliptic(vec);
+        return { lon: ecl.elon, lat: ecl.elat, dist: ecl.vec ? ecl.vec.Length() : 1 };
+    }
+
+    const c1 = getCoords(bodyId, time);
+    const c2 = getCoords(bodyId, timePlus);
+    if (!c1 || !c2) {
+        throw new Error(`Không tìm thấy dữ liệu thiên thể cho ${bodyId}`);
+    }
+
+    let dLon = c2.lon - c1.lon;
+    while (dLon > 180) dLon -= 360;
+    while (dLon < -180) dLon += 360;
+    const speed = dLon / dt;
+
+    return {
+        longitude: (c1.lon % 360 + 360) % 360,
+        speedLongitude: speed,
+        latitude: c1.lat,
+        distance: c1.dist
+    };
+}
+
+/**
+ * Tính toán toàn bộ lá số Horary (Hành tinh, Nhà Regiomontanus, Tốc độ, Trạng thái, Pars Fortunae)
  */
 export async function calculateHoraryChart(params) {
     const {
         year, month, day,
         hour = 0, minute = 0, second = 0,
         latitude = 21.0285, longitude = 105.8542,
-        utcOffset = 7, locationName = 'Hà Nội'
+        utcOffset = 7, locationName = 'Hà Nội',
+        calendar = 'GREGORIAN',
+        nodeType = 'MEAN' // Mặc định Mean Node theo chuẩn William Lilly
     } = params;
 
-    const jdUT = getJulianDayUT(year, month, day, hour, minute, second, utcOffset);
+    const jdUT = getJulianDayUT(year, month, day, hour, minute, second, utcOffset, calendar);
 
     if (!sweInstance) {
         await initEphemerisEngine();
@@ -168,8 +313,7 @@ export async function calculateHoraryChart(params) {
     let epheStatus = currentEphemerisSource;
     let sunAltitude = null;
 
-    // Body IDs trong Swiss Ephemeris
-    // 0: Sun, 1: Moon, 2: Mercury, 3: Venus, 4: Mars, 5: Jupiter, 6: Saturn, 10: TrueNode
+    // Swiss Ephemeris Body IDs
     const swissBodyMap = {
         sun: 0,
         moon: 1,
@@ -178,12 +322,12 @@ export async function calculateHoraryChart(params) {
         mars: 4,
         jupiter: 5,
         saturn: 6,
-        northNode: 10
+        northNode: nodeType === 'TRUE' ? 11 : 10
     };
 
     if (sweInstance) {
         try {
-            // 1. Tính hệ nhà Regiomontanus (mã 'R')
+            // 1. Hệ nhà Regiomontanus (mã 'R') từ Swiss Ephemeris
             const houseData = sweInstance.houses(jdUT, latitude, longitude, 'R');
             houses = {
                 system: 'Regiomontanus',
@@ -197,23 +341,21 @@ export async function calculateHoraryChart(params) {
                 cusps: houseData.cusps.slice(0, 12)
             };
 
-            // 2. Tính độ cao thật của Mặt Trời so với chân trời địa phương (True Solar Altitude)
+            // 2. True Unrefracted Solar Altitude (Độ cao hình học không khúc xạ)
             try {
                 const sunHor = sweInstance.horizontal(jdUT, 0, latitude, longitude);
                 sunAltitude = sunHor.altitude;
             } catch (errHor) {
-                console.warn('Không thể tính horizontal qua SwissEph, dùng công thức lượng giác cầu:', errHor);
+                console.warn('Lỗi sweInstance.horizontal:', errHor);
             }
 
             // 3. Tính tọa độ và vận tốc 7 hành tinh + Nodes
             for (const pInfo of PLANETS_INFO) {
                 if (pInfo.isNode && pInfo.id === 'southNode') {
-                    // Nam Giao Điểm đối xứng Bắc Giao Điểm 180°
                     const nn = planets.find(p => p.id === 'northNode');
                     if (nn) {
                         const snLon = (nn.longitude + 180) % 360;
                         const pos = getZodiacPosition(snLon);
-                        // CHUẨN TOÁN HỌC: d(snLon)/dt = d(nnLon)/dt -> speedLongitude = nn.speedLongitude
                         planets.push({
                             id: 'southNode',
                             nameVi: pInfo.nameVi,
@@ -291,7 +433,6 @@ export async function calculateHoraryChart(params) {
     }
 
     // TẦNG DỰ PHÒNG THIÊN VĂN THỰC SỰ 100% (Astronomy Engine VSOP87/NOVAS)
-    // TUYỆT ĐỐI KHÔNG BAO GIỜ DÙNG DỮ LIỆU GIẢ!
     if (!houses || planets.length === 0) {
         console.warn('Swiss Ephemeris không khả dụng -> Kích hoạt Astronomy Engine (VSOP87/NOVAS) 100% thực');
         const fallbackRes = await calculateAstronomicalFallback(jdUT, latitude, longitude);
@@ -301,22 +442,70 @@ export async function calculateHoraryChart(params) {
         epheStatus = 'Astronomy Engine (VSOP87/NOVAS Fallback)';
     }
 
-    // Xác định hành tinh đang ngụ tại nhà nào (House Placement)
+    // Áp dụng Quy Tắc 5° Đỉnh Nhà (William Lilly CA pp.33, 151)
+    // Tách bạch rõ ràng giữa geometricHouseNumber và traditionalHouseNumber
     for (const p of planets) {
-        p.houseNumber = getHouseOfLongitude(p.longitude, houses.cusps);
+        const geomHouse = getHouseOfLongitude(p.longitude, houses.cusps);
+        const nextCuspIndex = geomHouse % 12; // Cusp của nhà kế tiếp (0-index tương ứng đỉnh nhà geomHouse + 1)
+        const nextCuspLon = houses.cusps[nextCuspIndex];
+        let distToNextCusp = (nextCuspLon - p.longitude + 360) % 360;
+        const isWithin5Deg = distToNextCusp <= 5.0;
+        const tradHouse = isWithin5Deg ? (geomHouse % 12) + 1 : geomHouse;
+
+        p.geometricHouseNumber = geomHouse;
+        p.traditionalHouseNumber = tradHouse;
+        p.houseNumber = tradHouse; // Horary chuẩn mực gán vào nhà truyền thống
+        p.isWithinFiveDegreeCusp = isWithin5Deg;
+        p.distanceToNextCusp = Math.round(distToNextCusp * 100) / 100;
     }
 
-    // Xác định lá số Ban Ngày hay Ban Đêm (Sect):
-    // Dựa trên True Solar Altitude: Altitude >= -0.833° (tính cả khúc xạ khí quyển và bán kính Mặt Trời) -> Day Chart
+    // Xác định Day/Night Sect dựa trên True Unrefracted Solar Altitude
+    // Ngưỡng 0°: sunAltitude >= 0 -> Day, < 0 -> Night
+    // Cờ borderline: |sunAltitude| < 1.0°
     let isDayChart = true;
+    let isBorderlineSect = false;
     if (sunAltitude !== null && sunAltitude !== undefined) {
-        isDayChart = (sunAltitude >= -0.833);
+        isDayChart = (sunAltitude >= 0);
+        isBorderlineSect = (Math.abs(sunAltitude) < 1.0);
     } else {
-        // Dự phòng hình học qua trục chân trời ASC - DSC nếu altitude chưa sẵn sàng
         const sunPlanet = planets.find(p => p.id === 'sun');
         if (sunPlanet && houses && houses.cusps) {
-            isDayChart = (sunPlanet.houseNumber >= 7 && sunPlanet.houseNumber <= 12);
+            isDayChart = (sunPlanet.geometricHouseNumber >= 7 && sunPlanet.geometricHouseNumber <= 12);
         }
+    }
+
+    // Tính Điểm May Mắn (Pars Fortunae) theo William Lilly CA Book II, Ch. XXIII (p.143)
+    // Lilly viết rõ: "The Part of Fortune is taken both day and night from the Ascendant,
+    // by adding the Moon's place to the Ascendant, and subtracting the Sun's place"
+    const moonObj = planets.find(p => p.id === 'moon');
+    const sunObj = planets.find(p => p.id === 'sun');
+    let partOfFortune = null;
+
+    if (moonObj && sunObj && houses) {
+        const lillyPofLon = (houses.ascendant + moonObj.longitude - sunObj.longitude + 720) % 360;
+        const pofPos = getZodiacPosition(lillyPofLon);
+        const pofGeomHouse = getHouseOfLongitude(lillyPofLon, houses.cusps);
+        const pofNextCusp = houses.cusps[pofGeomHouse % 12];
+        const pofDistToNext = (pofNextCusp - lillyPofLon + 360) % 360;
+        const pofTradHouse = pofDistToNext <= 5.0 ? (pofGeomHouse % 12) + 1 : pofGeomHouse;
+
+        // Công thức Hermetic đảo ngày/đêm để tham chiếu học thuật
+        const hermeticLon = isDayChart ? lillyPofLon : ((houses.ascendant + sunObj.longitude - moonObj.longitude + 720) % 360);
+
+        partOfFortune = {
+            id: 'partOfFortune',
+            nameVi: 'Điểm May Mắn (Pars Fortunae)',
+            nameEn: 'Part of Fortune',
+            glyphKey: 'partOfFortune',
+            longitude: lillyPofLon,
+            rule: 'William Lilly (CA p.143: ASC + Moon - Sun cho cả Ngày và Đêm)',
+            hermeticLongitude: hermeticLon,
+            houseNumber: pofTradHouse,
+            geometricHouseNumber: pofGeomHouse,
+            isWithinFiveDegreeCusp: pofDistToNext <= 5.0,
+            distanceToNextCusp: Math.round(pofDistToNext * 100) / 100,
+            ...pofPos
+        };
     }
 
     const sunAltFormatted = sunAltitude !== null ?
@@ -324,6 +513,7 @@ export async function calculateHoraryChart(params) {
 
     return {
         julianDayUT: jdUT,
+        calendarMode: calendar.toUpperCase(),
         localTimeFormatted: `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`,
         utcOffsetFormatted: `UTC${utcOffset >= 0 ? '+' : ''}${String(utcOffset).padStart(2, '0')}:00`,
         location: {
@@ -335,7 +525,9 @@ export async function calculateHoraryChart(params) {
         },
         houses,
         planets,
+        partOfFortune,
         isDayChart,
+        isBorderlineSect,
         sunAltitude,
         sunAltFormatted,
         ephemerisSource: epheStatus
@@ -362,9 +554,6 @@ export function getHouseOfLongitude(longitude, cusps) {
 
 /**
  * Tính toán vị trí và tốc độ thiên văn thật bằng Astronomy Engine (VSOP87 / NOVAS)
- * Khi không có Swiss Ephemeris.
- * BẢO ĐẢM: 100% dữ liệu thiên văn thật, sai số dưới 1 arcsecond so với Swiss Ephemeris.
- * Nếu không có Astronomy Engine, throw Error rõ ràng.
  */
 async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
     const ast = await getAstronomyEngine();
@@ -375,28 +564,23 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
     const rad = Math.PI / 180;
     const deg = 180 / Math.PI;
 
-    // Chuyển Julian Day UT sang đối tượng Thời gian của Astronomy Engine
     const dateMs = (jdUT - 2440587.5) * 86400000;
     const time = ast.MakeTime(new Date(dateMs));
-    
-    // Bước vi phân dt = 0.001 ngày (~86.4 giây) để tính đạo hàm vận tốc tức thời chính xác
     const dt = 0.001;
     const timePlus = ast.MakeTime(new Date(dateMs + dt * 86400000));
 
-    // 1. Tính hệ nhà Regiomontanus giải tích lượng giác cầu
+    // 1. Hệ nhà Regiomontanus giải tích lượng giác cầu
     const T = (jdUT - 2451545.0) / 36525.0;
     let gmst = 280.46061837 + 360.98564736629 * (jdUT - 2451545.0) + 0.000387933 * T * T;
     gmst = ((gmst % 360) + 360) % 360;
 
     const ramc = ((gmst + longitude) % 360 + 360) % 360;
-    const eps = 23.4392911 - 0.0130042 * T; // Độ nghiêng hoàng đạo trung bình
+    const eps = 23.4392911 - 0.0130042 * T;
     const phiRad = latitude * rad;
     const epsRad = eps * rad;
     const ramcRad = ramc * rad;
 
-    // Midheaven (MC)
     const mcLon = (Math.atan2(Math.sin(ramcRad), Math.cos(ramcRad) * Math.cos(epsRad)) * deg + 360) % 360;
-    // Ascendant (ASC)
     const ascLon = (Math.atan2(Math.cos(ramcRad), -Math.sin(ramcRad) * Math.cos(epsRad) - Math.tan(phiRad) * Math.sin(epsRad)) * deg + 360) % 360;
 
     const cusps = new Array(12);
@@ -432,13 +616,13 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
         cusps
     };
 
-    // 2. Tính độ cao Mặt Trời (True Solar Altitude)
+    // 2. True Unrefracted Solar Altitude: cờ 'none' tắt khúc xạ khí quyển
     const obs = new ast.Observer(latitude, longitude, 0);
     const sunEq = ast.Equator('Sun', time, obs, true, true);
-    const sunHor = ast.Horizon(time, obs, sunEq.ra, sunEq.dec, 'normal');
+    const sunHor = ast.Horizon(time, obs, sunEq.ra, sunEq.dec, 'none');
     const sunAltitude = sunHor.altitude;
 
-    // 3. Hàm tính tọa độ hoàng đạo địa tâm thực và tốc độ
+    // 3. Tọa độ hoàng đạo địa tâm thực
     function getTrueBodyCoords(bodyId, t) {
         if (bodyId === 'sun') {
             const pos = ast.SunPosition(t);
@@ -449,7 +633,6 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
             const ecl = ast.Ecliptic(vMoon);
             return { lon: ecl.elon, lat: ecl.elat, dist: ecl.vec ? ecl.vec.Length() : 0.00257 };
         }
-        // Các hành tinh khác: Mercury, Venus, Mars, Jupiter, Saturn
         const nameMap = {
             mercury: 'Mercury',
             venus: 'Venus',
@@ -466,7 +649,6 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
 
     const planets = [];
 
-    // Tính 7 hành tinh truyền thống
     for (const pInfo of PLANETS_INFO) {
         if (pInfo.isNode) continue;
 
@@ -477,7 +659,7 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
         let dLon = c2.lon - c1.lon;
         while (dLon > 180) dLon -= 360;
         while (dLon < -180) dLon += 360;
-        const speed = dLon / dt; // Tốc độ kinh độ theo độ/ngày
+        const speed = dLon / dt;
 
         const threshold = pInfo.speedStationaryThreshold || 0.001;
         let motion = 'DIRECT';
@@ -519,8 +701,7 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
         });
     }
 
-    // Tính Bắc Giao Điểm (North Node - Mean Lunar Node IAU) & Nam Giao Điểm
-    // Công thức tiêu chuẩn thiên văn học hiện đại cho Mean Lunar Node
+    // Mean Lunar Node IAU
     const calcNodeLon = (jd) => {
         const tVal = (jd - 2451545.0) / 36525.0;
         let omega = 125.04452 - 1934.136261 * tVal + 0.0020708 * tVal * tVal + (tVal * tVal * tVal) / 450000;
@@ -532,7 +713,7 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
     let dNodeLon = nnLon2 - nnLon1;
     while (dNodeLon > 180) dNodeLon -= 360;
     while (dNodeLon < -180) dNodeLon += 360;
-    const nodeSpeed = dNodeLon / dt; // ~ -0.053°/ngày
+    const nodeSpeed = dNodeLon / dt;
 
     const nnInfo = PLANETS_INFO.find(p => p.id === 'northNode');
     const nnPos = getZodiacPosition(nnLon1);
@@ -557,7 +738,6 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
     const snInfo = PLANETS_INFO.find(p => p.id === 'southNode');
     const snLon1 = (nnLon1 + 180) % 360;
     const snPos = getZodiacPosition(snLon1);
-    // Nam Giao Điểm có cùng vận tốc với Bắc Giao Điểm: d(snLon)/dt = d(nnLon)/dt
     planets.push({
         id: 'southNode',
         nameVi: snInfo.nameVi,
@@ -566,7 +746,7 @@ async function calculateAstronomicalFallback(jdUT, latitude, longitude) {
         longitude: snLon1,
         latitude: 0,
         distance: 1,
-        speedLongitude: nodeSpeed, // ĐÚNG: nodeSpeed, KHÔNG ĐẢO DẤU!
+        speedLongitude: nodeSpeed,
         motion: 'RETROGRADE',
         motionVi: 'Nghịch hành',
         motionGlyphKey: 'retrograde',
