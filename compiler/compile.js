@@ -138,6 +138,14 @@ export const COMPILED_KNOWLEDGE = ${JSON.stringify(compiledData, null, 2)};
         console.log('Successfully copied phong-thuy module recursively to public/phong-thuy!');
     }
 
+    // Sao chép đệ quy thư mục phân hệ Chiêm Tinh Giờ Hỏi Horary sang public/horary
+    const srcHorary = path.join(projectRoot, 'horary');
+    const destHorary = path.join(publicDir, 'horary');
+    if (fs.existsSync(srcHorary)) {
+        copyDirRecursiveSync(srcHorary, destHorary);
+        console.log('Successfully copied horary module recursively to public/horary!');
+    }
+
     // Sao chép đệ quy thư mục lib sang public/lib để phục vụ browser nếu cần
     const destLib = path.join(publicDir, 'lib');
     if (fs.existsSync(libDir)) {

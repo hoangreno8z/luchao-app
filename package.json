@@ -5,10 +5,12 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "test": "node test_luc_hao_astronomy.cjs",
-    "build": "node test_luc_hao_astronomy.cjs && node compiler/compile.js"
+    "test": "node test_luc_hao_astronomy.cjs && node test_horary_engine.cjs",
+    "build": "node test_luc_hao_astronomy.cjs && node test_horary_engine.cjs && node compiler/compile.js"
   },
   "dependencies": {
+    "@kuntay/swisseph": "^0.2.2",
+    "@kuntay/swisseph-data": "^0.2.2",
     "clsx": "^2.1.1",
     "html2canvas": "^1.4.1",
     "lunar-javascript": "^1.7.7"
