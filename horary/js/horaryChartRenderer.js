@@ -42,15 +42,31 @@ export class HoraryChartRenderer {
 
     /**
      * Cập nhật dữ liệu lá số và tiến hành vẽ
+     * Kết xuất ra thẻ <img> với Data URL PNG để hỗ trợ:
+     * 1. Click chuột phải "Save image as..." trên PC
+     * 2. Nhấn giữ màn hình "Save to Photos" trên iOS/Android
      */
-    render(chartData, aspects = []) {
+    async render(chartData, aspects = []) {
         this.chartData = chartData;
         this.aspects = aspects;
 
         if (!this.container) return;
 
         const svgXml = this.generateSvgXml();
+        
+        // Hiển thị ngay SVG ban đầu
         this.container.innerHTML = svgXml;
+
+        // Chuyển đổi sang thẻ <img> định dạng PNG data URL
+        try {
+            const pngDataUrl = await this.svgToPngDataUrl(svgXml, 1);
+            this.container.innerHTML = `
+                <img id="horary-chart-img" src="${pngDataUrl}" alt="Lá số Horary Chiêm Tinh - Huy Hoàng" style="width:100%; height:auto; display:block; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.05); -webkit-touch-callout:default; user-select:auto; pointer-events:auto;" />
+                <div id="horary-svg-hidden" style="display:none;">${svgXml}</div>
+            `;
+        } catch (e) {
+            console.warn('Fallback sang hiển thị SVG trực tiếp:', e);
+        }
     }
 
     /**
@@ -487,44 +503,27 @@ export class HoraryChartRenderer {
     }
 
     /**
-     * Xuất lá số ra ảnh PNG hình vuông sắc nét (1200x1200px hoặc 2400x2400px)
-     * Đảm bảo giữ nguyên toàn bộ nền vuông và 4 góc chú thích
+     * Chuyển đổi chuỗi XML SVG sang Data URL ảnh PNG
      */
-    async exportToPng(scale = 1) {
-        if (!document.fonts) {
-            await new Promise(r => setTimeout(r, 200));
-        } else {
+    async svgToPngDataUrl(svgXml, scale = 1) {
+        if (document.fonts) {
             await document.fonts.ready;
         }
 
-        const svgElement = this.container.querySelector('#horary-main-svg');
-        if (!svgElement) throw new Error('Không tìm thấy SVG lá số để export');
-
-        const svgString = new XMLSerializer().serializeToString(svgElement);
-        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
         const URL = window.URL || window.webkitURL || window;
         const blobUrl = URL.createObjectURL(svgBlob);
 
-        const image = new Image();
         return new Promise((resolve, reject) => {
+            const image = new Image();
             image.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = 1200 * scale;
                 canvas.height = 1200 * scale;
                 const ctx = canvas.getContext('2d');
-                ctx.scale(scale, scale);
-                ctx.drawImage(image, 0, 0);
-
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
                 URL.revokeObjectURL(blobUrl);
-
-                const fileName = `horary-${new Date().toISOString().slice(0, 10)}.png`;
-                const a = document.createElement('a');
-                a.download = fileName;
-                a.href = canvas.toDataURL('image/png');
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                resolve(fileName);
+                resolve(canvas.toDataURL('image/png'));
             };
             image.onerror = err => {
                 URL.revokeObjectURL(blobUrl);
@@ -532,5 +531,30 @@ export class HoraryChartRenderer {
             };
             image.src = blobUrl;
         });
+    }
+
+    /**
+     * Xuất lá số ra ảnh PNG hình vuông sắc nét (1200x1200px hoặc 2400x2400px)
+     * Đảm bảo giữ nguyên toàn bộ nền vuông và 4 góc chú thích
+     */
+    async exportToPng(scale = 1) {
+        const img = this.container.querySelector('#horary-chart-img');
+        const fileName = `horary-${new Date().toISOString().slice(0, 10)}.png`;
+
+        let dataUrl = '';
+        if (img && img.src && img.src.startsWith('data:image/png') && scale === 1) {
+            dataUrl = img.src;
+        } else {
+            const svgXml = this.generateSvgXml();
+            dataUrl = await this.svgToPngDataUrl(svgXml, scale);
+        }
+
+        const a = document.createElement('a');
+        a.download = fileName;
+        a.href = dataUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return fileName;
     }
 }
