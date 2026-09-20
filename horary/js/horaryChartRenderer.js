@@ -15,7 +15,8 @@
  *     theta = (eclipticLon - ascAngle) * PI / 180
  *     x = centerX - radius * cos(theta)
  *     y = centerY + radius * sin(theta)
- * - Xuất PNG vuông sắc nét qua thẻ <img> hỗ trợ click chuột phải tải trên PC và giữ ngón tay lưu trên mobile.
+ * - Hiển thị ngay lập tức SVG gốc để không bao giờ bị lỗi hiển thị,
+ *   đồng thời chuyển đổi ngầm sang <img> PNG để hỗ trợ click chuột phải tải trên PC và giữ ngón tay lưu trên mobile.
  */
 
 import { GLYPH_PATHS, getGlyphGroupXml } from './svgGlyphs.js';
@@ -59,10 +60,11 @@ export class HoraryChartRenderer {
     }
 
     /**
-     * Cập nhật dữ liệu lá số và tiến hành vẽ
-     * Kết xuất ra thẻ <img> với Data URL PNG để hỗ trợ:
-     * 1. Click chuột phải "Save image as..." trên PC
-     * 2. Nhấn giữ màn hình "Save to Photos" trên iOS/Android
+     * Cập nhật dữ liệu lá số và tiến hành vẽ:
+     * 1. Hiển thị NGAY LẬP TỨC SVG gốc vào container (đảm bảo lá số hiện ra 100% không bị delay hay icon ảnh hỏng).
+     * 2. Chuyển đổi ngầm sang thẻ <img> định dạng PNG Data URL để hỗ trợ:
+     *    - Click chuột phải "Save image as..." trên PC
+     *    - Nhấn giữ màn hình "Save to Photos" trên iOS/Android
      */
     async render(chartData, aspects = []) {
         this.chartData = chartData;
@@ -72,20 +74,31 @@ export class HoraryChartRenderer {
 
         const svgXml = this.generateSvgXml();
 
-        // Chuyển đổi sang thẻ <img> định dạng PNG data URL
+        // 1. HIỂN THỊ NGAY SVG GỐC: Đảm bảo người dùng luôn thấy lá số ngay tức thì
+        this.container.innerHTML = `
+            <div id="chart-display-wrapper" style="width:100%; max-width:720px; margin:0 auto; position:relative;">
+                ${svgXml}
+            </div>
+        `;
+
+        // 2. Chuyển đổi ngầm sang thẻ <img> định dạng PNG Data URL
         try {
-            const imgDataUrl = await this.svgToPngDataUrl(svgXml, 1);
-            this.container.innerHTML = `
-                <img id="horary-chart-img"
-                     src="${imgDataUrl}"
-                     alt="Lá số Horary Chiêm Tinh - Huy Hoàng"
-                     draggable="true"
-                     style="width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important; pointer-events: auto !important; touch-action: auto !important;" />
-                <div id="horary-svg-hidden" style="display:none;">${svgXml}</div>
-            `;
+            const pngDataUrl = await this.svgToPngDataUrl(svgXml, 1);
+            if (pngDataUrl && pngDataUrl.startsWith('data:image/png')) {
+                const wrapper = this.container.querySelector('#chart-display-wrapper');
+                if (wrapper) {
+                    wrapper.innerHTML = `
+                        <img id="horary-chart-img"
+                             src="${pngDataUrl}"
+                             alt="Lá số Horary Chiêm Tinh - Huy Hoàng"
+                             draggable="true"
+                             style="width: 100%; height: auto; display: block; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); -webkit-touch-callout: default !important; -webkit-user-select: auto !important; user-select: auto !important; pointer-events: auto !important; touch-action: auto !important; cursor: pointer;" />
+                        <div id="horary-svg-hidden" style="display:none;">${svgXml}</div>
+                    `;
+                }
+            }
         } catch (e) {
-            console.warn('Fallback sang hiển thị SVG trực tiếp:', e);
-            this.container.innerHTML = svgXml;
+            console.warn('Giữ nguyên hiển thị SVG trực tiếp:', e);
         }
     }
 
@@ -115,7 +128,7 @@ export class HoraryChartRenderer {
         // Góc ASC (Ascendant): Trong chiêm tinh học truyền thống, trục ASC luôn nằm ở vị trí 9 giờ (mép trái)
         const ascAngle = houses ? houses.ascendant : 0;
 
-        let svg = `<svg id="horary-main-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="background:${bgColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        let svg = `<svg id="horary-main-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" style="background:${bgColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
             <defs>
                 <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="110%">
                     <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.08" />
@@ -478,7 +491,7 @@ export class HoraryChartRenderer {
     }
 
     /**
-     * Chuyển đổi chuỗi XML SVG sang Data URL ảnh PNG (tương thích 100% Safari, WebKit, iOS & Android)
+     * Chuyển đổi chuỗi XML SVG sang Data URL ảnh PNG
      */
     async svgToPngDataUrl(svgXml, scale = 1) {
         if (typeof document !== 'undefined' && document.fonts) {
@@ -487,11 +500,18 @@ export class HoraryChartRenderer {
             } catch (_) {}
         }
 
-        const dataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgXml);
+        // Đảm bảo có explicit width & height dạng số nguyên 1200x1200px
+        let preparedXml = svgXml;
+        if (!preparedXml.includes('width="1200"')) {
+            preparedXml = preparedXml.replace('width="100%"', 'width="1200"').replace('height="100%"', 'height="1200"');
+        }
 
-        return new Promise((resolve) => {
+        const svgBlob = new Blob([preparedXml], { type: 'image/svg+xml;charset=utf-8' });
+        const URL = window.URL || window.webkitURL || window;
+        const blobUrl = URL.createObjectURL(svgBlob);
+
+        return new Promise((resolve, reject) => {
             const image = new Image();
-            image.crossOrigin = 'anonymous';
             image.onload = () => {
                 try {
                     const canvas = document.createElement('canvas');
@@ -499,18 +519,18 @@ export class HoraryChartRenderer {
                     canvas.height = 1200 * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                    const pngUrl = canvas.toDataURL('image/png');
-                    resolve(pngUrl);
+                    URL.revokeObjectURL(blobUrl);
+                    resolve(canvas.toDataURL('image/png'));
                 } catch (canvasErr) {
-                    console.warn('Canvas toDataURL failed/tainted, falling back to SVG data URI:', canvasErr);
-                    resolve(dataUri);
+                    URL.revokeObjectURL(blobUrl);
+                    reject(canvasErr);
                 }
             };
             image.onerror = (err) => {
-                console.warn('Image onload error, falling back to SVG data URI:', err);
-                resolve(dataUri);
+                URL.revokeObjectURL(blobUrl);
+                reject(err);
             };
-            image.src = dataUri;
+            image.src = blobUrl;
         });
     }
 
@@ -520,8 +540,15 @@ export class HoraryChartRenderer {
      */
     async exportToPng(scale = 1) {
         const fileName = `horary-${new Date().toISOString().slice(0, 10)}.png`;
-        const svgXml = this.generateSvgXml();
-        const dataUrl = await this.svgToPngDataUrl(svgXml, scale);
+        let dataUrl = '';
+
+        const img = this.container ? this.container.querySelector('#horary-chart-img') : null;
+        if (img && img.src && img.src.startsWith('data:image/png') && scale === 1) {
+            dataUrl = img.src;
+        } else {
+            const svgXml = this.generateSvgXml();
+            dataUrl = await this.svgToPngDataUrl(svgXml, scale);
+        }
 
         const a = document.createElement('a');
         a.download = fileName;

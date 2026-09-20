@@ -199,10 +199,12 @@ body {
     -webkit-touch-callout: default;
 }
 
-#horary-chart-img {
+#horary-chart-img, #horary-main-svg {
     width: 100%;
+    max-width: 720px;
     height: auto;
     display: block;
+    margin: 0 auto;
     border-radius: 10px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     user-select: auto !important;
@@ -211,6 +213,15 @@ body {
     pointer-events: auto !important;
     touch-action: auto !important;
     cursor: pointer;
+}
+
+#chart-display-wrapper {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Thẻ Thông Tin Lá Số */
