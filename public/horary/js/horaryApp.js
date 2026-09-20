@@ -12,6 +12,29 @@ import { generateHouseExplanation } from './houseMeanings.js';
 import { HoraryChartRenderer } from './horaryChartRenderer.js';
 import { renderGlyphSvg } from './svgGlyphs.js';
 
+/**
+ * Phân giải offset UTC động bằng IANA TimeZone chuẩn xác (tự động xử lý DST mùa hè/đông)
+ */
+export function getTimezoneOffsetHours(timeZone, dateObj) {
+    try {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone,
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric',
+            hour12: false
+        });
+        const parts = formatter.formatToParts(dateObj);
+        const p = {};
+        for (const part of parts) p[part.type] = part.value;
+        let h = parseInt(p.hour, 10);
+        if (h === 24) h = 0;
+        const tzUtc = Date.UTC(parseInt(p.year, 10), parseInt(p.month, 10) - 1, parseInt(p.day, 10), h, parseInt(p.minute, 10), parseInt(p.second, 10));
+        return Math.round((tzUtc - dateObj.getTime()) / 3600000 * 100) / 100;
+    } catch (e) {
+        return 7;
+    }
+}
+
 class HoraryApp {
     constructor() {
         this.renderer = null;
@@ -20,16 +43,16 @@ class HoraryApp {
         this.currentReceptions = [];
         this.beginnerMode = false;
         this.presetLocations = [
-            { name: 'Hà Nội', lat: 21.0285, lon: 105.8542, offset: 7 },
-            { name: 'TP. Hồ Chí Minh', lat: 10.8231, lon: 106.6297, offset: 7 },
-            { name: 'Đà Nẵng', lat: 16.0544, lon: 108.2022, offset: 7 },
-            { name: 'Hải Phòng', lat: 20.8449, lon: 106.6881, offset: 7 },
-            { name: 'Cần Thơ', lat: 10.0452, lon: 105.7469, offset: 7 },
-            { name: 'Nha Trang', lat: 12.2388, lon: 109.1967, offset: 7 },
-            { name: 'Huế', lat: 16.4637, lon: 107.5909, offset: 7 },
-            { name: 'Tokyo', lat: 35.6762, lon: 139.6503, offset: 9 },
-            { name: 'London', lat: 51.5074, lon: -0.1278, offset: 0 },
-            { name: 'New York', lat: 40.7128, lon: -74.0060, offset: -5 }
+            { name: 'Hà Nội', lat: 21.0285, lon: 105.8542, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'TP. Hồ Chí Minh', lat: 10.8231, lon: 106.6297, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Đà Nẵng', lat: 16.0544, lon: 108.2022, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Hải Phòng', lat: 20.8449, lon: 106.6881, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Cần Thơ', lat: 10.0452, lon: 105.7469, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Nha Trang', lat: 12.2388, lon: 109.1967, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Huế', lat: 16.4637, lon: 107.5909, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
+            { name: 'Tokyo', lat: 35.6762, lon: 139.6503, timeZone: 'Asia/Tokyo', defaultOffset: 9 },
+            { name: 'London', lat: 51.5074, lon: -0.1278, timeZone: 'Europe/London', defaultOffset: 0 },
+            { name: 'New York', lat: 40.7128, lon: -74.0060, timeZone: 'America/New_York', defaultOffset: -5 }
         ];
     }
 
@@ -62,6 +85,27 @@ class HoraryApp {
         if (hourInput) hourInput.value = now.getHours();
         if (minuteInput) minuteInput.value = now.getMinutes();
         if (secondInput) secondInput.value = now.getSeconds();
+
+        // Tự động phân giải offset theo thành phố đang chọn
+        const citySelect = document.getElementById('select-city');
+        const cityName = citySelect ? citySelect.value : 'Hà Nội';
+        const city = this.presetLocations.find(c => c.name === cityName);
+        if (city) {
+            this.updateOffsetForCity(city);
+        }
+    }
+
+    updateOffsetForCity(city) {
+        if (!city || !city.timeZone) return;
+        const dateVal = document.getElementById('input-date')?.value;
+        if (!dateVal) return;
+        const [y, m, d] = dateVal.split('-').map(Number);
+        const h = parseInt(document.getElementById('input-hour')?.value || 12, 10);
+        const min = parseInt(document.getElementById('input-minute')?.value || 0, 10);
+        const dateObj = new Date(Date.UTC(y, m - 1, d, h, min, 0));
+        const offset = getTimezoneOffsetHours(city.timeZone, dateObj);
+        const offsetInput = document.getElementById('input-offset');
+        if (offsetInput) offsetInput.value = offset;
     }
 
     bindEvents() {
@@ -80,7 +124,7 @@ class HoraryApp {
             });
         }
 
-        // Chọn Thành Phố Nhanh
+        // Chọn Thành Phố Nhanh (với múi giờ IANA động)
         const selectCity = document.getElementById('select-city');
         if (selectCity) {
             selectCity.addEventListener('change', (e) => {
@@ -88,8 +132,18 @@ class HoraryApp {
                 if (city) {
                     document.getElementById('input-lat').value = city.lat;
                     document.getElementById('input-lon').value = city.lon;
-                    document.getElementById('input-offset').value = city.offset;
+                    this.updateOffsetForCity(city);
                 }
+            });
+        }
+
+        // Thay đổi ngày / giờ -> cập nhật lại offset DST động nếu không phải custom
+        const dateInput = document.getElementById('input-date');
+        if (dateInput) {
+            dateInput.addEventListener('change', () => {
+                const cityName = selectCity ? selectCity.value : 'Hà Nội';
+                const city = this.presetLocations.find(c => c.name === cityName);
+                if (city) this.updateOffsetForCity(city);
             });
         }
 
@@ -108,45 +162,30 @@ class HoraryApp {
                         err => alert('Không thể lấy tọa độ GPS: ' + err.message)
                     );
                 } else {
-                    alert('Trình duyệt không hỗ trợ Geolocation');
+                    alert('Trình duyệt không hỗ trợ Geolocation.');
                 }
             });
         }
 
-        // Nút Bật/Tắt Chế Độ Người Mới
-        const btnBeginner = document.getElementById('btn-beginner-mode');
-        if (btnBeginner) {
-            btnBeginner.addEventListener('click', () => {
-                this.beginnerMode = !this.beginnerMode;
-                btnBeginner.classList.toggle('active', this.beginnerMode);
-                btnBeginner.innerText = this.beginnerMode ? 'Đang bật: Chế độ người mới' : 'Bật chế độ người mới';
+        // Nút Bật/Tắt Chế Độ Người Mới Học
+        const toggleBeginner = document.getElementById('toggle-beginner');
+        if (toggleBeginner) {
+            toggleBeginner.addEventListener('change', (e) => {
+                this.beginnerMode = e.target.checked;
                 this.renderDetailedReading();
             });
         }
 
-        // Nút Ẩn/Hiện Aspect Lines
-        const btnToggleAspect = document.getElementById('btn-toggle-aspects');
-        if (btnToggleAspect) {
-            btnToggleAspect.addEventListener('click', () => {
-                const showing = this.renderer.toggleAspectLines();
-                btnToggleAspect.classList.toggle('active', showing);
-                btnToggleAspect.innerText = showing ? 'Ẩn đường góc chiếu' : 'Hiện đường góc chiếu';
+        // Modal Giải Thích Vì Sao
+        const modalClose = document.getElementById('modal-close');
+        const modal = document.getElementById('why-modal');
+        if (modalClose && modal) {
+            modalClose.addEventListener('click', () => {
+                modal.classList.remove('modal-active');
             });
-        }
-
-        // Nút Xuất Ảnh PNG
-        const btnExportPng = document.getElementById('btn-export-png');
-        if (btnExportPng) {
-            btnExportPng.addEventListener('click', async () => {
-                try {
-                    btnExportPng.innerText = 'Đang kết xuất...';
-                    btnExportPng.disabled = true;
-                    await this.renderer.exportToPng(1);
-                } catch (e) {
-                    alert('Lỗi xuất ảnh: ' + e.message);
-                } finally {
-                    btnExportPng.innerText = 'Tải ảnh lá số PNG';
-                    btnExportPng.disabled = false;
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('modal-active');
                 }
             });
         }
@@ -180,11 +219,11 @@ class HoraryApp {
             p.dignity = calculateEssentialDignities(p.id, p.longitude, this.currentChart.isDayChart);
         }
 
-        // 3. Quét các góc chiếu (Aspects)
-        this.currentAspects = scanAllAspects(this.currentChart.planets);
+        // 3. Quét các góc chiếu (Aspects) trong phạm vi Moieties
+        this.currentAspects = scanAllAspects(this.currentChart.planets, { includeOutOfOrb: false });
 
-        // 4. Quét các cặp tiếp nhận (Receptions)
-        this.currentReceptions = scanAllReceptions(this.currentChart.planets, this.currentChart.isDayChart);
+        // 4. Quét các cặp tiếp nhận (Receptions) có đối chiếu với Aspects thực tế
+        this.currentReceptions = scanAllReceptions(this.currentChart.planets, this.currentChart.isDayChart, this.currentAspects);
 
         // 5. Vẽ lá số bằng SVG
         this.renderer.render(this.currentChart, this.currentAspects);
@@ -215,7 +254,7 @@ class HoraryApp {
                 <div class="info-item"><span class="lbl">Địa điểm:</span> <strong>${c.location.name} (${c.location.latFormatted}, ${c.location.lonFormatted})</strong></div>
                 <div class="info-item"><span class="lbl">Hệ hoàng đạo:</span> <strong>Tropical (Nhiệt Đới)</strong></div>
                 <div class="info-item"><span class="lbl">Hệ thống nhà:</span> <strong>Regiomontanus (Hệ chuẩn Horary)</strong></div>
-                <div class="info-item"><span class="lbl">Loại lá số:</span> <strong>${c.isDayChart ? 'Ban Ngày (Day Chart)' : 'Ban Đêm (Night Chart)'}</strong></div>
+                <div class="info-item"><span class="lbl">Loại lá số:</span> <strong>${c.isDayChart ? 'Ban Ngày (Day Chart)' : 'Ban Đêm (Night Chart)'}</strong> ${c.sunAltFormatted ? `<small style="color:#475569;">(${c.sunAltFormatted} so với chân trời)</small>` : ''}</div>
                 <div class="info-item"><span class="lbl">Nguồn Ephemeris:</span> <strong class="badge-source">${c.ephemerisSource}</strong></div>
             </div>
         `;
@@ -249,33 +288,46 @@ class HoraryApp {
             const signIdx = Math.floor(cuspLon / 30) % 12;
             const deg = Math.floor(cuspLon % 30);
             const min = Math.round((cuspLon % 1) * 60);
-            const cuspFormatted = `${deg}°${String(min).padStart(2, '0')}′`;
 
-            const signList = ['Bạch Dương', 'Kim Ngưu', 'Song Tử', 'Cự Giải', 'Sư Tử', 'Xử Nữ', 'Thiên Bình', 'Bọ Cạp', 'Nhân Mã', 'Ma Kết', 'Bảo Bình', 'Song Ngư'];
-            const signKeys = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
-            const rulers = ['Hỏa Tinh', 'Kim Tinh', 'Thủy Tinh', 'Mặt Trăng', 'Mặt Trời', 'Thủy Tinh', 'Kim Tinh', 'Hỏa Tinh', 'Mộc Tinh', 'Thổ Tinh', 'Thổ Tinh', 'Mộc Tinh'];
-            const rulerKeys = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter'];
+            const signList = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
+            const signId = signList[signIdx];
 
-            const signName = signList[signIdx];
-            const rulerName = rulers[signIdx];
-            const signKey = signKeys[signIdx];
-            const rulerKey = rulerKeys[signIdx];
+            const signRulers = {
+                aries: 'mars', taurus: 'venus', gemini: 'mercury', cancer: 'moon',
+                leo: 'sun', virgo: 'mercury', libra: 'venus', scorpio: 'mars',
+                sagittarius: 'jupiter', capricorn: 'saturn', aquarius: 'saturn', pisces: 'jupiter'
+            };
+            const rulerId = signRulers[signId];
+            const rulerPlanet = this.currentChart.planets.find(p => p.id === rulerId);
 
-            const exp = generateHouseExplanation(houseNum, signName, rulerName, cuspFormatted);
+            const signNames = {
+                aries: 'Bạch Dương', taurus: 'Kim Ngưu', gemini: 'Song Tử', cancer: 'Cự Giải',
+                leo: 'Sư Tử', virgo: 'Xử Nữ', libra: 'Thiên Bình', scorpio: 'Bọ Cạp',
+                sagittarius: 'Nhân Mã', capricorn: 'Ma Kết', aquarius: 'Bảo Bình', pisces: 'Song Ngư'
+            };
 
             const isAngular = [1, 4, 7, 10].includes(houseNum);
             const rowClass = isAngular ? 'row-angular' : '';
 
+            const explanation = generateHouseExplanation(houseNum, signId, rulerId, rulerPlanet);
+
             html += `
                 <tr class="${rowClass}">
-                    <td class="text-center font-bold">Nhà ${houseNum} ${isAngular ? '<span class="angular-tag">Trục</span>' : ''}</td>
-                    <td>${renderGlyphSvg(signKey, 16)} <strong>${cuspFormatted}</strong> ${signName}</td>
-                    <td>${renderGlyphSvg(rulerKey, 16)} <strong>${rulerName}</strong></td>
                     <td>
-                        <div class="house-explanation-box">
-                            <div class="house-sentence">${exp.sentence}</div>
-                            <div class="house-subinfo"><em>Từ khóa:</em> ${exp.keyword}</div>
-                        </div>
+                        <strong>Nhà ${houseNum}</strong>
+                        ${isAngular ? `<span class="angular-tag">Góc</span>` : ''}
+                    </td>
+                    <td>
+                        ${renderGlyphSvg(signId, 16)}
+                        <strong>${deg}°${String(min).padStart(2, '0')}′</strong> ${signNames[signId]}
+                    </td>
+                    <td>
+                        ${renderGlyphSvg(rulerPlanet ? rulerPlanet.glyphKey : rulerId, 16)}
+                        <strong>${rulerPlanet ? rulerPlanet.nameVi : rulerId}</strong>
+                    </td>
+                    <td>
+                        <div class="house-sentence">${explanation.sentence}</div>
+                        <div class="house-subinfo"><em>Ý nghĩa gốc:</em> ${explanation.traditionalMeaning}</div>
                     </td>
                 </tr>
             `;
@@ -291,8 +343,8 @@ class HoraryApp {
 
         let html = `
             <div class="reading-card">
-                <h3>BẢNG HÀNH TINH, VẬN TỐC & PHẨM GIÁ BẢN CHẤT (LILLY CA p.104)</h3>
-                <p class="section-desc">Phẩm giá cho biết thực lực nội tại của tác nhân (vững mạnh hay suy nhược). Trạng thái chuyển động cho biết khả năng hành động.</p>
+                <h3>BẢNG TỌA ĐỘ, VẬN TỐC & PHẨM GIÁ BẢN CHẤT</h3>
+                <p class="section-desc">Phẩm giá bản chất xác định năng lực, tư cách và thiện chí thực sự của từng hành tinh theo chuẩn mực William Lilly (1647).</p>
                 <div class="table-responsive">
                     <table class="horary-table">
                         <thead>
@@ -356,7 +408,7 @@ class HoraryApp {
             container.innerHTML = `
                 <div class="reading-card">
                     <h3>BẢNG GÓC CHIẾU (ASPECTS) & CHUYỂN ĐỘNG THỰC</h3>
-                    <p>Không có góc chiếu Ptolemaic nào nằm trong phạm vi Orb cho phép.</p>
+                    <p>Không có góc chiếu Ptolemaic nào nằm trong phạm vi Orb Moieties của các thiên thể.</p>
                 </div>`;
             return;
         }
@@ -373,9 +425,9 @@ class HoraryApp {
                                 <th>Góc Chiếu</th>
                                 <th>Hành Tinh B</th>
                                 <th>Sai Số (Orb)</th>
-                                <th>Trạng Thái</th>
+                                <th>Trạng Thái Động Học</th>
                                 <th>Bảng Chuyển Động Kiểm Chứng (-6h → Hiện tại → +6h)</th>
-                                <th>Dự Báo Perfection</th>
+                                <th>Dự Báo Hoàn Thành (Perfection)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -385,6 +437,17 @@ class HoraryApp {
             const stateClass = `badge-${asp.stateClass}`;
             const motionStr = asp.motionSteps.map(m => `<span>${m.label}: <strong>${m.separation}</strong></span>`).join(' → ');
 
+            let perfHtml = '<em>Đã qua đỉnh</em>';
+            if (asp.perfectionInfo) {
+                if (asp.perfectionInfo.refranation) {
+                    perfHtml = `<span class="badge badge-warning-refranation">${asp.perfectionInfo.description}</span>`;
+                } else if (asp.perfectionInfo.ingressBeforeAspect) {
+                    perfHtml = `<span class="badge badge-warning-refranation">${asp.perfectionInfo.description}</span>`;
+                } else {
+                    perfHtml = `<span class="badge-perfection">${asp.perfectionInfo.description}</span>`;
+                }
+            }
+
             html += `
                 <tr>
                     <td>${renderGlyphSvg(asp.planetA.glyphKey, 16)} <strong>${asp.planetA.nameVi}</strong></td>
@@ -392,7 +455,7 @@ class HoraryApp {
                         ${renderGlyphSvg(asp.aspectGlyphKey, 18)} ${asp.aspectNameVi} (${asp.aspectAngle}°)
                     </td>
                     <td>${renderGlyphSvg(asp.planetB.glyphKey, 16)} <strong>${asp.planetB.nameVi}</strong></td>
-                    <td><strong>${asp.orbFormatted}</strong></td>
+                    <td><strong>${asp.orbFormatted}</strong> <small style="color:#64748b;">(Max: ${asp.maxOrbAllowed.toFixed(1)}°)</small></td>
                     <td>
                         <span class="badge ${stateClass}">${asp.stateVi}</span>
                         <div class="aspect-hint">${asp.explanation}</div>
@@ -400,9 +463,7 @@ class HoraryApp {
                     <td>
                         <div class="motion-steps-box">${motionStr}</div>
                     </td>
-                    <td>
-                        ${asp.perfectionInfo ? `<span class="badge-perfection">${asp.perfectionInfo.description}</span>` : '<em>Đã qua đỉnh</em>'}
-                    </td>
+                    <td>${perfHtml}</td>
                 </tr>
             `;
         }
@@ -426,30 +487,40 @@ class HoraryApp {
 
         let html = `
             <div class="reading-card">
-                <h3>BẢNG TIẾP NHẬN (RECEPTION) HAI CHIỀU ĐỘC LẬP</h3>
-                <p class="section-desc">Tiếp nhận cho biết sự hiếu khách, đồng thuận và thiện chí giữa hai phía. Nếu có <strong>Tiếp nhận tương hỗ (Mutual Reception)</strong>, hai bên hỗ trợ nhau tối đa.</p>
+                <h3>BẢNG TIẾP NHẬN (RECEPTION) HAI CHIỀU ĐỘC LẬP (CHUẨN SAHL IBN BISHR)</h3>
+                <p class="section-desc">Theo Sahl ibn Bishr, tiếp nhận chỉ có giá trị khi qua Domicile/Exaltation hoặc kết hợp ít nhất 2 phẩm giá nhỏ. Tiếp nhận được kích hoạt (Active) khi hai bên có Aspect kết nối.</p>
                 <div class="reception-cards-grid">
         `;
 
         for (const pair of this.currentReceptions) {
-            const mutualTag = pair.hasMutual ? `<span class="badge-mutual">★ TIẾP NHẬN LẪN NHAU (MUTUAL RECEPTION)</span>` : '';
+            const mutualTag = pair.hasMutual ? `<span class="badge-mutual">★ TIẾP NHẬN TƯƠNG HỖ (MUTUAL RECEPTION)</span>` : '';
+            const activeBadge = pair.isActive ?
+                `<span class="badge badge-active">● ĐÃ KÍCH HOẠT QUA GÓC CHIẾU</span>` :
+                `<span class="badge badge-potential">○ TIỀM NĂNG (CHƯA CÓ GÓC)</span>`;
 
             html += `
                 <div class="reception-card ${pair.hasMutual ? 'mutual-card' : ''}">
-                    <div class="reception-header">
+                    <div class="reception-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
                         <h4>Cặp: ${getPlanetNameVi(pair.planetAId)} & ${getPlanetNameVi(pair.planetBId)} ${mutualTag}</h4>
+                        <div>${activeBadge}</div>
                     </div>
                     <div class="reception-body">
+                        <div style="font-size:0.8rem; color:#475569; margin-bottom:10px; font-style:italic; background:#f8fafc; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0;">
+                            ${pair.activeExplanation}
+                        </div>
+
                         ${pair.aReceivesB ? `
                             <div class="reception-dir">
-                                <strong>${pair.aReceivesB.hostNameVi} tiếp nhận ${pair.aReceivesB.guestNameVi}:</strong>
+                                <strong>${pair.aReceivesB.hostNameVi} đón ${pair.aReceivesB.guestNameVi}:</strong>
+                                <small style="color:${pair.aReceivesB.isQualified ? '#15803d' : '#b45309'}; font-weight:600;">[${pair.aReceivesB.sahlStatusVi}]</small>
                                 <ul>${pair.aReceivesB.receptionTypes.map(r => `<li><strong>${r.nameVi}</strong>: ${r.explanation}</li>`).join('')}</ul>
                             </div>
                         ` : `<div class="reception-dir text-muted">${getPlanetNameVi(pair.planetAId)} không tiếp nhận ${getPlanetNameVi(pair.planetBId)}.</div>`}
 
                         ${pair.bReceivesA ? `
                             <div class="reception-dir">
-                                <strong>${pair.bReceivesA.hostNameVi} tiếp nhận ${pair.bReceivesA.guestNameVi}:</strong>
+                                <strong>${pair.bReceivesA.hostNameVi} đón ${pair.bReceivesA.guestNameVi}:</strong>
+                                <small style="color:${pair.bReceivesA.isQualified ? '#15803d' : '#b45309'}; font-weight:600;">[${pair.bReceivesA.sahlStatusVi}]</small>
                                 <ul>${pair.bReceivesA.receptionTypes.map(r => `<li><strong>${r.nameVi}</strong>: ${r.explanation}</li>`).join('')}</ul>
                             </div>
                         ` : `<div class="reception-dir text-muted">${getPlanetNameVi(pair.planetBId)} không tiếp nhận ${getPlanetNameVi(pair.planetAId)}.</div>`}
@@ -474,6 +545,8 @@ class HoraryApp {
             ephemerisSource: c.ephemerisSource,
             localTime: c.localTimeFormatted,
             coordinates: c.location,
+            sunAltitude: c.sunAltitude,
+            isDayChart: c.isDayChart,
             houses: c.houses,
             planets: c.planets.map(p => ({
                 id: p.id,
@@ -511,7 +584,9 @@ function getPlanetNameVi(id) {
 }
 
 // Khởi tạo và gắn vào window khi trang tải xong
-window.addEventListener('DOMContentLoaded', () => {
-    window.horaryAppInstance = new HoraryApp();
-    window.horaryAppInstance.init();
-});
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+        window.horaryAppInstance = new HoraryApp();
+        window.horaryAppInstance.init();
+    });
+}

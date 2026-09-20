@@ -1,16 +1,19 @@
 /**
  * receptionEngine.js - Lõi Phân Tích Tiếp Nhận (Reception Engine)
- * Source: William Lilly, Christian Astrology (1647), Chapter XIX & XX.
+ * Source: Sahl ibn Bishr (The Introduction to the Science of the Judgments of the Stars) &
+ *         William Lilly, Christian Astrology (1647), Chapter XIX & XX.
  *
- * NGUYÊN LÝ HORARY CỔ ĐIỂN:
- * - Tiếp nhận (Reception) xảy ra khi Hành tinh A đang ở trong phẩm giá của Hành tinh B.
- *   Khi đó, B được coi là "tiếp nhận" A (B receives A).
- * - Hành tinh tiếp nhận đóng vai trò như người chủ nhà hiếu khách đón tiếp vị khách đến thăm.
- * - Phải tính toán và hiển thị rõ ràng THEO TỪNG CHIỀU ĐỘC LẬP:
- *   Chiều 1: B tiếp nhận A qua phẩm giá nào (Domicile, Exaltation, Triplicity, Term, Face).
- *   Chiều 2: A tiếp nhận B qua phẩm giá nào.
- * - Nếu cả hai chiều cùng tiếp nhận -> Tiếp nhận lẫn nhau (Mutual Reception).
- * - TUYỆT ĐỐI KHÔNG gộp chung thành một con điểm vô nghĩa; tách bạch giải thích cho người mới.
+ * NGUYÊN LÝ TIẾP NHẬN HORARY KINH ĐIỂN:
+ * 1. Tiếp nhận (Reception) xảy ra khi Hành tinh A ngụ tại nơi Hành tinh B có phẩm giá (B tiếp nhận A).
+ * 2. Tiêu chuẩn phẩm giá theo Sahl ibn Bishr:
+ *    - Chủ cung (Domicile): ĐỦ ĐIỀU KIỆN.
+ *    - Tôn quý (Exaltation): ĐỦ ĐIỀU KIỆN.
+ *    - Phẩm giá nhỏ (Triplicity, Term, Face): Một phẩm giá đơn lẻ KHÔNG ĐỦ điều kiện tiếp nhận;
+ *      bắt buộc phải kết hợp ít nhất 2 phẩm giá nhỏ (ví dụ: Triplicity + Term, Term + Face).
+ * 3. Tách bạch hai trạng thái:
+ *    - POTENTIAL (Tiềm năng): Quan hệ phẩm giá thuần túy, chưa có góc chiếu kết nối.
+ *    - ACTIVE (Thực thi): Đã được kích hoạt nhờ có góc chiếu (Aspect) thực tế kết nối 2 hành tinh.
+ * 4. Diễn giải Mutual Reception trung tính học thuật, không phán đoán chủ quan.
  */
 
 import { DOMICILES, EXALTATIONS, TRIPLICITIES, TERMS_LILLY, FACES_LILLY } from './traditionalDignities.js';
@@ -21,7 +24,7 @@ import { DOMICILES, EXALTATIONS, TRIPLICITIES, TERMS_LILLY, FACES_LILLY } from '
  * @param {string} guestPlanetId
  * @param {number} guestLongitude - Kinh độ hoàng đạo của hành tinh khách
  * @param {boolean} isDayChart - Ban ngày hay ban đêm
- * @returns {object} Chi tiết các tầng tiếp nhận
+ * @returns {object|null} Chi tiết các tầng tiếp nhận
  */
 export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongitude, isDayChart = true) {
     if (hostPlanetId === guestPlanetId) return null;
@@ -35,29 +38,31 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
 
     const receptionTypes = [];
 
-    // 1. Tiếp nhận bằng Chủ Cung / Bản Vị (Domicile)
+    // 1. Tiếp nhận bằng Chủ Cung / Bản Vị (Domicile) - Phẩm giá lớn
     const dom = DOMICILES[hostPlanetId];
     if (dom && dom.signs.includes(signId)) {
         receptionTypes.push({
             type: 'domicile',
             nameVi: 'Chủ cung (Domicile)',
-            power: 'Mạnh nhất',
-            explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở ${getSignNameVi(signId)}, mà ${getSignNameVi(signId)} do ${getPlanetNameVi(hostPlanetId)} làm chủ.`
+            power: 'Phẩm giá lớn',
+            isMajor: true,
+            explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở ${getSignNameVi(signId)}, do ${getPlanetNameVi(hostPlanetId)} làm chủ cung.`
         });
     }
 
-    // 2. Tiếp nhận bằng Tôn Quý (Exaltation)
+    // 2. Tiếp nhận bằng Tôn Quý (Exaltation) - Phẩm giá lớn
     const ex = EXALTATIONS[hostPlanetId];
     if (ex && ex.sign === signId) {
         receptionTypes.push({
             type: 'exaltation',
             nameVi: 'Tôn quý (Exaltation)',
-            power: 'Rất mạnh',
-            explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở ${getSignNameVi(signId)}, nơi ${getPlanetNameVi(hostPlanetId)} được đắc địa tôn quý tối cao.`
+            power: 'Phẩm giá lớn',
+            isMajor: true,
+            explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở ${getSignNameVi(signId)}, nơi ${getPlanetNameVi(hostPlanetId)} được đắc địa tôn quý.`
         });
     }
 
-    // 3. Tiếp nhận bằng Tam Hợp (Triplicity)
+    // 3. Tiếp nhận bằng Tam Hợp (Triplicity) - Phẩm giá nhỏ
     const element = getSignElement(signId);
     if (element && TRIPLICITIES[element]) {
         const tripRuler = isDayChart ? TRIPLICITIES[element].day : TRIPLICITIES[element].night;
@@ -65,13 +70,14 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
             receptionTypes.push({
                 type: 'triplicity',
                 nameVi: `Tam hợp (${isDayChart ? 'Ngày' : 'Đêm'})`,
-                power: 'Vừa phải',
-                explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở cung nguyên tố ${getElementNameVi(element)}, mà ${getPlanetNameVi(hostPlanetId)} cai quản tam hợp này.`
+                power: 'Phẩm giá nhỏ',
+                isMajor: false,
+                explanation: `Vì ${getPlanetNameVi(guestPlanetId)} ngụ tại tam hợp nguyên tố ${getElementNameVi(element)} do ${getPlanetNameVi(hostPlanetId)} cai quản.`
             });
         }
     }
 
-    // 4. Tiếp nhận bằng Giới Hạn (Term)
+    // 4. Tiếp nhận bằng Giới Hạn (Term) - Phẩm giá nhỏ
     const signTerms = TERMS_LILLY[signId];
     if (signTerms) {
         for (const t of signTerms) {
@@ -80,7 +86,8 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
                     receptionTypes.push({
                         type: 'term',
                         nameVi: `Giới hạn (Term)`,
-                        power: 'Nhỏ',
+                        power: 'Phẩm giá nhỏ',
+                        isMajor: false,
                         explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang nằm trong phân độ Term của ${getPlanetNameVi(hostPlanetId)} [0° đến ${t.maxDeg}°].`
                     });
                 }
@@ -89,7 +96,7 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
         }
     }
 
-    // 5. Tiếp nhận bằng Thập Phân Độ (Face)
+    // 5. Tiếp nhận bằng Thập Phân Độ (Face) - Phẩm giá nhỏ
     const signFaces = FACES_LILLY[signId];
     if (signFaces) {
         const faceIndex = Math.min(2, Math.floor(degInSign / 10));
@@ -97,13 +104,32 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
             receptionTypes.push({
                 type: 'face',
                 nameVi: `Thập phân độ (Face)`,
-                power: 'Vi mô',
-                explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở thập phân độ Face thứ ${faceIndex + 1} do ${getPlanetNameVi(hostPlanetId)} cai quản.`
+                power: 'Phẩm giá nhỏ',
+                isMajor: false,
+                explanation: `Vì ${getPlanetNameVi(guestPlanetId)} đang ở thập phân độ Face thứ ${faceIndex + 1} do ${getPlanetNameVi(hostPlanetId)} quản hạt.`
             });
         }
     }
 
     if (receptionTypes.length === 0) return null;
+
+    // =========================================================================
+    // QUY TẮC PHẨM GIÁ THEO SAHL IBN BISHR:
+    // - Domicile hoặc Exaltation: Đủ chuẩn tiếp nhận kinh điển.
+    // - Triplicity, Term, Face: Một phẩm giá đơn lẻ KHÔNG ĐỦ; cần ít nhất 2 phẩm giá nhỏ.
+    // =========================================================================
+    const hasMajor = receptionTypes.some(r => r.isMajor);
+    const minorCount = receptionTypes.filter(r => !r.isMajor).length;
+    const isQualified = hasMajor || (minorCount >= 2);
+
+    let sahlStatusVi = '';
+    if (hasMajor) {
+        sahlStatusVi = 'Đủ điều kiện tiếp nhận kinh điển (Qua phẩm giá lớn Domicile/Exaltation)';
+    } else if (minorCount >= 2) {
+        sahlStatusVi = `Đủ điều kiện tiếp nhận kinh điển (${minorCount} phẩm giá nhỏ phối hợp)`;
+    } else {
+        sahlStatusVi = 'Chưa đủ điều kiện tiếp nhận kinh điển (Chỉ có 1 phẩm giá nhỏ đơn lẻ theo chuẩn Sahl ibn Bishr)';
+    }
 
     return {
         hostPlanetId,
@@ -113,7 +139,11 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
         signId,
         signNameVi: getSignNameVi(signId),
         receptionTypes,
-        summaryText: `${getPlanetNameVi(hostPlanetId)} tiếp nhận ${getPlanetNameVi(guestPlanetId)} bằng ${receptionTypes.map(r => r.nameVi).join(', ')}.`
+        hasMajor,
+        minorCount,
+        isQualified,
+        sahlStatusVi,
+        summaryText: `${getPlanetNameVi(hostPlanetId)} đón ${getPlanetNameVi(guestPlanetId)} qua ${receptionTypes.map(r => r.nameVi).join(', ')}.`
     };
 }
 
@@ -122,17 +152,33 @@ export function evaluateSingleReception(hostPlanetId, guestPlanetId, guestLongit
  * @param {object} planetA - { id, longitude }
  * @param {object} planetB - { id, longitude }
  * @param {boolean} isDayChart
- * @returns {object} Phân tích tiếp nhận 2 chiều hoàn chỉnh
+ * @param {object|null} connectingAspect - Góc chiếu thực tế kết nối A và B (nếu có)
+ * @returns {object}
  */
-export function analyzePairReception(planetA, planetB, isDayChart = true) {
+export function analyzePairReception(planetA, planetB, isDayChart = true, connectingAspect = null) {
     const aReceivesB = evaluateSingleReception(planetA.id, planetB.id, planetB.longitude, isDayChart);
     const bReceivesA = evaluateSingleReception(planetB.id, planetA.id, planetA.longitude, isDayChart);
 
-    const hasMutual = !!(aReceivesB && bReceivesA);
-    let mutualDescription = '';
+    // Tiếp nhận tương hỗ kinh điển yêu cầu cả hai chiều đều có phẩm giá và đạt chuẩn Sahl
+    const hasMutual = !!(aReceivesB && bReceivesA && aReceivesB.isQualified && bReceivesA.isQualified);
+    const hasAnyReception = !!(aReceivesB || bReceivesA);
 
+    // Phân định Trạng thái Kích Hoạt (Active) vs Tiềm Năng (Potential)
+    const isActive = !!(connectingAspect && ['APPLYING', 'EXACT', 'SEPARATING'].includes(connectingAspect.state));
+
+    let activeStatus = isActive ? 'ACTIVE' : 'POTENTIAL';
+    let activeStatusVi = isActive ? 'Đã kích hoạt qua góc chiếu' : 'Tiềm năng (Chưa kích hoạt qua góc chiếu)';
+    let activeExplanation = '';
+
+    if (isActive) {
+        activeExplanation = `Tiếp nhận đã được kích hoạt nhờ góc chiếu ${connectingAspect.aspectNameVi} (${connectingAspect.stateVi}, sai số ${connectingAspect.orbFormatted}).`;
+    } else {
+        activeExplanation = `Hai hành tinh có quan hệ phẩm giá nhưng chưa có góc chiếu kết nối thực tế. Trong Horary kinh điển, tiếp nhận chỉ thực sự phát huy tác dụng cụ thể khi có sự kết nối của góc chiếu hoặc ánh sáng.`;
+    }
+
+    let mutualDescription = '';
     if (hasMutual) {
-        mutualDescription = `TIẾP NHẬN LẪN NHAU (Mutual Reception): Cả hai hành tinh đều ngụ tại phẩm giá của nhau, biểu thị sự tương trợ, đồng thuận và kết nối thuận lợi mạnh mẽ trong Horary.`;
+        mutualDescription = `TIẾP NHẬN TƯƠNG HỖ (Mutual Reception): Hai hành tinh cùng ngụ tại phẩm giá của nhau. Trong chiêm tinh kinh điển (Sahl ibn Bishr & William Lilly), đây là quan hệ thiện chí hoặc hoán đổi vị trí, nhưng cần kết hợp xét góc chiếu (aspect) và khả năng hoàn thành (perfection) để phán đoán diễn tiến sự việc.`;
     }
 
     return {
@@ -141,6 +187,12 @@ export function analyzePairReception(planetA, planetB, isDayChart = true) {
         aReceivesB,
         bReceivesA,
         hasMutual,
+        hasAnyReception,
+        isActive,
+        activeStatus,
+        activeStatusVi,
+        activeExplanation,
+        connectingAspect,
         mutualDescription
     };
 }
@@ -149,9 +201,10 @@ export function analyzePairReception(planetA, planetB, isDayChart = true) {
  * Quét toàn bộ tiếp nhận giữa 7 hành tinh truyền thống trong lá số
  * @param {Array<object>} planetsList - Mảng các hành tinh [{ id, nameVi, longitude }, ...]
  * @param {boolean} isDayChart
- * @returns {Array<object>} Danh sách tất cả các cặp có tiếp nhận
+ * @param {Array<object>} aspectsList - Danh sách các góc chiếu đã tính trong lá số
+ * @returns {Array<object>}
  */
-export function scanAllReceptions(planetsList, isDayChart = true) {
+export function scanAllReceptions(planetsList, isDayChart = true, aspectsList = []) {
     const main7 = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'];
     const filtered = planetsList.filter(p => main7.includes(p.id));
     const results = [];
@@ -160,8 +213,15 @@ export function scanAllReceptions(planetsList, isDayChart = true) {
         for (let j = i + 1; j < filtered.length; j++) {
             const p1 = filtered[i];
             const p2 = filtered[j];
-            const pair = analyzePairReception(p1, p2, isDayChart);
-            if (pair.aReceivesB || pair.bReceivesA) {
+
+            // Tìm xem hai hành tinh này có góc chiếu kết nối nào không
+            const connectingAsp = aspectsList.find(asp =>
+                (asp.planetA.id === p1.id && asp.planetB.id === p2.id) ||
+                (asp.planetA.id === p2.id && asp.planetB.id === p1.id)
+            ) || null;
+
+            const pair = analyzePairReception(p1, p2, isDayChart, connectingAsp);
+            if (pair.hasAnyReception) {
                 results.push(pair);
             }
         }
