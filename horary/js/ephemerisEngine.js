@@ -15,7 +15,7 @@
  */
 
 import { getZodiacPosition, formatZodiacLongitude, PLANETS_INFO, normalize360 } from './traditionalRulers.js';
-import { getJulianDayFromUtcInstant, formatOffsetMinutes, resolveWallTimeToUtc } from './timeResolver.js';
+import { getJulianDayFromUtcInstant, formatOffsetMinutes, formatOffsetSeconds, resolveWallTimeToUtc, isValidCivilDate } from './timeResolver.js';
 
 let sweInstance = null;
 let currentEphemerisSource = 'Chưa khởi tạo';
@@ -313,15 +313,9 @@ export async function calculateHoraryChart(params) {
     const min = parseInt(params.minute !== undefined ? params.minute : 0, 10);
     const s = parseInt(params.second !== undefined ? params.second : 0, 10);
 
-    if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) {
-        throw new Error(`Ngày tháng không hợp lệ: year=${params.year}, month=${params.month}, day=${params.day}`);
-    }
-    if (m < 1 || m > 12) {
-        throw new Error(`Tháng không hợp lệ: ${m}. Phải từ 1 đến 12.`);
-    }
-    if (d < 1 || d > 31) {
-        throw new Error(`Ngày không hợp lệ: ${d}.`);
-    }
+    // 1. Kiểm tra tính hợp lệ của ngày dân dụng (Calendar-aware validation)
+    isValidCivilDate(y, m, d, effectiveCalendar);
+
     if (h < 0 || h > 23 || min < 0 || min > 59 || s < 0 || s > 59) {
         throw new Error(`Giờ phút giây không hợp lệ: ${h}:${min}:${s}.`);
     }
@@ -345,14 +339,43 @@ export async function calculateHoraryChart(params) {
 
     if (params.utcInstant instanceof Date && !isNaN(params.utcInstant.getTime())) {
         effectiveUtcInstant = params.utcInstant;
-        effectiveOffsetMinutes = params.utcOffset !== undefined ? Math.round(params.utcOffset * 60) : 0;
-        formattedOffset = formatOffsetMinutes(effectiveOffsetMinutes);
+        if (params.formattedOffset) {
+            formattedOffset = params.formattedOffset;
+            effectiveOffsetMinutes = params.offsetMinutes !== undefined ? params.offsetMinutes : (params.utcOffset !== undefined ? Math.round(params.utcOffset * 60) : 0);
+        } else if (params.offsetMinutes !== undefined) {
+            effectiveOffsetMinutes = params.offsetMinutes;
+            formattedOffset = formatOffsetMinutes(effectiveOffsetMinutes);
+        } else if (params.offsetSeconds !== undefined) {
+            effectiveOffsetMinutes = Math.round(params.offsetSeconds / 60);
+            formattedOffset = formatOffsetSeconds(params.offsetSeconds);
+        } else if (params.utcOffset !== undefined) {
+            effectiveOffsetMinutes = Math.round(params.utcOffset * 60);
+            formattedOffset = formatOffsetMinutes(effectiveOffsetMinutes);
+        } else if (params.timeZone) {
+            try {
+                const res = resolveWallTimeToUtc({
+                    year: y, month: m, day: d,
+                    hour: h, minute: min, second: s,
+                    timeZone: params.timeZone,
+                    calendarMode: effectiveCalendar
+                });
+                effectiveOffsetMinutes = res.offsetMinutes !== undefined ? res.offsetMinutes : 0;
+                formattedOffset = res.formattedOffset || 'UTC+00:00';
+            } catch (_) {
+                effectiveOffsetMinutes = 0;
+                formattedOffset = 'UTC+00:00';
+            }
+        } else {
+            effectiveOffsetMinutes = 0;
+            formattedOffset = 'UTC+00:00';
+        }
         jdUT = getJulianDayFromUtcInstant(effectiveUtcInstant, effectiveCalendar);
     } else if (params.timeZone) {
         const resolution = resolveWallTimeToUtc({
             year: y, month: m, day: d,
             hour: h, minute: min, second: s,
-            timeZone: params.timeZone
+            timeZone: params.timeZone,
+            calendarMode: effectiveCalendar
         });
 
         if (resolution.status === 'NON_EXISTENT_TIME') {
@@ -493,11 +516,11 @@ export async function calculateHoraryChart(params) {
                 latitude: -nn.latitude,
                 distance: nn.distance,
                 speedLongitude: nn.speedLongitude,
-                motion: 'RETROGRADE',
-                motionVi: 'Nghịch hành',
-                motionGlyphKey: 'retrograde',
-                isRetrograde: true,
-                isStationary: false,
+                motion: nn.motion,
+                motionVi: nn.motionVi,
+                motionGlyphKey: nn.motionGlyphKey,
+                isRetrograde: nn.isRetrograde,
+                isStationary: nn.isStationary,
                 formattedSpeed: `${nn.speedLongitude >= 0 ? '+' : ''}${nn.speedLongitude.toFixed(2)}°/ngày`,
                 ...pos
             });
@@ -648,6 +671,7 @@ export async function calculateHoraryChart(params) {
 
     return {
         julianDayUT: jdUT,
+        jdUT: jdUT,
         calendarMode: effectiveCalendar,
         utcInstant: effectiveUtcInstant,
         timeZone: params.timeZone || 'Asia/Ho_Chi_Minh',

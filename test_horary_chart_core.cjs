@@ -491,6 +491,76 @@ async function runGoldenCorpusSuite() {
         assert.strictEqual(Math.round(diffDays), 10, 'Năm 1647 thế kỷ XVII chênh lệch lịch là đúng 10 ngày');
     });
 
+    await testAsync('Invariant 7: Lịch sử Lilly London 1647 (LMT -75s, Julian Calendar) phân giải thành công không bị DST gap', async () => {
+        const res = resolveWallTimeToUtc({
+            year: 1647, month: 10, day: 25, hour: 11, minute: 30, second: 0,
+            timeZone: 'Europe/London', calendarMode: 'JULIAN'
+        });
+        assert.strictEqual(res.status, 'VALID');
+        assert.strictEqual(res.offsetSeconds, -75);
+        assert.strictEqual(res.formattedOffset, 'UTC-00:01:15');
+        assert.strictEqual(res.utcInstant.toISOString(), '1647-11-04T11:31:15.000Z');
+
+        const chart = await calculateHoraryChart({
+            year: 1647, month: 10, day: 25, hour: 11, minute: 30, second: 0,
+            latitude: 51.5074, longitude: -0.1278, timeZone: 'Europe/London',
+            calendarMode: 'JULIAN'
+        });
+        assert.strictEqual(chart.utcOffsetFormatted, 'UTC-00:01:15');
+        assert.ok(chart.jdUT > 2322921 && chart.jdUT < 2322923);
+        assert.strictEqual(chart.planets.length, 9);
+    });
+
+    test('Invariant 8: Calendar-aware validation từ chối ngày không tồn tại trước khi vào resolver', () => {
+        assert.throws(() => {
+            resolveWallTimeToUtc({
+                year: 2026, month: 2, day: 31, hour: 10, minute: 0, second: 0,
+                timeZone: 'Asia/Ho_Chi_Minh'
+            });
+        }, /không tồn tại trong lịch/);
+
+        // Năm 1700: Julian có ngày 29/02, Gregorian không có
+        assert.throws(() => {
+            resolveWallTimeToUtc({
+                year: 1700, month: 2, day: 29, hour: 12, minute: 0, second: 0,
+                timeZone: 'Europe/London', calendarMode: 'GREGORIAN'
+            });
+        }, /không tồn tại trong lịch/);
+
+        const jul1700 = resolveWallTimeToUtc({
+            year: 1700, month: 2, day: 29, hour: 12, minute: 0, second: 0,
+            timeZone: 'Europe/London', calendarMode: 'JULIAN'
+        });
+        assert.strictEqual(jul1700.status, 'VALID');
+    });
+
+    await testAsync('Invariant 9: Nam Giao Điểm (South Node) thừa hưởng động học chính xác từ Bắc Giao Điểm', async () => {
+        const chartTrue = await calculateHoraryChart({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            latitude: 21.0285, longitude: 105.8542, timeZone: 'Asia/Ho_Chi_Minh',
+            nodeType: 'TRUE'
+        });
+        const nn = chartTrue.planets.find(p => p.id === 'northNode');
+        const sn = chartTrue.planets.find(p => p.id === 'southNode');
+        assert.strictEqual(sn.motion, nn.motion);
+        assert.strictEqual(sn.isRetrograde, nn.isRetrograde);
+        assert.strictEqual(sn.isStationary, nn.isStationary);
+        assert.strictEqual(sn.speedLongitude, nn.speedLongitude);
+    });
+
+    await testAsync('Invariant 10: Bảo tồn metadata offset khi truyền utcInstant vào calculateHoraryChart', async () => {
+        const res = resolveWallTimeToUtc({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            timeZone: 'Asia/Ho_Chi_Minh'
+        });
+        const chart = await calculateHoraryChart({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            latitude: 21.0285, longitude: 105.8542, timeZone: 'Asia/Ho_Chi_Minh',
+            utcInstant: res.utcInstant
+        });
+        assert.strictEqual(chart.utcOffsetFormatted, 'UTC+07:00', 'Không được rơi về UTC+00:00 khi có timeZone và utcInstant');
+    });
+
     console.log('================================================================');
     console.log(`KẾT QUẢ KIỂM THỬ GOLDEN CORPUS: ${passed}/${passed + failed} TESTS ĐẠT (${Math.round(passed / (passed + failed) * 100)}% SUCCESS)`);
     console.log('================================================================\n');

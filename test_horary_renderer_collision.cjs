@@ -292,7 +292,13 @@ async function runCollisionSuite() {
         test(`Test 3: Viewport ${vp.name}`, () => {
             const svg = renderer.generateSvgXml({ isExport: false, isMobile: true });
             assert.ok(svg.includes('viewBox="70 70 1060 1060"'), `${vp.name} phải dùng viewBox zoom 70 70 1060 1060`);
-            assert.ok(!svg.includes('CUNG HOÀNG ĐẠO (1 - 6)'), `${vp.name} không chứa 4 góc chú thích`);
+            assert.ok(svg.includes('id="mobile-legend-zodiac-1"'), `${vp.name} phải chứa chú thích hoàng đạo (1 - 6)`);
+            assert.ok(svg.includes('id="mobile-legend-zodiac-2"'), `${vp.name} phải chứa chú thích hoàng đạo (7 - 12)`);
+            assert.ok(svg.includes('id="mobile-legend-planets-1"'), `${vp.name} phải chứa chú thích hành tinh nhanh`);
+            assert.ok(svg.includes('id="mobile-legend-planets-2"'), `${vp.name} phải chứa chú thích hành tinh chậm`);
+            assert.ok(svg.includes('Bạch Dương') && svg.includes('Song Ngư') && svg.includes('Mặt Trời'), `${vp.name} phải có tên cung và hành tinh`);
+            const hasEmoji = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u.test(svg);
+            assert.strictEqual(hasEmoji, false, `${vp.name} CẤM TUYỆT ĐỐI SỬ DỤNG EMOJI`);
             assert.ok(svg.includes('Zalo 0933116860'), `${vp.name} có số Zalo`);
             assert.ok(svg.includes('font-size="23"'), `${vp.name} dùng font độ phút tối ưu 23px`);
             assert.ok(svg.includes('font-size="21"'), `${vp.name} dùng font số nhà tối ưu 21px`);

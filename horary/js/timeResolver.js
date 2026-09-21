@@ -14,13 +14,82 @@
  * @param {number} offsetMinutes - Số phút chênh lệch so với UTC
  * @returns {string} Ví dụ: "UTC+07:00", "UTC+05:30", "UTC-04:00"
  */
+export function formatOffsetSeconds(offsetSeconds) {
+    if (!Number.isFinite(offsetSeconds)) return 'UTC+00:00';
+    const sign = offsetSeconds >= 0 ? '+' : '-';
+    const absSec = Math.abs(Math.round(offsetSeconds));
+    const h = String(Math.floor(absSec / 3600)).padStart(2, '0');
+    const m = String(Math.floor((absSec % 3600) / 60)).padStart(2, '0');
+    const s = String(absSec % 60).padStart(2, '0');
+    if (absSec % 60 === 0) {
+        return `UTC${sign}${h}:${m}`;
+    }
+    return `UTC${sign}${h}:${m}:${s}`;
+}
+
+/**
+ * Định dạng số phút lệch múi giờ thành chuỗi chuẩn UTC+HH:MM hoặc UTC-HH:MM
+ * @param {number} offsetMinutes - Số phút chênh lệch so với UTC
+ * @returns {string} Ví dụ: "UTC+07:00", "UTC+05:30", "UTC-04:00"
+ */
 export function formatOffsetMinutes(offsetMinutes) {
     if (!Number.isFinite(offsetMinutes)) return 'UTC+00:00';
-    const sign = offsetMinutes >= 0 ? '+' : '-';
-    const absMin = Math.abs(offsetMinutes);
-    const h = String(Math.floor(absMin / 60)).padStart(2, '0');
-    const m = String(Math.round(absMin % 60)).padStart(2, '0');
-    return `UTC${sign}${h}:${m}`;
+    return formatOffsetSeconds(Math.round(offsetMinutes * 60));
+}
+
+/**
+ * Kiểm tra tính hợp lệ của ngày dân dụng (Civil Date Validation)
+ * Có nhận thức chế độ lịch: Julian (nhuận chia hết cho 4) vs Gregorian (chuẩn 400 năm)
+ */
+export function isValidCivilDate(year, month, day, calendarMode = 'GREGORIAN') {
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+        throw new Error(`Ngày tháng không hợp lệ: year=${year}, month=${month}, day=${day}`);
+    }
+    if (month < 1 || month > 12) {
+        throw new Error(`Tháng không hợp lệ: ${month}. Phải từ 1 đến 12.`);
+    }
+    const cal = String(calendarMode).toUpperCase();
+    let isLeap = false;
+    if (cal === 'JULIAN') {
+        isLeap = (year % 4 === 0);
+    } else {
+        isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+    const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const maxDay = daysInMonths[month - 1];
+    if (day < 1 || day > maxDay) {
+        throw new Error(`Ngày ${day}/${month}/${year} không tồn tại trong lịch ${cal} (Tháng ${month} năm ${year} chỉ có tối đa ${maxDay} ngày).`);
+    }
+    return true;
+}
+
+/**
+ * Chuyển đổi nhãn ngày dân dụng Julian sang ngày dân dụng Gregorian tương ứng (Meeus Astronomical Algorithms)
+ * Dùng trước khi giải múi giờ bằng Intl.DateTimeFormat (Intl sử dụng proleptic Gregorian calendar cho dữ liệu lịch sử)
+ */
+export function julianCivilToGregorian(y, m, d) {
+    let yy = y;
+    let mm = m;
+    if (mm <= 2) {
+        yy -= 1;
+        mm += 12;
+    }
+    const jd = Math.floor(365.25 * (yy + 4716)) + Math.floor(30.6001 * (mm + 1)) + d - 1524.5;
+    const Z = Math.floor(jd + 0.5);
+    const F = (jd + 0.5) - Z;
+    let A = Z;
+    if (Z >= 2299161) {
+        const alpha = Math.floor((Z - 1867216.25) / 36524.25);
+        A = Z + 1 + alpha - Math.floor(alpha / 4);
+    }
+    const B = A + 1524;
+    const C = Math.floor((B - 122.1) / 365.25);
+    const D = Math.floor(365.25 * C);
+    const E = Math.floor((B - D) / 30.6001);
+    const day = B - D - Math.floor(30.6001 * E) + F;
+    const month = E < 14 ? E - 1 : E - 13;
+    const year = month > 2 ? C - 4716 : C - 4715;
+    return { year, month, day: Math.floor(day) };
 }
 
 /**
@@ -64,63 +133,76 @@ export function getTimezoneOffsetHours(timeZone, dateObj) {
 
 /**
  * Phân giải giờ dân dụng địa phương (Wall Time) sang UTC Instant duy nhất hoặc phát hiện DST Gap / Fold.
- * @param {object} params - { year, month, day, hour, minute, second, timeZone }
+ * @param {object} params - { year, month, day, hour, minute, second, timeZone, calendarMode }
  * @returns {object}
- *   - VALID: { status: 'VALID', utcInstant: Date, offsetMinutes: number, formattedOffset: string, formattedUtc: string }
+ *   - VALID: { status: 'VALID', utcInstant: Date, offsetSeconds: number, offsetMinutes: number, formattedOffset: string, formattedUtc: string }
  *   - NON_EXISTENT_TIME: { status: 'NON_EXISTENT_TIME', message: string }
- *   - AMBIGUOUS_TIME: { status: 'AMBIGUOUS_TIME', candidates: Array<{ utcInstant: Date, offsetMinutes: number, label: string, formattedOffset: string, formattedUtc: string }> }
+ *   - AMBIGUOUS_TIME: { status: 'AMBIGUOUS_TIME', candidates: Array<{ utcInstant: Date, offsetSeconds: number, offsetMinutes: number, label: string, formattedOffset: string, formattedUtc: string }> }
  */
 export function resolveWallTimeToUtc(params) {
-    // Hỗ trợ cả cú pháp truyền object { year, month, ... } và argument danh sách cũ (y, m, d, h, min, s, tz)
-    let year, month, day, hour, minute, second, timeZone;
+    // Hỗ trợ cả cú pháp truyền object { year, month, ... } và argument danh sách cũ (y, m, d, h, min, s, tz, cal)
+    let year, month, day, hour, minute, second, timeZone, calendarMode;
     if (typeof params === 'object' && params !== null && !Array.isArray(params)) {
         year = parseInt(params.year, 10);
         month = parseInt(params.month, 10);
         day = parseInt(params.day, 10);
-        hour = parseInt(params.hour || 0, 10);
-        minute = parseInt(params.minute || 0, 10);
-        second = parseInt(params.second || 0, 10);
+        hour = parseInt(params.hour !== undefined ? params.hour : 0, 10);
+        minute = parseInt(params.minute !== undefined ? params.minute : 0, 10);
+        second = parseInt(params.second !== undefined ? params.second : 0, 10);
         timeZone = params.timeZone || 'Asia/Ho_Chi_Minh';
+        calendarMode = (params.calendarMode || params.calendar || 'GREGORIAN').toUpperCase();
     } else {
         year = parseInt(arguments[0], 10);
         month = parseInt(arguments[1], 10);
         day = parseInt(arguments[2], 10);
-        hour = parseInt(arguments[3] || 0, 10);
-        minute = parseInt(arguments[4] || 0, 10);
-        second = parseInt(arguments[5] || 0, 10);
+        hour = parseInt(arguments[3] !== undefined ? arguments[3] : 0, 10);
+        minute = parseInt(arguments[4] !== undefined ? arguments[4] : 0, 10);
+        second = parseInt(arguments[5] !== undefined ? arguments[5] : 0, 10);
         timeZone = arguments[6] || 'Asia/Ho_Chi_Minh';
+        calendarMode = (arguments[7] || 'GREGORIAN').toUpperCase();
     }
 
-    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
-        throw new Error(`Ngày tháng không hợp lệ: year=${year}, month=${month}, day=${day}`);
+    // 1. Kiểm tra tính hợp lệ của ngày dân dụng theo lịch đã chọn (Calendar-aware validation)
+    isValidCivilDate(year, month, day, calendarMode);
+
+    // 2. Nếu là lịch Julian, chuyển đổi ngày dân dụng Julian sang proleptic Gregorian trước khi giải IANA
+    let effYear = year;
+    let effMonth = month;
+    let effDay = day;
+    if (calendarMode === 'JULIAN') {
+        const greg = julianCivilToGregorian(year, month, day);
+        effYear = greg.year;
+        effMonth = greg.month;
+        effDay = greg.day;
     }
 
-    const targetWallMs = Date.UTC(year, month - 1, day, hour, minute, second);
+    const targetWallMs = Date.UTC(effYear, effMonth - 1, effDay, hour, minute, second);
 
-    // Quét các offset tiềm năng của múi giờ trong khoảng +/- 14 giờ xung quanh ngày này
-    const candidateOffsets = new Set();
+    // Quét các offset tiềm năng của múi giờ (độ chính xác đến giây) trong khoảng +/- 14 giờ
+    const candidateOffsetsSec = new Set();
     for (let testOffHours = -14; testOffHours <= 14; testOffHours += 0.5) {
         const testUtcDate = new Date(targetWallMs - testOffHours * 3600000);
         try {
             const p = getWallComponents(testUtcDate, timeZone);
             const wallMs = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
-            const offMin = Math.round((wallMs - testUtcDate.getTime()) / 60000);
-            candidateOffsets.add(offMin);
+            const offSec = Math.round((wallMs - testUtcDate.getTime()) / 1000);
+            candidateOffsetsSec.add(offSec);
         } catch (_) {}
     }
 
     const matches = [];
-    for (const offMin of candidateOffsets) {
-        const candidateUtcMs = targetWallMs - offMin * 60000;
+    for (const offSec of candidateOffsetsSec) {
+        const candidateUtcMs = targetWallMs - offSec * 1000;
         const candidateDate = new Date(candidateUtcMs);
         try {
             const p = getWallComponents(candidateDate, timeZone);
-            if (p.year === year && p.month === month && p.day === day &&
+            if (p.year === effYear && p.month === effMonth && p.day === effDay &&
                 p.hour === hour && p.minute === minute && p.second === second) {
                 matches.push({
                     utcInstant: candidateDate,
-                    offsetMinutes: offMin,
-                    formattedOffset: formatOffsetMinutes(offMin),
+                    offsetSeconds: offSec,
+                    offsetMinutes: Math.round(offSec / 60),
+                    formattedOffset: formatOffsetSeconds(offSec),
                     formattedUtc: candidateDate.toISOString()
                 });
             }
@@ -141,6 +223,7 @@ export function resolveWallTimeToUtc(params) {
         return {
             status: 'VALID',
             utcInstant: matches[0].utcInstant,
+            offsetSeconds: matches[0].offsetSeconds,
             offsetMinutes: matches[0].offsetMinutes,
             formattedOffset: matches[0].formattedOffset,
             formattedUtc: matches[0].formattedUtc
@@ -162,38 +245,16 @@ export function resolveWallTimeToUtc(params) {
 /**
  * Tính Julian Day (UT) trực tiếp từ UTC Instant và Chế độ lịch (Calendar Mode)
  * @param {Date} utcInstant - Thời điểm UTC chính xác
- * @param {string} calendarMode - 'GREGORIAN' | 'JULIAN'
+ * @param {string} calendarMode - 'GREGORIAN' | 'JULIAN' (giữ lại tham số để tương thích ngược)
  * @returns {number} Julian Day UT
  */
 export function getJulianDayFromUtcInstant(utcInstant, calendarMode = 'GREGORIAN') {
     if (!(utcInstant instanceof Date) || isNaN(utcInstant.getTime())) {
         throw new Error('Thời điểm UTC Instant không hợp lệ để tính Julian Day');
     }
-
-    const year = utcInstant.getUTCFullYear();
-    const month = utcInstant.getUTCMonth() + 1;
-    const day = utcInstant.getUTCDate();
-    const hour = utcInstant.getUTCHours();
-    const minute = utcInstant.getUTCMinutes();
-    const second = utcInstant.getUTCSeconds() + utcInstant.getUTCMilliseconds() / 1000;
-
-    const decimalDay = day + (hour + minute / 60 + second / 3600) / 24;
-    let y = year;
-    let m = month;
-
-    if (m <= 2) {
-        y -= 1;
-        m += 12;
-    }
-
-    let B = 0;
-    if (String(calendarMode).toUpperCase() === 'GREGORIAN') {
-        const A = Math.floor(y / 100);
-        B = 2 - A + Math.floor(A / 4);
-    }
-
-    const jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + decimalDay + B - 1524.5;
-    return jd;
+    // Chân lý thiên văn: UTC instant là một thời điểm vật lý duy nhất trong vũ trụ.
+    // Julian Day UT được chuyển đổi trực tiếp từ epoch UTC một cách tuyệt đối:
+    return utcInstant.getTime() / 86400000 + 2440587.5;
 }
 
 /**
@@ -216,18 +277,28 @@ export function getNowInTimezone(timeZone = 'Asia/Ho_Chi_Minh') {
 }
 
 /**
- * Chức năng tương thích ngược
+ * Chức năng tương thích ngược (Fail-closed khi gặp DST gap/fold)
  */
-export function localWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh') {
-    const res = resolveWallTimeToUtc({ year, month, day, hour, minute, second, timeZone });
+export function localWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh', calendarMode = 'GREGORIAN') {
+    const res = resolveWallTimeToUtc({ year, month, day, hour, minute, second, timeZone, calendarMode });
     if (res.status === 'VALID') return res.utcInstant;
-    if (res.status === 'AMBIGUOUS_TIME') return res.candidates[0].utcInstant;
-    return new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+    if (res.status === 'AMBIGUOUS_TIME') {
+        throw new Error('Thời điểm bị trùng lặp do chuyển giờ DST (AMBIGUOUS_TIME). Phải chọn một candidate cụ thể.');
+    }
+    if (res.status === 'NON_EXISTENT_TIME') {
+        throw new Error('Giờ này không tồn tại do chuyển giờ DST (NON_EXISTENT_TIME).');
+    }
+    throw new Error('Không thể phân giải thời gian: ' + (res.message || 'Lỗi không xác định'));
 }
 
-export function getTimezoneOffsetForWallTime(timeZone, year, month, day, hour, minute, second = 0) {
-    const res = resolveWallTimeToUtc({ year, month, day, hour, minute, second, timeZone });
+export function getTimezoneOffsetForWallTime(timeZone, year, month, day, hour, minute, second = 0, calendarMode = 'GREGORIAN') {
+    const res = resolveWallTimeToUtc({ year, month, day, hour, minute, second, timeZone, calendarMode });
     if (res.status === 'VALID') return res.offsetMinutes / 60;
-    if (res.status === 'AMBIGUOUS_TIME') return res.candidates[0].offsetMinutes / 60;
+    if (res.status === 'AMBIGUOUS_TIME') {
+        throw new Error('Thời điểm bị trùng lặp do chuyển giờ DST (AMBIGUOUS_TIME). Phải chọn một candidate cụ thể.');
+    }
+    if (res.status === 'NON_EXISTENT_TIME') {
+        throw new Error('Giờ này không tồn tại do chuyển giờ DST (NON_EXISTENT_TIME).');
+    }
     return getTimezoneOffsetHours(timeZone, new Date());
 }

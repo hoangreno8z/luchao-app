@@ -168,10 +168,13 @@ export class HoraryChartRenderer {
         `;
 
         // =========================================================================
-        // 2. BỐN GÓC CHÚ THÍCH (4 CORNER LEGENDS) - CHỈ DÙNG CHO EXPORT / DESKTOP
+        // 2. BỐN GÓC CHÚ THÍCH (LEGENDS: DESKTOP & MOBILE)
+        // 100% SVG Vector Paths - CẤM TUYỆT ĐỐI DÙNG EMOJI
         // =========================================================================
         if (!isMobile) {
             svg += this.renderCornerLegends();
+        } else {
+            svg += this.renderMobileLegends();
         }
 
         // =========================================================================
@@ -314,6 +317,82 @@ export class HoraryChartRenderer {
         return `<g>
             ${glyphXml}
             <text x="${x + 28}" y="${y}" font-size="12" font-weight="600" fill="#334155">${labelText}</text>
+        </g>`;
+    }
+
+    /**
+     * Chú thích ký hiệu hành tinh và hoàng đạo tối ưu cho Mobile (Zero Emojis - 100% Vector Path)
+     */
+    renderMobileLegends() {
+        const { cardBgColor, accentColor } = this.options;
+        const boxW = 195;
+        const boxH = 175;
+
+        let s = `<!-- Chú thích Mobile (Zero Emojis - 100% SVG Vector Paths) -->`;
+
+        // Card 1: Top-Left - Cung Hoàng Đạo 1-6
+        s += `
+        <g id="mobile-legend-zodiac-1" transform="translate(78, 78)">
+            <rect width="${boxW}" height="${boxH}" rx="8" fill="${cardBgColor}" fill-opacity="0.94" stroke="#cfd3c7" stroke-width="1.5" />
+            <text x="14" y="24" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HOÀNG ĐẠO (1 - 6)</text>
+            <line x1="14" y1="31" x2="${boxW - 14}" y2="31" stroke="#cfd3c7" stroke-width="1" />
+            ${this.renderLegendItem('aries', 'Bạch Dương', 14, 50, 11.5, 0.75)}
+            ${this.renderLegendItem('taurus', 'Kim Ngưu', 14, 73, 11.5, 0.75)}
+            ${this.renderLegendItem('gemini', 'Song Tử', 14, 96, 11.5, 0.75)}
+            ${this.renderLegendItem('cancer', 'Cự Giải', 14, 119, 11.5, 0.75)}
+            ${this.renderLegendItem('leo', 'Sư Tử', 14, 142, 11.5, 0.75)}
+            ${this.renderLegendItem('virgo', 'Xử Nữ', 14, 165, 11.5, 0.75)}
+        </g>`;
+
+        // Card 2: Bottom-Left - Cung Hoàng Đạo 7-12
+        s += `
+        <g id="mobile-legend-zodiac-2" transform="translate(78, 947)">
+            <rect width="${boxW}" height="${boxH}" rx="8" fill="${cardBgColor}" fill-opacity="0.94" stroke="#cfd3c7" stroke-width="1.5" />
+            <text x="14" y="24" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HOÀNG ĐẠO (7 - 12)</text>
+            <line x1="14" y1="31" x2="${boxW - 14}" y2="31" stroke="#cfd3c7" stroke-width="1" />
+            ${this.renderLegendItem('libra', 'Thiên Bình', 14, 50, 11.5, 0.75)}
+            ${this.renderLegendItem('scorpio', 'Bọ Cạp', 14, 73, 11.5, 0.75)}
+            ${this.renderLegendItem('sagittarius', 'Nhân Mã', 14, 96, 11.5, 0.75)}
+            ${this.renderLegendItem('capricorn', 'Ma Kết', 14, 119, 11.5, 0.75)}
+            ${this.renderLegendItem('aquarius', 'Bảo Bình', 14, 142, 11.5, 0.75)}
+            ${this.renderLegendItem('pisces', 'Song Ngư', 14, 165, 11.5, 0.75)}
+        </g>`;
+
+        // Card 3: Top-Right - Hành Tinh (1)
+        s += `
+        <g id="mobile-legend-planets-1" transform="translate(927, 78)">
+            <rect width="${boxW}" height="${boxH}" rx="8" fill="${cardBgColor}" fill-opacity="0.94" stroke="#cfd3c7" stroke-width="1.5" />
+            <text x="14" y="24" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HÀNH TINH (1)</text>
+            <line x1="14" y1="31" x2="${boxW - 14}" y2="31" stroke="#cfd3c7" stroke-width="1" />
+            ${this.renderLegendItem('sun', 'Mặt Trời (Sun)', 14, 52, 11.5, 0.75)}
+            ${this.renderLegendItem('moon', 'Mặt Trăng (Moon)', 14, 78, 11.5, 0.75)}
+            ${this.renderLegendItem('mercury', 'Thủy Tinh (Mercury)', 14, 104, 11.5, 0.75)}
+            ${this.renderLegendItem('venus', 'Kim Tinh (Venus)', 14, 130, 11.5, 0.75)}
+            ${this.renderLegendItem('northNode', 'Bắc Giao Điểm', 14, 156, 11.5, 0.75)}
+        </g>`;
+
+        // Card 4: Bottom-Right - Hành Tinh (2) & Điểm đặc biệt
+        s += `
+        <g id="mobile-legend-planets-2" transform="translate(927, 947)">
+            <rect width="${boxW}" height="${boxH}" rx="8" fill="${cardBgColor}" fill-opacity="0.94" stroke="#cfd3c7" stroke-width="1.5" />
+            <text x="14" y="24" font-size="12" font-weight="700" fill="${accentColor}" letter-spacing="0.5">HÀNH TINH (2) &amp; ĐIỂM</text>
+            <line x1="14" y1="31" x2="${boxW - 14}" y2="31" stroke="#cfd3c7" stroke-width="1" />
+            ${this.renderLegendItem('mars', 'Hỏa Tinh (Mars)', 14, 50, 11.5, 0.75)}
+            ${this.renderLegendItem('jupiter', 'Mộc Tinh (Jupiter)', 14, 73, 11.5, 0.75)}
+            ${this.renderLegendItem('saturn', 'Thổ Tinh (Saturn)', 14, 96, 11.5, 0.75)}
+            ${this.renderLegendItem('southNode', 'Nam Giao Điểm', 14, 119, 11.5, 0.75)}
+            ${this.renderLegendItem('partOfFortune', 'Điểm May Mắn', 14, 142, 11.5, 0.75)}
+            ${this.renderLegendItem('retrograde', '℞ Nghịch Hành', 14, 165, 11.5, 0.75)}
+        </g>`;
+
+        return s;
+    }
+
+    renderLegendItem(glyphKey, labelText, x, y, fontSize = 12, scale = 0.75) {
+        const glyphXml = getGlyphGroupXml(glyphKey, x + 8, y - 4, scale, '#1e293b', 2);
+        return `<g>
+            ${glyphXml}
+            <text x="${x + 24}" y="${y}" font-size="${fontSize}" font-weight="600" fill="#1e293b">${labelText}</text>
         </g>`;
     }
 

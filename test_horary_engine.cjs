@@ -618,20 +618,20 @@ async function runTests() {
         assert.ok(Math.abs(dscCoord.y - 600) < 1e-4, 'y phải bằng tâm cy (600)');
     });
 
-    test('Hình học SVG: eclipticToSvg đặt MC tại hướng 12 giờ (đỉnh trên, x = cx, y = cy - R)', () => {
+    test('Hình học SVG: eclipticToSvg chiếu điểm góc lệch 270° về hướng 12 giờ (đỉnh trên, x = cx, y = cy - R)', () => {
         const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
-        // MC cách ASC khoảng -90° (270°)
-        const mcCoord = renderer.eclipticToSvg((15.5 + 270) % 360, 15.5, 400);
-        assert.ok(Math.abs(mcCoord.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
-        assert.ok(Math.abs(mcCoord.y - (600 - 400)) < 1e-4, 'y phải ở đỉnh trên (200)');
+        // Phép kiểm tọa độ tổng quát: điểm có góc lệch 270° (hoặc -90°) so với ASC phải chiếu lên hướng 12 giờ
+        const coord270 = renderer.eclipticToSvg((15.5 + 270) % 360, 15.5, 400);
+        assert.ok(Math.abs(coord270.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
+        assert.ok(Math.abs(coord270.y - (600 - 400)) < 1e-4, 'y phải ở đỉnh trên (200)');
     });
 
-    test('Hình học SVG: eclipticToSvg đặt IC tại hướng 6 giờ (đáy dưới, x = cx, y = cy + R)', () => {
+    test('Hình học SVG: eclipticToSvg chiếu điểm góc lệch 90° về hướng 6 giờ (đáy dưới, x = cx, y = cy + R)', () => {
         const renderer = new HoraryChartRenderer(null, { centerX: 600, centerY: 600 });
-        // IC cách ASC khoảng +90°
-        const icCoord = renderer.eclipticToSvg((15.5 + 90) % 360, 15.5, 400);
-        assert.ok(Math.abs(icCoord.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
-        assert.ok(Math.abs(icCoord.y - (600 + 400)) < 1e-4, 'y phải ở đáy dưới (1000)');
+        // Phép kiểm tọa độ tổng quát: điểm có góc lệch +90° so với ASC phải chiếu xuống hướng 6 giờ
+        const coord90 = renderer.eclipticToSvg((15.5 + 90) % 360, 15.5, 400);
+        assert.ok(Math.abs(coord90.x - 600) < 1e-4, 'x phải ở tâm cx (600)');
+        assert.ok(Math.abs(coord90.y - (600 + 400)) < 1e-4, 'y phải ở đáy dưới (1000)');
     });
 
     test('DST Resolver: London 29/03/2026 01:30 phát hiện NON_EXISTENT_TIME (DST gap)', () => {

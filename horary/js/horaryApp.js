@@ -250,9 +250,19 @@ class HoraryApp {
         const currentGen = this.chartGeneration;
 
         // Phân giải giờ dân dụng và kiểm tra DST
-        const res = resolveWallTimeToUtc({
-            year, month, day, hour, minute, second, timeZone
-        });
+        let res;
+        try {
+            res = resolveWallTimeToUtc({
+                year, month, day, hour, minute, second, timeZone, calendarMode
+            });
+        } catch (dateErr) {
+            this.showDstModal({
+                title: 'Ngày Nhập Liệu Không Hợp Lệ',
+                message: dateErr.message,
+                type: 'error'
+            });
+            return;
+        }
 
         if (res.status === 'NON_EXISTENT_TIME') {
             this.showDstModal({
@@ -277,10 +287,17 @@ class HoraryApp {
         }
 
         let chosenUtcInstant = null;
+        let chosenOffsetMinutes = 0;
+        let chosenFormattedOffset = 'UTC+00:00';
         if (res.status === 'AMBIGUOUS_TIME') {
-            chosenUtcInstant = res.candidates[selectedCandidateIndex].utcInstant;
+            const cand = res.candidates[selectedCandidateIndex];
+            chosenUtcInstant = cand.utcInstant;
+            chosenOffsetMinutes = cand.offsetMinutes;
+            chosenFormattedOffset = cand.formattedOffset;
         } else {
             chosenUtcInstant = res.utcInstant;
+            chosenOffsetMinutes = res.offsetMinutes;
+            chosenFormattedOffset = res.formattedOffset;
         }
 
         try {
@@ -289,6 +306,8 @@ class HoraryApp {
                 year, month, day, hour, minute, second,
                 latitude, longitude, timeZone,
                 utcInstant: chosenUtcInstant,
+                offsetMinutes: chosenOffsetMinutes,
+                formattedOffset: chosenFormattedOffset,
                 locationName, calendarMode, nodeType
             });
 
