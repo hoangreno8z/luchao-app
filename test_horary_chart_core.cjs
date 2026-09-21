@@ -343,8 +343,8 @@ async function runGoldenCorpusSuite() {
         }
     });
 
-    // Case 21: Transactional: simulate planet calc failure => no partial chart
-    await testAsync('Case 21: Lỗi tính toán hành tinh bất kỳ kích hoạt dừng toàn diện (Transactional)', async () => {
+    // Case 21: Fail-closed input validation: latitude out of [-90, 90] rejects immediately without generating partial chart
+    await testAsync('Case 21: Fail-closed input validation: Vĩ độ ngoài [-90, 90] từ chối ngay lập tức không tạo partial chart', async () => {
         // Nhập tọa độ vĩ độ không hợp lệ ngoài phạm vi [-90, 90]
         await assert.rejects(async () => {
             await calculateHoraryChart({
@@ -354,8 +354,8 @@ async function runGoldenCorpusSuite() {
         }, /Vĩ độ/);
     });
 
-    // Case 22: Swiss houses failure => fail closed
-    await testAsync('Case 22: Swiss houses failure kích hoạt fail-closed dừng hẳn', async () => {
+    // Case 22: Fail-closed input validation: longitude out of [-180, 180] rejects immediately
+    await testAsync('Case 22: Fail-closed input validation: Kinh độ ngoài [-180, 180] dừng hẳn, không gọi Swiss bừa bãi', async () => {
         await assert.rejects(async () => {
             await calculateHoraryChart({
                 year: 2026, month: 1, day: 1, hour: 12, minute: 0, second: 0,
@@ -559,6 +559,38 @@ async function runGoldenCorpusSuite() {
             utcInstant: res.utcInstant
         });
         assert.strictEqual(chart.utcOffsetFormatted, 'UTC+07:00', 'Không được rơi về UTC+00:00 khi có timeZone và utcInstant');
+    });
+
+    await testAsync('Invariant 11: Ngăn chặn lỗi input pipeline GPS giữ múi giờ cũ - bắt buộc xác nhận IANA timezone', async () => {
+        // Tình huống: Người dùng trước đó chọn Europe/London. Khi bấm GPS tại TP.HCM (lat: 10.7769, lon: 106.7009):
+        // Nếu app tự động tính với Europe/London, offset sẽ là GMT/BST thay vì UTC+07:00, làm sai lệch toàn bộ UTC instant và 12 nhà.
+        const gpsLat = 10.7769;
+        const gpsLon = 106.7009;
+        const oldTimezone = 'Europe/London';
+        const confirmedTimezone = 'Asia/Ho_Chi_Minh';
+
+        // 1. Múi giờ cũ London bị lệch hoàn toàn so với thực tế Việt Nam
+        const unconfirmedRes = resolveWallTimeToUtc({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            timeZone: oldTimezone
+        });
+        assert.notStrictEqual(unconfirmedRes.formattedOffset, 'UTC+07:00');
+
+        // 2. Sau khi xác nhận chọn đúng IANA timezone cho tọa độ GPS:
+        const confirmedRes = resolveWallTimeToUtc({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            timeZone: confirmedTimezone
+        });
+        assert.strictEqual(confirmedRes.formattedOffset, 'UTC+07:00');
+
+        const chart = await calculateHoraryChart({
+            year: 2026, month: 9, day: 21, hour: 10, minute: 0, second: 0,
+            latitude: gpsLat, longitude: gpsLon, timeZone: confirmedTimezone,
+            locationName: 'Tọa độ tùy chỉnh (GPS)'
+        });
+        assert.strictEqual(chart.utcOffsetFormatted, 'UTC+07:00');
+        assert.strictEqual(chart.location.name, 'Tọa độ tùy chỉnh (GPS)');
+        assert.ok(chart.houses && chart.houses.cusps.length === 12);
     });
 
     console.log('================================================================');

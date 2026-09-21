@@ -122,10 +122,16 @@ class HoraryApp {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         pos => {
-                            document.getElementById('input-lat').value = pos.coords.latitude.toFixed(4);
-                            document.getElementById('input-lon').value = pos.coords.longitude.toFixed(4);
-                            document.getElementById('select-city').value = 'custom';
-                            this.calculateAndRender();
+                            const lat = pos.coords.latitude.toFixed(4);
+                            const lon = pos.coords.longitude.toFixed(4);
+                            document.getElementById('input-lat').value = lat;
+                            document.getElementById('input-lon').value = lon;
+                            const citySelect = document.getElementById('select-city');
+                            if (citySelect) citySelect.value = 'custom';
+
+                            // TUYỆT ĐỐI KHÔNG tự động gọi this.calculateAndRender()!
+                            // Bắt buộc yêu cầu người dùng xác nhận hoặc chọn đúng Múi giờ IANA trước khi lập lá số.
+                            this.showGpsTimezoneModal(lat, lon);
                         },
                         err => alert('Không thể lấy tọa độ GPS: ' + err.message)
                     );
@@ -217,6 +223,83 @@ class HoraryApp {
             okBtn.onclick = () => { modal.style.display = 'none'; };
             actionsEl.appendChild(okBtn);
         }
+
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * Hiển thị Hộp thoại Yêu Cầu Xác Nhận Múi Giờ IANA khi Lấy Tọa Độ GPS
+     * Tuyệt đối không tự động suy đoán múi giờ chính trị từ kinh độ hình học.
+     * Người dùng bắt buộc phải xác nhận hoặc chọn đúng Múi giờ IANA trước khi lập lá số.
+     */
+    showGpsTimezoneModal(lat, lon) {
+        const modal = document.getElementById('dst-modal');
+        const titleEl = document.getElementById('dst-modal-title');
+        const bodyEl = document.getElementById('dst-modal-body');
+        const actionsEl = document.getElementById('dst-modal-actions');
+        if (!modal) {
+            alert(`Đã nhận tọa độ GPS: ${lat}, ${lon}.\nLƯU Ý: Vui lòng kiểm tra và chọn đúng Múi Giờ IANA trước khi bấm LẬP LÁ SỐ!`);
+            const tzSelect = document.getElementById('select-timezone');
+            if (tzSelect) tzSelect.focus();
+            return;
+        }
+
+        const tzSelect = document.getElementById('select-timezone');
+        const currentTz = tzSelect ? tzSelect.value : 'Asia/Ho_Chi_Minh';
+
+        titleEl.innerText = 'Xác Nhận Múi Giờ IANA Cho Tọa Độ GPS';
+        bodyEl.innerHTML = `
+            <div style="font-size:0.92rem; color:#1e293b; line-height:1.5;">
+                <p style="margin-bottom:8px;">
+                    📍 Đã cập nhật tọa độ GPS: <strong>Vĩ độ ${lat}°</strong>, <strong>Kinh độ ${lon}°</strong> (Tùy chỉnh).
+                </p>
+                <p style="margin-bottom:12px; color:#b45309; background:#fef3c7; padding:8px 10px; border-radius:6px; border:1px solid #fde68a;">
+                    ⚠️ <strong>Lưu ý bắt buộc:</strong> Tọa độ GPS không thể tự động quy định múi giờ hành chính. Để tránh sai lệch UTC Instant và hệ nhà Regiomontanus, bạn phải <strong>xác nhận hoặc chọn đúng Múi giờ IANA</strong> tại vị trí thực tế của mình trước khi lập lá số.
+                </p>
+                <div style="margin-bottom:12px;">
+                    <label for="modal-gps-timezone" style="display:block; font-size:0.85rem; font-weight:700; color:#334155; margin-bottom:4px;">
+                        Múi giờ IANA tại địa điểm thực tế của bạn:
+                    </label>
+                    <select id="modal-gps-timezone" style="width:100%; padding:8px 10px; border:1.5px solid #cbd5e1; border-radius:6px; font-size:0.95rem; background:#fff; color:#0f172a;">
+                        ${tzSelect ? tzSelect.innerHTML : ''}
+                    </select>
+                </div>
+            </div>
+        `;
+
+        const modalTzSelect = document.getElementById('modal-gps-timezone');
+        if (modalTzSelect) {
+            modalTzSelect.value = currentTz;
+        }
+
+        actionsEl.innerHTML = '';
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.style.margin = '4px 0';
+        confirmBtn.innerText = 'Xác Nhận Múi Giờ & Lập Lá Số';
+        confirmBtn.onclick = () => {
+            if (tzSelect && modalTzSelect) {
+                tzSelect.value = modalTzSelect.value;
+            }
+            modal.style.display = 'none';
+            this.calculateAndRender();
+        };
+        actionsEl.appendChild(confirmBtn);
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.style.marginTop = '6px';
+        cancelBtn.innerText = 'Để Tôi Tự Chọn Sau';
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+            if (tzSelect) {
+                tzSelect.focus();
+                tzSelect.style.outline = '2px solid #8a4b18';
+                setTimeout(() => { tzSelect.style.outline = ''; }, 3000);
+            }
+        };
+        actionsEl.appendChild(cancelBtn);
 
         modal.style.display = 'flex';
     }
