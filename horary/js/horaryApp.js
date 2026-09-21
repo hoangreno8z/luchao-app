@@ -12,6 +12,7 @@ import { generateHouseExplanation } from './houseMeanings.js';
 import { HoraryChartRenderer } from './horaryChartRenderer.js';
 import { resolveWallTimeToUtc, getNowInTimezone, formatOffsetMinutes, getTimezoneOffsetHours, getTimezoneOffsetForWallTime, localWallTimeToUtc } from './timeResolver.js';
 import { formatZodiacLongitude } from './traditionalRulers.js';
+import { renderGlyphSvg } from './svgGlyphs.js';
 
 export { getTimezoneOffsetHours, getTimezoneOffsetForWallTime, localWallTimeToUtc, resolveWallTimeToUtc, getNowInTimezone, formatOffsetMinutes };
 
