@@ -61,7 +61,9 @@ export class HoraryChartRenderer {
 
     /**
      * Cập nhật dữ liệu lá số và tiến hành vẽ.
-     * NGUYÊN TẮC: SVG luôn là DOM chính trên màn hình. Tuyệt đối không tự động thay SVG bằng PNG.
+     * Desktop: SVG trực tiếp tương tác.
+     * Mobile: Render SVG tức thì, sau đó chuyển sang thẻ <img> (PNG) để hỗ trợ nhấn giữ lưu ảnh trên iOS/Android.
+     * Chống Race Condition thông qua this.renderGeneration token.
      */
     async render(chartData, aspects = [], renderOptions = {}) {
         this.chartData = chartData;
@@ -73,14 +75,40 @@ export class HoraryChartRenderer {
             renderOptions.isMobile :
             (typeof window !== 'undefined' && window.innerWidth <= 768);
 
+        // Render generation token để chống race condition khi chuyển đổi PNG bất đồng bộ
+        this.renderGeneration = (this.renderGeneration || 0) + 1;
+        const gen = this.renderGeneration;
+
         const svgXml = this.generateSvgXml({ isExport: false, isMobile });
 
-        // SVG là DOM chính
+        // Bước 1: Hiển thị ngay SVG trên màn hình (đảm bảo phản hồi tức thì)
         this.container.innerHTML = `
             <div id="chart-display-wrapper" style="width:100%; max-width:720px; margin:0 auto; position:relative;">
                 ${svgXml}
             </div>
         `;
+
+        // Bước 2: Trên Mobile, chuyển đổi screen SVG thành ảnh PNG để hỗ trợ nhấn giữ lưu ảnh
+        if (isMobile && typeof window !== 'undefined' && typeof Image !== 'undefined') {
+            try {
+                const pngDataUrl = await this.svgToPngDataUrl(svgXml, 1);
+                if (gen !== this.renderGeneration) return;
+
+                const wrapper = this.container.querySelector('#chart-display-wrapper');
+                if (wrapper) {
+                    wrapper.innerHTML = `
+                        <img
+                            id="horary-chart-img"
+                            src="${pngDataUrl}"
+                            alt="Lá số Horary"
+                            draggable="true"
+                        />
+                    `;
+                }
+            } catch (err) {
+                console.warn('Không thể chuyển đổi mobile SVG sang PNG, giữ nguyên SVG:', err);
+            }
+        }
     }
 
     /**
@@ -169,15 +197,14 @@ export class HoraryChartRenderer {
             svg += this.renderAspectLines(planets, ascAngle);
         }
 
-        // Vẽ các hành tinh + Pars Fortunae với thuật toán chống đè chữ (Collision Avoidance)
-        svg += this.renderPlanetsOnWheel(planets, ascAngle, isMobile);
-
         // =========================================================================
         // 4. TRUNG TÂM LÁ SỐ (CENTER BRANDING BOX)
+        // Thứ tự DOM: aspect-lines -> center-branding-background -> center-branding-text
         // =========================================================================
         if (!isMobile) {
-            svg += `<!-- Hộp thông tin trung tâm -->
+            svg += `<!-- Hộp thông tin trung tâm (Desktop / Export) -->
                 <g id="center-branding" text-anchor="middle">
+                    <rect x="${centerX - 95}" y="${centerY - 55}" width="190" height="135" rx="10" fill="${cardBgColor}" fill-opacity="0.88" />
                     <text x="${centerX}" y="${centerY - 35}" font-size="22" font-weight="800" fill="${accentColor}" letter-spacing="1">HUY HOÀNG</text>
                     <text x="${centerX}" y="${centerY - 10}" font-size="16" font-weight="700" fill="#334155" letter-spacing="0.5">Zalo 0933116860</text>
                     
@@ -190,16 +217,21 @@ export class HoraryChartRenderer {
                 </g>
             `;
         } else {
-            // Tinh giản trên điện thoại để vòng lá số thanh thoát, thoáng đãng
+            // Mobile: Phục hồi số Zalo, có nền che mờ aspect lines đi qua tâm
             svg += `
                 <g id="center-branding-mobile" text-anchor="middle">
-                    <text x="${centerX}" y="${centerY - 10}" font-size="20" font-weight="800" fill="${accentColor}" letter-spacing="1">HUY HOÀNG</text>
-                    <line x1="${centerX - 45}" y1="${centerY + 2}" x2="${centerX + 45}" y2="${centerY + 2}" stroke="#cfd3c7" stroke-width="1.5" />
-                    <text x="${centerX}" y="${centerY + 20}" font-size="13" font-weight="700" fill="#475569">HORARY</text>
-                    <text x="${centerX}" y="${centerY + 38}" font-size="11" font-weight="600" fill="#64748b">Regiomontanus</text>
+                    <rect x="${centerX - 75}" y="${centerY - 45}" width="150" height="96" rx="8" fill="${cardBgColor}" fill-opacity="0.88" />
+                    <text x="${centerX}" y="${centerY - 26}" font-size="18" font-weight="800" fill="${accentColor}" letter-spacing="1">HUY HOÀNG</text>
+                    <text x="${centerX}" y="${centerY - 5}" font-size="13.5" font-weight="700" fill="#334155" letter-spacing="0.5">Zalo 0933116860</text>
+                    <line x1="${centerX - 48}" y1="${centerY + 7}" x2="${centerX + 48}" y2="${centerY + 7}" stroke="#cfd3c7" stroke-width="1.5" />
+                    <text x="${centerX}" y="${centerY + 25}" font-size="12" font-weight="700" fill="#475569">HORARY</text>
+                    <text x="${centerX}" y="${centerY + 42}" font-size="10.5" font-weight="600" fill="#64748b">Regiomontanus</text>
                 </g>
             `;
         }
+
+        // Vẽ các hành tinh + Pars Fortunae với thuật toán chống đè chữ (Collision Avoidance)
+        svg += this.renderPlanetsOnWheel(planets, ascAngle, isMobile);
 
         svg += `</svg>`;
         return svg;
@@ -347,8 +379,8 @@ export class HoraryChartRenderer {
             const labelR = radiusInner + 30;
             const labelPt = this.eclipticToSvg(midHouseLon, ascAngle, labelR);
 
-            const houseNumFontSize = isMobile ? 26 : 14;
-            s += `<text x="${labelPt.x.toFixed(2)}" y="${(labelPt.y + (isMobile ? 9 : 5)).toFixed(2)}" font-size="${houseNumFontSize}" font-weight="700" fill="#64748b" text-anchor="middle">${houseNum}</text>`;
+            const houseNumFontSize = isMobile ? 21 : 14;
+            s += `<text x="${labelPt.x.toFixed(2)}" y="${(labelPt.y + (isMobile ? 7 : 5)).toFixed(2)}" font-size="${houseNumFontSize}" font-weight="700" fill="#64748b" text-anchor="middle">${houseNum}</text>`;
         }
 
         // =========================================================================
@@ -442,8 +474,38 @@ export class HoraryChartRenderer {
     }
 
     /**
-     * Vẽ các hành tinh VÀ Pars Fortunae với thuật toán so le bán kính (Collision Avoidance).
-     * Trên màn hình nhỏ (Mobile), tăng font size và glyph scale để đảm bảo >= 9 CSS px.
+     * Tính toán Bounding Box bao trọn cả Glyph, ký hiệu Rx/S và nhãn độ phút
+     */
+    computeBodyBbox(dispPt, body, isMobile, degFontSize) {
+        const estimatedTextWidth = (str) => (str ? str.length : 5) * degFontSize * 0.58;
+        const rawWidth = Math.max(52, estimatedTextWidth(body.formatted) + 18);
+        const rxOffset = (body.isRetrograde || body.isStationary) ? (isMobile ? 18 : 12) : 0;
+        const halfW = rawWidth / 2;
+        const labelHeight = isMobile ? 66 : 38;
+        return {
+            minX: dispPt.x - halfW,
+            maxX: dispPt.x + halfW + rxOffset,
+            minY: dispPt.y - labelHeight / 2,
+            maxY: dispPt.y + labelHeight / 2
+        };
+    }
+
+    /**
+     * Kiểm tra hai Bounding Box có giao nhau hay không với padding an toàn
+     */
+    boxesIntersect(a, b, pad = 12) {
+        return !(
+            a.maxX + pad < b.minX ||
+            a.minX > b.maxX + pad ||
+            a.maxY + pad < b.minY ||
+            a.minY > b.maxY + pad
+        );
+    }
+
+    /**
+     * Vẽ các hành tinh VÀ Pars Fortunae với Bounding Box Collision Placement Engine.
+     * ZERO 7° Threshold — Định vị dựa trên Bounding Box thực, so le bán kính và tiếp tuyến.
+     * Đảm bảo không bao giờ thay đổi kinh độ thiên văn thật của thiên thể.
      */
     renderPlanetsOnWheel(planets, ascAngle, isMobile = false) {
         const { radiusPlanets } = this.options;
@@ -455,50 +517,104 @@ export class HoraryChartRenderer {
             allBodies.push(this.chartData.partOfFortune);
         }
 
-        // Sắp xếp các thiên thể theo kinh độ góc để xử lý va chạm
+        // Sắp xếp các thiên thể theo kinh độ góc
         const sorted = [...allBodies].sort((a, b) => a.longitude - b.longitude);
 
-        // Thuật toán so le bán kính: Khi hai thiên thể cách nhau < 7.0°, đẩy lệch bán kính
-        const deltaR = isMobile ? 42 : 35;
-        const radiiLayers = [radiusPlanets, radiusPlanets + deltaR, radiusPlanets - deltaR, radiusPlanets + deltaR * 2];
+        // Kích thước chuẩn hóa tối ưu cho mobile theo đặc tả
+        const glyphScale = isMobile ? 1.6 : 1.1;
+        const degFontSize = isMobile ? 23 : 11;
+        const subGlyphScale = isMobile ? 0.9 : 0.65;
+        const pad = isMobile ? 12 : 6;
 
-        const glyphScale = isMobile ? 1.8 : 1.1;
-        const degFontSize = isMobile ? 28 : 11;
-        const subGlyphScale = isMobile ? 1.0 : 0.65;
+        // B. Các display candidate radius (an toàn trong khoảng giữa radiusInner và radiusZodiacRing)
+        const radialLayers = isMobile
+            ? [radiusPlanets, radiusPlanets + 58, radiusPlanets - 58, radiusPlanets + 105, radiusPlanets - 85]
+            : [radiusPlanets, radiusPlanets + 40, radiusPlanets - 40, radiusPlanets + 75, radiusPlanets - 65];
+
+        // E. Tangential displacement theo phương tiếp tuyến của longitude
+        const tangentialDisplacements = isMobile
+            ? [0, 20, -20, 35, -35, 50, -50, 70, -70, 90, -90]
+            : [0, 15, -15, 30, -30, 45, -45];
+
+        // Tập hợp danh sách ứng viên sắp xếp theo khoảng cách Euclidean tới vị trí tự nhiên
+        const candidatePool = [];
+        for (const r of radialLayers) {
+            for (const d of tangentialDisplacements) {
+                const dist = Math.sqrt((r - radiusPlanets) ** 2 + d ** 2);
+                candidatePool.push({ r, d, dist });
+            }
+        }
+        candidatePool.sort((a, b) => a.dist - b.dist);
+
+        const placed = [];
 
         for (let i = 0; i < sorted.length; i++) {
             const p = sorted[i];
-            let layerIndex = 0;
 
-            for (let j = 0; j < i; j++) {
-                const prev = sorted[j];
-                const dist = Math.abs(p.longitude - prev.longitude);
-                const circDist = Math.min(dist, 360 - dist);
-                if (circDist < 7.0) {
-                    layerIndex = (sorted[j].assignedLayer + 1) % radiiLayers.length;
+            // A. True anchor: anchorPt = eclipticToSvg(body.longitude, ascAngle, radiusPlanets)
+            const anchorPt = this.eclipticToSvg(p.longitude, ascAngle, radiusPlanets);
+
+            // Vector tiếp tuyến thuận chiều hoàng đạo (tangent unit vector)
+            const tx = Math.sin(anchorPt.thetaRad);
+            const ty = Math.cos(anchorPt.thetaRad);
+
+            let chosenCandidate = null;
+            let minOverlapCandidate = null;
+            let minOverlapScore = Infinity;
+
+            for (const cand of candidatePool) {
+                const basePt = this.eclipticToSvg(p.longitude, ascAngle, cand.r);
+                const dispPt = {
+                    x: basePt.x + cand.d * tx,
+                    y: basePt.y + cand.d * ty
+                };
+                const bbox = this.computeBodyBbox(dispPt, p, isMobile, degFontSize);
+
+                // D. Kiểm tra giao nhau với TẤT CẢ bbox đã đặt
+                let totalOverlap = 0;
+                let hasCollision = false;
+
+                for (const pl of placed) {
+                    if (this.boxesIntersect(bbox, pl.bbox, pad)) {
+                        hasCollision = true;
+                        const xOverlap = Math.max(0, Math.min(bbox.maxX + pad, pl.bbox.maxX + pad) - Math.max(bbox.minX, pl.bbox.minX));
+                        const yOverlap = Math.max(0, Math.min(bbox.maxY + pad, pl.bbox.maxY + pad) - Math.max(bbox.minY, pl.bbox.minY));
+                        totalOverlap += xOverlap * yOverlap;
+                    }
+                }
+
+                if (!hasCollision) {
+                    chosenCandidate = { dispPt, bbox, ...cand };
+                    break;
+                }
+
+                const score = totalOverlap + cand.dist * 0.1;
+                if (score < minOverlapScore) {
+                    minOverlapScore = score;
+                    minOverlapCandidate = { dispPt, bbox, ...cand };
                 }
             }
-            p.assignedLayer = layerIndex;
-            const currentR = radiiLayers[layerIndex];
 
-            // Tọa độ thực trên vành và tọa độ sau khi so le
-            const realPt = this.eclipticToSvg(p.longitude, ascAngle, radiusPlanets);
-            const dispPt = this.eclipticToSvg(p.longitude, ascAngle, currentR);
+            const chosen = chosenCandidate || minOverlapCandidate;
+            placed.push({ id: p.id, bbox: chosen.bbox });
+
+            const dispPt = chosen.dispPt;
+            const isOffset = Math.hypot(dispPt.x - anchorPt.x, dispPt.y - anchorPt.y) > 4;
 
             s += `<g id="body-${p.id}" class="chart-body ${p.id}">`;
 
-            // Nếu bị đẩy lệch bán kính, vẽ đường leader line trỏ về tọa độ thực
-            if (layerIndex !== 0) {
-                s += `<line x1="${realPt.x.toFixed(2)}" y1="${realPt.y.toFixed(2)}" x2="${dispPt.x.toFixed(2)}" y2="${dispPt.y.toFixed(2)}" stroke="#94a3b8" stroke-width="${isMobile ? 1.5 : 1}" stroke-dasharray="2 2" />`;
-                s += `<circle cx="${realPt.x.toFixed(2)}" cy="${realPt.y.toFixed(2)}" r="${isMobile ? 3 : 2}" fill="#8a4b18" />`;
+            // F. Nếu display position khác anchor: luôn vẽ leader line từ true anchor đến display position
+            if (isOffset) {
+                s += `<line x1="${anchorPt.x.toFixed(2)}" y1="${anchorPt.y.toFixed(2)}" x2="${dispPt.x.toFixed(2)}" y2="${dispPt.y.toFixed(2)}" stroke="#94a3b8" stroke-width="${isMobile ? 1.5 : 1}" stroke-dasharray="2 2" />`;
+                s += `<circle cx="${anchorPt.x.toFixed(2)}" cy="${anchorPt.y.toFixed(2)}" r="${isMobile ? 3 : 2}" fill="#8a4b18" />`;
             }
 
-            // Màu và viền glyph: Pars Fortunae dùng màu nhấn riêng #b45309 để nhận diện tức thì
+            // G. Pars Fortunae dùng màu nhấn riêng #b45309 để nhận diện tức thì
             const glyphColor = p.id === 'partOfFortune' ? '#b45309' : '#1e293b';
             const glyphXml = getGlyphGroupXml(p.glyphKey, dispPt.x, dispPt.y - (isMobile ? 14 : 8), glyphScale, glyphColor, isMobile ? 2.5 : 2.2);
             s += glyphXml;
 
-            // Kèm ký hiệu nghịch hành ℞ nếu có
+            // Kèm ký hiệu nghịch hành ℞ hoặc đứng/trạm S nếu có
             if (p.isRetrograde) {
                 const rxXml = getGlyphGroupXml('retrograde', dispPt.x + (isMobile ? 24 : 16), dispPt.y - (isMobile ? 18 : 12), subGlyphScale, '#dc2626', 2.0);
                 s += rxXml;
