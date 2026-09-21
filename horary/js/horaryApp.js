@@ -1,7 +1,7 @@
 /**
  * horaryApp.js - Bộ Điều Phối Chính Ứng Dụng Horary Astrology
  * Kết nối Form nhập liệu, Lõi Thiên Văn, Lõi Quy Tắc Lilly,
- * Trình vẽ SVG 1200x1200px và Bản diễn giải tự động cho người mới.
+ * Trình vẽ SVG và Bản diễn giải học thuật.
  */
 
 import { calculateHoraryChart } from './ephemerisEngine.js';
@@ -10,106 +10,10 @@ import { scanAllAspects, scanAllAspectsTimeline } from './aspectEngine.js';
 import { scanAllReceptions } from './receptionEngine.js';
 import { generateHouseExplanation } from './houseMeanings.js';
 import { HoraryChartRenderer } from './horaryChartRenderer.js';
-import { renderGlyphSvg } from './svgGlyphs.js';
+import { resolveWallTimeToUtc, getNowInTimezone, formatOffsetMinutes, getTimezoneOffsetHours, getTimezoneOffsetForWallTime, localWallTimeToUtc } from './timeResolver.js';
+import { formatZodiacLongitude } from './traditionalRulers.js';
 
-/**
- * Phân giải offset UTC động bằng IANA TimeZone chuẩn xác (tự động xử lý DST mùa hè/đông)
- */
-export function getTimezoneOffsetHours(timeZone, dateObj) {
-    try {
-        const formatter = new Intl.DateTimeFormat('en-US', {
-            timeZone,
-            year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', minute: 'numeric', second: 'numeric',
-            hour12: false
-        });
-        const parts = formatter.formatToParts(dateObj);
-        const p = {};
-        for (const part of parts) p[part.type] = part.value;
-        let h = parseInt(p.hour, 10);
-        if (h === 24) h = 0;
-        const tzUtc = Date.UTC(parseInt(p.year, 10), parseInt(p.month, 10) - 1, parseInt(p.day, 10), h, parseInt(p.minute, 10), parseInt(p.second, 10));
-        return Math.round((tzUtc - dateObj.getTime()) / 3600000 * 100) / 100;
-    } catch (e) {
-        return 7;
-    }
-}
-
-/**
- * Giải quyết giờ dân dụng địa phương (Wall-Time) sang UTC chính xác,
- * phát hiện và xử lý triệt để bước nhảy giờ DST:
- * - NON_EXISTENT_TIME (DST Gap: giờ bị bỏ qua khi đồng hồ nhảy tới)
- * - AMBIGUOUS_TIME (DST Fold: giờ bị lặp lại khi đồng hồ lùi lại)
- * - VALID (giờ hợp lệ)
- */
-export function resolveWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh') {
-    const targetWallMs = Date.UTC(year, month - 1, day, hour, minute, second);
-    const offApprox = getTimezoneOffsetHours(timeZone, new Date(targetWallMs));
-
-    // Lấy các offset tiềm năng trong khoảng +/- 2 giờ xung quanh
-    const offsets = new Set();
-    for (let deltaH = -2; deltaH <= 2; deltaH++) {
-        const testDate = new Date(targetWallMs - (offApprox + deltaH) * 3600000);
-        offsets.add(getTimezoneOffsetHours(timeZone, testDate));
-    }
-
-    const validInstants = [];
-    for (const off of offsets) {
-        const candidateUtc = new Date(targetWallMs - off * 3600000);
-        const offCheck = getTimezoneOffsetHours(timeZone, candidateUtc);
-        if (Math.abs(offCheck - off) < 1e-4) {
-            validInstants.push({ utcDate: candidateUtc, offset: off });
-        }
-    }
-
-    if (validInstants.length === 0) {
-        // DST Gap
-        return {
-            status: 'NON_EXISTENT_TIME',
-            error: 'Giờ nhập không tồn tại trong múi giờ do bước nhảy mùa hè (DST gap).'
-        };
-    } else if (validInstants.length > 1) {
-        // DST Fold
-        return {
-            status: 'AMBIGUOUS_TIME',
-            instants: validInstants,
-            utcDate: validInstants[0].utcDate, // default to earlier
-            offset: validInstants[0].offset
-        };
-    } else {
-        return {
-            status: 'VALID',
-            utcDate: validInstants[0].utcDate,
-            offset: validInstants[0].offset
-        };
-    }
-}
-
-/**
- * Chuyển đổi giờ dân dụng địa phương (Wall-Time) sang UTC cho ephemeris
- */
-export function localWallTimeToUtc(year, month, day, hour, minute, second = 0, timeZone = 'Asia/Ho_Chi_Minh') {
-    const res = resolveWallTimeToUtc(year, month, day, hour, minute, second, timeZone);
-    if (res.status === 'NON_EXISTENT_TIME') {
-        // Tự động tịnh tiến 1 giờ qua gap
-        const shiftedMs = Date.UTC(year, month - 1, day, hour + 1, minute, second);
-        const offShift = getTimezoneOffsetHours(timeZone, new Date(shiftedMs));
-        return new Date(shiftedMs - offShift * 3600000);
-    }
-    return res.utcDate;
-}
-
-/**
- * Lấy UTC Offset chính xác cho giờ địa phương nhập liệu
- */
-export function getTimezoneOffsetForWallTime(timeZone, year, month, day, hour, minute, second = 0) {
-    const res = resolveWallTimeToUtc(year, month, day, hour, minute, second, timeZone);
-    if (res.status === 'NON_EXISTENT_TIME') {
-        const shiftedMs = Date.UTC(year, month - 1, day, hour + 1, minute, second);
-        return getTimezoneOffsetHours(timeZone, new Date(shiftedMs));
-    }
-    return res.offset;
-}
+export { getTimezoneOffsetHours, getTimezoneOffsetForWallTime, localWallTimeToUtc, resolveWallTimeToUtc, getNowInTimezone, formatOffsetMinutes };
 
 class HoraryApp {
     constructor() {
@@ -118,17 +22,18 @@ class HoraryApp {
         this.currentAspects = [];
         this.currentReceptions = [];
         this.beginnerMode = false;
+        this.chartGeneration = 0;
         this.presetLocations = [
-            { name: 'Hà Nội', lat: 21.0285, lon: 105.8542, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'TP. Hồ Chí Minh', lat: 10.8231, lon: 106.6297, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Đà Nẵng', lat: 16.0544, lon: 108.2022, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Hải Phòng', lat: 20.8449, lon: 106.6881, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Cần Thơ', lat: 10.0452, lon: 105.7469, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Nha Trang', lat: 12.2388, lon: 109.1967, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Huế', lat: 16.4637, lon: 107.5909, timeZone: 'Asia/Ho_Chi_Minh', defaultOffset: 7 },
-            { name: 'Tokyo', lat: 35.6762, lon: 139.6503, timeZone: 'Asia/Tokyo', defaultOffset: 9 },
-            { name: 'London', lat: 51.5074, lon: -0.1278, timeZone: 'Europe/London', defaultOffset: 0 },
-            { name: 'New York', lat: 40.7128, lon: -74.0060, timeZone: 'America/New_York', defaultOffset: -5 }
+            { name: 'Hà Nội', lat: 21.0285, lon: 105.8542, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'TP. Hồ Chí Minh', lat: 10.8231, lon: 106.6297, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Đà Nẵng', lat: 16.0544, lon: 108.2022, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Hải Phòng', lat: 20.8449, lon: 106.6881, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Cần Thơ', lat: 10.0452, lon: 105.7469, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Nha Trang', lat: 12.2388, lon: 109.1967, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Huế', lat: 16.4637, lon: 107.5909, timeZone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Tokyo', lat: 35.6762, lon: 139.6503, timeZone: 'Asia/Tokyo' },
+            { name: 'London', lat: 51.5074, lon: -0.1278, timeZone: 'Europe/London' },
+            { name: 'New York', lat: 40.7128, lon: -74.0060, timeZone: 'America/New_York' }
         ];
     }
 
@@ -155,48 +60,26 @@ class HoraryApp {
         this.calculateAndRender();
     }
 
+    /**
+     * Lấy giờ hiện tại chuẩn theo múi giờ IANA của địa điểm đang chọn
+     * (Không lấy giờ máy khách khi xem thành phố khác)
+     */
     populateDefaultDateTime() {
-        const now = new Date();
+        const tzSelect = document.getElementById('select-timezone');
+        const timeZone = tzSelect?.value || 'Asia/Ho_Chi_Minh';
+        const nowInTz = getNowInTimezone(timeZone);
+
         const dateInput = document.getElementById('input-date');
         const hourInput = document.getElementById('input-hour');
         const minuteInput = document.getElementById('input-minute');
         const secondInput = document.getElementById('input-second');
 
         if (dateInput) {
-            const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            dateInput.value = `${y}-${m}-${d}`;
+            dateInput.value = `${nowInTz.year}-${String(nowInTz.month).padStart(2, '0')}-${String(nowInTz.day).padStart(2, '0')}`;
         }
-        if (hourInput) hourInput.value = now.getHours();
-        if (minuteInput) minuteInput.value = now.getMinutes();
-        if (secondInput) secondInput.value = now.getSeconds();
-
-        // Tự động phân giải offset theo thành phố đang chọn
-        const citySelect = document.getElementById('select-city');
-        const cityName = citySelect ? citySelect.value : 'Hà Nội';
-        const city = this.presetLocations.find(c => c.name === cityName);
-        if (city) {
-            this.updateOffsetForCity(city);
-        }
-    }
-
-    updateOffsetForCity(city) {
-        if (!city || !city.timeZone) return;
-        const dateVal = document.getElementById('input-date')?.value;
-        if (!dateVal) return;
-        const [y, m, d] = dateVal.split('-').map(Number);
-        const h = parseInt(document.getElementById('input-hour')?.value || 12, 10);
-        const min = parseInt(document.getElementById('input-minute')?.value || 0, 10);
-        const sec = parseInt(document.getElementById('input-second')?.value || 0, 10);
-
-        const res = resolveWallTimeToUtc(y, m, d, h, min, sec, city.timeZone);
-        if (res.status === 'NON_EXISTENT_TIME') {
-            console.warn(`[DST Gap] ${city.name} ${y}-${m}-${d} ${h}:${min} không tồn tại trong giờ dân sự.`);
-        }
-        const offset = getTimezoneOffsetForWallTime(city.timeZone, y, m, d, h, min, sec);
-        const offsetInput = document.getElementById('input-offset');
-        if (offsetInput) offsetInput.value = offset;
+        if (hourInput) hourInput.value = nowInTz.hour;
+        if (minuteInput) minuteInput.value = nowInTz.minute;
+        if (secondInput) secondInput.value = nowInTz.second;
     }
 
     bindEvents() {
@@ -215,34 +98,21 @@ class HoraryApp {
             });
         }
 
-        // Chọn Thành Phố Nhanh (với múi giờ IANA động)
+        // Chọn Thành Phố Nhanh (tự động cập nhật vĩ độ, kinh độ và timezone IANA)
         const selectCity = document.getElementById('select-city');
         if (selectCity) {
             selectCity.addEventListener('change', (e) => {
                 const city = this.presetLocations.find(c => c.name === e.target.value);
                 if (city) {
-                    document.getElementById('input-lat').value = city.lat;
-                    document.getElementById('input-lon').value = city.lon;
-                    this.updateOffsetForCity(city);
+                    const latInput = document.getElementById('input-lat');
+                    const lonInput = document.getElementById('input-lon');
+                    const tzSelect = document.getElementById('select-timezone');
+                    if (latInput) latInput.value = city.lat;
+                    if (lonInput) lonInput.value = city.lon;
+                    if (tzSelect && city.timeZone) tzSelect.value = city.timeZone;
                 }
             });
         }
-
-        // Thay đổi ngày / giờ / phút -> cập nhật lại offset DST động nếu không phải custom
-        const updateOffsetCallback = () => {
-            const cityName = selectCity ? selectCity.value : 'Hà Nội';
-            const city = this.presetLocations.find(c => c.name === cityName);
-            if (city) this.updateOffsetForCity(city);
-        };
-
-        const dateInput = document.getElementById('input-date');
-        if (dateInput) dateInput.addEventListener('change', updateOffsetCallback);
-
-        const hourInput = document.getElementById('input-hour');
-        if (hourInput) hourInput.addEventListener('change', updateOffsetCallback);
-
-        const minuteInput = document.getElementById('input-minute');
-        if (minuteInput) minuteInput.addEventListener('change', updateOffsetCallback);
 
         // Nút Lấy GPS Trình Duyệt
         const btnGps = document.getElementById('btn-gps');
@@ -281,11 +151,11 @@ class HoraryApp {
             btnAspects.addEventListener('click', () => {
                 const isShown = this.renderer.toggleAspectLines();
                 btnAspects.classList.toggle('active', isShown);
-                btnAspects.innerText = isShown ? 'Ẩn Đường Góc Chiếu' : 'Hiện Đường Góc Chiếu';
+                btnAspects.innerText = isShown ? 'Ẩn Góc Chiếu' : 'Hiện Góc Chiếu';
             });
         }
 
-        // Nút Tải Ảnh Lá Số PNG
+        // Nút Tải Ảnh Lá Số PNG (Chỉ sinh PNG theo yêu cầu)
         const btnExport = document.getElementById('btn-export-png');
         if (btnExport) {
             btnExport.addEventListener('click', async () => {
@@ -303,7 +173,58 @@ class HoraryApp {
         }
     }
 
-    async calculateAndRender() {
+    /**
+     * Hiển thị Modal thông báo chuyển giờ DST hoặc cho phép chọn giờ trùng lặp (Fold)
+     */
+    showDstModal({ title, message, candidates = [], type = 'info', onSelect }) {
+        const modal = document.getElementById('dst-modal');
+        const titleEl = document.getElementById('dst-modal-title');
+        const bodyEl = document.getElementById('dst-modal-body');
+        const actionsEl = document.getElementById('dst-modal-actions');
+        if (!modal) {
+            alert(message);
+            return;
+        }
+
+        titleEl.innerText = title;
+        bodyEl.innerHTML = `<p style="margin-bottom:12px; font-size:0.95rem; color:#1e293b;">${message}</p>`;
+        actionsEl.innerHTML = '';
+
+        if (type === 'choice' && candidates.length > 0) {
+            candidates.forEach((cand, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-primary';
+                btn.style.margin = '4px 0';
+                btn.style.textAlign = 'left';
+                btn.innerHTML = `<strong>${cand.label}</strong><br><small style="opacity:0.85;">UTC: ${cand.formattedUtc} (${cand.formattedOffset})</small>`;
+                btn.onclick = () => {
+                    modal.style.display = 'none';
+                    if (onSelect) onSelect(idx);
+                };
+                actionsEl.appendChild(btn);
+            });
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn btn-secondary';
+            cancelBtn.style.marginTop = '8px';
+            cancelBtn.innerText = 'Hủy bỏ';
+            cancelBtn.onclick = () => { modal.style.display = 'none'; };
+            actionsEl.appendChild(cancelBtn);
+        } else {
+            const okBtn = document.createElement('button');
+            okBtn.className = 'btn btn-primary';
+            okBtn.innerText = 'Đã Hiểu';
+            okBtn.onclick = () => { modal.style.display = 'none'; };
+            actionsEl.appendChild(okBtn);
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * Tính toán lá số và kết xuất giao diện.
+     * Áp dụng chống Race Condition thông qua generation token (this.chartGeneration++).
+     */
+    async calculateAndRender(selectedCandidateIndex = undefined) {
         const dateVal = document.getElementById('input-date')?.value || new Date().toISOString().slice(0, 10);
         const [yearStr, monthStr, dayStr] = dateVal.split('-');
         const year = parseInt(yearStr, 10);
@@ -316,40 +237,92 @@ class HoraryApp {
 
         const latitude = parseFloat(document.getElementById('input-lat')?.value || 21.0285);
         const longitude = parseFloat(document.getElementById('input-lon')?.value || 105.8542);
-        const utcOffset = parseFloat(document.getElementById('input-offset')?.value || 7);
+        const timeZone = document.getElementById('select-timezone')?.value || 'Asia/Ho_Chi_Minh';
+        const calendarMode = document.getElementById('select-calendar')?.value || 'GREGORIAN';
+        const nodeType = document.getElementById('select-node-type')?.value || 'MEAN';
+
         const citySelect = document.getElementById('select-city');
         const locationName = citySelect && citySelect.value !== 'custom' ? citySelect.value : 'Tọa độ tùy chỉnh';
 
-        // 1. Tính toán thiên văn & Hệ nhà Regiomontanus chuẩn
-        this.currentChart = await calculateHoraryChart({
-            year, month, day, hour, minute, second,
-            latitude, longitude, utcOffset, locationName
+        // Tăng generation token để phòng chống triệt để race condition
+        this.chartGeneration = (this.chartGeneration || 0) + 1;
+        const currentGen = this.chartGeneration;
+
+        // Phân giải giờ dân dụng và kiểm tra DST
+        const res = resolveWallTimeToUtc({
+            year, month, day, hour, minute, second, timeZone
         });
 
-        // 2. Tính phẩm giá bản chất cho các hành tinh
-        for (const p of this.currentChart.planets) {
-            p.dignity = calculateEssentialDignities(p.id, p.longitude, this.currentChart.isDayChart);
+        if (res.status === 'NON_EXISTENT_TIME') {
+            this.showDstModal({
+                title: 'Giờ Không Tồn Tại (DST Gap)',
+                message: 'Giờ này không tồn tại tại địa điểm đã chọn do chuyển giờ DST. Vui lòng chọn một mốc giờ khác.',
+                type: 'error'
+            });
+            return;
         }
 
-        // 3. TÁCH RỜI LUỒNG: Quét nhanh các góc chiếu tức thời tại t0 để HIỂN THỊ NGAY LẬP TỨC
-        this.currentAspects = scanAllAspects(this.currentChart.planets);
-
-        // 4. Quét các cặp tiếp nhận (Receptions) có đối chiếu với Aspects tức thời
-        this.currentReceptions = scanAllReceptions(this.currentChart.planets, this.currentChart.isDayChart, this.currentAspects);
-
-        // 5. Kết xuất ngay lá số SVG/PNG và các bảng thông tin mà không chờ giải nghiệm tương lai
-        await this.renderer.render(this.currentChart, this.currentAspects);
-        this.renderDetailedReading();
-
-        // 6. GIẢI NGHIỆM TƯƠNG LAI ASYNC: Chạy solver ephemeris 14 ngày nền để cập nhật perfection & refranation
-        scanAllAspectsTimeline(this.currentChart.planets, this.currentChart.julianDayUT, { inOrbOnly: true })
-            .then(timelineAspects => {
-                this.currentAspects = timelineAspects;
-                this.renderAspectsSection();
-            })
-            .catch(err => {
-                console.warn('Lỗi giải nghiệm tương lai:', err);
+        if (res.status === 'AMBIGUOUS_TIME' && selectedCandidateIndex === undefined) {
+            this.showDstModal({
+                title: 'Thời Điểm Trùng Lặp (DST Fold)',
+                message: `Thời điểm ${hour}:${String(minute).padStart(2, '0')} xuất hiện hai lần do vặn lùi đồng hồ. Vui lòng chọn một thời điểm cụ thể:`,
+                candidates: res.candidates,
+                type: 'choice',
+                onSelect: (idx) => {
+                    this.calculateAndRender(idx);
+                }
             });
+            return;
+        }
+
+        let chosenUtcInstant = null;
+        if (res.status === 'AMBIGUOUS_TIME') {
+            chosenUtcInstant = res.candidates[selectedCandidateIndex].utcInstant;
+        } else {
+            chosenUtcInstant = res.utcInstant;
+        }
+
+        try {
+            // 1. Tính toán thiên văn & Hệ nhà Regiomontanus chuẩn
+            const chart = await calculateHoraryChart({
+                year, month, day, hour, minute, second,
+                latitude, longitude, timeZone,
+                utcInstant: chosenUtcInstant,
+                locationName, calendarMode, nodeType
+            });
+
+            if (currentGen !== this.chartGeneration) return;
+            this.currentChart = chart;
+
+            // 2. Tính phẩm giá bản chất cho các hành tinh
+            for (const p of this.currentChart.planets) {
+                p.dignity = calculateEssentialDignities(p.id, p.longitude, this.currentChart.isDayChart);
+            }
+
+            // 3. Quét nhanh các góc chiếu tức thời tại t0 để vẽ aspect lines
+            this.currentAspects = scanAllAspects(this.currentChart.planets);
+
+            // 4. Quét các cặp tiếp nhận
+            this.currentReceptions = scanAllReceptions(this.currentChart.planets, this.currentChart.isDayChart, this.currentAspects);
+
+            // 5. Kết xuất SVG trực tiếp vào DOM chính
+            await this.renderer.render(this.currentChart, this.currentAspects);
+            this.renderDetailedReading();
+
+            // 6. Tách solver nặng chạy nền không chặn luồng chính
+            scanAllAspectsTimeline(this.currentChart.planets, this.currentChart.julianDayUT, { inOrbOnly: true })
+                .then(timelineAspects => {
+                    if (currentGen !== this.chartGeneration) return;
+                    this.currentAspects = timelineAspects;
+                    this.renderAspectsSection();
+                })
+                .catch(err => {
+                    console.warn('Lỗi giải timeline tương lai:', err);
+                });
+        } catch (errChart) {
+            console.error('Lỗi tính toán lá số:', errChart);
+            alert('Lỗi tính toán lá số: ' + errChart.message);
+        }
     }
 
     renderDetailedReading() {
@@ -373,7 +346,7 @@ class HoraryApp {
                 <div class="info-item"><span class="lbl">Thời gian địa phương:</span> <strong>${c.localTimeFormatted} (${c.utcOffsetFormatted})</strong></div>
                 <div class="info-item"><span class="lbl">Địa điểm:</span> <strong>${c.location.name} (${c.location.latFormatted}, ${c.location.lonFormatted})</strong></div>
                 <div class="info-item"><span class="lbl">Hệ hoàng đạo:</span> <strong>Tropical (Nhiệt Đới)</strong></div>
-                <div class="info-item"><span class="lbl">Hệ thống nhà:</span> <strong>Regiomontanus (Hệ chuẩn Horary)</strong></div>
+                <div class="info-item"><span class="lbl">Hệ thống nhà:</span> <strong>Regiomontanus — cấu hình truyền thống William Lilly</strong></div>
                 <div class="info-item"><span class="lbl">Loại lá số:</span> <strong>${c.isDayChart ? 'Ban Ngày (Day Chart)' : 'Ban Đêm (Night Chart)'}</strong> ${c.sunAltFormatted ? `<small style="color:#475569;">(${c.sunAltFormatted} so với chân trời${c.isBorderlineSect ? ' — Sát đường chân trời' : ''})</small>` : ''}</div>
                 ${c.partOfFortune ? `<div class="info-item"><span class="lbl">Điểm May Mắn (Pars Fortunae):</span> <strong>${c.partOfFortune.fullDisplay}</strong> (Nhà ${c.partOfFortune.houseNumber} — Lilly CA p.143)</div>` : ''}
                 <div class="info-item"><span class="lbl">Nguồn Ephemeris:</span> <strong class="badge-source">${c.ephemerisSource}</strong></div>
@@ -407,34 +380,25 @@ class HoraryApp {
                             <tbody>
         `;
 
+        const signRulers = {
+            aries: 'mars', taurus: 'venus', gemini: 'mercury', cancer: 'moon',
+            leo: 'sun', virgo: 'mercury', libra: 'venus', scorpio: 'mars',
+            sagittarius: 'jupiter', capricorn: 'saturn', aquarius: 'saturn', pisces: 'jupiter'
+        };
+
         for (let i = 0; i < 12; i++) {
             const houseNum = i + 1;
             const cuspLon = cusps[i];
-            const signIdx = Math.floor(cuspLon / 30) % 12;
-            const deg = Math.floor(cuspLon % 30);
-            const min = Math.round((cuspLon % 1) * 60);
+            const dms = formatZodiacLongitude(cuspLon);
+            const signId = dms.signId;
+            const cuspFormatted = dms.formatted;
 
-            const signList = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
-            const signId = signList[signIdx];
-
-            const signRulers = {
-                aries: 'mars', taurus: 'venus', gemini: 'mercury', cancer: 'moon',
-                leo: 'sun', virgo: 'mercury', libra: 'venus', scorpio: 'mars',
-                sagittarius: 'jupiter', capricorn: 'saturn', aquarius: 'saturn', pisces: 'jupiter'
-            };
             const rulerId = signRulers[signId];
             const rulerPlanet = this.currentChart.planets.find(p => p.id === rulerId);
-
-            const signNames = {
-                aries: 'Bạch Dương', taurus: 'Kim Ngưu', gemini: 'Song Tử', cancer: 'Cự Giải',
-                leo: 'Sư Tử', virgo: 'Xử Nữ', libra: 'Thiên Bình', scorpio: 'Bọ Cạp',
-                sagittarius: 'Nhân Mã', capricorn: 'Ma Kết', aquarius: 'Bảo Bình', pisces: 'Song Ngư'
-            };
 
             const isAngular = [1, 4, 7, 10].includes(houseNum);
             const rowClass = isAngular ? 'row-angular' : '';
 
-            const cuspFormatted = `${deg}°${String(min).padStart(2, '0')}′`;
             const explanation = generateHouseExplanation(houseNum, signId, rulerId, cuspFormatted, rulerPlanet);
 
             // Quy tắc 5° Lilly: Cung cấp ảnh hưởng cuspInfluence mà không ghi đè houseNumber gốc
@@ -450,7 +414,7 @@ class HoraryApp {
                     </td>
                     <td>
                         ${renderGlyphSvg(signId, 16)}
-                        <strong>${deg}°${String(min).padStart(2, '0')}′</strong> ${signNames[signId]}
+                        <strong>${cuspFormatted}</strong> ${dms.signNameVi}
                     </td>
                     <td>
                         ${renderGlyphSvg(rulerPlanet ? rulerPlanet.glyphKey : rulerId, 16)}
@@ -701,12 +665,16 @@ class HoraryApp {
         const c = this.currentChart;
         const rawJson = JSON.stringify({
             julianDayUT: c.julianDayUT,
+            calendarMode: c.calendarMode,
+            timeZone: c.timeZone,
             ephemerisSource: c.ephemerisSource,
             localTime: c.localTimeFormatted,
+            utcOffset: c.utcOffsetFormatted,
             coordinates: c.location,
             sunAltitude: c.sunAltitude,
             isDayChart: c.isDayChart,
             houses: c.houses,
+            partOfFortune: c.partOfFortune,
             planets: c.planets.map(p => ({
                 id: p.id,
                 name: p.nameVi,

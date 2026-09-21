@@ -284,8 +284,9 @@ export function calculateAspectBetween(pA, pB, options = {}) {
         }
     }
 
-    const orbDeg = Math.floor(minError);
-    const orbMin = Math.round((minError - orbDeg) * 60);
+    let orbDeg = Math.floor(minError);
+    let orbMin = Math.floor((minError - orbDeg) * 60);
+    if (orbMin >= 60) orbMin = 59;
     const orbFormatted = `${orbDeg}°${String(orbMin).padStart(2, '0')}′`;
 
     return {

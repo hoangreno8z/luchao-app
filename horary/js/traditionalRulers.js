@@ -200,35 +200,71 @@ export const PLANETS_INFO = [
     { id: 'mars', nameVi: 'Hỏa Tinh', nameEn: 'Mars', glyphKey: 'mars', speedStationaryThreshold: 0.005 },
     { id: 'jupiter', nameVi: 'Mộc Tinh', nameEn: 'Jupiter', glyphKey: 'jupiter', speedStationaryThreshold: 0.002 },
     { id: 'saturn', nameVi: 'Thổ Tinh', nameEn: 'Saturn', glyphKey: 'saturn', speedStationaryThreshold: 0.001 },
-    { id: 'northNode', nameVi: 'Bắc Giao Điểm (La Hầu)', nameEn: 'North Node', glyphKey: 'northNode', isNode: true },
-    { id: 'southNode', nameVi: 'Nam Giao Điểm (Kế Đô)', nameEn: 'South Node', glyphKey: 'southNode', isNode: true }
+    { id: 'northNode', nameVi: 'Bắc Giao Điểm (Đầu Rồng)', nameEn: "North Node / Dragon's Head", aliasVi: 'La Hầu', glyphKey: 'northNode', isNode: true },
+    { id: 'southNode', nameVi: 'Nam Giao Điểm (Đuôi Rồng)', nameEn: "South Node / Dragon's Tail", aliasVi: 'Kế Đô', glyphKey: 'southNode', isNode: true }
 ];
 
 /**
- * Định dạng kinh độ thành độ, phút, giây cung theo chuẩn thiên văn duy nhất
- * Đảm bảo độ [0, 29], phút [0, 59], giây [0, 59], triệt tiêu 100% lỗi 29°60′ hay 30°
- * @param {number} longitude - Kinh độ hoàng đạo [0, 360)
- * @returns {object} { signIndex, deg, min, sec, formatted, formattedWithSec }
+ * Chuẩn hóa góc kinh độ hoàng đạo về đoạn [0, 360)
  */
-export function formatZodiacDms(longitude) {
-    let norm = (longitude % 360 + 360) % 360;
-    // Làm tròn tới arcsecond gần nhất trên vòng tròn 360° (1,296,000 arcseconds)
-    const totalSecCircle = (Math.round(norm * 3600) % 1296000 + 1296000) % 1296000;
-    const signIndex = Math.floor(totalSecCircle / 108000) % 12;
-    const secInSign = totalSecCircle % 108000;
+export function normalize360(deg) {
+    if (!Number.isFinite(deg)) return 0;
+    return (deg % 360 + 360) % 360;
+}
 
-    const deg = Math.floor(secInSign / 3600);
-    const min = Math.floor((secInSign % 3600) / 60);
-    const sec = secInSign % 60;
+/**
+ * Định dạng kinh độ thành độ, phút, giây cung theo chuẩn thiên văn duy nhất (SINGLE FORMATTER API).
+ * Tách bạch tuyệt đối giữa SEMANTIC (Cung logic theo tọa độ raw) và DISPLAY (Chuỗi hiển thị).
+ * Tuyệt đối không sinh 29°60′, 30°00′, 60′ hay 60″.
+ * @param {number} rawLongitude - Kinh độ hoàng đạo thực [0, 360)
+ * @param {object} options - Tùy chọn định dạng
+ * @returns {object} { semanticSignIndex, signIndex, deg, min, sec, degree: deg, minute: min, second: sec, formatted, formattedWithSec, fullDisplay }
+ */
+export function formatZodiacLongitude(rawLongitude, options = {}) {
+    const norm = normalize360(rawLongitude);
+    const semanticSignIndex = Math.floor(norm / 30) % 12;
+    const sign = ZODIAC_SIGNS[semanticSignIndex];
+
+    const degreeInSign = norm - semanticSignIndex * 30; // [0, 30)
+    let deg = Math.floor(degreeInSign);
+    if (deg >= 30) deg = 29; // Phòng vệ cực hạn không bao giờ vượt 29°
+    const remDeg = Math.max(0, degreeInSign - deg);
+
+    let min = Math.floor(remDeg * 60);
+    if (min >= 60) min = 59; // Phòng vệ không bao giờ có 60′
+
+    let sec = Math.floor((remDeg * 3600) % 60);
+    if (sec >= 60) sec = 59; // Phòng vệ không bao giờ có 60″
+
+    const minStr = String(min).padStart(2, '0');
+    const secStr = String(sec).padStart(2, '0');
+    const formatted = `${deg}°${minStr}′`;
+    const formattedWithSec = `${deg}°${minStr}′${secStr}″`;
+    const fullDisplay = `${formatted} ${sign.nameVi}`;
 
     return {
-        signIndex,
+        semanticSignIndex,
+        signIndex: semanticSignIndex,
+        signId: sign.id,
+        signNameVi: sign.nameVi,
         deg,
         min,
         sec,
-        formatted: `${deg}°${String(min).padStart(2, '0')}′`,
-        formattedWithSec: `${deg}°${String(min).padStart(2, '0')}′${String(sec).padStart(2, '0')}″`
+        degree: deg,
+        minute: min,
+        second: sec,
+        degreeDecimal: degreeInSign,
+        formatted,
+        formattedWithSec,
+        fullDisplay
     };
+}
+
+/**
+ * Alias tương thích ngược cho formatZodiacLongitude
+ */
+export function formatZodiacDms(longitude) {
+    return formatZodiacLongitude(longitude);
 }
 
 /**
@@ -239,27 +275,26 @@ export function formatZodiacDms(longitude) {
  * @returns {object} Thông tin chi tiết vị trí cung
  */
 export function getZodiacPosition(longitude) {
-    let norm = (longitude % 360 + 360) % 360;
-    const dms = formatZodiacDms(norm);
-    const sign = ZODIAC_SIGNS[dms.signIndex];
-    const degreeDecimal = norm - dms.signIndex * 30;
+    const norm = normalize360(longitude);
+    const dms = formatZodiacLongitude(norm);
+    const sign = ZODIAC_SIGNS[dms.semanticSignIndex];
 
     return {
         longitude: norm,
-        signIndex: dms.signIndex,
+        signIndex: dms.semanticSignIndex,
         signId: sign.id,
         signNameVi: sign.nameVi,
         signNameEn: sign.nameEn,
         signGlyphKey: sign.glyphKey,
         rulerId: sign.rulerId,
         rulerNameVi: sign.rulerNameVi,
-        degreeDecimal,
+        degreeDecimal: dms.degreeDecimal,
         degree: dms.deg,
         minute: dms.min,
         second: dms.sec,
         formatted: dms.formatted,
         formattedWithSec: dms.formattedWithSec,
-        fullDisplay: `${dms.formatted} ${sign.nameVi}`
+        fullDisplay: dms.fullDisplay
     };
 }
 

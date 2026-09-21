@@ -70,12 +70,11 @@ async function runTests() {
         assert.strictEqual(p.minute, 59);
     });
 
-    test('29.9999° làm tròn chuẩn xác sang 0° Kim Ngưu, tuyệt đối không tạo lỗi 29°60′ hay 30° Bạch Dương', () => {
+    test('29.9999° giữ nguyên ngữ nghĩa Bạch Dương (29°59′59″), tuyệt đối không tạo lỗi 29°60′ hay 30° Bạch Dương', () => {
         const p = getZodiacPosition(29.9999);
-        assert.strictEqual(p.signId, 'taurus');
-        assert.strictEqual(p.degree, 0);
-        assert.strictEqual(p.minute, 0);
-        assert.strictEqual(p.second, 0);
+        assert.strictEqual(p.signId, 'aries');
+        assert.strictEqual(p.degree, 29);
+        assert.strictEqual(p.minute, 59);
     });
 
     test('30.0° bước sang 0° Kim Ngưu (Taurus)', () => {

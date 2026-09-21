@@ -36,23 +36,23 @@
         <!-- Form Điều Khiển -->
         <section class="control-panel">
             <div class="form-grid">
-                <div class="form-group">
+                <div class="form-group col-full">
                     <label for="input-date">Ngày lập lá số</label>
                     <input type="date" id="input-date">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-3">
                     <label for="input-hour">Giờ (0 - 23)</label>
                     <input type="number" id="input-hour" min="0" max="23" value="12">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-3">
                     <label for="input-minute">Phút (0 - 59)</label>
                     <input type="number" id="input-minute" min="0" max="59" value="0">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-3">
                     <label for="input-second">Giây (0 - 59)</label>
                     <input type="number" id="input-second" min="0" max="59" value="0">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-full">
                     <label for="select-city">Địa điểm / Thành phố</label>
                     <select id="select-city">
                         <option value="Hà Nội" selected>Hà Nội (21.03° N, 105.85° E)</option>
@@ -68,29 +68,66 @@
                         <option value="custom">Tùy chỉnh tọa độ thủ công</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-2">
                     <label for="input-lat">Vĩ độ (Latitude)</label>
                     <input type="number" id="input-lat" step="0.0001" value="21.0285">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-2">
                     <label for="input-lon">Kinh độ (Longitude)</label>
                     <input type="number" id="input-lon" step="0.0001" value="105.8542">
                 </div>
-                <div class="form-group">
-                    <label for="input-offset">Múi giờ (UTC Offset)</label>
-                    <input type="number" id="input-offset" step="0.5" value="7">
+                <div class="form-group col-full">
+                    <label for="select-timezone">Múi giờ IANA (Timezone)</label>
+                    <select id="select-timezone">
+                        <option value="Asia/Ho_Chi_Minh" selected>Asia/Ho_Chi_Minh (Việt Nam, UTC+07:00)</option>
+                        <option value="Asia/Tokyo">Asia/Tokyo (Nhật Bản, UTC+09:00)</option>
+                        <option value="Asia/Bangkok">Asia/Bangkok (Thái Lan, UTC+07:00)</option>
+                        <option value="Asia/Singapore">Asia/Singapore (Singapore, UTC+08:00)</option>
+                        <option value="Europe/London">Europe/London (Anh Quốc, GMT/BST)</option>
+                        <option value="Europe/Paris">Europe/Paris (Pháp, CET/CEST)</option>
+                        <option value="America/New_York">America/New_York (Mỹ - Eastern, EST/EDT)</option>
+                        <option value="America/Chicago">America/Chicago (Mỹ - Central, CST/CDT)</option>
+                        <option value="America/Los_Angeles">America/Los_Angeles (Mỹ - Pacific, PST/PDT)</option>
+                        <option value="Australia/Sydney">Australia/Sydney (Úc - AEST/AEDT)</option>
+                        <option value="UTC">UTC (Giờ phối hợp quốc tế)</option>
+                    </select>
+                </div>
+                <div class="form-group col-2">
+                    <label for="select-calendar">Chế độ lịch (Calendar)</label>
+                    <select id="select-calendar">
+                        <option value="GREGORIAN" selected>Gregorian (Hiện đại)</option>
+                        <option value="JULIAN">Julian (Lịch cổ 1647)</option>
+                    </select>
+                </div>
+                <div class="form-group col-2">
+                    <label for="select-node-type">Giao điểm Mặt Trăng (Node)</label>
+                    <select id="select-node-type">
+                        <option value="MEAN" selected>Mean Node (Chuẩn Lilly)</option>
+                        <option value="TRUE">True Node (Thực tế)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button id="btn-calculate" class="btn btn-primary">Lập Lá Số</button>
+                <button id="btn-calculate" class="btn btn-primary btn-calc-main">LẬP LÁ SỐ</button>
                 <button id="btn-now" class="btn btn-secondary">Lấy Giờ Hiện Tại</button>
                 <button id="btn-gps" class="btn btn-secondary">Định Vị GPS</button>
-                <button id="btn-beginner-mode" class="btn btn-toggle">Bật Chế Độ Người Mới</button>
-                <button id="btn-toggle-aspects" class="btn btn-toggle active">Ẩn/Hiện Đường Góc Chiếu</button>
+                <button id="btn-toggle-aspects" class="btn btn-toggle active">Ẩn/Hiện Góc Chiếu</button>
                 <button id="btn-export-png" class="btn btn-export">Tải Ảnh Lá Số PNG</button>
+                <button id="btn-beginner-mode" class="btn btn-toggle">Bật Chế Độ Người Mới</button>
             </div>
         </section>
+
+        <!-- Hộp Thoại Chuyển Giờ DST (Modal) -->
+        <div id="dst-modal" class="modal-backdrop" style="display:none;">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h4 id="dst-modal-title">Thông Báo Chuyển Giờ (DST)</h4>
+                </div>
+                <div id="dst-modal-body" class="modal-body"></div>
+                <div id="dst-modal-actions" class="modal-actions"></div>
+            </div>
+        </div>
 
         <!-- Thông Tin Lá Số -->
         <div id="chart-info-panel"></div>

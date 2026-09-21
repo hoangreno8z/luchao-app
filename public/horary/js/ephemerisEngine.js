@@ -14,7 +14,8 @@
  * 9. Quy tắc 5° Đỉnh Nhà (Lilly CA pp.33, 151): Giữ nguyên houseNumber hình học, cung cấp cuspInfluence.
  */
 
-import { getZodiacPosition, formatZodiacDms, PLANETS_INFO } from './traditionalRulers.js';
+import { getZodiacPosition, formatZodiacLongitude, PLANETS_INFO, normalize360 } from './traditionalRulers.js';
+import { getJulianDayFromUtcInstant, formatOffsetMinutes, resolveWallTimeToUtc } from './timeResolver.js';
 
 let sweInstance = null;
 let currentEphemerisSource = 'Chưa khởi tạo';
@@ -154,26 +155,27 @@ export function getJulianDayUT(year, month, day, hour, minute, second, utcOffset
  * @returns {{ houseNumber: number, exactHousePos: number } | null}
  */
 export function getSwissHousePosition(swe, armc, geolat, eps, lon, lat = 0) {
-    if (swe && swe.raw && swe.raw._swe_house_pos) {
-        const raw = swe.raw;
-        const swe_house_pos = raw.cwrap('swe_house_pos', 'number', ['number', 'number', 'number', 'number', 'number', 'number']);
-        const xpinPtr = raw._malloc(16);
-        const serrPtr = raw._malloc(256);
-        try {
-            raw.setValue(xpinPtr, lon, 'double');
-            raw.setValue(xpinPtr + 8, lat, 'double');
-            const hpos = swe_house_pos(armc, geolat, eps, 82 /* 'R' */, xpinPtr, serrPtr);
-            let hNum = Math.floor(hpos);
-            hNum = ((hNum - 1) % 12 + 12) % 12 + 1;
-            return { houseNumber: hNum, exactHousePos: hpos };
-        } catch (e) {
-            console.warn('Lỗi gọi swe_house_pos:', e);
-        } finally {
-            raw._free(xpinPtr);
-            raw._free(serrPtr);
-        }
+    if (!swe || !swe.raw || !swe.raw._swe_house_pos) {
+        throw new Error('Swiss Ephemeris _swe_house_pos không khả dụng');
     }
-    return null;
+    const raw = swe.raw;
+    const swe_house_pos = raw.cwrap('swe_house_pos', 'number', ['number', 'number', 'number', 'number', 'number', 'number']);
+    const xpinPtr = raw._malloc(16);
+    const serrPtr = raw._malloc(256);
+    try {
+        raw.setValue(xpinPtr, lon, 'double');
+        raw.setValue(xpinPtr + 8, lat, 'double');
+        const hpos = swe_house_pos(armc, geolat, eps, 82 /* 'R' */, xpinPtr, serrPtr);
+        if (!Number.isFinite(hpos) || hpos < 1 || hpos >= 13) {
+            throw new Error(`Giá trị Swiss mundane house position không hợp lệ: ${hpos}`);
+        }
+        let hNum = Math.floor(hpos);
+        hNum = ((hNum - 1) % 12 + 12) % 12 + 1;
+        return { houseNumber: hNum, exactHousePos: hpos };
+    } finally {
+        raw._free(xpinPtr);
+        raw._free(serrPtr);
+    }
 }
 
 /**
@@ -295,16 +297,96 @@ export async function calcBodyPositionAtJD(bodyId, jdUT, options = {}) {
  * Áp dụng Transactional Safety: Nếu bất kỳ phần tử nào khuyết thiếu, throw Error và dừng hẳn.
  */
 export async function calculateHoraryChart(params) {
-    const {
-        year, month, day,
-        hour = 0, minute = 0, second = 0,
-        latitude = 21.0285, longitude = 105.8542,
-        utcOffset = 7, locationName = 'Hà Nội',
-        calendar = 'GREGORIAN',
-        nodeType = 'MEAN'
-    } = params;
+    const effectiveCalendar = (params.calendarMode || params.calendar || 'GREGORIAN').toUpperCase();
+    const effectiveNodeType = (params.nodeType || 'MEAN').toUpperCase();
+    if (!['GREGORIAN', 'JULIAN'].includes(effectiveCalendar)) {
+        throw new Error(`Calendar mode không hợp lệ: ${effectiveCalendar}. Phải là GREGORIAN hoặc JULIAN.`);
+    }
+    if (!['MEAN', 'TRUE'].includes(effectiveNodeType)) {
+        throw new Error(`Node type không hợp lệ: ${effectiveNodeType}. Phải là MEAN hoặc TRUE.`);
+    }
 
-    const jdUT = getJulianDayUT(year, month, day, hour, minute, second, utcOffset, calendar);
+    const y = parseInt(params.year, 10);
+    const m = parseInt(params.month, 10);
+    const d = parseInt(params.day, 10);
+    const h = parseInt(params.hour !== undefined ? params.hour : 0, 10);
+    const min = parseInt(params.minute !== undefined ? params.minute : 0, 10);
+    const s = parseInt(params.second !== undefined ? params.second : 0, 10);
+
+    if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) {
+        throw new Error(`Ngày tháng không hợp lệ: year=${params.year}, month=${params.month}, day=${params.day}`);
+    }
+    if (m < 1 || m > 12) {
+        throw new Error(`Tháng không hợp lệ: ${m}. Phải từ 1 đến 12.`);
+    }
+    if (d < 1 || d > 31) {
+        throw new Error(`Ngày không hợp lệ: ${d}.`);
+    }
+    if (h < 0 || h > 23 || min < 0 || min > 59 || s < 0 || s > 59) {
+        throw new Error(`Giờ phút giây không hợp lệ: ${h}:${min}:${s}.`);
+    }
+
+    const lat = parseFloat(params.latitude !== undefined ? params.latitude : 21.0285);
+    const lon = parseFloat(params.longitude !== undefined ? params.longitude : 105.8542);
+    if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
+        throw new Error(`Vĩ độ (latitude) không hợp lệ: ${lat}. Phải nằm trong [-90, 90].`);
+    }
+    if (!Number.isFinite(lon) || lon < -180 || lon > 180) {
+        throw new Error(`Kinh độ (longitude) không hợp lệ: ${lon}. Phải nằm trong [-180, 180].`);
+    }
+
+    // =========================================================================
+    // 0. PHÂN GIẢI THỜI GIAN SANG UTC INSTANT & JULIAN DAY UT
+    // =========================================================================
+    let effectiveUtcInstant = null;
+    let effectiveOffsetMinutes = 0;
+    let formattedOffset = 'UTC+00:00';
+    let jdUT = null;
+
+    if (params.utcInstant instanceof Date && !isNaN(params.utcInstant.getTime())) {
+        effectiveUtcInstant = params.utcInstant;
+        effectiveOffsetMinutes = params.utcOffset !== undefined ? Math.round(params.utcOffset * 60) : 0;
+        formattedOffset = formatOffsetMinutes(effectiveOffsetMinutes);
+        jdUT = getJulianDayFromUtcInstant(effectiveUtcInstant, effectiveCalendar);
+    } else if (params.timeZone) {
+        const resolution = resolveWallTimeToUtc({
+            year: y, month: m, day: d,
+            hour: h, minute: min, second: s,
+            timeZone: params.timeZone
+        });
+
+        if (resolution.status === 'NON_EXISTENT_TIME') {
+            throw new Error('Giờ này không tồn tại tại địa điểm đã chọn do chuyển giờ DST.');
+        }
+
+        if (resolution.status === 'AMBIGUOUS_TIME') {
+            if (params.selectedCandidateIndex === undefined || !resolution.candidates[params.selectedCandidateIndex]) {
+                const err = new Error('Thời điểm bị trùng lặp do chuyển giờ DST (AMBIGUOUS_TIME). Người dùng phải chọn một mốc giờ cụ thể.');
+                err.code = 'AMBIGUOUS_TIME';
+                err.candidates = resolution.candidates;
+                throw err;
+            }
+            const cand = resolution.candidates[params.selectedCandidateIndex];
+            effectiveUtcInstant = cand.utcInstant;
+            effectiveOffsetMinutes = cand.offsetMinutes;
+            formattedOffset = cand.formattedOffset;
+            jdUT = getJulianDayFromUtcInstant(effectiveUtcInstant, effectiveCalendar);
+        } else {
+            // VALID
+            effectiveUtcInstant = resolution.utcInstant;
+            effectiveOffsetMinutes = resolution.offsetMinutes;
+            formattedOffset = resolution.formattedOffset;
+            jdUT = getJulianDayFromUtcInstant(effectiveUtcInstant, effectiveCalendar);
+        }
+    } else {
+        // Fallback cho tests gọi trực tiếp với utcOffset mà không kèm timeZone
+        const offHours = params.utcOffset !== undefined ? parseFloat(params.utcOffset) : 7;
+        effectiveOffsetMinutes = Math.round(offHours * 60);
+        formattedOffset = formatOffsetMinutes(effectiveOffsetMinutes);
+        jdUT = getJulianDayUT(y, m, d, h, min, s, offHours, effectiveCalendar);
+        const utcMs = (jdUT - 2440587.5) * 86400000;
+        effectiveUtcInstant = new Date(utcMs);
+    }
 
     if (!sweInstance) {
         await initEphemerisEngine();
@@ -323,7 +405,7 @@ export async function calculateHoraryChart(params) {
         mars: 4,
         jupiter: 5,
         saturn: 6,
-        northNode: nodeType === 'TRUE' ? 11 : 10
+        northNode: effectiveNodeType === 'TRUE' ? 11 : 10
     };
 
     // =========================================================================
@@ -334,9 +416,13 @@ export async function calculateHoraryChart(params) {
     let trueObliquity = 23.439;
 
     try {
-        const houseData = sweInstance.houses(jdUT, latitude, longitude, 'R');
+        const houseData = sweInstance.houses(jdUT, lat, lon, 'R');
         if (!houseData || !houseData.cusps || houseData.cusps.length < 12) {
             throw new Error('Dữ liệu đỉnh nhà Swiss Ephemeris trả về không đủ 12 nhà');
+        }
+
+        if (houseData.substituted === true) {
+            throw new Error('Hệ nhà Regiomontanus không khả dụng tại vĩ độ này (Swiss Ephemeris substituted). Hệ thống dừng canonical chart!');
         }
 
         // Kiểm tra tính hữu hạn của tọa độ các đỉnh nhà
@@ -344,6 +430,10 @@ export async function calculateHoraryChart(params) {
             if (!Number.isFinite(houseData.cusps[i])) {
                 throw new Error(`Đỉnh nhà ${i + 1} không phải số hữu hạn hợp lệ`);
             }
+        }
+
+        if (!Number.isFinite(houseData.ascendant) || !Number.isFinite(houseData.midheaven) || !Number.isFinite(houseData.armc)) {
+            throw new Error('Tọa độ trục chính hoặc ARMC không phải số hữu hạn hợp lệ');
         }
 
         // Lấy độ nghiêng hoàng đạo thực
@@ -354,21 +444,26 @@ export async function calculateHoraryChart(params) {
             trueObliquity = 23.4392911 - 0.0130042 * ((jdUT - 2451545.0) / 36525.0);
         }
 
+        const asc = normalize360(houseData.ascendant);
+        const mc = normalize360(houseData.midheaven);
+        const dsc = normalize360(asc + 180);
+        const ic = normalize360(mc + 180);
+
         candidateHouses = {
-            system: 'Regiomontanus (Canonical Swiss Ephemeris)',
+            system: 'Regiomontanus — cấu hình truyền thống William Lilly',
             systemCode: 'R',
-            ascendant: houseData.ascendant,
-            midheaven: houseData.midheaven,
-            descendant: houseData.descendant,
-            imumCoeli: houseData.imumCoeli,
+            ascendant: asc,
+            midheaven: mc,
+            descendant: dsc,
+            imumCoeli: ic,
             armc: houseData.armc,
-            vertex: houseData.vertex,
-            cusps: houseData.cusps.slice(0, 12),
-            cuspsFormatted: houseData.cusps.slice(0, 12).map(c => formatZodiacDms(c).formatted)
+            vertex: houseData.vertex !== undefined ? normalize360(houseData.vertex) : undefined,
+            cusps: houseData.cusps.slice(0, 12).map(c => normalize360(c)),
+            cuspsFormatted: houseData.cusps.slice(0, 12).map(c => formatZodiacLongitude(c).formatted)
         };
 
         // Độ cao hình học không khúc xạ của Mặt Trời (True Unrefracted Solar Altitude)
-        const sunHor = sweInstance.horizontal(jdUT, 0, latitude, longitude);
+        const sunHor = sweInstance.horizontal(jdUT, 0, lat, lon);
         candidateSunAltitude = sunHor.altitude;
     } catch (errHouses) {
         throw new Error(`Lỗi tính hệ nhà Regiomontanus Canonical: ${errHouses.message}`);
@@ -386,12 +481,13 @@ export async function calculateHoraryChart(params) {
             if (!nn) {
                 throw new Error('Không tìm thấy Bắc Giao Điểm để suy diễn Nam Giao Điểm');
             }
-            const snLon = (nn.longitude + 180) % 360;
+            const snLon = normalize360(nn.longitude + 180);
             const pos = getZodiacPosition(snLon);
             candidatePlanets.push({
                 id: 'southNode',
                 nameVi: pInfo.nameVi,
                 nameEn: pInfo.nameEn,
+                aliasVi: pInfo.aliasVi,
                 glyphKey: pInfo.glyphKey,
                 longitude: snLon,
                 latitude: -nn.latitude,
@@ -416,7 +512,8 @@ export async function calculateHoraryChart(params) {
             throw new Error(`Tọa độ hoặc vận tốc không hợp lệ cho hành tinh ${pInfo.id}`);
         }
 
-        const pos = getZodiacPosition(posData.longitude);
+        const normLon = normalize360(posData.longitude);
+        const pos = getZodiacPosition(normLon);
         const speed = posData.longitudeSpeed;
         const threshold = pInfo.speedStationaryThreshold || 0.001;
 
@@ -442,8 +539,9 @@ export async function calculateHoraryChart(params) {
             id: pInfo.id,
             nameVi: pInfo.nameVi,
             nameEn: pInfo.nameEn,
+            aliasVi: pInfo.aliasVi,
             glyphKey: pInfo.glyphKey,
-            longitude: posData.longitude,
+            longitude: normLon,
             latitude: posData.latitude,
             distance: posData.distance,
             speedLongitude: speed,
@@ -467,19 +565,23 @@ export async function calculateHoraryChart(params) {
     // 3. GÁN NHÀ HÌNH HỌC (SWISS MUNDANE HOUSE POSITION) & QUY TẮC 5° LILLY
     // =========================================================================
     for (const p of candidatePlanets) {
-        // Ưu tiên 1: Mundane House Position từ Swiss Ephemeris swe_house_pos
-        const swissHPos = getSwissHousePosition(sweInstance, candidateHouses.armc, latitude, trueObliquity, p.longitude, 0);
-        let geomHouse = swissHPos ? swissHPos.houseNumber : getHouseOfLongitude(p.longitude, candidateHouses.cusps);
+        // Mundane House Position từ Swiss Ephemeris swe_house_pos (Fail-Closed, zero fake fallback)
+        const swissHPos = getSwissHousePosition(sweInstance, candidateHouses.armc, lat, trueObliquity, p.longitude, 0);
+        if (!swissHPos || !Number.isFinite(swissHPos.houseNumber)) {
+            throw new Error(`Không thể xác định vị trí nhà hình học Swiss cho ${p.id}`);
+        }
+        const geomHouse = swissHPos.houseNumber;
 
         // Khoảng cách tới đỉnh nhà kế tiếp
         const nextCuspIndex = geomHouse % 12;
         const nextCuspLon = candidateHouses.cusps[nextCuspIndex];
-        let distToNextCusp = (nextCuspLon - p.longitude + 360) % 360;
+        let distToNextCusp = normalize360(nextCuspLon - p.longitude);
         const isWithin5Deg = distToNextCusp <= 5.0;
 
         // KIẾN TRÚC CHUẨN: houseNumber = geometricHouseNumber (không bị ghi đè!)
         p.geometricHouseNumber = geomHouse;
         p.houseNumber = geomHouse;
+        p.exactHousePos = swissHPos.exactHousePos;
         p.cuspInfluence = {
             nextHouse: (geomHouse % 12) + 1,
             distanceDeg: Math.round(distToNextCusp * 100) / 100,
@@ -487,7 +589,7 @@ export async function calculateHoraryChart(params) {
         };
         p.isWithinFiveDegreeCusp = isWithin5Deg;
         p.distanceToNextCusp = Math.round(distToNextCusp * 100) / 100;
-        p.traditionalHouseNumber = isWithin5Deg ? (geomHouse % 12) + 1 : geomHouse;
+        p.traditionalHouseNumber = isWithin5Deg ? ((geomHouse % 12) + 1) : geomHouse;
     }
 
     // Phân định Sect (Day/Night Chart) dựa trên True Unrefracted Solar Altitude
@@ -500,12 +602,15 @@ export async function calculateHoraryChart(params) {
     let partOfFortune = null;
 
     if (moonObj && sunObj && candidateHouses) {
-        const lillyPofLon = (candidateHouses.ascendant + moonObj.longitude - sunObj.longitude + 720) % 360;
+        const lillyPofLon = normalize360(candidateHouses.ascendant + moonObj.longitude - sunObj.longitude);
         const pofPos = getZodiacPosition(lillyPofLon);
-        const pofSwissHPos = getSwissHousePosition(sweInstance, candidateHouses.armc, latitude, trueObliquity, lillyPofLon, 0);
-        const pofGeomHouse = pofSwissHPos ? pofSwissHPos.houseNumber : getHouseOfLongitude(lillyPofLon, candidateHouses.cusps);
+        const pofSwissHPos = getSwissHousePosition(sweInstance, candidateHouses.armc, lat, trueObliquity, lillyPofLon, 0);
+        if (!pofSwissHPos || !Number.isFinite(pofSwissHPos.houseNumber)) {
+            throw new Error('Không thể xác định vị trí nhà hình học Swiss cho Pars Fortunae');
+        }
+        const pofGeomHouse = pofSwissHPos.houseNumber;
         const pofNextCusp = candidateHouses.cusps[pofGeomHouse % 12];
-        const pofDistToNext = (pofNextCusp - lillyPofLon + 360) % 360;
+        const pofDistToNext = normalize360(pofNextCusp - lillyPofLon);
         const pofIs5Deg = pofDistToNext <= 5.0;
 
         partOfFortune = {
@@ -517,6 +622,7 @@ export async function calculateHoraryChart(params) {
             rule: 'William Lilly (CA p.143: ASC + Moon - Sun cho cả Ngày và Đêm)',
             houseNumber: pofGeomHouse,
             geometricHouseNumber: pofGeomHouse,
+            exactHousePos: pofSwissHPos.exactHousePos,
             cuspInfluence: {
                 nextHouse: (pofGeomHouse % 12) + 1,
                 distanceDeg: Math.round(pofDistToNext * 100) / 100,
@@ -524,9 +630,17 @@ export async function calculateHoraryChart(params) {
             },
             isWithinFiveDegreeCusp: pofIs5Deg,
             distanceToNextCusp: Math.round(pofDistToNext * 100) / 100,
-            traditionalHouseNumber: pofIs5Deg ? (pofGeomHouse % 12) + 1 : pofGeomHouse,
+            traditionalHouseNumber: pofIs5Deg ? ((pofGeomHouse % 12) + 1) : pofGeomHouse,
             ...pofPos
         };
+    }
+
+    // Kiểm tra tính toàn vẹn cuối cùng trước khi trả về kết quả
+    for (const p of candidatePlanets) {
+        if (!Number.isFinite(p.longitude) || !Number.isFinite(p.latitude) ||
+            !Number.isFinite(p.speedLongitude) || !Number.isFinite(p.houseNumber)) {
+            throw new Error(`Dữ liệu hành tinh ${p.id} không toàn vẹn trước khi trả về lá số`);
+        }
     }
 
     const sunAltFormatted = candidateSunAltitude !== null ?
@@ -534,15 +648,18 @@ export async function calculateHoraryChart(params) {
 
     return {
         julianDayUT: jdUT,
-        calendarMode: calendar.toUpperCase(),
-        localTimeFormatted: `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`,
-        utcOffsetFormatted: `UTC${utcOffset >= 0 ? '+' : ''}${String(utcOffset).padStart(2, '0')}:00`,
+        calendarMode: effectiveCalendar,
+        utcInstant: effectiveUtcInstant,
+        timeZone: params.timeZone || 'Asia/Ho_Chi_Minh',
+        localTimeFormatted: `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y} ${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}:${String(s).padStart(2, '0')}`,
+        utcOffsetFormatted: formattedOffset,
+        offsetMinutes: effectiveOffsetMinutes,
         location: {
-            name: locationName,
-            latitude,
-            longitude,
-            latFormatted: `${Math.abs(latitude).toFixed(4)}° ${latitude >= 0 ? 'Bắc' : 'Nam'}`,
-            lonFormatted: `${Math.abs(longitude).toFixed(4)}° ${longitude >= 0 ? 'Đông' : 'Tây'}`
+            name: params.locationName || 'Hà Nội',
+            latitude: lat,
+            longitude: lon,
+            latFormatted: `${Math.abs(lat).toFixed(4)}° ${lat >= 0 ? 'Bắc' : 'Nam'}`,
+            lonFormatted: `${Math.abs(lon).toFixed(4)}° ${lon >= 0 ? 'Đông' : 'Tây'}`
         },
         houses: candidateHouses,
         planets: candidatePlanets,

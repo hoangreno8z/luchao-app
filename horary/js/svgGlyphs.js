@@ -181,6 +181,14 @@ export const GLYPH_PATHS = {
         strokeLinecap: 'round',
         strokeLinejoin: 'round'
     },
+    // Điểm May Mắn (Pars Fortunae): Vòng tròn chữ thập bánh xe số phận (Wheel of Fortune)
+    partOfFortune: {
+        d: 'M 0,-7 A 7,7 0 1 1 0,7 A 7,7 0 1 1 0,-7 M -4.95,-4.95 L 4.95,4.95 M -4.95,4.95 L 4.95,-4.95',
+        fill: 'none',
+        strokeWidth: 2,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round'
+    },
 
     // ==========================================
     // 5 ASPECT HORARY CHÍNH (GÓC CHIẾU)
