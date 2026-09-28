@@ -456,6 +456,55 @@ const ICHING = (function () {
 
         const shensha = calculateShenSha(safeCal.ngay.can, safeCal.ngay.chi, safeCal.thang.chi);
 
+        // =============================================================
+        // AN QUÁI THÂN, HƯƠNG KHUÊ, SÀNG TRƯỚNG (LỤC HÀO VƯƠNG HỔ ỨNG)
+        // =============================================================
+        const shiPos = info.shi; // 1 -> 6
+        const shiLineVal = lines[shiPos - 1]; // 0=Lão Âm, 1=Thiếu Dương, 2=Thiếu Âm, 3=Lão Dương
+        const isShiYang = (shiLineVal === 1 || shiLineVal === 3);
+
+        const YANG_QUAI_THAN = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ'];
+        const YIN_QUAI_THAN = ['Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+        const quaiThanChi = isShiYang ? YANG_QUAI_THAN[shiPos - 1] : YIN_QUAI_THAN[shiPos - 1];
+        const quaiThanHanh = CALENDAR.NGU_HANH_CHI[quaiThanChi];
+        const quaiThanRel = getRelation(quaiThanHanh, palaceEl);
+
+        const hienHaoList = [];
+        for (let i = 0; i < 6; i++) {
+            if (linesData[i].chi === quaiThanChi) {
+                hienHaoList.push(i + 1);
+            }
+        }
+        const hienStatus = hienHaoList.length > 0 ? `(Hào ${hienHaoList.join(', ')})` : '(Phục)';
+        const quaiThanStr = `${quaiThanRel} ${quaiThanChi} ${hienStatus}`;
+
+        // Hương Khuê: Chi bị Quái Thân khắc (卦身所克之爻为香闺)
+        const KHAC_MAP = {
+            'Kim': ['Dần', 'Mão'],
+            'Mộc': ['Thìn', 'Tuất', 'Sửu', 'Mùi'],
+            'Thủy': ['Tỵ', 'Ngọ'],
+            'Hỏa': ['Thân', 'Dậu'],
+            'Thổ': ['Hợi', 'Tý']
+        };
+        const huongKhueChiList = KHAC_MAP[quaiThanHanh] || [];
+        const huongKhueStr = huongKhueChiList.join(', ');
+
+        // Sàng Trướng: Chi được Quái Thân sinh (卦身所生之爻为床帐)
+        const SINH_MAP = {
+            'Kim': ['Hợi', 'Tý'],
+            'Mộc': ['Tỵ', 'Ngọ'],
+            'Thủy': ['Dần', 'Mão'],
+            'Hỏa': ['Thìn', 'Tuất', 'Sửu', 'Mùi'],
+            'Thổ': ['Thân', 'Dậu']
+        };
+        const sangTruongChiList = SINH_MAP[quaiThanHanh] || [];
+        const sangTruongStr = sangTruongChiList.join(', ');
+
+        shensha.push(`<strong>Quái Thân:</strong> ${quaiThanStr}`);
+        shensha.push(`<strong>Hương Khuê:</strong> ${huongKhueStr}`);
+        shensha.push(`<strong>Sàng Trướng:</strong> ${sangTruongStr}`);
+
         return {
             mainID: hexID,
             changedID: hexIDChanged,
@@ -474,6 +523,22 @@ const ICHING = (function () {
             ngamResult,
             formattedDate,
             methodText,
+            quaiThan: {
+                chi: quaiThanChi,
+                hanh: quaiThanHanh,
+                relation: quaiThanRel,
+                hienHao: hienHaoList,
+                isPhuc: hienHaoList.length === 0,
+                text: quaiThanStr
+            },
+            huongKhue: {
+                chiList: huongKhueChiList,
+                text: huongKhueStr
+            },
+            sangTruong: {
+                chiList: sangTruongChiList,
+                text: sangTruongStr
+            },
             dateInfo: {
                 fullCanChi: `Giờ ${safeCal.gio.can} ${safeCal.gio.chi}, Ngày ${safeCal.ngay.can} ${safeCal.ngay.chi}, Tháng ${safeCal.thang.can} ${safeCal.thang.chi}, Năm ${safeCal.nam.can} ${safeCal.nam.chi}`,
                 tietKhi: safeCal.tietKhi,

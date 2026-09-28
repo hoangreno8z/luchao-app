@@ -313,6 +313,49 @@ it('Kiểm tra Vong Thần theo Tam Hợp Ngày (Thủy=Hợi, Hỏa=Tỵ, Kim=T
     assert.ok(ssMoc.some(s => s.includes('Vong Thần') && s.includes('Dần')), 'Mộc cục Vong Thần tại Dần');
 });
 
+// -----------------------------------------------------------------------------
+// NHÓM 6: QUÁI THÂN, HƯƠNG KHUÊ, SÀNG TRƯỚNG (LỤC HÀO VƯƠNG HỔ ỨNG)
+// -----------------------------------------------------------------------------
+console.log('\n--- NHÓM 6: QUÁI THÂN, HƯƠNG KHUÊ, SÀNG TRƯỚNG (VƯƠNG HỔ ỨNG) ---');
+
+it('Bát Thuần Càn: Dương Thế hào 6 khởi Tý -> Quái Thân Quan Quỷ Tỵ (Phục), Hương Khuê Thân/Dậu, Sàng Trướng Thìn/Tuất/Sửu/Mùi', () => {
+    const dummyCal = {
+        ngay: { can: 'Giáp', chi: 'Tý' },
+        thang: { can: 'Bính', chi: 'Dần' },
+        nam: { can: 'Ất', chi: 'Tỵ' },
+        gio: { can: 'Giáp', chi: 'Tý' },
+        tuanKhong: ['Tuất', 'Hợi'],
+        tietKhi: 'Lập Xuân'
+    };
+    const can = ICHING.calculateHexagramData([1, 1, 1, 1, 1, 1], dummyCal);
+    assert.strictEqual(can.quaiThan.chi, 'Tỵ');
+    assert.strictEqual(can.quaiThan.relation, 'Quan Quỷ');
+    assert.strictEqual(can.quaiThan.isPhuc, true);
+    assert.deepStrictEqual(can.huongKhue.chiList, ['Thân', 'Dậu']);
+    assert.deepStrictEqual(can.sangTruong.chiList, ['Thìn', 'Tuất', 'Sửu', 'Mùi']);
+    assert.ok(can.shensha.some(s => s.includes('Quái Thân:')), 'Quái Thân có trong shensha');
+    assert.ok(can.shensha.some(s => s.includes('Hương Khuê:')), 'Hương Khuê có trong shensha');
+    assert.ok(can.shensha.some(s => s.includes('Sàng Trướng:')), 'Sàng Trướng có trong shensha');
+});
+
+it('Bát Thuần Khôn: Âm Thế hào 6 khởi Ngọ -> Quái Thân Thê Tài Hợi (Hào 5), Hương Khuê Tỵ/Ngọ, Sàng Trướng Dần/Mão', () => {
+    const dummyCal = {
+        ngay: { can: 'Giáp', chi: 'Tý' },
+        thang: { can: 'Bính', chi: 'Dần' },
+        nam: { can: 'Ất', chi: 'Tỵ' },
+        gio: { can: 'Giáp', chi: 'Tý' },
+        tuanKhong: ['Tuất', 'Hợi'],
+        tietKhi: 'Lập Xuân'
+    };
+    const khon = ICHING.calculateHexagramData([2, 2, 2, 2, 2, 2], dummyCal);
+    assert.strictEqual(khon.quaiThan.chi, 'Hợi');
+    assert.strictEqual(khon.quaiThan.relation, 'Thê Tài');
+    assert.strictEqual(khon.quaiThan.isPhuc, false);
+    assert.deepStrictEqual(khon.quaiThan.hienHao, [5]);
+    assert.deepStrictEqual(khon.huongKhue.chiList, ['Tỵ', 'Ngọ']);
+    assert.deepStrictEqual(khon.sangTruong.chiList, ['Dần', 'Mão']);
+});
+
 console.log('\n================================================================');
 console.log('KẾT QUẢ KIỂM THỬ: ' + passedTests + '/' + totalTests + ' TESTS ĐẠT (100% SUCCESS)');
 console.log('================================================================\n');
