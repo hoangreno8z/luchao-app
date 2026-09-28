@@ -318,7 +318,7 @@ it('Kiểm tra Vong Thần theo Tam Hợp Ngày (Thủy=Hợi, Hỏa=Tỵ, Kim=T
 // -----------------------------------------------------------------------------
 console.log('\n--- NHÓM 6: QUÁI THÂN, HƯƠNG KHUÊ, SÀNG TRƯỚNG (VƯƠNG HỔ ỨNG) ---');
 
-it('Bát Thuần Càn: Dương Thế hào 6 khởi Tý -> Quái Thân Quan Quỷ Tỵ (Phục), Hương Khuê Thân/Dậu, Sàng Trướng Thìn/Tuất/Sửu/Mùi', () => {
+it('Bát Thuần Càn: Dương Thế hào 6 khởi Tý -> Quái Thân Tỵ, Hương Khuê Kim, Sàng Trướng Thổ', () => {
     const dummyCal = {
         ngay: { can: 'Giáp', chi: 'Tý' },
         thang: { can: 'Bính', chi: 'Dần' },
@@ -329,16 +329,17 @@ it('Bát Thuần Càn: Dương Thế hào 6 khởi Tý -> Quái Thân Quan Quỷ
     };
     const can = ICHING.calculateHexagramData([1, 1, 1, 1, 1, 1], dummyCal);
     assert.strictEqual(can.quaiThan.chi, 'Tỵ');
+    assert.strictEqual(can.quaiThan.text, 'Tỵ');
     assert.strictEqual(can.quaiThan.relation, 'Quan Quỷ');
     assert.strictEqual(can.quaiThan.isPhuc, true);
-    assert.deepStrictEqual(can.huongKhue.chiList, ['Thân', 'Dậu']);
-    assert.deepStrictEqual(can.sangTruong.chiList, ['Thìn', 'Tuất', 'Sửu', 'Mùi']);
-    assert.ok(can.shensha.some(s => s.includes('Quái Thân:')), 'Quái Thân có trong shensha');
-    assert.ok(can.shensha.some(s => s.includes('Hương Khuê:')), 'Hương Khuê có trong shensha');
-    assert.ok(can.shensha.some(s => s.includes('Sàng Trướng:')), 'Sàng Trướng có trong shensha');
+    assert.strictEqual(can.huongKhue.text, 'Kim');
+    assert.strictEqual(can.sangTruong.text, 'Thổ');
+    assert.ok(can.shensha.some(s => s.includes('Quái Thân:') && s.includes('Tỵ')), 'Quái Thân có trong shensha');
+    assert.ok(can.shensha.some(s => s.includes('Hương Khuê:') && s.includes('Kim')), 'Hương Khuê có trong shensha');
+    assert.ok(can.shensha.some(s => s.includes('Sàng Trướng:') && s.includes('Thổ')), 'Sàng Trướng có trong shensha');
 });
 
-it('Bát Thuần Khôn: Âm Thế hào 6 khởi Ngọ -> Quái Thân Thê Tài Hợi (Hào 5), Hương Khuê Tỵ/Ngọ, Sàng Trướng Dần/Mão', () => {
+it('Bát Thuần Khôn: Âm Thế hào 6 khởi Ngọ -> Quái Thân Hợi, Hương Khuê Hỏa, Sàng Trướng Mộc', () => {
     const dummyCal = {
         ngay: { can: 'Giáp', chi: 'Tý' },
         thang: { can: 'Bính', chi: 'Dần' },
@@ -349,11 +350,15 @@ it('Bát Thuần Khôn: Âm Thế hào 6 khởi Ngọ -> Quái Thân Thê Tài H
     };
     const khon = ICHING.calculateHexagramData([2, 2, 2, 2, 2, 2], dummyCal);
     assert.strictEqual(khon.quaiThan.chi, 'Hợi');
+    assert.strictEqual(khon.quaiThan.text, 'Hợi');
     assert.strictEqual(khon.quaiThan.relation, 'Thê Tài');
     assert.strictEqual(khon.quaiThan.isPhuc, false);
     assert.deepStrictEqual(khon.quaiThan.hienHao, [5]);
-    assert.deepStrictEqual(khon.huongKhue.chiList, ['Tỵ', 'Ngọ']);
-    assert.deepStrictEqual(khon.sangTruong.chiList, ['Dần', 'Mão']);
+    assert.strictEqual(khon.huongKhue.text, 'Hỏa');
+    assert.strictEqual(khon.sangTruong.text, 'Mộc');
+    assert.ok(khon.shensha.some(s => s.includes('Quái Thân:') && s.includes('Hợi')), 'Quái Thân có trong shensha');
+    assert.ok(khon.shensha.some(s => s.includes('Hương Khuê:') && s.includes('Hỏa')), 'Hương Khuê có trong shensha');
+    assert.ok(khon.shensha.some(s => s.includes('Sàng Trướng:') && s.includes('Mộc')), 'Sàng Trướng có trong shensha');
 });
 
 console.log('\n================================================================');

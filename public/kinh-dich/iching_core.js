@@ -477,29 +477,29 @@ const ICHING = (function () {
             }
         }
         const hienStatus = hienHaoList.length > 0 ? `(Hào ${hienHaoList.join(', ')})` : '(Phục)';
-        const quaiThanStr = `${quaiThanRel} ${quaiThanChi} ${hienStatus}`;
+        const quaiThanStr = quaiThanChi;
 
-        // Hương Khuê: Chi bị Quái Thân khắc (卦身所克之爻为香闺)
-        const KHAC_MAP = {
-            'Kim': ['Dần', 'Mão'],
-            'Mộc': ['Thìn', 'Tuất', 'Sửu', 'Mùi'],
-            'Thủy': ['Tỵ', 'Ngọ'],
-            'Hỏa': ['Thân', 'Dậu'],
-            'Thổ': ['Hợi', 'Tý']
+        // Hương Khuê: Ngũ hành bị Quái Thân khắc (卦身所克之爻为香闺)
+        const NGU_HANH_KHAC = {
+            'Kim': 'Mộc',
+            'Mộc': 'Thổ',
+            'Thủy': 'Hỏa',
+            'Hỏa': 'Kim',
+            'Thổ': 'Thủy'
         };
-        const huongKhueChiList = KHAC_MAP[quaiThanHanh] || [];
-        const huongKhueStr = huongKhueChiList.join(', ');
+        const huongKhueHanh = NGU_HANH_KHAC[quaiThanHanh] || '';
+        const huongKhueStr = huongKhueHanh;
 
-        // Sàng Trướng: Chi được Quái Thân sinh (卦身所生之爻为床帐)
-        const SINH_MAP = {
-            'Kim': ['Hợi', 'Tý'],
-            'Mộc': ['Tỵ', 'Ngọ'],
-            'Thủy': ['Dần', 'Mão'],
-            'Hỏa': ['Thìn', 'Tuất', 'Sửu', 'Mùi'],
-            'Thổ': ['Thân', 'Dậu']
+        // Sàng Trướng: Ngũ hành được Quái Thân sinh (卦身所生之爻为床帐)
+        const NGU_HANH_SINH = {
+            'Kim': 'Thủy',
+            'Mộc': 'Hỏa',
+            'Thủy': 'Mộc',
+            'Hỏa': 'Thổ',
+            'Thổ': 'Kim'
         };
-        const sangTruongChiList = SINH_MAP[quaiThanHanh] || [];
-        const sangTruongStr = sangTruongChiList.join(', ');
+        const sangTruongHanh = NGU_HANH_SINH[quaiThanHanh] || '';
+        const sangTruongStr = sangTruongHanh;
 
         shensha.push(`<strong>Quái Thân:</strong> ${quaiThanStr}`);
         shensha.push(`<strong>Hương Khuê:</strong> ${huongKhueStr}`);
@@ -532,11 +532,11 @@ const ICHING = (function () {
                 text: quaiThanStr
             },
             huongKhue: {
-                chiList: huongKhueChiList,
+                hanh: huongKhueHanh,
                 text: huongKhueStr
             },
             sangTruong: {
-                chiList: sangTruongChiList,
+                hanh: sangTruongHanh,
                 text: sangTruongStr
             },
             dateInfo: {
