@@ -1,0 +1,54 @@
+:root {
+  --bg: #0c1020;
+  --panel: #141b2e;
+  --panel2: #1b243b;
+  --line: #34415f;
+  --text: #f5f7fb;
+  --muted: #aab4c9;
+  --accent: #f5a900;
+  --accent2: #ffc94a;
+  --ok: #21c58b;
+  --danger: #ff6b6b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.app { min-height: 100vh; }
+.header { position: sticky; top: 0; z-index: 20; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px; background:#0b0f1aee; backdrop-filter: blur(16px); border-bottom:1px solid var(--line); }
+.brand { font-weight: 900; letter-spacing:.04em; color:#ffbd22; font-size:20px; }
+.sub { color:var(--muted); font-size:12px; margin-top:2px; }
+.main { max-width: 1600px; margin: 0 auto; padding: 20px; }
+.grid { display:grid; grid-template-columns: 360px minmax(0,1fr); gap:18px; align-items:start; }
+.panel { background:linear-gradient(180deg,var(--panel),#101728); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 20px 50px #0005; }
+.panel h2 { font-size:15px; margin:0 0 12px; }
+.section { border-top:1px solid #ffffff12; padding-top:14px; margin-top:14px; }
+.field { display:grid; gap:6px; margin-bottom:11px; }
+.field label { font-size:12px; color:var(--muted); }
+.field input, .field select { width:100%; padding:10px 11px; border:1px solid #3a4765; border-radius:10px; background:#0d1424; color:var(--text); outline:none; }
+.field input:focus, .field select:focus { border-color:var(--accent); box-shadow:0 0 0 3px #f5a90022; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.room-row { display:grid; grid-template-columns:1fr 70px; gap:8px; align-items:center; margin-bottom:8px; }
+.room-row label { color:#dce2ef; font-size:13px; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+.btn { border:1px solid #485573; color:var(--text); background:#182139; border-radius:10px; padding:10px 13px; font-weight:800; }
+.btn:hover { border-color:#64779f; }
+.btn.primary { background:linear-gradient(180deg,#ffbd2f,#dc8600); border-color:#ffbd2f; color:#14110a; }
+.btn.success { border-color:#1acb8c; color:#4ce0ad; }
+.btn.small { padding:7px 9px; font-size:12px; }
+.viewer { min-width:0; }
+.viewer-tabs { display:flex; gap:8px; margin-bottom:10px; }
+.tab { border:1px solid var(--line); background:#12192a; color:#aeb8cc; padding:9px 12px; border-radius:10px; font-weight:800; }
+.tab.active { background:#2b344c; color:#fff; border-color:#f5a90088; }
+.canvas-shell { background:#eef2f5; border:1px solid #d6dce3; border-radius:18px; overflow:hidden; position:relative; min-height:720px; }
+.canvas-toolbar { position:absolute; z-index:5; top:12px; right:12px; display:flex; gap:6px; background:#0e1421e8; padding:6px; border:1px solid #ffffff18; border-radius:12px; }
+.canvas-toolbar button { background:#1c2740; border:1px solid #465372; color:#fff; border-radius:8px; padding:7px 9px; font-weight:800; }
+.svg-scroll { width:100%; height:calc(100vh - 150px); min-height:720px; overflow:auto; display:flex; align-items:center; justify-content:center; padding:35px; touch-action:none; }
+.svg-stage { flex:0 0 auto; transform-origin:center center; transition:transform .12s ease; filter: drop-shadow(0 18px 30px #0003); }
+.legend { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; color:#66728a; font-size:12px; }
+.badge { border:1px solid #52617e; border-radius:999px; padding:4px 8px; background:#182139; color:#dfe5f0; }
+.error { color:#ff8c8c; font-size:12px; }
+.ok { color:#44d9a0; font-size:12px; }
+.footer-note { margin-top:12px; color:#7f8aa1; font-size:11px; line-height:1.5; }
+@media (max-width: 1000px) { .grid { grid-template-columns:1fr; } .canvas-shell { min-height:620px; } .svg-scroll { height:70vh; min-height:560px; } }
+@media (max-width: 560px) { .main { padding:10px; } .header { padding:12px; } .brand { font-size:16px; } .two { grid-template-columns:1fr; } .svg-scroll { padding:16px; } }

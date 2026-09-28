@@ -7,3 +7,46 @@ scratch/
 Thumbs.db
 
 .vercel
+
+# Deploy scripts containing secrets
+backups/
+deploy_atomic.cjs
+deploy_cleanup_and_release.cjs
+deploy_full_tuvi.cjs
+deploy_gh_pages.cjs
+git_push_release.cjs
+git_push_release.js
+trigger_deploy.cjs
+single_tree_commit.cjs
+
+# Large files
+*.pdf
+
+# Temp / dev files
+.agents/
+tmp_prod.html
+last_prompt.txt
+edge_dom.html
+mobile_dom_dump.html
+postcss.config.cjs
+local_server.cjs
+server_8088.cjs
+scratch_extract.cjs
+verify_dom.cjs
+verify_mobile_cdp.cjs
+
+# Test & dev scripts (not needed in prod)
+test_*.cjs
+test_*.js
+comprehensive_audit.cjs
+
+# Generated screenshots
+mobile_verified_*.png
+generated_test.svg
+
+# Module images at root (already in subdirs)
+bat-tu.png
+kinh-dich.png
+thai-at.png
+tu-vi.png
+nganha.png
