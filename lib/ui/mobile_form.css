@@ -1,0 +1,224 @@
+/* ==========================================================================
+   mobile_form.css — Lớp giao diện "Birth Information Card" dùng chung
+   cho Tử Vi & Bát Tự.
+   CHỈ LÀ GIAO DIỆN: không thay đổi id/name/value của bất kỳ ô nhập nào,
+   nên thuật toán lập lá số & lịch giữ nguyên tuyệt đối.
+   ========================================================================== */
+
+:root {
+    --bf-gold: #f59e0b;
+    --bf-gold-soft: #fbbf24;
+    --bf-gold-glow: rgba(245, 158, 11, 0.22);
+    --bf-surface: #1f2937;
+    --bf-surface-2: #111827;
+    --bf-line: #4b5563;
+    --bf-text: #f8fafc;
+    --bf-muted: #94a3b8;
+    --bf-radius: 10px;
+}
+
+/* ---------- Header thương hiệu gọn (dùng chung) ---------- */
+.brand-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+.brand-row-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+.brand-wrapper .brand-link { gap: 6px; }
+.brand-wrapper .brand-icon { color: var(--bf-gold-soft); display: inline-flex; }
+.brand-wrapper .brand-sub {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+    font-size: 0.7rem;
+    color: var(--bf-muted) !important;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+.brand-wrapper .header-social-group { margin-left: 2px; gap: 6px; }
+
+/* ---------- Nhãn & trường nhập ---------- */
+.bf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+.bf-label,
+.bf-field > label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Ngày / Tháng / Năm trên một hàng */
+.bf-dob {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 8px;
+}
+.bf-dob-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.bf-dob-cell input { text-align: center; font-variant-numeric: tabular-nums; width: 100%; }
+.bf-dob-cell .bf-unit {
+    font-size: 0.68rem;
+    color: var(--bf-muted);
+    text-align: center;
+    letter-spacing: 0.04em;
+}
+
+/* Giờ sinh: canh giờ + giờ đồng hồ */
+.bf-hour-row {
+    display: grid;
+    grid-template-columns: 1fr 118px;
+    gap: 8px;
+}
+.bf-hint {
+    font-size: 0.72rem;
+    color: var(--bf-muted);
+    line-height: 1.35;
+}
+.bf-hint strong { color: var(--bf-gold-soft); font-weight: 700; }
+
+/* Kết quả quy đổi Âm lịch — chỉ hiển thị sau khi đã nhập */
+.bf-preview {
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: #e2e8f0;
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px dashed rgba(245, 158, 11, 0.35);
+    border-radius: 8px;
+    padding: 5px 9px;
+}
+.bf-preview[hidden] { display: none !important; }
+.bf-preview b { color: var(--bf-gold-soft); font-weight: 700; }
+
+/* Segmented control (Nam / Nữ) thay dropdown */
+.bf-visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+.bf-segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 6px;
+    padding: 4px;
+    background: var(--bf-surface-2);
+    border: 1px solid var(--bf-line);
+    border-radius: var(--bf-radius);
+}
+.bf-seg-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #cbd5e1;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    min-height: 40px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.bf-seg-btn[aria-checked="true"] {
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+    border-color: var(--bf-gold);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(217, 119, 6, 0.35);
+}
+.bf-seg-btn:focus-visible {
+    outline: 2px solid var(--bf-gold-soft);
+    outline-offset: 2px;
+}
+
+/* Tránh iOS tự phóng to khi chạm vào ô nhập (font < 16px) */
+@supports (-webkit-touch-callout: none) {
+    .bf input.form-control,
+    .bf select.form-control { font-size: 16px; }
+}
+
+/* ==========================================================================
+   MOBILE (≤ 640px): tăng mật độ chiều dọc
+   ========================================================================== */
+@media (max-width: 640px) {
+    /* Header thấp hơn ~30% */
+    .app-universal-header .header-inner { padding: 6px 12px !important; gap: 8px; }
+    .brand-wrapper .brand-title { font-size: 0.9rem !important; letter-spacing: 0.03em; white-space: nowrap; }
+    .brand-wrapper .brand-sub { font-size: 0.64rem; }
+    .brand-wrapper .brand-icon svg { width: 16px; height: 16px; }
+    .brand-wrapper .header-social-group .social-label { display: none; }
+    .brand-wrapper .header-social-btn { padding: 3px 5px !important; }
+    .brand-wrapper .header-social-btn svg { width: 15px; height: 15px; }
+    .app-universal-header .menu-toggle-btn { padding: 5px 10px !important; font-size: 0.78rem !important; }
+
+    /* Hero Tử Vi: còn 1 tiêu đề + 1 dòng phụ, giảm nửa cỡ chữ */
+    .bf-page .container { padding: 12px 12px 24px; }
+    .bf-page .page-header { margin-bottom: 12px; }
+    .bf-page .page-title { font-size: 1.15rem; letter-spacing: 0.06em; line-height: 1.25; }
+    .bf-page .page-subtitle { font-size: 0.76rem; margin-top: 2px; }
+
+    /* Thẻ form */
+    .bf-page .form-card { padding: 14px 12px; border-radius: 14px; margin-bottom: 18px; }
+    .bf-page .glass-card { padding: 14px 12px; }
+    .bf-page .card-title { font-size: 0.86rem; margin-bottom: 10px; }
+
+    .bf .form-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+    .bf .form-group { margin-bottom: 12px; gap: 5px; }
+    .bf .bf-field > label,
+    .bf .bf-label,
+    .bf .form-group > label { font-size: 0.7rem; margin-bottom: 0; }
+    .bf input.form-control,
+    .bf select.form-control {
+        min-height: 44px;
+        padding: 8px 12px;
+        border-radius: 9px;
+    }
+    .bf .bf-dob-cell input { padding: 8px 4px; }
+
+    .bf .toggle-switches-grid { gap: 10px 14px !important; padding: 8px 10px !important; margin: 8px 0 12px !important; }
+    .bf .toggle-switches-grid label { font-size: 0.8rem !important; }
+    .bf .toggle-group { margin: 4px 0 12px; }
+
+    .bf .btn-submit,
+    .bf .btn-primary[type="submit"] {
+        min-height: 50px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        margin-top: 4px;
+    }
+
+    .bf-page .bf-contact { margin-top: 12px !important; padding-top: 10px !important; font-size: 0.78rem !important; }
+}
+
+/* Desktop: ô Ngày sinh rộng gấp đôi trong lưới tự động */
+@media (min-width: 641px) {
+    .bf .form-grid .bf-span-2 { grid-column: span 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bf-seg-btn { transition: none; }
+}
