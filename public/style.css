@@ -252,15 +252,16 @@ header p {
 .live-clock-container {
     background: rgba(223, 177, 91, 0.05);
     border: 1px dashed var(--gold-dark);
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 5px 10px;
+    border-radius: 6px;
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+    line-height: 1.35;
 }
 
 .live-clock-container span {
     font-family: var(--font-serif);
-    font-size: 0.95rem;
+    font-size: 0.75rem;
 }
 
 /* Top-Right Contact Info Styling */

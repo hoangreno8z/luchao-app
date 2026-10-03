@@ -98,29 +98,33 @@ body {
 }
 
 /* Header & Scholar Identity */
+header.altar-header,
 header {
     text-align: center;
-    padding: 16px 0 20px;
+    padding: 8px 0 10px;
     border-bottom: 1px solid var(--altar-border);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
+header.altar-header h1,
 header h1 {
     font-family: var(--font-title);
-    font-size: 1.5rem;
+    font-size: 0.95rem;
     font-weight: 800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.06em;
     color: var(--altar-gold);
-    text-shadow: 0 0 16px var(--altar-gold-glow);
-    margin-bottom: 4px;
+    text-shadow: 0 0 12px var(--altar-gold-glow);
+    margin-bottom: 2px;
 }
 
+header.altar-header p,
 header p {
     font-family: var(--font-serif);
     font-style: italic;
     color: var(--altar-text-muted);
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    margin: 0;
 }
 
 /* Main Altar Card */
@@ -155,12 +159,13 @@ header p {
 .live-clock-container {
     background: rgba(212, 175, 55, 0.04);
     border: 1px solid var(--altar-border);
-    padding: 10px 16px;
+    padding: 5px 10px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-family: var(--font-serif);
-    font-size: 0.92rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
     color: var(--altar-text-muted);
 }
 
@@ -175,7 +180,7 @@ header p {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 
 .tz-badge {
@@ -183,16 +188,17 @@ header p {
     background: rgba(212, 175, 55, 0.12);
     border: 1px solid rgba(212, 175, 55, 0.28);
     color: var(--altar-gold);
-    font-size: 0.78rem;
-    padding: 1px 7px;
+    font-size: 0.65rem;
+    padding: 0 5px;
     border-radius: 4px;
     font-family: var(--font-ui);
     vertical-align: middle;
 }
 
 .solar-status-badge {
-    margin-top: 5px;
-    font-size: 0.82rem;
+    margin-top: 2px;
+    font-size: 0.68rem;
+    line-height: 1.3;
     color: rgba(235, 217, 197, 0.75);
     font-family: var(--font-ui);
 }
@@ -204,8 +210,8 @@ header p {
 
 .solar-status-badge .solar-warning {
     color: #fca5a5;
-    font-size: 0.78rem;
-    margin-left: 6px;
+    font-size: 0.65rem;
+    margin-left: 4px;
 }
 
 /* ==========================================================================
@@ -1081,6 +1087,30 @@ footer p {
    ========================================================================== */
 
 @media (max-width: 640px) {
+    header.altar-header {
+        padding: 4px 0 6px;
+        margin-bottom: 4px;
+    }
+    header.altar-header h1 {
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+    }
+    header.altar-header p {
+        font-size: 0.68rem;
+    }
+    .live-clock-container {
+        padding: 4px 6px;
+        margin-bottom: 8px;
+        font-size: 0.70rem;
+    }
+    .tz-badge {
+        font-size: 0.62rem;
+        padding: 0 4px;
+    }
+    .solar-status-badge {
+        font-size: 0.65rem;
+        margin-top: 1px;
+    }
     .container {
         padding: 12px 10px 40px;
     }

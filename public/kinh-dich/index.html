@@ -31,24 +31,42 @@
         justify-content: space-between;
         align-items: center;
     }
-    .brand-link {
+    .brand-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .brand-row-top {
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    .brand-link {
+        display: inline-flex;
+        align-items: center;
         text-decoration: none !important;
     }
     .brand-title {
-        font-size: 1rem;
+        font-size: 0.98rem;
         font-weight: 800;
         color: #fbbf24 !important;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
     }
     .brand-sub {
         font-size: 0.72rem;
         color: #94a3b8 !important;
-        margin-left: 6px;
-        border-left: 1px solid #475569;
-        padding-left: 6px;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+    }
+    .header-social-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 0;
     }
     .menu-dropdown-wrapper { position: relative; }
     .menu-toggle-btn {
@@ -174,8 +192,14 @@
         box-shadow: 0 4px 14px rgba(0, 104, 255, 0.4);
     }
     @media (max-width: 640px) {
+        .header-inner { padding: 8px 12px; }
+        .brand-title { font-size: 0.90rem; }
+        .brand-sub { font-size: 0.68rem; }
+        .header-social-group { gap: 4px; }
         .header-social-group .social-label { display: none; }
-        .header-social-btn { padding: 4px 6px; }
+        .header-social-btn { padding: 3px 5px; }
+        .header-social-btn svg { width: 14px; height: 14px; }
+        .menu-toggle-btn { padding: 5px 10px; font-size: 0.78rem; }
     }
     </style>
     
@@ -210,23 +234,23 @@
     <!-- UNIVERSAL DROPDOWN HEADER -->
     <header class="app-universal-header">
         <div class="header-inner">
-            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-                <a href="/" class="brand-link">
-                    <div>
+            <div class="brand-wrapper">
+                <div class="brand-row-top">
+                    <a href="/" class="brand-link">
                         <span class="brand-title">NGUYỄN HUY HOÀNG</span>
-                        <span class="brand-sub">Kinh Dịch • Lục Hào Cổ Bốc</span>
+                    </a>
+                    <div class="header-social-group">
+                        <a href="https://www.facebook.com/hoangngumo" target="_blank" rel="noopener noreferrer" class="header-social-btn fb" title="Theo dõi Facebook Nguyễn Huy Hoàng">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1877F2"/><path d="M16.5 12.5H14V20H11V12.5H9.5V10H11V8.2C11 6.3 12.1 5 14.3 5H16.5V7.5H15.1C14.2 7.5 14 7.9 14 8.6V10H16.8L16.5 12.5Z" fill="#FFFFFF"/></svg>
+                            <span class="social-label">Follow FB</span>
+                        </a>
+                        <a href="https://zalo.me/0933116860" target="_blank" rel="noopener noreferrer" class="header-social-btn zalo" title="Nhắn tin Zalo: 0933 116 860">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0068FF"/><path d="M5 8.5C5 7.12 6.12 6 7.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H12.8L9.5 19.2C9.1 19.47 8.5 19.18 8.5 18.7V17H7.5C6.12 17 5 15.88 5 14.5V8.5Z" fill="#FFFFFF"/><path d="M7.5 9.5H10.5L7.8 13.2V13.5H11V12.5H8.7L11.4 8.8V8.5H7.5V9.5ZM12.2 13.5H13.2V8.5H12.2V13.5ZM14.2 13.5H15.2V11H16.2V10H15.2V9.5H16.8V8.5H14.2V13.5Z" fill="#0068FF"/></svg>
+                            <span class="social-label">Zalo</span>
+                        </a>
                     </div>
-                </a>
-                <div class="header-social-group">
-                    <a href="https://www.facebook.com/hoangngumo" target="_blank" rel="noopener noreferrer" class="header-social-btn fb" title="Theo dõi Facebook Nguyễn Huy Hoàng">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1877F2"/><path d="M16.5 12.5H14V20H11V12.5H9.5V10H11V8.2C11 6.3 12.1 5 14.3 5H16.5V7.5H15.1C14.2 7.5 14 7.9 14 8.6V10H16.8L16.5 12.5Z" fill="#FFFFFF"/></svg>
-                        <span class="social-label">Follow FB</span>
-                    </a>
-                    <a href="https://zalo.me/0933116860" target="_blank" rel="noopener noreferrer" class="header-social-btn zalo" title="Nhắn tin Zalo: 0933 116 860">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0068FF"/><path d="M5 8.5C5 7.12 6.12 6 7.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H12.8L9.5 19.2C9.1 19.47 8.5 19.18 8.5 18.7V17H7.5C6.12 17 5 15.88 5 14.5V8.5Z" fill="#FFFFFF"/><path d="M7.5 9.5H10.5L7.8 13.2V13.5H11V12.5H8.7L11.4 8.8V8.5H7.5V9.5ZM12.2 13.5H13.2V8.5H12.2V13.5ZM14.2 13.5H15.2V11H16.2V10H15.2V9.5H16.8V8.5H14.2V13.5Z" fill="#0068FF"/></svg>
-                        <span class="social-label">Zalo</span>
-                    </a>
                 </div>
+                <div class="brand-sub">Chuyên gia nghiên cứu huyền học</div>
             </div>
 
             <div class="menu-dropdown-wrapper">
