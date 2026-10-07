@@ -1009,6 +1009,38 @@
             </div>
         </div>
 
+        <!-- LỊCH TIẾT KHÍ (phần bổ sung độc lập — chỉ hiển thị, không tham gia gieo quẻ) -->
+        <style>
+            #tiet-khi-calendar { max-width: 760px; margin: 24px auto 0; padding: 0 12px; }
+            #tiet-khi-calendar[hidden] { display: none !important; }
+            .tk-card { background: rgba(10, 15, 29, 0.92); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+            .tk-title { margin: 0 0 10px; color: #fbbf24; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.06em; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+            .tk-row { display: grid; grid-template-columns: 112px 1fr; gap: 10px; padding: 7px 0; border-top: 1px dashed rgba(245, 158, 11, 0.15); font-size: 0.88rem; line-height: 1.45; }
+            .tk-row:first-child { border-top: 0; }
+            .tk-label { color: #94a3b8; font-weight: 600; }
+            .tk-value { color: #f1f5f9; }
+            .tk-value b { font-weight: 700; }
+            .tk-gold { color: #fbbf24; }
+            .tk-muted { color: #94a3b8; font-size: 0.8rem; }
+            .tk-bar { height: 4px; background: rgba(148, 163, 184, 0.2); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+            .tk-bar span { display: block; height: 100%; background: linear-gradient(90deg, #d97706, #fbbf24); }
+            .tk-note { margin: 8px 0 0; color: #64748b; font-size: 0.72rem; text-align: center; }
+            @media (max-width: 480px) {
+                .tk-row { grid-template-columns: 1fr; gap: 2px; }
+                .tk-card { padding: 12px; }
+            }
+        </style>
+        <section id="tiet-khi-calendar" hidden aria-label="Lịch tiết khí">
+            <div class="tk-card">
+                <h3 class="tk-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    LỊCH TIẾT KHÍ
+                </h3>
+                <div class="tk-body"></div>
+                <p class="tk-note">Tính theo thiên văn (Astronomy Engine) · Giờ Việt Nam UTC+7</p>
+            </div>
+        </section>
+
         <!-- Bản quyền chân trang -->
         <footer style="padding: 24px 15px 30px; text-align: center; border-top: 1px solid rgba(245, 158, 11, 0.2); background: rgba(10, 15, 29, 0.95); margin-top: 25px;">
             <p style="color: var(--gold); font-weight: 800; margin: 0 0 6px 0; font-size: 0.95rem; letter-spacing: 0.05em;">DỊCH SƯ NGUYỄN HUY HOÀNG</p>
@@ -1048,6 +1080,7 @@
     <script src="calendar.js?v=6.1.0"></script>
     <script src="iching_core.js?v=6.1.0"></script>
     <script src="app.js?v=6.1.0"></script>
+    <script src="tiet_khi_widget.js?v=1.0.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('menu-btn');
