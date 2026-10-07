@@ -146,19 +146,29 @@
 
     function render(box) {
         var now = new Date();
-        var dn = dayNum(now);
-        if (cache.dn !== dn) { cache.dn = dn; cache.lunar = solarToLunar(dn); }
+        var p = localParts(now);
+        var isTyHour = (p.h >= 23);
+        var targetDn = dayNum(now) + (isTyHour ? 1 : 0);
+        if (cache.dn !== targetDn) {
+            cache.dn = targetDn;
+            cache.lunar = solarToLunar(targetDn);
+        }
         if (!cache.info || now >= cache.info.next) cache.info = termInfo(now);
 
-        var p = localParts(now), L = cache.lunar, I = cache.info;
+        var L = cache.lunar, I = cache.info;
+        var jd = targetDn + 2440588;
+        var canNgay = CAN[(jd + 9) % 10];
+        var chiNgay = CHI[(jd + 1) % 12];
+        var canChiNgay = canNgay + ' ' + chiNgay;
         var lunarYearCC = CAN[((L.year + 6) % 10 + 10) % 10] + ' ' + CHI[((L.year + 8) % 12 + 12) % 12];
         var total = I.next - I.start, done = now - I.start;
         var pct = Math.max(0, Math.min(100, (done / total) * 100));
         var nextIsJie = I.next.getTime() === I.nextJie.getTime() || Math.abs(I.next - I.nextJie) < 60000;
 
         var html = '';
-        html += row('Dương lịch', '<b>' + THU[p.wd] + ', ' + pad(p.d) + '/' + pad(p.m) + '/' + p.y + '</b> <span class="tk-muted">· ' + pad(p.h) + ':' + pad(p.mi) + '</span>');
-        html += row('Âm lịch', '<b>Ngày ' + L.day + ' tháng ' + (L.leap ? 'nhuận ' : '') + L.month + '</b> năm <b>' + lunarYearCC + '</b>');
+        var tyNote = isTyHour ? ' <span class="tk-muted" style="color: #fbbf24; font-size: 0.8rem;">(Khởi giờ Tý ngày mới)</span>' : '';
+        html += row('Dương lịch', '<b>' + THU[p.wd] + ', ' + pad(p.d) + '/' + pad(p.m) + '/' + p.y + '</b> <span class="tk-muted">· ' + pad(p.h) + ':' + pad(p.mi) + '</span>' + tyNote);
+        html += row('Âm lịch', '<b>Ngày ' + L.day + ' tháng ' + (L.leap ? 'nhuận ' : '') + L.month + '</b> (' + canChiNgay + ') năm <b>' + lunarYearCC + '</b>');
         html += row('Tiết khí', '<b class="tk-gold">' + TERMS[I.k] + '</b> <span class="tk-muted">(từ ' + fmtDateTime(I.start) + ')</span>' +
             '<div class="tk-bar" aria-hidden="true"><span style="width:' + pct.toFixed(1) + '%"></span></div>');
         html += row('Tháng tiết', '<b class="tk-gold">Tháng ' + CHI[I.monthChi] + '</b> <span class="tk-muted">(' + CAN[I.monthCan] + ' ' + CHI[I.monthChi] + ')</span>');

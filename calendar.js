@@ -314,11 +314,36 @@ const CALENDAR = (function () {
 
         // Nguyệt Kiến (Chi Tháng): Chỉ đổi tại 12 Tiết lệnh (isJie === true), KHÔNG đổi tại Trung Khí
         let currentJie = null;
+        let nextJie = null;
         for (let i = 0; i < allTermsSequence.length; i++) {
-            if (allTermsSequence[i].isJie && castInstantUtc >= allTermsSequence[i].date) {
-                currentJie = allTermsSequence[i];
-            } else if (allTermsSequence[i].date > castInstantUtc) {
-                break;
+            if (allTermsSequence[i].isJie) {
+                if (castInstantUtc >= allTermsSequence[i].date) {
+                    currentJie = allTermsSequence[i];
+                } else if (!nextJie && allTermsSequence[i].date > castInstantUtc) {
+                    nextJie = allTermsSequence[i];
+                    break;
+                }
+            }
+        }
+
+        let remainText = '';
+        if (nextJie) {
+            const diffMs = nextJie.date.getTime() - castInstantUtc.getTime();
+            if (diffMs > 0) {
+                const diffDays = Math.floor(diffMs / (24 * 3600 * 1000));
+                const diffHours = Math.floor((diffMs % (24 * 3600 * 1000)) / (3600 * 1000));
+                const diffMins = Math.floor((diffMs % (3600 * 1000)) / (60 * 1000));
+
+                let timeStr = '';
+                if (diffDays > 0) {
+                    timeStr = `${diffDays} ngày ${diffHours} giờ`;
+                } else if (diffHours > 0) {
+                    timeStr = `${diffHours} giờ ${diffMins} phút`;
+                } else {
+                    timeStr = `${diffMins} phút`;
+                }
+                const nextMonthChi = nextJie.monthChi || '';
+                remainText = `còn ${timeStr} sang ${nextMonthChi}`;
             }
         }
 
@@ -382,7 +407,14 @@ const CALENDAR = (function () {
 
         return {
             nam: { can: CAN[canNamIdx], chi: CHI[chiNamIdx], napAm: getNapAm(CAN[canNamIdx], CHI[chiNamIdx]) },
-            thang: { can: CAN[canThangIdx], chi: CHI[chiThangIdx], hanh: NGU_HANH_CHI[CHI[chiThangIdx]], napAm: getNapAm(CAN[canThangIdx], CHI[chiThangIdx]) },
+            thang: { 
+                can: CAN[canThangIdx], 
+                chi: CHI[chiThangIdx], 
+                hanh: NGU_HANH_CHI[CHI[chiThangIdx]], 
+                napAm: getNapAm(CAN[canThangIdx], CHI[chiThangIdx]),
+                nextMonthChi: nextJie ? nextJie.monthChi : '',
+                remainText: remainText
+            },
             ngay: { can: CAN[canNgayIdx], chi: CHI[chiNgayIdx], hanh: NGU_HANH_CHI[CHI[chiNgayIdx]], napAm: getNapAm(CAN[canNgayIdx], CHI[chiNgayIdx]) },
             gio: { can: CAN[canGioIdx], chi: CHI[chiGioIdx] },
             tuanKhong: [tk1, tk2],

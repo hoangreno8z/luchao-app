@@ -1694,7 +1694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="info-line"><strong>Ngày gieo:</strong> <span>${data.formattedDate}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tiết khí:</strong> <span class="highlight">${dateInfo.tietKhi}</span></div>
                     <div class="info-line"><strong>Ngày âm:</strong> <span>${dateInfo.fullCanChi}</span></div>
                     <div class="info-line"><strong>Tâm niệm:</strong> <span>${dateInfo.haoTamText || 'Không'}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Tuần Không:</strong> <span class="highlight">${dateInfo.tuanKhong}</span></div>
-                    <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span></div>
+                    <div class="info-line"><strong>Nhật Thần:</strong> <span class="highlight">${dateInfo.nhatThan}</span> &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nguyệt Lệnh:</strong> <span class="highlight">${dateInfo.nguyetLenh}</span>${dateInfo.nguyetLenhRemain ? ` <span class="nguyet-lenh-remain" style="color: #666; font-size: 13px; font-weight: 500;">(${dateInfo.nguyetLenhRemain})</span>` : ''}</div>
                 </div>
             </div>
             

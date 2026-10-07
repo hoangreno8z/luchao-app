@@ -546,6 +546,7 @@ const ICHING = (function () {
                 tuanKhong: safeCal.tuanKhong.join(', '),
                 nhatThan: `${safeCal.ngay.can} ${safeCal.ngay.chi}`,
                 nguyetLenh: `${safeCal.thang.can} ${safeCal.thang.chi}`,
+                nguyetLenhRemain: (safeCal.thang && safeCal.thang.remainText) ? safeCal.thang.remainText : '',
                 nhatLenhShort: `${safeCal.ngay.can} ${safeCal.ngay.chi}`,
                 nguyetLenhShort: `${safeCal.thang.can} ${safeCal.thang.chi}`,
                 shenshaRaw: shensha
