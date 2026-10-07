@@ -1029,6 +1029,252 @@
                 .tk-row { grid-template-columns: 1fr; gap: 2px; }
                 .tk-card { padding: 12px; }
             }
+
+            /* --- Menu mở rộng & Tra cứu tiết khí --- */
+            .tk-toggle-btn {
+                width: 100%;
+                margin-top: 10px;
+                padding: 8px 12px;
+                background: rgba(245, 158, 11, 0.08);
+                border: 1px solid rgba(245, 158, 11, 0.28);
+                border-radius: 8px;
+                color: #fbbf24;
+                font-size: 0.82rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: all 0.2s ease;
+            }
+            .tk-toggle-btn:hover {
+                background: rgba(245, 158, 11, 0.16);
+                border-color: #fbbf24;
+            }
+            .tk-toggle-btn .tk-chevron {
+                transition: transform 0.25s ease;
+            }
+            .tk-toggle-btn.expanded .tk-chevron {
+                transform: rotate(180deg);
+            }
+
+            .tk-panel {
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px solid rgba(245, 158, 11, 0.2);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .tk-panel[hidden] {
+                display: none !important;
+            }
+
+            /* Bộ tra cứu */
+            .tk-inspector {
+                background: rgba(15, 23, 42, 0.7);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 8px;
+                padding: 10px;
+            }
+            .tk-sec-title {
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #e2e8f0;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .tk-mode-switch {
+                display: inline-flex;
+                background: rgba(2, 6, 23, 0.6);
+                border: 1px solid rgba(148, 163, 184, 0.25);
+                border-radius: 6px;
+                padding: 2px;
+                margin-bottom: 8px;
+            }
+            .tk-mode-btn {
+                background: transparent;
+                border: none;
+                color: #94a3b8;
+                padding: 4px 10px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+            .tk-mode-btn.active {
+                background: #d97706;
+                color: #fff;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            }
+
+            .tk-inputs-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr) repeat(2, 0.9fr);
+                gap: 5px;
+                margin-bottom: 8px;
+            }
+            .tk-input-group {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .tk-input-group label {
+                font-size: 0.68rem;
+                color: #94a3b8;
+                font-weight: 600;
+            }
+            .tk-input-group input, .tk-input-group select {
+                background: rgba(30, 41, 59, 0.85);
+                border: 1px solid rgba(148, 163, 184, 0.3);
+                color: #f8fafc;
+                border-radius: 5px;
+                padding: 5px 4px;
+                font-size: 0.82rem;
+                font-variant-numeric: tabular-nums;
+                outline: none;
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+            .tk-input-group input:focus, .tk-input-group select:focus {
+                border-color: #fbbf24;
+            }
+
+            .tk-actions {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .tk-btn-primary {
+                background: linear-gradient(135deg, #d97706, #b45309);
+                border: 1px solid #fbbf24;
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 5px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .tk-btn-secondary {
+                background: rgba(30, 41, 59, 0.8);
+                border: 1px solid rgba(148, 163, 184, 0.3);
+                color: #cbd5e1;
+                font-size: 0.75rem;
+                padding: 5px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .tk-leap-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 0.74rem;
+                color: #fbbf24;
+                cursor: pointer;
+                margin-left: 4px;
+            }
+
+            .tk-result-box {
+                background: rgba(2, 6, 23, 0.75);
+                border: 1px dashed rgba(245, 158, 11, 0.35);
+                border-radius: 6px;
+                padding: 8px 10px;
+                font-size: 0.78rem;
+                line-height: 1.45;
+                color: #e2e8f0;
+            }
+            .tk-res-row {
+                margin-bottom: 3px;
+            }
+            .tk-res-row:last-child {
+                margin-bottom: 0;
+            }
+
+            /* Phần 24 tiết khí */
+            .tk-terms-sec {
+                background: rgba(15, 23, 42, 0.7);
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                border-radius: 8px;
+                padding: 10px;
+            }
+            .tk-terms-filter {
+                display: grid;
+                grid-template-columns: 88px 1fr;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .tk-terms-filter select, .tk-terms-filter input {
+                background: rgba(30, 41, 59, 0.85);
+                border: 1px solid rgba(148, 163, 184, 0.3);
+                color: #f8fafc;
+                border-radius: 5px;
+                padding: 5px 8px;
+                font-size: 0.78rem;
+                outline: none;
+                box-sizing: border-box;
+            }
+            .tk-terms-filter input:focus, .tk-terms-filter select:focus {
+                border-color: #fbbf24;
+            }
+
+            .tk-terms-list {
+                max-height: 200px;
+                overflow-y: auto;
+                border: 1px solid rgba(148, 163, 184, 0.15);
+                border-radius: 6px;
+                background: rgba(2, 6, 23, 0.75);
+                padding: 3px;
+            }
+            .tk-term-row {
+                display: grid;
+                grid-template-columns: 74px 8px 62px 8px 1fr;
+                align-items: center;
+                padding: 4px 6px;
+                font-size: 0.74rem;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                border-bottom: 1px solid rgba(148, 163, 184, 0.06);
+                cursor: pointer;
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+            .tk-term-row:last-child {
+                border-bottom: none;
+            }
+            .tk-term-row:hover {
+                background: rgba(245, 158, 11, 0.1);
+            }
+            .tk-term-row.active {
+                background: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+                font-weight: 700;
+                border-left: 3px solid #fbbf24;
+            }
+            .tk-t-name { font-weight: 600; color: #f1f5f9; }
+            .tk-term-row.active .tk-t-name { color: #fbbf24; }
+            .tk-t-solar { color: #94a3b8; }
+            .tk-t-lunar { color: #cbd5e1; }
+            .tk-t-badge {
+                display: inline-block;
+                background: #d97706;
+                color: #fff;
+                font-size: 0.62rem;
+                padding: 1px 4px;
+                border-radius: 3px;
+                margin-left: 4px;
+                font-weight: 700;
+                font-family: system-ui, sans-serif;
+            }
+            .tk-term-empty {
+                padding: 12px;
+                text-align: center;
+                color: #64748b;
+                font-size: 0.76rem;
+            }
         </style>
         <section id="tiet-khi-calendar" hidden aria-label="Lịch tiết khí">
             <div class="tk-card">
@@ -1037,7 +1283,7 @@
                     LỊCH TIẾT KHÍ
                 </h3>
                 <div class="tk-body"></div>
-                <p class="tk-note">Tính theo thiên văn (Astronomy Engine) · Đồng bộ giờ Tý (23:00) theo chuẩn Lục Hào</p>
+                <div id="tk-tools-wrap"></div>
             </div>
         </section>
 
