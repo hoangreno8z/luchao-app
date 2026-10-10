@@ -39,13 +39,14 @@
         "Nhâm": ["Tị", "Thân"], "Quý": ["Tị", "Thân"]
     };
 
-    // 1.3. Phúc Tinh Quý Nhân (Tra theo Can Ngày & Can Năm — Bính gặp Dần, Tý theo Tam Mệnh Thông Hội)
+    // 1.3. Phúc Tinh Quý Nhân (Chuẩn Ca Quyết Vấn Chân Bát Tự 问真八字 & Uyên Hải Tử Bình:
+    // 甲丙相邀寅子位，乙癸相邀卯丑知，戊喜申乡己喜未，丁见亥上壬见辰，庚寻午位辛寻巳)
     const PHUC_TINH_MAP = {
         "Giáp": ["Dần", "Tý"],
-        "Ất": ["Sửu", "Hợi"],
+        "Ất": ["Mão", "Sửu"],
         "Bính": ["Dần", "Tý"],
-        "Đinh": ["Dậu"],
-        "Mậu": ["Thân", "Tý"],
+        "Đinh": ["Hợi"],
+        "Mậu": ["Thân"],
         "Kỷ": ["Mùi"],
         "Canh": ["Ngọ"],
         "Tân": ["Tị"],
