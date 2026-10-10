@@ -108,9 +108,14 @@
             type: "Nghệ Thuật & Huyền Học",
             meaning: "Chủ về tư chất thông tuệ, có tài hoa nghệ thuật, yêu thích nghiên cứu tôn giáo triết học; tính cách thanh cao, thích không gian tĩnh lặng."
         },
+        "Dịch Mã": {
+            name: "Dịch Mã (驿马)",
+            type: "Động Tinh Thăng Tiến",
+            meaning: "Chủ về di chuyển, xuất ngoại, công tác xa, thay đổi nơi ở hoặc nghề nghiệp. Năng động, cầu tiến, phát triển mạnh khi đi xa lập nghiệp."
+        },
         "Trạch Mã": {
             name: "Trạch Mã / Dịch Mã (驿马)",
-            type: "Động Tinh",
+            type: "Động Tinh Thăng Tiến",
             meaning: "Chủ về di chuyển, xuất ngoại, công tác xa, thay đổi nơi ở hoặc nghề nghiệp. Năng động, cầu tiến, phát triển mạnh khi đi xa lập nghiệp."
         },
         "Đào Hoa": {
@@ -119,24 +124,189 @@
             meaning: "Chủ về diện mạo tuấn tú/xinh đẹp, đa tình, có sức hút giới tính mạnh mẽ, duyên ăn nói thu hút đám đông; cần kiểm soát để tránh thị phi ái tình."
         },
         "Lộc Thần": {
-            name: "Lộc Thần (禄神)",
+            name: "Lộc Thần / Nhật Lộc (禄神)",
             type: "Cát Thần Tài Lộc",
-            meaning: "Lộc trời ban, đại diện cho bổng lộc, tiền tài tự tay gây dựng, cơ thể khỏe mạnh dẻo dai, cuộc sống sung túc ấm no."
+            meaning: "Lộc trời ban theo Can Ngày, đại diện cho bổng lộc, tiền tài tự tay gây dựng, cơ thể khỏe mạnh dẻo dai, cuộc sống sung túc ấm no."
+        },
+        "Tuế Lộc": {
+            name: "Tuế Lộc / Niên Lộc (岁禄)",
+            type: "Cát Thần Phúc Ấm",
+            meaning: "Lộc theo Can Năm của dòng họ tổ tiên truyền lại; chủ về được hưởng âm phúc gia đình, thừa kế điền sản hoặc tổ nghiệp vẻ vang."
         },
         "Kình Dương": {
             name: "Kình Dương / Dương Nhẫn (羊刃)",
             type: "Hung Tinh Cương Liệt",
             meaning: "Thanh đao sắc bén. Tính tình cương liệt, dũng cảm, quyết liệt; nếu đắc dụng thì nắm đại quyền, nếu vô chế thì dễ tai nạn thương tích hoặc bốc đồng."
         },
+        "Niên Nhẫn": {
+            name: "Niên Nhẫn (年刃)",
+            type: "Hung Sát Cương Liệt",
+            meaning: "Dương Nhẫn tra theo Can Năm; chủ về tính cách mạnh mẽ, tự lập sớm, cần tôi luyện kiên nhẫn để không xảy ra va chạm thị phi."
+        },
+        "Phi Nhẫn": {
+            name: "Phi Nhẫn (飞刃)",
+            type: "Hung Tinh Đối Xung",
+            meaning: "Đối xung với Dương Nhẫn. Chủ về biến động bất ngờ, cẩn trọng khi tham gia thể thao mạo hiểm hoặc quyết định tài chính liều lĩnh."
+        },
+        "Quốc Ấn": {
+            name: "Quốc Ấn Quý Nhân (国印贵人)",
+            type: "Quyền Bính Cát Thần",
+            meaning: "Con dấu của nhà nước. Đại diện cho phẩm hàm, chức vụ, sự chính trực, đáng tin cậy, dễ thăng tiến trong cơ quan công quyền hoặc tập đoàn lớn."
+        },
+        "Thiên Trù": {
+            name: "Thiên Trù Quý Nhân (天厨贵人)",
+            type: "Phúc Lộc Ẩm Thực",
+            meaning: "Bếp trời ban phúc. Đại diện cho tài ẩm thực, ăn ngon mặc đẹp, cuộc sống an nhiên no đủ, hậu vận an khang."
+        },
         "Kim Dư": {
             name: "Kim Dư (金舆)",
             type: "Phú Quý Cát Thần",
-            meaning: "Xe vàng ngọc. Đại diện cho phú quý, hôn nhân gả vào nhà giàu hoặc lấy được vợ hiền trợ giúp đắc lực cho sự nghiệp."
+            meaning: "Xe vàng ngọc. Đại diện cho phú quý, hôn nhân môn đăng hộ đối hoặc lấy được bạn đời hiền đức trợ giúp đắc lực cho sự nghiệp."
+        },
+        "Học Đường": {
+            name: "Học Đường Quý Nhân (学堂贵人)",
+            type: "Học Thuật Cát Thần",
+            meaning: "Trường sinh vị của bản mệnh. Chủ về thông minh, ham học hỏi, tiếp thu nhanh, học cao hiểu rộng, sự nghiệp học hành đỗ đạt vẻ vang."
+        },
+        "Từ Quán": {
+            name: "Từ Quán Quý Nhân (词馆贵人)",
+            type: "Văn Chương Cát Thần",
+            meaning: "Kho sách thánh hiền. Chủ về văn phong lưu loát, tài hoa xuất chúng, có năng khiếu viết lách, ngôn luận và phát biểu thuyết phục."
         },
         "Hồng Diễm": {
             name: "Hồng Diễm Sát (红艳)",
             type: "Duyên Dáng Tình Duyên",
             meaning: "Chủ về nụ cười duyên dáng, lãng mạn, dễ làm say đắm lòng người, tình cảm phong phú và được nhiều người mến mộ."
+        },
+        "Lưu Hà": {
+            name: "Lưu Hà Sát (流霞)",
+            type: "Huyết Quang Hung Sát",
+            meaning: "Chủ về kỵ huyết quang, sản nạn, di chuyển sông nước; cần chú ý an toàn khi đi xa và chăm sóc sức khỏe sinh sản định kỳ."
+        },
+        "Huyết Nhẫn": {
+            name: "Huyết Nhẫn (血刃)",
+            type: "Thương Tật Hung Sát",
+            meaning: "Chủ về dễ gặp thương tật ngoài da, phẫu thuật dao kéo hoặc va quẹt xe cộ; nên hiến máu nhân đạo hoặc cạo vôi răng đầu năm để giải hạn."
+        },
+        "Thiên Đức Hợp": {
+            name: "Thiên Đức Hợp (天德合)",
+            type: "Cát Thần Che Chở",
+            meaning: "Hợp khí với Thiên Đức. Gia tăng phúc thọ, giảm nhẹ tai ương, hóa giải các xung khắc bất ngờ trong cuộc sống."
+        },
+        "Nguyệt Đức Hợp": {
+            name: "Nguyệt Đức Hợp (月德合)",
+            type: "Cát Thần An Lành",
+            meaning: "Hợp khí với Nguyệt Đức. Tăng cường phúc duyên hôn nhân gia đạo, gặp nạn có người đỡ đầu, tâm hồn hướng thiện."
+        },
+        "Đức Tú": {
+            name: "Đức Tú Quý Nhân (德秀贵人)",
+            type: "Thanh Tú Cát Thần",
+            meaning: "Khí tú của ngũ hành theo lệnh tháng. Chủ về cốt cách thanh nhã, tài sắc song toàn, văn chương đoan chính, tính tình hòa nhã nhân từ."
+        },
+        "Thiên Xá": {
+            name: "Thiên Xá Quý Nhân (天赦贵人)",
+            type: "Đại Cát Cứu Giải",
+            meaning: "Trời ban chiếu ân xá. Quý thần giải tai ách đệ nhất; dù gặp nạn lớn hay vướng vào pháp lý cũng được quý nhân giải cứu, gặp hung hóa cát."
+        },
+        "Thiên Y": {
+            name: "Thiên Y Quý Nhân (天医贵人)",
+            type: "Sức Khỏe & Y Thuật",
+            meaning: "Thần sao thầy thuốc. Đại diện cho sức khỏe dẻo dai, biết cách phòng bệnh trị liệu; thích hợp làm nghề y dược, chăm sóc sức khỏe hoặc dưỡng sinh."
+        },
+        "Hồng Loan": {
+            name: "Hồng Loan Tinh (红鸾)",
+            type: "Hôn Nhân Hỷ Khánh",
+            meaning: "Sao chủ về tình duyên chính thức, hôn nhân hạnh phúc, gia đạo có tin mừng thêm người thêm của, diện mạo đoan trang khả ái."
+        },
+        "Thiên Hỷ": {
+            name: "Thiên Hỷ Tinh (天喜)",
+            type: "Niềm Vui May Mắn",
+            meaning: "Sao chủ về niềm vui, hỷ sự bất ngờ, tâm trạng vui tươi cởi mở; là vị tinh thần tiêu trừ buồn phiền âu lo."
+        },
+        "Cô Thần": {
+            name: "Cô Thần (孤辰)",
+            type: "Cô Độc Hung Sát",
+            meaning: "Chủ về tính tình trầm lặng, thích ở một mình, hôn nhân duyên phận đến muộn; nếu tu tập hoặc nghiên cứu chuyên sâu thì rất tinh thông."
+        },
+        "Quả Tú": {
+            name: "Quả Tú (寡宿)",
+            type: "Thanh Lặng Hung Sát",
+            meaning: "Chủ về ít giao thiệp, nội tâm kín đáo, khó sẻ chia tâm sự; cần chủ động mở lòng và tham gia các hoạt động cộng đồng."
+        },
+        "Câu Thần": {
+            name: "Câu Thần Sát (勾神)",
+            type: "Trở Ngại Thị Phi",
+            meaning: "Chủ về khẩu thiệt thị phi, việc làm hay bị níu kéo trì hoãn; cần cẩn trọng trong các cam kết bằng văn bản hoặc hợp đồng."
+        },
+        "Giảo Thần": {
+            name: "Giảo Thần Sát (绞神)",
+            type: "Vướng Mắc Rắc Rối",
+            meaning: "Chủ về công việc dễ bị dây dưa trói buộc, phiền phức từ các mối quan hệ xã giao; nên dứt khoát và rõ ràng trong tiền bạc."
+        },
+        "Đại Hao": {
+            name: "Đại Hao / Nguyên Thần (大耗 / 元辰)",
+            type: "Tổn Hao Hung Sát",
+            meaning: "Chủ về hao tán tài của, chi tiêu bất ngờ, gặp việc khó lường; thích hợp đầu tư dài hạn vào tài sản cố định hoặc làm từ thiện tích đức."
+        },
+        "Ngũ Quỷ": {
+            name: "Ngũ Quỷ / Quan Phù (五鬼 / 官符)",
+            type: "Tiểu Nhân Quấy Phá",
+            meaning: "Chủ về đề phòng tiểu nhân gièm pha, tranh chấp công việc; nên hành xử minh bạch, tránh bao che hoặc tham gia chuyện mờ ám."
+        },
+        "Thiên La": {
+            name: "Thiên La (天罗)",
+            type: "Lưới Trời Trói Buộc",
+            meaning: "Lưới trời Tuất Hợi. Chủ về tâm trí trăn trở nhiều, dễ cảm thấy bế tắc định hướng; thích hợp hướng tâm vào nghiên cứu triết học, đạo học."
+        },
+        "Địa Võng": {
+            name: "Địa Võng (地网)",
+            type: "Lưới Đất Ràng Buộc",
+            meaning: "Lưới đất Thìn Tị. Chủ về công việc nhiều ràng buộc, áp lực môi trường sống; cần giữ tinh thần lạc quan, tuân thủ pháp luật nghiêm ngặt."
+        },
+        "Khôi Cương": {
+            name: "Khôi Cương Quý Cách (魁罡)",
+            type: "Uy Quyền Cương Quyết",
+            meaning: "Tính tình cương nghị, thông minh quyết đoán, có chí lớn làm lãnh đạo; kỵ hình xung phá cách, đắc cách thì phú quý tột bậc."
+        },
+        "Thập Linh": {
+            name: "Thập Linh Nhật (十灵日)",
+            type: "Trí Tuệ Linh Hoạt",
+            meaning: "Ngộ tính cực cao, trực giác nhạy bén, thông minh đĩnh ngộ, có duyên sâu đậm với huyền học và nghệ thuật sáng tạo."
+        },
+        "Kim Thần": {
+            name: "Kim Thần Quý Cách (金神)",
+            type: "Uy Dũng Kiên Cường",
+            meaning: "Chí khí hào kiệt, ý chí gang thép, không chịu khuất phục khó khăn; gặp đất Hỏa chế ngự thì phát tài phát lộc lớn."
+        },
+        "Lục Tú": {
+            name: "Lục Tú Nhật (六秀日)",
+            type: "Tài Hoa Thanh Nhã",
+            meaning: "Vẻ ngoài tuấn tú/xinh đẹp, tài hoa phát lộ, ăn nói có duyên và cư xử hòa nhã lịch thiệp, dễ thành công trong xã hội."
+        },
+        "Thập Ác Đại Bại": {
+            name: "Thập Ác Đại Bại (十恶大败)",
+            type: "Bất Khả Kháng Hung Sát",
+            meaning: "Chủ về tài vận thăng trầm khó giữ, tiền vào tay này ra tay khác; nên rèn luyện kỹ năng quản lý tài chính chặt chẽ."
+        },
+        "Âm Dương Sai Thác": {
+            name: "Âm Dương Sai Thác (阴阳差错)",
+            type: "Hôn Nhân Bất Hòa",
+            meaning: "Duyên phận vợ chồng hoặc quan hệ với gia đình thông gia dễ có hiểu lầm trắc trở; cần bao dung lắng nghe để giữ hòa khí gia đình."
+        },
+        "Cô Loan": {
+            name: "Cô Loan Sát (孤鸾煞)",
+            type: "Phòng Trống Cô Đơn",
+            meaning: "Chủ về tình duyên trắc trở, hôn nhân đến muộn hoặc khó hòa hợp trong đời sống vợ chồng; nên kết hôn muộn để hóa giải."
+        },
+        "Tai Sát": {
+            name: "Tai Sát (灾煞)",
+            type: "Tai Họa Đột Xuất",
+            meaning: "Lục xung với Tướng Tinh. Cần thận trọng khi di chuyển xa hoặc đưa ra các quyết định liều lĩnh trong công việc."
+        },
+        "Tuế Sát": {
+            name: "Tuế Sát (岁煞)",
+            type: "Trở Ngại Tiến Trình",
+            meaning: "Chủ về mưu sự hay gặp cản trở từ ngoại cảnh; cần chuẩn bị kế hoạch dự phòng chu đáo và kiên nhẫn vượt khó."
         },
         "Không Vong": {
             name: "Tuần Không / Không Vong (空亡)",

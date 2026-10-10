@@ -29,6 +29,13 @@
         return map[branch] || '#1e293b';
     }
 
+    function formatThanSatTag(s) {
+        const thanSatModule = global.BatTuThanSat || (typeof window !== 'undefined' ? window.BatTuThanSat : null);
+        const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(s) : false;
+        const cls = isCat ? "than-sat-tag than-sat-cat" : "than-sat-tag than-sat-hung";
+        return `<span class="${cls}">${s}</span>`;
+    }
+
     function renderBatTuHtmlTable(data, is100Years = false) {
         if (!data) return "";
 
@@ -137,7 +144,7 @@
                             ${pillars.map(p => {
                                 const stars = p.thanSat || p.stars || [];
                                 if (stars.length === 0) return '<td style="color:#94a3b8;">-</td>';
-                                return `<td><div class="than-sat-list">${stars.map(s => `<span class="than-sat-tag">${s}</span>`).join('')}</div></td>`;
+                                return `<td><div class="than-sat-list">${stars.map(s => formatThanSatTag(s)).join('')}</div></td>`;
                             }).join('')}
                         </tr>
 
@@ -233,7 +240,7 @@
                             <td class="row-label">DANH MỤC</td>
                             ${pillars.map(p => {
                                 const stars = p.thanSat || p.stars || [];
-                                return `<td><div class="than-sat-list">${stars.map(s => `<span class="than-sat-tag">${s}</span>`).join('') || '-'}</div></td>`;
+                                return `<td><div class="than-sat-list">${stars.map(s => formatThanSatTag(s)).join('') || '-'}</div></td>`;
                             }).join('')}
                         </tr>
                     </tbody>

@@ -694,11 +694,26 @@ input:checked + .slider:before {
 }
 
 .than-sat-tag {
-    color: #1e40af;
-    font-size: 0.74rem;
+    font-size: 0.73rem;
     font-weight: 600;
-    background: transparent;
-    padding: 0 2px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    line-height: 1.25;
+    display: inline-block;
+    margin: 1px;
+    color: #1e40af;
+}
+
+.than-sat-tag.than-sat-cat {
+    color: #15803d;
+    background: rgba(22, 101, 34, 0.08);
+    border: 1px solid rgba(22, 101, 34, 0.2);
+}
+
+.than-sat-tag.than-sat-hung {
+    color: #b91c1c;
+    background: rgba(185, 28, 28, 0.08);
+    border: 1px solid rgba(185, 28, 28, 0.2);
 }
 
 .cell-nayin {

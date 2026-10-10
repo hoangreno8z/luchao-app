@@ -277,12 +277,14 @@
                     });
                 } else if (r.key === "thanSat") {
                     const stars = p.thanSat || p.stars || [];
-                    ctx.fillStyle = "#1D4ED8";
                     ctx.font = "600 28px 'Inter', sans-serif";
                     ctx.textAlign = "center";
                     const step = !is100Years ? 46 : 40;
                     let tsY = curY + (r.h - (Math.min(4, stars.length) - 1) * step) / 2 + 9;
                     stars.slice(0, 4).forEach(st => {
+                        const thanSatModule = global.BatTuThanSat || (typeof window !== 'undefined' ? window.BatTuThanSat : null);
+                        const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(st) : false;
+                        ctx.fillStyle = isCat ? "#15803d" : "#b91c1c";
                         ctx.fillText(st, centerX, tsY);
                         tsY += step;
                     });
