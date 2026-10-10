@@ -82,19 +82,19 @@
         "Nhâm": "Hợi", "Quý": "Tý"
     };
 
-    // 1.8. Kình Dương / Dương Nhẫn (Tra theo Can Ngày — Đế Vượng vị của Dương Can, Quan Đới/Lâm Quan của Âm Can)
-    // Mậu gặp Ngọ là Kình Dương (Dương Nhẫn), tuyệt đối KHÔNG PHẢI Lộc Thần!
+    // 1.8. Kình Dương / Dương Nhẫn (Chuẩn Vấn Chân Bát Tự 问真八字 & Tam Mệnh Thông Hội)
+    // Dương Can đắc Đế Vượng vị; Âm Can đắc Lâm Quan vị của Dương Can cùng ngũ hành (Ất-Dần, Đinh/Kỷ-Tị, Tân-Thân, Quý-Hợi)
     const KINH_DUONG_MAP = {
-        "Giáp": "Mão", "Ất": "Thìn", "Bính": "Ngọ", "Mậu": "Ngọ",
-        "Đinh": "Mùi", "Kỷ": "Mùi", "Canh": "Dậu", "Tân": "Tuất",
-        "Nhâm": "Tý", "Quý": "Sửu"
+        "Giáp": "Mão", "Ất": "Dần", "Bính": "Ngọ", "Đinh": "Tị",
+        "Mậu": "Ngọ",  "Kỷ": "Tị",  "Canh": "Dậu", "Tân": "Thân",
+        "Nhâm": "Tý",  "Quý": "Hợi"
     };
 
-    // 1.9. Phi Nhẫn (Lục Xung của Dương Nhẫn — Tra theo Can Ngày)
+    // 1.9. Phi Nhẫn (Lục Xung của Dương Nhẫn — Chuẩn Vấn Chân Bát Tự 问真八字)
     const PHI_NHAN_MAP = {
-        "Giáp": "Dậu", "Ất": "Tuất", "Bính": "Tý", "Mậu": "Tý",
-        "Đinh": "Sửu", "Kỷ": "Sửu", "Canh": "Mão", "Tân": "Thìn",
-        "Nhâm": "Ngọ", "Quý": "Mùi"
+        "Giáp": "Dậu", "Ất": "Thân", "Bính": "Tý", "Đinh": "Hợi",
+        "Mậu": "Tý",  "Kỷ": "Hợi",  "Canh": "Mão", "Tân": "Dần",
+        "Nhâm": "Ngọ", "Quý": "Tị"
     };
 
     // 1.10. Kim Dư (Tra theo Can Ngày — Lộc tiền nhị vị: Giáp Thìn, Ất Tị...)
