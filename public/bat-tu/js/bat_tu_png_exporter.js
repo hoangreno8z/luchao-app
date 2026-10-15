@@ -313,10 +313,9 @@
         ctx.fillText("Đại vận lưu niên:", tblX + 24, curY + infoBarH / 2 + 10);
 
         ctx.fillStyle = "#475569";
-        ctx.font = "500 26px 'Inter', sans-serif";
-        const startAgeStr = data.yun?.startAgeFormatted || "8 tuổi 9 tháng";
-        const solarTermStr = data.solarTermInfo || "Tiết Tiểu hàn bắt đầu 05-01-1990 và kết thúc 04-02-1990";
-        ctx.fillText(`Số tính đại vận = ${data.yun?.startAgeDecimal || '26.14'}; Nhập đại vận lúc ${startAgeStr}. ${solarTermStr}`, tblX + 260, curY + infoBarH / 2 + 10);
+        ctx.font = "500 24px 'Inter', sans-serif";
+        const summaryText = data.yun?.summaryText || (data.yun?.startAgeFormatted ? `Khởi vận sau sinh: ${data.yun.startAgeFormatted}. ${data.solarTermInfo || ''}` : "Khởi Đại Vận theo Tiết Khí");
+        ctx.fillText(summaryText, tblX + 260, curY + infoBarH / 2 + 10);
 
         curY += infoBarH + (!is100Years ? 30 : 18);
 
@@ -514,7 +513,7 @@
                     ctx.fillStyle = "#DC2626";
                     ctx.font = "700 28px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    const startM = data.yun?.startMonthNum || 6;
+                    const startM = data.yun?.startSolarMonth || data.yun?.startMonthNum || 6;
                     const mStr = startM < 10 ? '0' + startM : startM;
                     ctx.fillText(`${mStr}/${dy.startYear} — ${startAge}t`, cX, gY + 40);
 

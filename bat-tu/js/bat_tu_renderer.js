@@ -265,7 +265,7 @@
                                 ${rowGroup.map(dy => {
                                     const sYear = parseInt(dy.startYear, 10);
                                     const sAge = Math.max(1, sYear - birthYear + 1);
-                                    const sM = data.yun?.startMonthNum || 6;
+                                    const sM = data.yun?.startSolarMonth || data.yun?.startMonthNum || 6;
                                     const mStr = sM < 10 ? '0' + sM : sM;
                                     return `
                                     <th style="width: 18.4%; background: #fffdf8; border: 1px solid #2b5797; padding: 4px 2px;">
