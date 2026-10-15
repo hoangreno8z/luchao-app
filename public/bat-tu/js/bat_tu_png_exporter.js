@@ -345,9 +345,11 @@
             // 10 Cột Đại Vận
             daYunList.slice(0, 10).forEach((dy, idx) => {
                 const dyX = tblX + colLabelW + idx * col10W;
-                const startAge = Math.max(1, parseInt(dy.startYear, 10) - birthYear + 1);
-                const endAge = startAge + 9;
-                const isActive = (currentAge >= startAge && currentAge <= endAge);
+                const startAge = dy.startAge || Math.max(1, parseInt(dy.startYear, 10) - birthYear + 1);
+                const endAge = dy.endAge || (startAge + 9);
+                const dyStartYear = parseInt(dy.startYear, 10);
+                const dyEndYear = parseInt(dy.endYear || (dyStartYear + 9), 10);
+                const isActive = (currentYear >= dyStartYear && currentYear <= dyEndYear) || (currentAge >= startAge && currentAge <= endAge);
 
                 ctx.fillStyle = isActive ? "#c8cdc0" : "#e7e8e2";
                 ctx.fillRect(dyX, curY, col10W, dyH);
@@ -388,8 +390,9 @@
 
             // 2 HÀNG LƯU NIÊN (MỖI HÀNG 10 NĂM)
             const activeIdx = daYunList.findIndex(d => {
-                const sAge = Math.max(1, parseInt(d.startYear, 10) - birthYear + 1);
-                return currentAge >= sAge && currentAge <= sAge + 9;
+                const dyStartYear = parseInt(d.startYear, 10);
+                const dyEndYear = parseInt(d.endYear || (dyStartYear + 9), 10);
+                return currentYear >= dyStartYear && currentYear <= dyEndYear;
             });
 
             const baseIdx = activeIdx >= 0 ? activeIdx : 2;
@@ -448,7 +451,7 @@
                     ctx.fillText(String(lnYear), cX, curY + 250);
 
                     // Tuổi
-                    const ageNum = Math.max(1, lnYear - birthYear + 1);
+                    const ageNum = lnList[i]?.age || Math.max(1, lnYear - birthYear + 1);
                     ctx.fillStyle = "#1D4ED8";
                     ctx.font = "700 32px 'Inter', sans-serif";
                     ctx.fillText(`${ageNum}t`, cX, curY + 335);
@@ -495,7 +498,7 @@
                 rowGroup.forEach((dy, cIdx) => {
                     const dyX = tblX + smallLabelW + cIdx * dyColW;
                     const startYear = parseInt(dy.startYear, 10);
-                    const startAge = Math.max(1, startYear - birthYear + 1);
+                    const startAge = dy.startAge || Math.max(1, startYear - birthYear + 1);
 
                     ctx.fillStyle = "#e7e8e2";
                     ctx.fillRect(dyX, gY, dyColW, dyRowH);

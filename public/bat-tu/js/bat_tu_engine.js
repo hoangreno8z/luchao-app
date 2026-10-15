@@ -228,6 +228,16 @@
         const nextJieStr = nextJie ? nextJie.getSolar().toYmdHms() : '';
         const solarTermInfo = `Tiết ${prevJieName} bắt đầu ${prevJieStr} và kết thúc ${nextJieStr}`;
 
+        // Tuổi khởi đại vận theo chuẩn Tử Bình tứ xả ngũ nhập (四舍五入):
+        // Dưới 6 tháng giữ nguyên năm, từ 6 tháng trở lên làm tròn lên 1 tuổi. Tối thiểu là 1 tuổi.
+        let baseStartAge = startYearNum;
+        if (startMonthNum >= 6) {
+            baseStartAge += 1;
+        }
+        if (baseStartAge < 1) {
+            baseStartAge = 1;
+        }
+
         // Lấy 11 phần tử để có trọn vẹn 10 bước Đại Vận (index 1..10) từ thư viện
         const daYunList = yun.getDaYun(11);
         const daYunResult = [];
@@ -239,14 +249,18 @@
             const dyBranch = toViZhi(dyGz[1]);
             const dyShiShen = getShiShenName(dayStem, dyStem);
 
+            const stepIdx = i - 1; // 0..9
+            const dyStartAge = baseStartAge + stepIdx * 10;
+            const dyEndAge = dyStartAge + 9;
+
             const liuNianList = dy.getLiuNian();
-            const lnResult = liuNianList.map(ln => {
+            const lnResult = liuNianList.map((ln, lnIdx) => {
                 const lnGz = ln.getGanZhi();
                 const lnStem = toViGan(lnGz[0]);
                 const lnBranch = toViZhi(lnGz[1]);
                 return {
                     year: ln.getYear(),
-                    age: ln.getAge(),
+                    age: dyStartAge + lnIdx,
                     stem: lnStem,
                     branch: lnBranch,
                     ganZhi: lnStem + ' ' + lnBranch,
@@ -259,8 +273,8 @@
                 index: i,
                 startYear: dy.getStartYear(),
                 endYear: dy.getEndYear(),
-                startAge: dy.getStartAge(),
-                endAge: dy.getEndAge(),
+                startAge: dyStartAge,
+                endAge: dyEndAge,
                 realStartAge: dy.getStartYear() - year,
                 realEndAge: dy.getEndYear() - year,
                 stem: dyStem,
@@ -324,8 +338,8 @@
         }
 
         const startAgeDecimal = (startYearNum + (startMonthNum / 12) + (startDayNum / 365)).toFixed(2);
-        const startAgeFormatted = `${startYearNum} tuổi ${startMonthNum} tháng ${startDayNum} ngày`;
-        const summaryText = `Khởi vận sau sinh: ${startYearNum} năm ${startMonthNum} tháng ${startDayNum} ngày (Giao vận: ${startSolarDateFormatted}). ${solarTermInfo}`;
+        const startAgeFormatted = `${baseStartAge} tuổi (sau sinh ${startYearNum} năm ${startMonthNum} tháng ${startDayNum} ngày)`;
+        const summaryText = `Khởi đại vận: ${baseStartAge} tuổi (sau sinh ${startYearNum} năm ${startMonthNum} tháng ${startDayNum} ngày, giao vận: ${startSolarDateFormatted}). ${solarTermInfo}`;
 
         return {
             name: name || 'VÔ DANH KHÁCH',
@@ -344,6 +358,7 @@
             pillars,
             solarTermInfo,
             yun: {
+                baseStartAge,
                 startYearNum,
                 startMonthNum,
                 startDayNum,

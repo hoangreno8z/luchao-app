@@ -176,9 +176,11 @@
                         <tr>
                             <th style="width: 10%;">10 ĐẠI VẬN</th>
                             ${daYunList.slice(0, 10).map((dy) => {
-                                const sAge = Math.max(1, parseInt(dy.startYear, 10) - birthYear + 1);
-                                const eAge = sAge + 9;
-                                const isActive = (currentAge >= sAge && currentAge <= eAge);
+                                const sAge = dy.startAge || Math.max(1, parseInt(dy.startYear, 10) - birthYear + 1);
+                                const eAge = dy.endAge || (sAge + 9);
+                                const dyStartYear = parseInt(dy.startYear, 10);
+                                const dyEndYear = parseInt(dy.endYear || (dyStartYear + 9), 10);
+                                const isActive = (2026 >= dyStartYear && 2026 <= dyEndYear) || (currentAge >= sAge && currentAge <= eAge);
                                 return `
                                 <th class="${isActive ? 'active-dayun-col' : ''}">
                                     <div class="dy-ganzhi" style="color:${dy.stemColor || '#27ae60'};">${dy.ganZhi}</div>
@@ -194,8 +196,9 @@
                 <!-- Hàng 10 Năm Lưu Niên Của Đại Vận Hiện Tại -->
                 ${(() => {
                     const activeDaYun = daYunList.find(d => {
-                        const sAge = Math.max(1, parseInt(d.startYear, 10) - birthYear + 1);
-                        return currentAge >= sAge && currentAge <= sAge + 9;
+                        const dyStartYear = parseInt(d.startYear, 10);
+                        const dyEndYear = parseInt(d.endYear || (dyStartYear + 9), 10);
+                        return 2026 >= dyStartYear && 2026 <= dyEndYear;
                     }) || daYunList[0];
 
                     if (!activeDaYun || !activeDaYun.liuNian) return '';
@@ -209,7 +212,7 @@
                                 </td>
                                 ${activeDaYun.liuNian.slice(0, 10).map((ln) => {
                                     const lnYear = parseInt(ln.year, 10);
-                                    const lnAge = Math.max(1, lnYear - birthYear + 1);
+                                    const lnAge = ln.age || Math.max(1, lnYear - birthYear + 1);
                                     const isCurYear = (lnYear === 2026);
                                     return `
                                     <td class="${isCurYear ? 'active-year-cell' : ''}">
@@ -264,7 +267,7 @@
                                 <th style="width: 8%; vertical-align: middle; font-size: 0.8rem;">${gIdx === 0 ? 'ĐẠI VẬN' : 'ĐẠI VẬN'}</th>
                                 ${rowGroup.map(dy => {
                                     const sYear = parseInt(dy.startYear, 10);
-                                    const sAge = Math.max(1, sYear - birthYear + 1);
+                                    const sAge = dy.startAge || Math.max(1, sYear - birthYear + 1);
                                     const sM = data.yun?.startSolarMonth || data.yun?.startMonthNum || 6;
                                     const mStr = sM < 10 ? '0' + sM : sM;
                                     return `
