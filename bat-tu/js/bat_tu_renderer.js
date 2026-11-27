@@ -42,7 +42,8 @@
         const pillars = [data.pillars.year, data.pillars.month, data.pillars.day, data.pillars.time];
         const daYunList = data.daYun || [];
         const birthYear = parseInt(data.solarYear || data.pillars?.year?.solarYear || 1988, 10);
-        const currentAge = Math.max(1, 2026 - birthYear + 1);
+        const currentYear = new Date().getFullYear();
+        const currentAge = Math.max(1, currentYear - birthYear + 1);
 
         let html = `
         <div class="battu-sheet" id="battu-sheet-export">
@@ -180,7 +181,7 @@
                                 const eAge = dy.endAge || (sAge + 9);
                                 const dyStartYear = parseInt(dy.startYear, 10);
                                 const dyEndYear = parseInt(dy.endYear || (dyStartYear + 9), 10);
-                                const isActive = (2026 >= dyStartYear && 2026 <= dyEndYear) || (currentAge >= sAge && currentAge <= eAge);
+                                const isActive = (currentYear >= dyStartYear && currentYear <= dyEndYear) || (currentAge >= sAge && currentAge <= eAge);
                                 return `
                                 <th class="${isActive ? 'active-dayun-col' : ''}">
                                     <div class="dy-ganzhi" style="color:${dy.stemColor || '#27ae60'};">${dy.ganZhi}</div>
@@ -198,7 +199,7 @@
                     const activeDaYun = daYunList.find(d => {
                         const dyStartYear = parseInt(d.startYear, 10);
                         const dyEndYear = parseInt(d.endYear || (dyStartYear + 9), 10);
-                        return 2026 >= dyStartYear && 2026 <= dyEndYear;
+                        return currentYear >= dyStartYear && currentYear <= dyEndYear;
                     }) || daYunList[0];
 
                     if (!activeDaYun || !activeDaYun.liuNian) return '';
@@ -213,7 +214,7 @@
                                 ${activeDaYun.liuNian.slice(0, 10).map((ln) => {
                                     const lnYear = parseInt(ln.year, 10);
                                     const lnAge = ln.age || Math.max(1, lnYear - birthYear + 1);
-                                    const isCurYear = (lnYear === 2026);
+                                    const isCurYear = (lnYear === currentYear);
                                     return `
                                     <td class="${isCurYear ? 'active-year-cell' : ''}">
                                         <div style="font-weight:700; color:${getStemColor(ln.ganZhi.split(' ')[0])}; font-size:0.88rem;">${ln.ganZhi}</div>

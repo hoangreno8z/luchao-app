@@ -13,18 +13,20 @@
 
     var GAN = { '甲': 'Giáp', '乙': 'Ất', '丙': 'Bính', '丁': 'Đinh', '戊': 'Mậu', '己': 'Kỷ', '庚': 'Canh', '辛': 'Tân', '壬': 'Nhâm', '癸': 'Quý' };
     var ZHI = { '子': 'Tý', '丑': 'Sửu', '寅': 'Dần', '卯': 'Mão', '辰': 'Thìn', '巳': 'Tỵ', '午': 'Ngọ', '未': 'Mùi', '申': 'Thân', '酉': 'Dậu', '戌': 'Tuất', '亥': 'Hợi' };
-    var CANH = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
-    var CANH_RANGE = ['23:00–00:59', '01:00–02:59', '03:00–04:59', '05:00–06:59', '07:00–08:59', '09:00–10:59',
-        '11:00–12:59', '13:00–14:59', '15:00–16:59', '17:00–18:59', '19:00–20:59', '21:00–22:59'];
+    var CANH = ['Tý sớm', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi', 'Tý muộn'];
+    var CANH_RANGE = ['00:00–00:59', '01:00–02:59', '03:00–04:59', '05:00–06:59', '07:00–08:59', '09:00–10:59',
+        '11:00–12:59', '13:00–14:59', '15:00–16:59', '17:00–18:59', '19:00–20:59', '21:00–22:59', '23:00–23:59 → sang hôm sau'];
 
     function ganZhiVi(gz) {
         if (!gz || gz.length < 2) return '';
         return (GAN[gz.charAt(0)] || gz.charAt(0)) + ' ' + (ZHI[gz.charAt(1)] || gz.charAt(1));
     }
 
-    /** Giờ đồng hồ (0–23) → chỉ số canh giờ 0..11 (Tý = 23:00–00:59). */
+    /** Giờ đồng hồ (0–23) → chỉ số canh giờ 0..12 (0 = Tý sớm 00h, 12 = Tý muộn 23h tính sang hôm sau). */
     function hourToCanhIndex(h) {
-        return Math.floor(((h + 1) % 24) / 2);
+        if (h === 0) return 0;
+        if (h === 23) return 12;
+        return Math.floor((h + 1) / 2);
     }
 
     /** Gắn hook để khi script gốc gán .value bằng code, giao diện cũng đồng bộ theo. */
@@ -122,9 +124,13 @@
         function renderHint() {
             if (!hint) return;
             var idx = parseInt(hourSelect.value, 10);
-            if (isNaN(idx) || idx < 0 || idx > 11) return;
-            hint.innerHTML = 'Đang chọn: <strong>Giờ ' + CANH[idx] + ' (' + CANH_RANGE[idx] + ')</strong>. ' +
-                'Không rõ canh giờ? Nhập giờ đồng hồ bên cạnh, hệ thống tự chọn.';
+            if (isNaN(idx) || idx < 0 || idx > 12) return;
+            if (idx === 12) {
+                hint.innerHTML = 'Đang chọn: <strong>Giờ Tý muộn (23:00–23:59)</strong> — tự động tính sang <strong>giờ Tý đầu ngày hôm sau</strong>.';
+            } else {
+                hint.innerHTML = 'Đang chọn: <strong>Giờ ' + CANH[idx] + ' (' + CANH_RANGE[idx] + ')</strong>. ' +
+                    'Không rõ canh giờ? Nhập giờ đồng hồ bên cạnh, hệ thống tự chọn.';
+            }
         }
         clock.addEventListener('input', function () {
             if (!clock.value) return;
@@ -157,7 +163,11 @@
             var h = parseInt(v.split(':')[0], 10);
             if (isNaN(h)) { hint.textContent = ''; return; }
             var idx = hourToCanhIndex(h);
-            hint.innerHTML = '→ <strong>Giờ ' + CANH[idx] + '</strong> (' + CANH_RANGE[idx] + ')';
+            if (idx === 12) {
+                hint.innerHTML = '→ <strong>Giờ Tý muộn (23:00–23:59)</strong> · Tính sang đầu ngày hôm sau';
+            } else {
+                hint.innerHTML = '→ <strong>Giờ ' + CANH[idx] + '</strong> (' + CANH_RANGE[idx] + ')';
+            }
         }
         timeInput.addEventListener('input', render);
         timeInput.addEventListener('change', render);
@@ -165,28 +175,51 @@
         render();
     }
 
-    /* ---------------- Xem trước Âm lịch (chỉ đọc) ---------------- */
-    function initLunarPreview(box, readYmd, readHour) {
+    /* ---------------- Xem trước Âm lịch Việt Nam UTC+7 (chỉ đọc) ---------------- */
+    function initLunarPreview(box, readYmd, readIsLateZi) {
         function render() {
             try {
                 var ymd = readYmd();
-                if (!ymd || typeof window.Solar === 'undefined') { box.hidden = true; return; }
+                if (!ymd) { box.hidden = true; return; }
                 var y = ymd[0], m = ymd[1], d = ymd[2];
                 if (!(y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) { box.hidden = true; return; }
-                // Kiểm tra ngày có thật (vd 31/02)
+
+                var VnCal = window.VnLunarCalendar;
                 var dt = new Date(Date.UTC(y, m - 1, d));
-                if (dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) { box.hidden = true; return; }
+                if (dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) {
+                    var maxD = VnCal ? VnCal.daysInSolarMonth(m, y) : 28;
+                    box.innerHTML = '<span style="color:#f87171;">⚠️ Ngày không tồn tại (Tháng ' + m + '/' + y + ' chỉ có tối đa ' + maxD + ' ngày)</span>';
+                    box.hidden = false;
+                    return;
+                }
 
-                var lunar = window.Solar.fromYmd(y, m, d).getLunar();
-                var lm = lunar.getMonth();
-                var monthTxt = (lm < 0 ? 'nhuận ' : '') + Math.abs(lm);
-                var html = 'Âm lịch: <b>' + lunar.getDay() + '/' + monthTxt + '</b> năm <b>' + ganZhiVi(lunar.getYearInGanZhi()) + '</b>';
+                var isLateZi = readIsLateZi ? Boolean(readIsLateZi()) : false;
+                var eff = isLateZi
+                    ? (VnCal ? VnCal.addDays(y, m, d, 1) : (function () {
+                        var nd = new Date(Date.UTC(y, m - 1, d + 1));
+                        return { year: nd.getUTCFullYear(), month: nd.getUTCMonth() + 1, day: nd.getUTCDate() };
+                    })())
+                    : { year: y, month: m, day: d };
 
-                // Ngày Can Chi theo lịch: ẩn khi sinh giờ Tý (23h) để không mâu thuẫn
-                // với quy ước đổi ngày của lá số.
-                var h = readHour ? readHour() : null;
-                if (h === null || h < 23) {
-                    html += ' · Ngày <b>' + ganZhiVi(lunar.getDayInGanZhi()) + '</b>';
+                var html = '';
+                if (VnCal) {
+                    var l = VnCal.convertSolar2Lunar(eff.day, eff.month, eff.year, 7);
+                    var yGz = VnCal.getYearCanChi(l.year).canChi;
+                    var dGz = VnCal.getDayCanChi(eff.day, eff.month, eff.year).canChi;
+                    var monthTxt = (l.isLeap ? 'nhuận ' : '') + l.month;
+                    html = 'Âm lịch VN: <b>' + l.day + '/' + monthTxt + '</b> năm <b>' + yGz + '</b> · Ngày <b>' + dGz + '</b>';
+                } else if (typeof window.Solar !== 'undefined') {
+                    var lunar = window.Solar.fromYmd(eff.year, eff.month, eff.day).getLunar();
+                    var lm = lunar.getMonth();
+                    var mTxt = (lm < 0 ? 'nhuận ' : '') + Math.abs(lm);
+                    html = 'Âm lịch: <b>' + lunar.getDay() + '/' + mTxt + '</b> năm <b>' + ganZhiVi(lunar.getYearInGanZhi()) + '</b> · Ngày <b>' + ganZhiVi(lunar.getDayInGanZhi()) + '</b>';
+                } else {
+                    box.hidden = true;
+                    return;
+                }
+
+                if (isLateZi) {
+                    html += ' <em>(Giờ Tý 23h → sang ' + eff.day + '/' + eff.month + '/' + eff.year + ')</em>';
                 }
                 box.innerHTML = html;
                 box.hidden = false;
@@ -237,7 +270,7 @@
                 var d = parseInt(dIn.value, 10), m = parseInt(mIn.value, 10), y = parseInt(yIn.value, 10);
                 return (isNaN(d) || isNaN(m) || isNaN(y)) ? null : [y, m, d];
             }, function () {
-                return hourSel && hourSel.value === '0' ? 23 : 12;
+                return hourSel && hourSel.value === '12';
             });
             [dIn, mIn, yIn].forEach(function (el) { el.addEventListener('input', renderTv); hookValue(el, renderTv); });
             if (hourSel) { hourSel.addEventListener('change', renderTv); }
@@ -257,9 +290,9 @@
                 if (p.length !== 3) return null;
                 return [parseInt(p[0], 10), parseInt(p[1], 10), parseInt(p[2], 10)];
             }, function () {
-                if (!timeIn || !timeIn.value) return null;
+                if (!timeIn || !timeIn.value) return false;
                 var h = parseInt(timeIn.value.split(':')[0], 10);
-                return isNaN(h) ? null : h;
+                return h === 23;
             });
             dateIn.addEventListener('input', renderBt);
             dateIn.addEventListener('change', renderBt);

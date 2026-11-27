@@ -25,13 +25,13 @@ export const CHI_ELEMENTS = {
     "Thân": "Kim", "Dậu": "Kim", "Tuất": "Thổ", "Hợi": "Thủy"
 };
 
-// Bảng màu chuẩn Ngũ Hành - Độ Đậm Màu Tối Đa (High Contrast)
+// Bảng màu chuẩn Ngũ Hành theo chuẩn tuvivietnam.vn
 export const ELEMENT_COLORS = {
-    "Kim": "#475569",   // Xám chì đậm / Khí Kim
-    "Mộc": "#15803d",   // Xanh lá đậm / Khí Mộc
-    "Thủy": "#1d4ed8",  // Xanh lam đậm / Khí Thủy
-    "Hỏa": "#dc2626",   // Đỏ tươi đậm / Khí Hỏa
-    "Thổ": "#92400e"    // Nâu hổ phách đậm / Khí Thổ
+    "Kim": "#708090",   // Xám bạc kim loại / Khí Kim
+    "Mộc": "#15803D",   // Xanh lá cây đậm / Khí Mộc
+    "Thủy": "#000000",  // Đen tuyền / Khí Thủy (chuẩn Huyền Vũ cổ truyền)
+    "Hỏa": "#DC2626",   // Đỏ tươi / Khí Hỏa
+    "Thổ": "#CB9E2B"    // Vàng cam mật ong / Khí Thổ
 };
 
 // 60 Hoa Giáp Nạp Âm
@@ -159,16 +159,34 @@ export class TuViEngine {
         name = "Đương Số",
         gender = "Nam", // "Nam" | "Nữ"
         solarDay, solarMonth, solarYear,
+        effectiveSolarDay = null, effectiveSolarMonth = null, effectiveSolarYear = null,
         lunarDay, lunarMonth, lunarYear, isLeap = false,
-        hourIndex, // 0=Tý, 1=Sửu, ..., 11=Hợi
-        viewYear = 2026,
+        hourIndex, // 0=Tý sớm (00-01h), 1=Sửu, ..., 11=Hợi, 12=Tý muộn (23-24h -> đầu ngày hôm sau)
+        isLateZi = false,
+        viewYear = new Date().getFullYear(),
         showSaoLuu = true,
         showDaoHongLuu = true,
         luongThiMode = false
     }) {
+        // Chuẩn hóa giờ Tý muộn (23h-24h): luôn an sao như giờ Tý (0) của ngày hôm sau
+        const lateZiFlag = Boolean(isLateZi || hourIndex === 12);
+        const calcHourIndex = (hourIndex === 12) ? 0 : hourIndex;
+
+        // Quy tắc Tháng Nhuận RIÊNG của Tử Vi Đẩu Số (tách biệt hoàn toàn với Bát Tự):
+        // Chuẩn thiên văn / iztro / Đẩu Số Tuyên Vi: ngày 1–15 tính theo tháng nhuận đó,
+        // từ ngày 16 trở đi tính sang tháng kế tiếp (tháng 12 nhuận vòng về 1).
+        const calcMonth = (isLeap && lunarDay >= 16) ? ((lunarMonth % 12) + 1) : lunarMonth;
+        const leapNote = isLeap
+            ? (lunarDay >= 16 ? `Nhuận → T.${calcMonth}` : `Nhuận`)
+            : '';
+
+        const effDay = effectiveSolarDay ?? solarDay;
+        const effMonth = effectiveSolarMonth ?? solarMonth;
+        const effYear = effectiveSolarYear ?? solarYear;
+
         // Can Chi Năm, Tháng, Ngày, Giờ
-        const yearCanIdx = (lunarYear - 4) % 10;
-        const yearChiIdx = (lunarYear - 4) % 12;
+        const yearCanIdx = ((lunarYear - 4) % 10 + 10) % 10;
+        const yearChiIdx = ((lunarYear - 4) % 12 + 12) % 12;
         const yearCan = CAN_NAMES[yearCanIdx];
         const yearChi = CHI_NAMES[yearChiIdx];
         const yearCanChi = `${yearCan} ${yearChi}`;
@@ -191,11 +209,11 @@ export class TuViEngine {
 
         // 1. TÌM CUNG MỆNH & CUNG THÂN
         // Khởi từ Dần (cung index 2)
-        // Tháng sinh (lunarMonth), Giờ sinh (hourIndex: 0=Tý, 1=Sửu...)
-        // Mệnh = (2 + (lunarMonth - 1) - hourIndex + 24) % 12
-        // Thân = (2 + (lunarMonth - 1) + hourIndex) % 12
-        const menhPos = (2 + (lunarMonth - 1) - hourIndex + 24) % 12;
-        const thanPos = (2 + (lunarMonth - 1) + hourIndex) % 12;
+        // Tháng sinh (calcMonth đã xét tháng nhuận Tử Vi), Giờ sinh (calcHourIndex: 0=Tý, 1=Sửu...)
+        // Mệnh = (2 + (calcMonth - 1) - calcHourIndex + 24) % 12
+        // Thân = (2 + (calcMonth - 1) + calcHourIndex) % 12
+        const menhPos = (2 + (calcMonth - 1) - calcHourIndex + 24) % 12;
+        const thanPos = (2 + (calcMonth - 1) + calcHourIndex) % 12;
 
         // 2. NGŨ HỔ ĐỘN: AN CAN CHO 12 CUNG
         // Khởi từ Dần (cung index 2) theo Can Năm:
@@ -281,7 +299,7 @@ export class TuViEngine {
             }
         }
         // Từ cung Tiểu hạn năm xem, coi là tháng 1, đếm nghịch đến tháng sinh, rồi thuận đến giờ sinh gặp cung đó là tháng 1 nguyệt hạn
-        const nguyetHan1Pos = (tieuHanViewYearPos - (lunarMonth - 1) + hourIndex + 24) % 12;
+        const nguyetHan1Pos = (tieuHanViewYearPos - (calcMonth - 1) + calcHourIndex + 24) % 12;
         const nguyetHanList = new Array(12);
         for (let m = 1; m <= 12; m++) {
             const pos = (nguyetHan1Pos + (m - 1)) % 12;
@@ -430,17 +448,17 @@ export class TuViEngine {
             palaces[pos].trangSinh = name;
         });
 
-        // 14. AN SAO THEO THÁNG SINH
+        // 14. AN SAO THEO THÁNG SINH (dùng calcMonth đã xử lý tháng nhuận Tử Vi)
         // Tả Phù (Thìn + tháng - 1), Hữu Bật (Tuất - tháng + 1)
-        const taPhuPos = (4 + (lunarMonth - 1)) % 12;
-        const huuBatPos = (10 - (lunarMonth - 1) + 24) % 12;
+        const taPhuPos = (4 + (calcMonth - 1)) % 12;
+        const huuBatPos = (10 - (calcMonth - 1) + 24) % 12;
         palaces[taPhuPos].goodStars.push({ name: "Tả Phù", mieuHam: "", element: "Thổ" });
         palaces[huuBatPos].goodStars.push({ name: "Hữu Bật", mieuHam: "", element: "Thổ" });
 
         // Thiên Hình (Dậu + tháng - 1), Thiên Diêu (Sửu + tháng - 1), Thiên Y (Sửu + tháng - 1)
-        const thienHinhPos = (9 + (lunarMonth - 1)) % 12;
-        const thienDieuPos = (1 + (lunarMonth - 1)) % 12;
-        const thienYPos = (1 + (lunarMonth - 1)) % 12;
+        const thienHinhPos = (9 + (calcMonth - 1)) % 12;
+        const thienDieuPos = (1 + (calcMonth - 1)) % 12;
+        const thienYPos = (1 + (calcMonth - 1)) % 12;
         const thienHinhMieu = ["H", "H", "M", "M", "H", "H", "H", "H", "M", "M", "H", "H"][thienHinhPos];
         const thienDieuMieu = ["H", "H", "M", "M", "H", "H", "H", "H", "M", "M", "H", "H"][thienDieuPos];
 
@@ -450,28 +468,28 @@ export class TuViEngine {
 
         // Thiên Giải, Địa Giải, Nguyệt Giải
         const thienGiaiTable = [8, 8, 9, 9, 10, 10, 11, 11, 0, 0, 1, 1];
-        const thienGiaiPos = thienGiaiTable[lunarMonth - 1];
-        const diaGiaiPos = (7 + (lunarMonth - 1)) % 12; // Khởi Mùi
+        const thienGiaiPos = thienGiaiTable[calcMonth - 1];
+        const diaGiaiPos = (7 + (calcMonth - 1)) % 12; // Khởi Mùi
         palaces[thienGiaiPos].goodStars.push({ name: "Thiên Giải", mieuHam: "", element: "Hỏa" });
         palaces[diaGiaiPos].goodStars.push({ name: "Địa Giải", mieuHam: "", element: "Thổ" });
 
         // Âm Sát (Tháng 1,7: Dần; 2,8: Tý; 3,9: Tuất; 4,10: Thân; 5,11: Ngọ; 6,12: Thìn)
         const amSatTable = [2, 0, 10, 8, 6, 4, 2, 0, 10, 8, 6, 4];
-        const amSatPos = amSatTable[lunarMonth - 1];
+        const amSatPos = amSatTable[calcMonth - 1];
         palaces[amSatPos].badStars.push({ name: "Âm Sát", mieuHam: "", element: "Thổ" });
 
         // 15. AN SAO THEO GIỜ SINH
         // Văn Xương (Tuất - giờ), Văn Khúc (Thìn + giờ)
-        const vanXuongPos = (10 - hourIndex + 24) % 12;
-        const vanKhucPos = (4 + hourIndex) % 12;
+        const vanXuongPos = (10 - calcHourIndex + 24) % 12;
+        const vanKhucPos = (4 + calcHourIndex) % 12;
         const vanXuongMieu = ["H", "Đ", "M", "H", "H", "Đ", "H", "H", "M", "H", "H", "Đ"][vanXuongPos];
         const vanKhucMieu = ["H", "Đ", "M", "H", "H", "Đ", "H", "H", "M", "H", "H", "Đ"][vanKhucPos];
         palaces[vanXuongPos].goodStars.push({ name: "Văn Xương", mieuHam: vanXuongMieu, element: "Kim" });
         palaces[vanKhucPos].goodStars.push({ name: "Văn Khúc", mieuHam: vanKhucMieu, element: "Thủy" });
 
         // Địa Không (Hợi - giờ), Địa Kiếp (Hợi + giờ)
-        const diaKhongPos = (11 - hourIndex + 24) % 12;
-        const diaKiepPos = (11 + hourIndex) % 12;
+        const diaKhongPos = (11 - calcHourIndex + 24) % 12;
+        const diaKiepPos = (11 + calcHourIndex) % 12;
         const diaKhongMieu = ["H", "H", "Đ", "H", "H", "Đ", "H", "H", "Đ", "H", "H", "Đ"][diaKhongPos];
         const diaKiepMieu = ["H", "H", "Đ", "H", "H", "Đ", "H", "H", "Đ", "H", "H", "Đ"][diaKiepPos];
         palaces[diaKhongPos].badStars.push({ name: "Địa Không", mieuHam: diaKhongMieu, element: "Hỏa" });
@@ -593,7 +611,7 @@ export class TuViEngine {
         palaces[nguyetSatPos].badStars.push({ name: "Nguyệt Sát", mieuHam: "", element: "Hỏa" });
 
         // Đẩu Quân: Từ Thái Tuế (Chi năm), đếm nghịch đến tháng sinh, rồi thuận đến giờ sinh
-        const dauQuanPos = (yearChiIdx - (lunarMonth - 1) + hourIndex + 24) % 12;
+        const dauQuanPos = (yearChiIdx - (calcMonth - 1) + calcHourIndex + 24) % 12;
         palaces[dauQuanPos].badStars.push({ name: "Đẩu Quân", mieuHam: "", element: "Hỏa" });
 
         // Thiên Thương (ở cung Nô Bộc), Thiên Sứ (ở cung Tật Ách)
@@ -616,8 +634,8 @@ export class TuViEngine {
         else if ([1, 5, 9].includes(yearChiIdx)) { hoaStart = 3; linhStart = 10; }
         else if ([3, 7, 11].includes(yearChiIdx)) { hoaStart = 9; linhStart = 10; }
 
-        const hoaTinhPos = (hoaStart + hourIndex * direction + 24) % 12;
-        const linhTinhPos = (linhStart - hourIndex * direction + 24) % 12;
+        const hoaTinhPos = (hoaStart + calcHourIndex * direction + 24) % 12;
+        const linhTinhPos = (linhStart - calcHourIndex * direction + 24) % 12;
         const hoaMieu = ["H", "H", "Đ", "M", "H", "H", "Đ", "M", "H", "H", "Đ", "M"][hoaTinhPos];
         const linhMieu = ["H", "H", "Đ", "M", "H", "H", "Đ", "M", "H", "H", "Đ", "M"][linhTinhPos];
         palaces[hoaTinhPos].badStars.push({ name: "Hỏa Tinh", mieuHam: hoaMieu, element: "Hỏa" });
@@ -785,10 +803,11 @@ export class TuViEngine {
             }
         }
 
-        const dayInfo = this.getDayCanChi(solarDay, solarMonth, solarYear);
+        const dayInfo = this.getDayCanChi(effDay, effMonth, effYear);
         const dayCanChi = dayInfo.canChi;
-        const hourCanIdx = (dayInfo.canIdx * 2 + hourIndex) % 10;
-        const hourCanChi = `${CAN_NAMES[hourCanIdx]} ${CHI_NAMES[hourIndex]}`;
+        const hourCanIdx = (dayInfo.canIdx * 2 + calcHourIndex) % 10;
+        const hourCanChi = `${CAN_NAMES[hourCanIdx]} ${CHI_NAMES[calcHourIndex]}`;
+        const monthCanChiBase = `${CAN_NAMES[(yearCanIdx * 2 + calcMonth + 1) % 10]} ${CHI_NAMES[(calcMonth + 1) % 12]}`;
 
         return {
             metadata: {
@@ -798,16 +817,23 @@ export class TuViEngine {
                 solarMonth,
                 solarYear,
                 solarDate: `${solarDay}/${solarMonth}/${solarYear}`,
+                effectiveSolarDate: `${effDay}/${effMonth}/${effYear}`,
+                isLateZi: lateZiFlag,
                 lunarDay,
                 lunarMonth,
+                calcMonth,
+                isLeap,
+                leapNote,
                 lunarYear,
-                lunarDate: `${lunarDay}/${lunarMonth}/${lunarYear} ${isLeap ? '(Nhuận)' : ''}`,
+                lunarDate: `${lunarDay}/${lunarMonth}/${lunarYear}${isLeap ? ` (${leapNote})` : ''}`,
                 lunarYearCanChi: yearCanChi,
-                lunarMonthCanChi: `Tháng ${lunarMonth} (${CAN_NAMES[(yearCanIdx * 2 + lunarMonth + 1) % 10]} ${CHI_NAMES[(lunarMonth + 1) % 12]})`,
+                lunarMonthCanChi: isLeap
+                    ? `Tháng ${lunarMonth} ${leapNote} (${monthCanChiBase})`
+                    : `Tháng ${lunarMonth} (${monthCanChiBase})`,
                 lunarDayCanChi: dayCanChi,
                 lunarHourCanChi: hourCanChi,
-                hourIndex,
-                hourName: CHI_NAMES[hourIndex],
+                hourIndex: calcHourIndex,
+                hourName: lateZiFlag ? `Tý muộn → ${effDay}/${effMonth}` : CHI_NAMES[calcHourIndex],
                 viewYear,
                 viewYearCanChi: `${CAN_NAMES[viewCanIdx]} ${CHI_NAMES[viewChiIdx]}`,
                 age: viewYear - lunarYear + 1,

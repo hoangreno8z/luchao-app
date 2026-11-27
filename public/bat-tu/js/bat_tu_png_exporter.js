@@ -321,7 +321,7 @@
 
         const daYunList = data.daYun || [];
         const birthYear = data.birthYear || data.solarYear || 1990;
-        const currentYear = 2026;
+        const currentYear = new Date().getFullYear();
         const currentAge = currentYear - birthYear + 1;
 
         if (!is100Years) {

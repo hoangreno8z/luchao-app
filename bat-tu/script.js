@@ -38,6 +38,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const minute = parseInt(minStr, 10);
         const is100Years = toggle100Years ? toggle100Years.checked : false;
 
+        // Kiểm tra ngày dương lịch hợp lệ (chặn tháng 2 thiếu ngày 29/30/31, tháng 30 ngày...)
+        const VnCal = window.VnLunarCalendar;
+        if (VnCal && !VnCal.isValidSolarDate(day, month, year)) {
+            const maxDay = (month >= 1 && month <= 12) ? VnCal.daysInSolarMonth(month, year) : 31;
+            alert(`Ngày dương lịch không hợp lệ: ${day}/${month}/${year}.\nTháng ${month}/${year} chỉ có tối đa ${maxDay} ngày.`);
+            return;
+        }
+
         const payload = {
             year,
             month,

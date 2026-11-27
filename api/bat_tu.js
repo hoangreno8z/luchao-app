@@ -1,5 +1,6 @@
 import { applySecurityHeaders } from '../lib/security_helper.js';
 import * as lunarJs from 'lunar-javascript';
+import '../lib/vn_lunar_calendar.js';
 import '../lib/bat_tu_than_sat.js';
 import '../lib/bat_tu_engine.js';
 
@@ -34,15 +35,21 @@ export default async function handler(req, res) {
             throw new Error('BatTuEngine not loaded');
         }
 
-        const data = engine.calculateBatTu(
-            parseInt(year, 10),
-            parseInt(month, 10),
-            parseInt(day, 10),
-            parseInt(hour, 10),
-            parseInt(minute, 10),
-            gender,
-            name
-        );
+        const pYear = parseInt(year, 10);
+        const pMonth = parseInt(month, 10);
+        const pDay = parseInt(day, 10);
+        const pHour = parseInt(hour, 10);
+        const pMin = parseInt(minute, 10);
+
+        const VnCal = globalThis.VnLunarCalendar;
+        if (VnCal && !VnCal.isValidSolarDate(pDay, pMonth, pYear)) {
+            const maxDay = (pMonth >= 1 && pMonth <= 12) ? VnCal.daysInSolarMonth(pMonth, pYear) : 31;
+            return res.status(400).json({
+                error: `Ngày dương lịch không hợp lệ: ${pDay}/${pMonth}/${pYear} (Tháng ${pMonth}/${pYear} chỉ có tối đa ${maxDay} ngày).`
+            });
+        }
+
+        const data = engine.calculateBatTu(pYear, pMonth, pDay, pHour, pMin, gender, name);
 
         return res.status(200).json(data);
     } catch (err) {

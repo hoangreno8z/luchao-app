@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('inputSolarMonth').value = 8;
     document.getElementById('inputSolarYear').value = 2008;
     document.getElementById('inputHour').value = 5; // Tị (9h-11h)
-    document.getElementById('inputViewYear').value = 2026;
+    document.getElementById('inputViewYear').value = new Date().getFullYear();
 
     // Generate initial chart
     generateHoroscope();
@@ -89,7 +89,15 @@ async function generateHoroscope() {
     const solarMonth = parseInt(document.getElementById('inputSolarMonth').value, 10);
     const solarYear = parseInt(document.getElementById('inputSolarYear').value, 10);
     const hourIndex = parseInt(document.getElementById('inputHour').value, 10);
-    const viewYear = parseInt(document.getElementById('inputViewYear').value, 10) || 2026;
+    const viewYear = parseInt(document.getElementById('inputViewYear').value, 10) || new Date().getFullYear();
+
+    // Kiểm tra ngày dương lịch hợp lệ (chặn 31/02, 29/02 năm không nhuận, 31/04...)
+    const VnCal = window.VnLunarCalendar;
+    if (VnCal && !VnCal.isValidSolarDate(solarDay, solarMonth, solarYear)) {
+        const maxDay = (solarMonth >= 1 && solarMonth <= 12) ? VnCal.daysInSolarMonth(solarMonth, solarYear) : 31;
+        alert(`Ngày dương lịch không hợp lệ: ${solarDay}/${solarMonth}/${solarYear}.\nTháng ${solarMonth}/${solarYear} chỉ có tối đa ${maxDay} ngày.`);
+        return;
+    }
 
     const showSaoLuu = document.getElementById('checkboxSaoLuu') ? document.getElementById('checkboxSaoLuu').checked : true;
     const showDaoHongLuu = document.getElementById('checkboxDaoHongLuu') ? document.getElementById('checkboxDaoHongLuu').checked : true;
@@ -125,10 +133,25 @@ async function generateHoroscope() {
     }
 
     // Local Fallback if serverless is unavailable
-    let lunarDay = solarDay, lunarMonth = solarMonth, lunarYear = solarYear, isLeap = false;
+    // Giờ Tý muộn (23h-24h, hourIndex = 12): bắt buộc chuyển sang giờ Tý đầu ngày hôm sau
+    const isLateZi = (hourIndex === 12);
+    const effSolar = (isLateZi && VnCal)
+        ? VnCal.addDays(solarYear, solarMonth, solarDay, 1)
+        : (isLateZi
+            ? (() => { const d = new Date(Date.UTC(solarYear, solarMonth - 1, solarDay + 1)); return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() }; })()
+            : { year: solarYear, month: solarMonth, day: solarDay });
+    const effectiveHourIndex = isLateZi ? 0 : hourIndex;
+
+    let lunarDay = effSolar.day, lunarMonth = effSolar.month, lunarYear = effSolar.year, isLeap = false;
     try {
-        if (window.Solar) {
-            const solar = window.Solar.fromYmd(solarYear, solarMonth, solarDay);
+        if (VnCal) {
+            const vnLunar = VnCal.convertSolar2Lunar(effSolar.day, effSolar.month, effSolar.year, 7);
+            lunarDay = vnLunar.day;
+            lunarMonth = vnLunar.month;
+            lunarYear = vnLunar.year;
+            isLeap = vnLunar.isLeap;
+        } else if (window.Solar) {
+            const solar = window.Solar.fromYmd(effSolar.year, effSolar.month, effSolar.day);
             const lunar = solar.getLunar();
             lunarDay = lunar.getDay();
             lunarMonth = Math.abs(lunar.getMonth());
@@ -141,10 +164,15 @@ async function generateHoroscope() {
 
     currentHoroscope = TuViEngine.calculateHoroscope({
         ...payload,
+        effectiveSolarDay: effSolar.day,
+        effectiveSolarMonth: effSolar.month,
+        effectiveSolarYear: effSolar.year,
         lunarDay,
         lunarMonth,
         lunarYear,
-        isLeap
+        isLeap,
+        hourIndex: effectiveHourIndex,
+        isLateZi
     });
 
     renderChart(currentHoroscope);

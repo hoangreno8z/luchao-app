@@ -1,6 +1,6 @@
 import { applySecurityHeaders } from '../lib/security_helper.js';
 import { TuViEngine } from '../lib/tu_vi_engine.js';
-import { Solar } from 'lunar-javascript';
+import '../lib/vn_lunar_calendar.js';
 
 export default async function handler(req, res) {
     if (!applySecurityHeaders(req, res)) return;
@@ -18,31 +18,49 @@ export default async function handler(req, res) {
             solarMonth = 1,
             solarYear = 1990,
             hourIndex = 0,
-            viewYear = 2026,
+            viewYear = new Date().getFullYear(),
             showSaoLuu = true,
             showDaoHongLuu = true,
             luongThiMode = false
         } = body;
 
-        let lunarDay = solarDay, lunarMonth = solarMonth, lunarYear = solarYear, isLeap = false;
-        try {
-            const solar = Solar.fromYmd(solarYear, solarMonth, solarDay);
-            const lunar = solar.getLunar();
-            lunarDay = lunar.getDay();
-            lunarMonth = Math.abs(lunar.getMonth());
-            lunarYear = lunar.getYear();
-            isLeap = lunar.getMonth() < 0;
-        } catch (err) {
-            console.warn('Lunar conversion error:', err);
+        const VnCal = globalThis.VnLunarCalendar;
+        const sDay = parseInt(solarDay, 10);
+        const sMonth = parseInt(solarMonth, 10);
+        const sYear = parseInt(solarYear, 10);
+        const hIdx = parseInt(hourIndex, 10);
+
+        if (!VnCal.isValidSolarDate(sDay, sMonth, sYear)) {
+            const maxDay = (sMonth >= 1 && sMonth <= 12) ? VnCal.daysInSolarMonth(sMonth, sYear) : 31;
+            return res.status(400).json({
+                error: `Ngày dương lịch không hợp lệ: ${sDay}/${sMonth}/${sYear} (Tháng ${sMonth}/${sYear} chỉ có tối đa ${maxDay} ngày).`
+            });
         }
+
+        // Giờ Tý muộn (23h-24h, hourIndex = 12): bắt buộc chuyển sang giờ Tý đầu ngày hôm sau
+        const isLateZi = (hIdx === 12);
+        const effSolar = isLateZi ? VnCal.addDays(sYear, sMonth, sDay, 1) : { year: sYear, month: sMonth, day: sDay };
+        const effectiveHourIndex = isLateZi ? 0 : hIdx;
+
+        // Quy đổi sang Âm lịch Việt Nam chuẩn (UTC+7 — Hồ Ngọc Đức)
+        const vnLunar = VnCal.convertSolar2Lunar(effSolar.day, effSolar.month, effSolar.year, 7);
 
         const horoscope = TuViEngine.calculateHoroscope({
             name,
             gender,
-            solarDay, solarMonth, solarYear,
-            lunarDay, lunarMonth, lunarYear, isLeap,
-            hourIndex,
-            viewYear,
+            solarDay: sDay,
+            solarMonth: sMonth,
+            solarYear: sYear,
+            effectiveSolarDay: effSolar.day,
+            effectiveSolarMonth: effSolar.month,
+            effectiveSolarYear: effSolar.year,
+            lunarDay: vnLunar.day,
+            lunarMonth: vnLunar.month,
+            lunarYear: vnLunar.year,
+            isLeap: vnLunar.isLeap,
+            hourIndex: effectiveHourIndex,
+            isLateZi,
+            viewYear: parseInt(viewYear, 10) || new Date().getFullYear(),
             showSaoLuu,
             showDaoHongLuu,
             luongThiMode
