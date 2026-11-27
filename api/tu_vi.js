@@ -14,9 +14,14 @@ export default async function handler(req, res) {
         const {
             name = 'Đương Số',
             gender = 'Nam',
+            calendarType = 'solar',
+            isLeapMonth = false,
             solarDay = 1,
             solarMonth = 1,
             solarYear = 1990,
+            lunarDay: reqLunarDay,
+            lunarMonth: reqLunarMonth,
+            lunarYear: reqLunarYear,
             hourIndex = 0,
             viewYear = new Date().getFullYear(),
             showSaoLuu = true,
@@ -25,12 +30,24 @@ export default async function handler(req, res) {
         } = body;
 
         const VnCal = globalThis.VnLunarCalendar;
-        const sDay = parseInt(solarDay, 10);
-        const sMonth = parseInt(solarMonth, 10);
-        const sYear = parseInt(solarYear, 10);
+        let sDay = parseInt(solarDay, 10);
+        let sMonth = parseInt(solarMonth, 10);
+        let sYear = parseInt(solarYear, 10);
         const hIdx = parseInt(hourIndex, 10);
 
-        if (!VnCal.isValidSolarDate(sDay, sMonth, sYear)) {
+        if (calendarType === 'lunar') {
+            const lDay = parseInt(reqLunarDay ?? solarDay, 10);
+            const lMonth = parseInt(reqLunarMonth ?? solarMonth, 10);
+            const lYear = parseInt(reqLunarYear ?? solarYear, 10);
+            try {
+                const converted = VnCal.convertLunar2Solar(lDay, lMonth, lYear, Boolean(isLeapMonth), 7);
+                sDay = converted.day;
+                sMonth = converted.month;
+                sYear = converted.year;
+            } catch (convErr) {
+                return res.status(400).json({ error: convErr.message });
+            }
+        } else if (!VnCal.isValidSolarDate(sDay, sMonth, sYear)) {
             const maxDay = (sMonth >= 1 && sMonth <= 12) ? VnCal.daysInSolarMonth(sMonth, sYear) : 31;
             return res.status(400).json({
                 error: `Ngày dương lịch không hợp lệ: ${sDay}/${sMonth}/${sYear} (Tháng ${sMonth}/${sYear} chỉ có tối đa ${maxDay} ngày).`

@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css?v=3.5.0">
-    <link rel="stylesheet" href="/lib/ui/mobile_form.css?v=1.2.0">
+    <link rel="stylesheet" href="/lib/ui/mobile_form.css?v=1.3.0">
     <style>
     /* CRITICAL INLINE CSS - PREVENTS FOUC & HIDES MENU DEFAULT */
     .portal-dropdown-menu { display: none !important; }
@@ -343,8 +343,41 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="inp-date">Ngày Sinh (Dương Lịch)</label>
+                        <div class="bf-label-row" id="battuDateLabelRow">
+                            <label for="inp-date" id="battuDateLabel">Ngày Sinh (Dương Lịch)</label>
+                            <label class="bf-cal-toggle" id="battuCalToggleWrap" title="Gạt để nhập ngày sinh theo Âm lịch hoặc Dương lịch">
+                                <span class="bf-cal-txt solar">Dương</span>
+                                <span class="bf-mini-switch">
+                                    <input type="checkbox" id="battuCalendarToggle" aria-label="Nhập theo Âm lịch">
+                                    <span class="bf-mini-slider"></span>
+                                </span>
+                                <span class="bf-cal-txt lunar">Âm</span>
+                            </label>
+                        </div>
                         <input type="date" id="inp-date" class="form-control" value="1990-02-01">
+                        <div id="battuLunarGroup" class="bf-dob" hidden>
+                            <div class="bf-dob-cell">
+                                <input type="number" id="inp-lunar-day" class="form-control" min="1" max="30" placeholder="Ngày" data-bf-next="inp-lunar-month" data-bf-digits="2">
+                                <span class="bf-unit">NGÀY ÂL</span>
+                            </div>
+                            <div class="bf-dob-cell">
+                                <input type="number" id="inp-lunar-month" class="form-control" min="1" max="12" placeholder="Tháng" data-bf-next="inp-lunar-year" data-bf-digits="2">
+                                <span class="bf-unit">THÁNG ÂL</span>
+                            </div>
+                            <div class="bf-dob-cell">
+                                <input type="number" id="inp-lunar-year" class="form-control" min="1900" max="2100" placeholder="Năm">
+                                <span class="bf-unit">NĂM ÂL</span>
+                            </div>
+                        </div>
+                        <div id="battuLeapRow" class="bf-leap-row" hidden>
+                            <label class="bf-leap-toggle">
+                                <span id="battuLeapLabelText">Tháng nhuận</span>
+                                <span class="bf-mini-switch">
+                                    <input type="checkbox" id="battuLeapToggle">
+                                    <span class="bf-mini-slider"></span>
+                                </span>
+                            </label>
+                        </div>
                         <div id="battuLunarPreview" class="bf-preview" hidden></div>
                     </div>
 
@@ -426,15 +459,15 @@
     </main>
 
     <!-- Scripts -->
-    <script src="/lib/vn_lunar_calendar.js?v=1.0.0"></script>
+    <script src="/lib/vn_lunar_calendar.js?v=1.1.0"></script>
     <script src="js/lunar.js?v=3.2.0"></script>
     <script src="js/bat_tu_than_sat.js?v=3.2.0"></script>
     <script src="js/bat_tu_reference.js?v=3.2.0"></script>
     <script src="js/bat_tu_engine.js?v=3.3.0"></script>
     <script src="js/bat_tu_png_exporter.js?v=3.3.0"></script>
     <script src="js/bat_tu_renderer.js?v=3.3.0"></script>
-    <script src="script.js?v=3.3.0"></script>
-    <script src="/lib/ui/mobile_form.js?v=1.1.0"></script>
+    <script src="script.js?v=3.4.0"></script>
+    <script src="/lib/ui/mobile_form.js?v=1.3.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.getElementById('menu-btn');

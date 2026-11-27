@@ -127,6 +127,135 @@
     letter-spacing: 0.05em;
 }
 
+/* ---------- Hàng tiêu đề Ngày Sinh + Nút gạt Âm/Dương siêu nhỏ (1/2 kích thước thường) ---------- */
+.bf-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 0;
+    margin-bottom: 2px;
+}
+.bf-label-row > label {
+    margin-bottom: 0 !important;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.bf-label-row.is-lunar > label {
+    color: var(--bf-gold-soft) !important;
+}
+
+.bf-cal-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    margin-bottom: 0 !important;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    line-height: 1;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.bf-cal-toggle:hover {
+    border-color: rgba(251, 191, 36, 0.6);
+}
+.bf-cal-txt {
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #94a3b8;
+    transition: color 0.18s ease;
+}
+.bf-cal-toggle:not(.is-lunar) .bf-cal-txt.solar {
+    color: #e2e8f0;
+}
+.bf-cal-toggle.is-lunar {
+    border-color: rgba(245, 158, 11, 0.55);
+    background: rgba(245, 158, 11, 0.12);
+}
+.bf-cal-toggle.is-lunar .bf-cal-txt.lunar {
+    color: var(--bf-gold-soft);
+}
+
+/* Switch track = 24px x 13px (đúng 1/2 so với switch thường 46px x 24px) */
+.bf-mini-switch {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 13px;
+    flex-shrink: 0;
+}
+.bf-mini-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+.bf-mini-slider {
+    position: absolute;
+    inset: 0;
+    background-color: #334155;
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+}
+.bf-mini-slider::before {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    left: 2px;
+    top: 2px;
+    background-color: #f8fafc;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+.bf-mini-switch input:checked + .bf-mini-slider {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+.bf-mini-switch input:checked + .bf-mini-slider::before {
+    transform: translateX(11px);
+}
+.bf-mini-switch input:focus-visible + .bf-mini-slider {
+    box-shadow: 0 0 0 2px var(--bf-gold-glow);
+}
+
+/* Hàng phụ chọn Tháng Nhuận (chỉ hiện khi năm/tháng Âm lịch đó thực sự có nhuận) */
+.bf-leap-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 2px;
+}
+.bf-leap-row[hidden],
+.bf-dob[hidden],
+.bf input[hidden] {
+    display: none !important;
+}
+.bf-leap-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    margin-bottom: 0 !important;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px dashed rgba(245, 158, 11, 0.45);
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    color: var(--bf-gold-soft) !important;
+    text-transform: none !important;
+    cursor: pointer;
+}
+
 /* Ngày / Tháng / Năm trên một hàng — dùng minmax(0, ...) chống tràn */
 .bf-dob {
     display: grid;

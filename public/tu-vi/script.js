@@ -85,15 +85,35 @@ document.addEventListener('DOMContentLoaded', () => {
 async function generateHoroscope() {
     const name = document.getElementById('inputName').value.trim() || 'Đương Số';
     const gender = document.getElementById('inputGender').value;
-    const solarDay = parseInt(document.getElementById('inputSolarDay').value, 10);
-    const solarMonth = parseInt(document.getElementById('inputSolarMonth').value, 10);
-    const solarYear = parseInt(document.getElementById('inputSolarYear').value, 10);
+    const rawDay = parseInt(document.getElementById('inputSolarDay').value, 10);
+    const rawMonth = parseInt(document.getElementById('inputSolarMonth').value, 10);
+    const rawYear = parseInt(document.getElementById('inputSolarYear').value, 10);
     const hourIndex = parseInt(document.getElementById('inputHour').value, 10);
     const viewYear = parseInt(document.getElementById('inputViewYear').value, 10) || new Date().getFullYear();
 
-    // Kiểm tra ngày dương lịch hợp lệ (chặn 31/02, 29/02 năm không nhuận, 31/04...)
+    const isLunarInput = document.getElementById('tuviCalendarToggle') ? document.getElementById('tuviCalendarToggle').checked : false;
+    const isLeapInput = (isLunarInput && document.getElementById('tuviLeapToggle') && !document.getElementById('tuviLeapRow')?.hidden)
+        ? document.getElementById('tuviLeapToggle').checked
+        : false;
+
     const VnCal = window.VnLunarCalendar;
-    if (VnCal && !VnCal.isValidSolarDate(solarDay, solarMonth, solarYear)) {
+    let solarDay = rawDay, solarMonth = rawMonth, solarYear = rawYear;
+
+    if (isLunarInput) {
+        if (!VnCal) {
+            alert('Chưa tải được bộ lịch Âm Dương Việt Nam.');
+            return;
+        }
+        try {
+            const converted = VnCal.convertLunar2Solar(rawDay, rawMonth, rawYear, isLeapInput, 7);
+            solarDay = converted.day;
+            solarMonth = converted.month;
+            solarYear = converted.year;
+        } catch (err) {
+            alert(err.message);
+            return;
+        }
+    } else if (VnCal && !VnCal.isValidSolarDate(solarDay, solarMonth, solarYear)) {
         const maxDay = (solarMonth >= 1 && solarMonth <= 12) ? VnCal.daysInSolarMonth(solarMonth, solarYear) : 31;
         alert(`Ngày dương lịch không hợp lệ: ${solarDay}/${solarMonth}/${solarYear}.\nTháng ${solarMonth}/${solarYear} chỉ có tối đa ${maxDay} ngày.`);
         return;

@@ -20,6 +20,8 @@ export default async function handler(req, res) {
     try {
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
         const {
+            calendarType = 'solar',
+            isLeapMonth = false,
             year = 1990,
             month = 2,
             day = 1,
@@ -35,14 +37,23 @@ export default async function handler(req, res) {
             throw new Error('BatTuEngine not loaded');
         }
 
-        const pYear = parseInt(year, 10);
-        const pMonth = parseInt(month, 10);
-        const pDay = parseInt(day, 10);
+        let pYear = parseInt(year, 10);
+        let pMonth = parseInt(month, 10);
+        let pDay = parseInt(day, 10);
         const pHour = parseInt(hour, 10);
         const pMin = parseInt(minute, 10);
 
         const VnCal = globalThis.VnLunarCalendar;
-        if (VnCal && !VnCal.isValidSolarDate(pDay, pMonth, pYear)) {
+        if (calendarType === 'lunar') {
+            try {
+                const converted = VnCal.convertLunar2Solar(pDay, pMonth, pYear, Boolean(isLeapMonth), 7);
+                pDay = converted.day;
+                pMonth = converted.month;
+                pYear = converted.year;
+            } catch (convErr) {
+                return res.status(400).json({ error: convErr.message });
+            }
+        } else if (VnCal && !VnCal.isValidSolarDate(pDay, pMonth, pYear)) {
             const maxDay = (pMonth >= 1 && pMonth <= 12) ? VnCal.daysInSolarMonth(pMonth, pYear) : 31;
             return res.status(400).json({
                 error: `Ngày dương lịch không hợp lệ: ${pDay}/${pMonth}/${pYear} (Tháng ${pMonth}/${pYear} chỉ có tối đa ${maxDay} ngày).`

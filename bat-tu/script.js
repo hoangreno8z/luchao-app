@@ -25,25 +25,54 @@ document.addEventListener("DOMContentLoaded", () => {
     async function renderChart() {
         const name = nameInput.value.trim() || "VÔ DANH KHÁCH";
         const gender = genderInput.value;
-        const dateVal = dateInput.value || "1990-02-01";
         const timeVal = timeInput.value || "01:00";
-
-        const [yStr, mStr, dStr] = dateVal.split("-");
         const [hStr, minStr] = timeVal.split(":");
-
-        const year = parseInt(yStr, 10);
-        const month = parseInt(mStr, 10);
-        const day = parseInt(dStr, 10);
         const hour = parseInt(hStr, 10);
         const minute = parseInt(minStr, 10);
         const is100Years = toggle100Years ? toggle100Years.checked : false;
 
-        // Kiểm tra ngày dương lịch hợp lệ (chặn tháng 2 thiếu ngày 29/30/31, tháng 30 ngày...)
+        const calToggle = document.getElementById("battuCalendarToggle");
+        const leapToggle = document.getElementById("battuLeapToggle");
+        const leapRow = document.getElementById("battuLeapRow");
+        const isLunarInput = calToggle ? calToggle.checked : false;
+        const isLeapInput = (isLunarInput && leapToggle && (!leapRow || !leapRow.hidden)) ? leapToggle.checked : false;
+
         const VnCal = window.VnLunarCalendar;
-        if (VnCal && !VnCal.isValidSolarDate(day, month, year)) {
-            const maxDay = (month >= 1 && month <= 12) ? VnCal.daysInSolarMonth(month, year) : 31;
-            alert(`Ngày dương lịch không hợp lệ: ${day}/${month}/${year}.\nTháng ${month}/${year} chỉ có tối đa ${maxDay} ngày.`);
-            return;
+        let year, month, day;
+
+        if (isLunarInput) {
+            const lDay = parseInt(document.getElementById("inp-lunar-day")?.value, 10);
+            const lMonth = parseInt(document.getElementById("inp-lunar-month")?.value, 10);
+            const lYear = parseInt(document.getElementById("inp-lunar-year")?.value, 10);
+            if (!VnCal) {
+                alert("Chưa tải được bộ lịch Âm Dương Việt Nam.");
+                return;
+            }
+            try {
+                const converted = VnCal.convertLunar2Solar(lDay, lMonth, lYear, isLeapInput, 7);
+                day = converted.day;
+                month = converted.month;
+                year = converted.year;
+                // Đồng bộ ngược lại ô date Dương lịch để dữ liệu luôn thống nhất
+                const pad2 = n => (n < 10 ? "0" + n : String(n));
+                dateInput.value = `${year}-${pad2(month)}-${pad2(day)}`;
+            } catch (err) {
+                alert(err.message);
+                return;
+            }
+        } else {
+            const dateVal = dateInput.value || "1990-02-01";
+            const [yStr, mStr, dStr] = dateVal.split("-");
+            year = parseInt(yStr, 10);
+            month = parseInt(mStr, 10);
+            day = parseInt(dStr, 10);
+
+            // Kiểm tra ngày dương lịch hợp lệ (chặn tháng 2 thiếu ngày 29/30/31, tháng 30 ngày...)
+            if (VnCal && !VnCal.isValidSolarDate(day, month, year)) {
+                const maxDay = (month >= 1 && month <= 12) ? VnCal.daysInSolarMonth(month, year) : 31;
+                alert(`Ngày dương lịch không hợp lệ: ${day}/${month}/${year}.\nTháng ${month}/${year} chỉ có tối đa ${maxDay} ngày.`);
+                return;
+            }
         }
 
         const payload = {
