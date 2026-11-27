@@ -56,6 +56,17 @@
     transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 
+/* Ẩn mũi tên tăng giảm mặc định của input[type=number] tránh che số trên ô hẹp */
+.bf input[type="number"]::-webkit-outer-spin-button,
+.bf input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.bf input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
 .bf input[type="date"].form-control,
 .bf input[type="time"].form-control {
     -webkit-appearance: none;
@@ -66,8 +77,13 @@
 
 .bf select.form-control:not(.bf-visually-hidden) {
     -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
+    height: 46px;
+    padding-top: 0;
+    padding-bottom: 0;
     padding-right: 34px;
+    line-height: 44px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -75,6 +91,9 @@
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 16px 16px;
+}
+.bf select.form-control::-ms-expand {
+    display: none;
 }
 
 .bf input.form-control:focus,
@@ -84,12 +103,24 @@
     box-shadow: 0 0 0 3px var(--bf-gold-glow);
 }
 
-/* ---------- Header thương hiệu gọn (dùng chung) ---------- */
+/* ---------- Header thương hiệu gọn (dùng chung, khóa chống ghi đè tag header) ---------- */
+header.app-universal-header {
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+}
+.app-universal-header .header-inner {
+    gap: 10px;
+}
+.app-universal-header .menu-dropdown-wrapper {
+    flex-shrink: 0;
+}
 .brand-wrapper {
     display: flex;
     flex-direction: column;
     gap: 1px;
     min-width: 0;
+    flex: 1 1 auto;
 }
 .brand-row-top {
     display: flex;
@@ -148,6 +179,7 @@
 }
 
 .bf-cal-toggle {
+    position: relative;
     display: inline-flex !important;
     align-items: center;
     gap: 4px;
@@ -164,6 +196,12 @@
     letter-spacing: 0 !important;
     line-height: 1;
     transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+/* Vùng chạm vô hình mở rộng chuẩn ngón tay (~38px) nhưng vẫn giữ nguyên kích thước hiển thị siêu nhỏ 1/2 */
+.bf-cal-toggle::after {
+    content: "";
+    position: absolute;
+    inset: -9px -4px;
 }
 .bf-cal-toggle:hover {
     border-color: rgba(251, 191, 36, 0.6);
@@ -458,13 +496,163 @@
     .bf-page .bf-contact { margin-top: 12px !important; padding-top: 10px !important; font-size: 0.78rem !important; }
 }
 
-/* Desktop: ô Ngày sinh rộng gấp đôi trong lưới tự động */
-@media (min-width: 641px) {
-    .bf .form-grid .bf-span-2 { grid-column: span 2; }
+@media (max-width: 420px) {
+    .app-universal-header .header-inner { padding: 7px 10px !important; gap: 6px !important; }
+    .brand-wrapper .brand-row-top { gap: 5px; }
+    .brand-wrapper .brand-title { font-size: 0.82rem !important; letter-spacing: 0.02em; }
+    .brand-wrapper .header-social-group { gap: 4px; }
+    .brand-wrapper .header-social-btn { padding: 3px 5px !important; }
+    .app-universal-header .menu-toggle-btn { padding: 5px 9px !important; font-size: 0.75rem !important; gap: 4px !important; }
+}
+
+/* Tablet (641px–959px): Lưới 2 cột thoáng đãng */
+@media (min-width: 641px) and (max-width: 959px) {
+    .bf .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .bf .form-grid .bf-span-2 {
+        grid-column: span 2;
+    }
+}
+
+/* Desktop (≥ 960px): Lưới 12 cột cân đối hoàn hảo cho Tử Vi (không bao giờ ép hẹp ô Giờ Sinh) */
+@media (min-width: 960px) {
+    #tuViForm .form-grid {
+        grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+        align-items: start;
+    }
+    #tuViForm .form-grid .bf-col-name { grid-column: span 4; }
+    #tuViForm .form-grid .bf-col-gender { grid-column: span 2; }
+    #tuViForm .form-grid .bf-col-dob { grid-column: span 6; }
+    #tuViForm .form-grid .bf-col-hour { grid-column: span 8; }
+    #tuViForm .form-grid .bf-col-viewyear { grid-column: span 4; }
+    #tuViForm .bf-hour-row {
+        grid-template-columns: minmax(0, 1fr) 142px;
+    }
+}
+
+/* ==========================================================================
+   LIGHTBOX PHÓNG TO LÁ SỐ HD (CHẠM / CLICK ĐỂ XEM RÕ TỪNG SAO 2400×3200)
+   ========================================================================== */
+.tuvi-image-container,
+.battu-image-container {
+    flex-direction: column !important;
+    align-items: center !important;
+}
+.bf-zoom-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 10px auto 4px;
+    padding: 6px 14px;
+    width: fit-content;
+    max-width: calc(100% - 16px);
+    text-align: center;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+.bf-zoom-hint:hover {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: rgba(251, 191, 36, 0.7);
+}
+
+.bf-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200000;
+    background: rgba(2, 6, 23, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+}
+.bf-lightbox[hidden] {
+    display: none !important;
+}
+.bf-lb-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(15, 23, 42, 0.96);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+    flex-shrink: 0;
+}
+.bf-lb-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+.bf-lb-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(30, 41, 59, 0.95);
+    color: #f8fafc;
+    border: 1px solid rgba(148, 163, 184, 0.38);
+    border-radius: 8px;
+    min-height: 36px;
+    min-width: 36px;
+    padding: 6px 11px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.bf-lb-btn:hover {
+    border-color: #fbbf24;
+    color: #fbbf24;
+}
+.bf-lb-btn-gold {
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+    border-color: #f59e0b;
+    color: #ffffff !important;
+}
+.bf-lb-btn-close {
+    background: rgba(185, 28, 28, 0.88);
+    border-color: rgba(248, 113, 113, 0.6);
+    color: #ffffff !important;
+}
+.bf-lb-stage {
+    flex: 1 1 auto;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y pinch-zoom;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px;
+}
+.bf-lb-img {
+    display: block;
+    height: auto;
+    max-width: none;
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.75);
+    transition: width 0.16s ease;
+    cursor: zoom-in;
+}
+.bf-lb-img.is-zoomed {
+    cursor: zoom-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .bf-seg-btn,
     .bf input.form-control,
-    .bf select.form-control { transition: none; }
+    .bf select.form-control,
+    .bf-lb-img { transition: none; }
 }

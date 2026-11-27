@@ -186,7 +186,7 @@ export class TuViPngExporter {
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         const cungTitle = palace.isThan ? `${palace.cungName} <THÂN>` : palace.cungName;
-        ctx.fillText(cungTitle, x + w / 2, y + 48);
+        ctx.fillText(cungTitle, x + w / 2, y + 48, w - 190);
 
         // 3. Đại Hạn (Top Right)
         ctx.font = '600 36px "Inter", "Be Vietnam Pro", sans-serif';
@@ -195,43 +195,50 @@ export class TuViPngExporter {
         ctx.fillText(String(palace.daiHan), x + w - padding, y + 48);
 
         // 4. Chính Tinh (Center Top of Palace)
-        let mainY = y + 118;
+        let mainY = y + 112;
         palace.mainStars.forEach(star => {
             ctx.font = '700 46px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = ELEMENT_COLORS[star.element] || '#000000';
             ctx.textAlign = 'center';
             const starText = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
-            ctx.fillText(starText, x + w / 2, mainY);
-            mainY += 54;
+            ctx.fillText(starText, x + w / 2, mainY, w - padding * 2);
+            mainY += 52;
         });
 
-        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) - RÕ RÀNG, SẮC SẢO
-        const colLeftX = x + padding + 4;
-        const colRightX = x + w - padding - 4;
-        let starYLeft = mainY + 20;
-        let starYRight = mainY + 20;
-        const starLineHeight = 50;
+        // 5. Cát Tinh (Left Column) & Hung Sát Tinh (Right Column) — Tự động co giãn thông minh, 0% rớt sao
+        const colLeftX = x + padding + 2;
+        const colRightX = x + w - padding - 2;
+        const maxColW = Math.floor((w - padding * 2 - 16) / 2);
+        const starStartY = palace.mainStars.length > 0 ? (mainY + 10) : (y + 132);
+        const bottomLimit = y + h - 84;
+        const spanH = Math.max(120, bottomLimit - starStartY);
 
-        palace.goodStars.forEach(star => {
-            if (starYLeft < y + h - 82) {
-                ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
-                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803D';
-                ctx.textAlign = 'left';
-                const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
-                ctx.fillText(text, colLeftX, starYLeft);
-                starYLeft += starLineHeight;
-            }
+        const nLeft = palace.goodStars.length;
+        const lineHLeft = nLeft > 1 ? Math.min(48, spanH / (nLeft - 1)) : 48;
+        const fontLeft = nLeft > 10 ? Math.max(25, Math.min(38, Math.floor(lineHLeft * 0.8))) : 38;
+
+        palace.goodStars.forEach((star, idx) => {
+            const sy = starStartY + idx * lineHLeft;
+            const weight = (star.isTuHoa || star.name.startsWith('Hóa ')) ? '600' : '400';
+            ctx.font = `${weight} ${fontLeft}px "Inter", "Be Vietnam Pro", sans-serif`;
+            ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803D';
+            ctx.textAlign = 'left';
+            const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
+            ctx.fillText(text, colLeftX, sy, maxColW);
         });
 
-        palace.badStars.forEach(star => {
-            if (starYRight < y + h - 82) {
-                ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
-                ctx.fillStyle = ELEMENT_COLORS[star.element] || '#DC2626';
-                ctx.textAlign = 'right';
-                const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
-                ctx.fillText(text, colRightX, starYRight);
-                starYRight += starLineHeight;
-            }
+        const nRight = palace.badStars.length;
+        const lineHRight = nRight > 1 ? Math.min(48, spanH / (nRight - 1)) : 48;
+        const fontRight = nRight > 10 ? Math.max(25, Math.min(38, Math.floor(lineHRight * 0.8))) : 38;
+
+        palace.badStars.forEach((star, idx) => {
+            const sy = starStartY + idx * lineHRight;
+            const weight = (star.isTuHoa || star.name.startsWith('Hóa ')) ? '600' : '400';
+            ctx.font = `${weight} ${fontRight}px "Inter", "Be Vietnam Pro", sans-serif`;
+            ctx.fillStyle = ELEMENT_COLORS[star.element] || '#DC2626';
+            ctx.textAlign = 'right';
+            const text = star.mieuHam ? `${star.name}(${star.mieuHam})` : star.name;
+            ctx.fillText(text, colRightX, sy, maxColW);
         });
 
         // 6. Bottom Bar (Chi Cung, Tiểu Hạn, Tràng Sinh, Nguyệt Hạn)

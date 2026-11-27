@@ -124,7 +124,7 @@
         const tblX = margin + 20;
         const tblY = 298;
         const tblW = gridW - 40;
-        const colLabelW = 160;
+        const colLabelW = 176;
         const colW = (tblW - colLabelW) / 4;
 
         const pYear = data.pillars?.year || {};
@@ -141,7 +141,11 @@
                 mainGod: pYear.chuTinh || 'Thực',
                 hidden: pYear.hiddenStems || ['Bính', 'Canh', 'Mậu'],
                 hiddenGods: pYear.phoTinh || ['Kiếp', 'Tài', 'Thương'],
-                thanSat: pYear.thanSat || ['Kình Dương', 'Không Vong']
+                tinhVan: pYear.tinhVan || '-',
+                tuToa: pYear.tuToa || '-',
+                khongVong: pYear.khongVong || '-',
+                nayin: pYear.nayin || '-',
+                thanSat: pYear.thanSat || []
             },
             {
                 name: 'Tháng',
@@ -151,7 +155,11 @@
                 mainGod: pMonth.chuTinh || 'Tỷ',
                 hidden: pMonth.hiddenStems || ['Kỷ', 'Quý', 'Tân'],
                 hiddenGods: pMonth.phoTinh || ['Thực', 'Sát', 'T.Tài'],
-                thanSat: pMonth.thanSat || ['Hoa Cái']
+                tinhVan: pMonth.tinhVan || '-',
+                tuToa: pMonth.tuToa || '-',
+                khongVong: pMonth.khongVong || '-',
+                nayin: pMonth.nayin || '-',
+                thanSat: pMonth.thanSat || []
             },
             {
                 name: 'Ngày',
@@ -163,7 +171,11 @@
                 mainGod: 'NHẬT CHỦ',
                 hidden: pDay.hiddenStems || ['Tân'],
                 hiddenGods: pDay.phoTinh || ['T.Tài'],
-                thanSat: pDay.thanSat || ['Văn Xương', 'Thiên Ất', 'Tướng Tinh']
+                tinhVan: pDay.tinhVan || '-',
+                tuToa: pDay.tuToa || '-',
+                khongVong: pDay.khongVong || '-',
+                nayin: pDay.nayin || '-',
+                thanSat: pDay.thanSat || []
             },
             {
                 name: 'Giờ',
@@ -173,19 +185,23 @@
                 mainGod: pHour.chuTinh || 'T.Tài',
                 hidden: pHour.hiddenStems || ['Kỷ', 'Quý', 'Tân'],
                 hiddenGods: pHour.phoTinh || ['Thực', 'Sát', 'T.Tài'],
-                thanSat: pHour.thanSat || ['Hoa Cái', 'Thiên Đức']
+                tinhVan: pHour.tinhVan || '-',
+                tuToa: pHour.tuToa || '-',
+                khongVong: pHour.khongVong || '-',
+                nayin: pHour.nayin || '-',
+                thanSat: pHour.thanSat || []
             }
         ];
 
         // 3.1. Hàng Tiêu Đề Cột
-        const headRowH = !is100Years ? 80 : 65;
+        const headRowH = !is100Years ? 70 : 58;
         ctx.fillStyle = "#e7e8e2";
         ctx.fillRect(tblX, tblY, tblW, headRowH);
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1.5;
         ctx.strokeRect(tblX, tblY, tblW, headRowH);
 
-        ctx.font = "700 30px 'Inter', sans-serif";
+        ctx.font = "700 29px 'Inter', sans-serif";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.fillText("TRỤ NĂM", tblX + colLabelW + colW * 0.5, tblY + headRowH / 2 + 10);
@@ -195,21 +211,29 @@
 
         let curY = tblY + headRowH;
 
-        // Chiều cao các hàng
+        // Chiều cao các hàng — Chuẩn chuyên sâu Vấn Chân Bát Tự (Đầy đủ Tinh Vận, Tự Tọa, Không Vong, Nạp Âm, Thần Sát 2 cột)
         const rows = !is100Years ? [
-            { label: "DƯƠNG LỊCH", h: 85, key: "solar" },
-            { label: "CHỦ TINH", h: 90, key: "mainGod" },
-            { label: "BÁT TỰ", h: 240, key: "batTu" },
-            { label: "TÀNG ẨN", h: 90, key: "hidden" },
-            { label: "PHÓ TINH", h: 90, key: "hiddenGods" },
-            { label: "THẦN SÁT", h: 200, key: "thanSat" }
+            { label: "DƯƠNG LỊCH", h: 66, key: "solar" },
+            { label: "CHỦ TINH", h: 68, key: "mainGod" },
+            { label: "BÁT TỰ", h: 214, key: "batTu" },
+            { label: "TÀNG ẨN", h: 68, key: "hidden" },
+            { label: "PHÓ TINH", h: 66, key: "hiddenGods" },
+            { label: "TINH VẬN", h: 60, key: "tinhVan" },
+            { label: "TỰ TỌA", h: 60, key: "tuToa" },
+            { label: "KHÔNG VONG", h: 60, key: "khongVong" },
+            { label: "NẠP ÂM", h: 62, key: "nayin" },
+            { label: "THẦN SÁT", h: 236, key: "thanSat" }
         ] : [
-            { label: "DƯƠNG LỊCH", h: 72, key: "solar" },
-            { label: "CHỦ TINH", h: 76, key: "mainGod" },
-            { label: "BÁT TỰ", h: 175, key: "batTu" },
-            { label: "TÀNG ẨN", h: 76, key: "hidden" },
-            { label: "PHÓ TINH", h: 76, key: "hiddenGods" },
-            { label: "THẦN SÁT", h: 160, key: "thanSat" }
+            { label: "DƯƠNG LỊCH", h: 56, key: "solar" },
+            { label: "CHỦ TINH", h: 58, key: "mainGod" },
+            { label: "BÁT TỰ", h: 166, key: "batTu" },
+            { label: "TÀNG ẨN", h: 58, key: "hidden" },
+            { label: "PHÓ TINH", h: 56, key: "hiddenGods" },
+            { label: "TINH VẬN", h: 54, key: "tinhVan" },
+            { label: "TỰ TỌA", h: 54, key: "tuToa" },
+            { label: "KHÔNG VONG", h: 54, key: "khongVong" },
+            { label: "NẠP ÂM", h: 56, key: "nayin" },
+            { label: "THẦN SÁT", h: 196, key: "thanSat" }
         ];
 
         rows.forEach(r => {
@@ -221,9 +245,9 @@
             ctx.strokeRect(tblX, curY, colLabelW, r.h);
 
             ctx.fillStyle = "#000000";
-            ctx.font = "700 26px 'Inter', sans-serif";
+            ctx.font = "700 24px 'Inter', sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(r.label, tblX + colLabelW / 2, curY + r.h / 2 + 9);
+            ctx.fillText(r.label, tblX + colLabelW / 2, curY + r.h / 2 + 8, colLabelW - 16);
 
             // 4 Cột Trụ
             pillars.forEach((p, cIdx) => {
@@ -238,34 +262,35 @@
 
                 if (r.key === "solar") {
                     ctx.fillStyle = "#000000";
-                    ctx.font = "600 32px 'Inter', sans-serif";
+                    ctx.font = "600 30px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(p.solar || "", centerX, curY + r.h / 2 + 11);
+                    ctx.fillText(p.solar || "", centerX, curY + r.h / 2 + 10);
                 } else if (r.key === "mainGod") {
                     const isMaster = (cIdx === 2);
                     ctx.fillStyle = isMaster ? "#DC2626" : "#000000";
-                    ctx.font = isMaster ? "700 34px 'Inter', sans-serif" : "600 30px 'Inter', sans-serif";
+                    ctx.font = isMaster ? "700 32px 'Inter', sans-serif" : "600 29px 'Inter', sans-serif";
                     ctx.textAlign = "center";
-                    ctx.fillText(p.mainGod || (isMaster ? "NHẬT CHỦ" : ""), centerX, curY + r.h / 2 + 11);
+                    ctx.fillText(p.mainGod || (isMaster ? "NHẬT CHỦ" : ""), centerX, curY + r.h / 2 + 10);
                 } else if (r.key === "batTu") {
+                    const bFont = !is100Years ? 72 : 60;
                     // Thiên Can
                     ctx.fillStyle = getStemColor(p.gan);
-                    ctx.font = "700 76px 'Inter', sans-serif";
+                    ctx.font = `700 ${bFont}px 'Inter', sans-serif`;
                     ctx.textAlign = "center";
-                    ctx.fillText(p.gan || "", centerX, curY + r.h * 0.38);
+                    ctx.fillText(p.gan || "", centerX, curY + r.h * 0.39);
 
                     // Địa Chi
                     ctx.fillStyle = getBranchColor(p.zhi);
-                    ctx.fillText(p.zhi || "", centerX, curY + r.h * 0.82);
+                    ctx.fillText(p.zhi || "", centerX, curY + r.h * 0.83);
                 } else if (r.key === "hidden") {
                     const hStems = p.hidden || [];
                     const count = hStems.length || 1;
                     const subW = colW / count;
                     hStems.forEach((st, sIdx) => {
                         ctx.fillStyle = getStemColor(st);
-                        ctx.font = "700 32px 'Inter', sans-serif";
+                        ctx.font = "700 30px 'Inter', sans-serif";
                         ctx.textAlign = "center";
-                        ctx.fillText(st, cX + sIdx * subW + subW / 2, curY + r.h / 2 + 11);
+                        ctx.fillText(st, cX + sIdx * subW + subW / 2, curY + r.h / 2 + 10);
                     });
                 } else if (r.key === "hiddenGods") {
                     const hGods = p.hiddenGods || [];
@@ -273,23 +298,76 @@
                     const subW = colW / count;
                     hGods.forEach((hg, sIdx) => {
                         ctx.fillStyle = "#475569";
-                        ctx.font = "600 30px 'Inter', sans-serif";
+                        ctx.font = "600 28px 'Inter', sans-serif";
                         ctx.textAlign = "center";
-                        ctx.fillText(hg, cX + sIdx * subW + subW / 2, curY + r.h / 2 + 11);
+                        ctx.fillText(hg, cX + sIdx * subW + subW / 2, curY + r.h / 2 + 10);
                     });
+                } else if (r.key === "tinhVan") {
+                    ctx.fillStyle = "#1D4ED8";
+                    ctx.font = !is100Years ? "600 27px 'Inter', sans-serif" : "600 25px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.tinhVan || "-", centerX, curY + r.h / 2 + 9);
+                } else if (r.key === "tuToa") {
+                    ctx.fillStyle = "#334155";
+                    ctx.font = !is100Years ? "500 26px 'Inter', sans-serif" : "500 24px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.tuToa || "-", centerX, curY + r.h / 2 + 9);
+                } else if (r.key === "khongVong") {
+                    ctx.fillStyle = "#64748b";
+                    ctx.font = !is100Years ? "600 26px 'Inter', sans-serif" : "600 24px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.khongVong || "-", centerX, curY + r.h / 2 + 9);
+                } else if (r.key === "nayin") {
+                    ctx.fillStyle = "#854d0e";
+                    ctx.font = !is100Years ? "600 26px 'Inter', sans-serif" : "600 24px 'Inter', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.nayin || "-", centerX, curY + r.h / 2 + 9, colW - 24);
                 } else if (r.key === "thanSat") {
                     const stars = p.thanSat || p.stars || [];
-                    ctx.font = "600 28px 'Inter', sans-serif";
+                    const thanSatModule = global.BatTuThanSat || (typeof window !== 'undefined' ? window.BatTuThanSat : null);
                     ctx.textAlign = "center";
-                    const step = !is100Years ? 46 : 40;
-                    let tsY = curY + (r.h - (Math.min(4, stars.length) - 1) * step) / 2 + 9;
-                    stars.slice(0, 4).forEach(st => {
-                        const thanSatModule = global.BatTuThanSat || (typeof window !== 'undefined' ? window.BatTuThanSat : null);
-                        const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(st) : false;
-                        ctx.fillStyle = isCat ? "#15803d" : "#b91c1c";
-                        ctx.fillText(st, centerX, tsY);
-                        tsY += step;
-                    });
+
+                    if (stars.length === 0) {
+                        ctx.fillStyle = "#94a3b8";
+                        ctx.font = "500 26px 'Inter', sans-serif";
+                        ctx.fillText("-", centerX, curY + r.h / 2 + 9);
+                    } else if (stars.length <= 5) {
+                        const count = stars.length;
+                        const maxSpan = r.h - 46;
+                        const step = count > 1 ? Math.min(!is100Years ? 42 : 34, maxSpan / (count - 1)) : 0;
+                        const fontPx = count <= 4 ? (!is100Years ? 28 : 25) : (!is100Years ? 25 : 22);
+                        ctx.font = `600 ${fontPx}px 'Inter', sans-serif`;
+                        let tsY = curY + (r.h - (count - 1) * step) / 2 + Math.round(fontPx * 0.34);
+                        stars.forEach(st => {
+                            const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(st) : false;
+                            ctx.fillStyle = isCat ? "#15803d" : "#b91c1c";
+                            ctx.fillText(st, centerX, tsY, colW - 24);
+                            tsY += step;
+                        });
+                    } else {
+                        // Hiển thị 2 cột song song khi Trụ có nhiều hơn 5 Thần Sát — không cắt bỏ sao nào
+                        const numRows = Math.ceil(stars.length / 2);
+                        const maxSpan = r.h - 42;
+                        const step = numRows > 1 ? Math.min(!is100Years ? 38 : 31, maxSpan / (numRows - 1)) : 0;
+                        const fontPx = numRows <= 5
+                            ? (!is100Years ? 25 : 22)
+                            : Math.max(19, Math.min(!is100Years ? 24 : 21, Math.floor(step * 0.78)));
+                        ctx.font = `600 ${fontPx}px 'Inter', sans-serif`;
+                        const startY = curY + (r.h - (numRows - 1) * step) / 2 + Math.round(fontPx * 0.34);
+                        const leftX = cX + colW * 0.26;
+                        const rightX = cX + colW * 0.74;
+                        const halfMaxW = colW * 0.45;
+
+                        stars.forEach((st, idx) => {
+                            const rowIdx = Math.floor(idx / 2);
+                            const isLeft = (idx % 2 === 0);
+                            const isOddLast = (isLeft && idx === stars.length - 1);
+                            const drawX = isOddLast ? centerX : (isLeft ? leftX : rightX);
+                            const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(st) : false;
+                            ctx.fillStyle = isCat ? "#15803d" : "#b91c1c";
+                            ctx.fillText(st, drawX, startY + rowIdx * step, isOddLast ? (colW - 24) : halfMaxW);
+                        });
+                    }
                 }
             });
 
@@ -299,10 +377,10 @@
         // ==========================================
         // 4. KHỐI THÔNG TIN ĐẠI VẬN & LƯU NIÊN
         // ==========================================
-        curY += !is100Years ? 30 : 24;
+        curY += !is100Years ? 22 : 18;
 
         // Header info bar
-        const infoBarH = !is100Years ? 68 : 60;
+        const infoBarH = !is100Years ? 64 : 56;
         ctx.fillStyle = "#e7e8e2";
         ctx.fillRect(tblX, curY, tblW, infoBarH);
         ctx.strokeStyle = "#000000";
@@ -319,7 +397,7 @@
         const summaryText = data.yun?.summaryText || (data.yun?.startAgeFormatted ? `Khởi vận sau sinh: ${data.yun.startAgeFormatted}. ${data.solarTermInfo || ''}` : "Khởi Đại Vận theo Tiết Khí");
         ctx.fillText(summaryText, tblX + 260, curY + infoBarH / 2 + 10, tblW - 280);
 
-        curY += infoBarH + (!is100Years ? 30 : 18);
+        curY += infoBarH + (!is100Years ? 22 : 16);
 
         const daYunList = data.daYun || [];
         const birthYear = data.birthYear || data.solarYear || 1990;

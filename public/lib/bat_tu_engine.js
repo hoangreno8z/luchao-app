@@ -110,6 +110,51 @@
         return CN_TO_VI_SOLAR_TERM[cn] || cn || '';
     }
 
+    const STEM_ORDER = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+    const BRANCH_ORDER = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+    const TRUONG_SINH_STAGES = [
+        'Trường Sinh', 'Mộc Dục', 'Quan Đới', 'Lâm Quan', 'Đế Vượng',
+        'Suy', 'Bệnh', 'Tử', 'Mộ', 'Tuyệt', 'Thai', 'Dưỡng'
+    ];
+    // Vị trí Trường Sinh chuẩn Tử Bình cổ điển (Dương thuận Âm nghịch, Hỏa Thổ đồng cung)
+    const TRUONG_SINH_START_BRANCH = {
+        'Giáp': 11, // Hợi (thuận)
+        'Ất':   6,  // Ngọ (nghịch)
+        'Bính': 2,  // Dần (thuận)
+        'Đinh': 9,  // Dậu (nghịch)
+        'Mậu':  2,  // Dần (thuận)
+        'Kỷ':   9,  // Dậu (nghịch)
+        'Canh': 5,  // Tị  (thuận)
+        'Tân':  0,  // Tý  (nghịch)
+        'Nhâm': 8,  // Thân (thuận)
+        'Quý':  3   // Mão (nghịch)
+    };
+
+    /**
+     * Tính vòng Thập Nhị Trường Sinh của một Thiên Can tại một Địa Chi
+     */
+    function getTruongSinh(stem, branch) {
+        const startIdx = TRUONG_SINH_START_BRANCH[stem];
+        const bIdx = BRANCH_ORDER.indexOf(branch);
+        if (startIdx === undefined || bIdx < 0) return '';
+        const isYang = STEM_ELEMENTS[stem]?.yinYang === 1;
+        const offset = isYang ? (bIdx - startIdx + 12) % 12 : (startIdx - bIdx + 12) % 12;
+        return TRUONG_SINH_STAGES[offset] || '';
+    }
+
+    /**
+     * Tính Tuần Không (Không Vong) của một trụ Can Chi
+     */
+    function getKhongVong(stem, branch) {
+        const sIdx = STEM_ORDER.indexOf(stem);
+        const bIdx = BRANCH_ORDER.indexOf(branch);
+        if (sIdx < 0 || bIdx < 0) return '';
+        const xunStart = (bIdx - sIdx + 12) % 12;
+        const kv1 = BRANCH_ORDER[(xunStart + 10) % 12];
+        const kv2 = BRANCH_ORDER[(xunStart + 11) % 12];
+        return `${kv1} ${kv2}`;
+    }
+
     /**
      * Tính toán toàn bộ Lá Số Bát Tự Tứ Trụ
      * - Bát Tự luôn luôn tính Trụ Năm, Trụ Tháng, Đại Vận theo 12 Tiết Khí (quy đổi chuẩn giờ Việt Nam UTC+7).
@@ -186,7 +231,10 @@
                 nayin: toViNaYin(eightCharBJT.getYearNaYin()),
                 chuTinh: getShiShenName(dayStem, yearStem),
                 hiddenStems: yearHidden,
-                phoTinh: yearHidden.map(h => getShiShenName(dayStem, h))
+                phoTinh: yearHidden.map(h => getShiShenName(dayStem, h)),
+                tinhVan: getTruongSinh(dayStem, yearBranch),
+                tuToa: getTruongSinh(yearStem, yearBranch),
+                khongVong: getKhongVong(yearStem, yearBranch)
             },
             month: {
                 title: "THÁNG",
@@ -199,7 +247,10 @@
                 nayin: toViNaYin(eightCharBJT.getMonthNaYin()),
                 chuTinh: getShiShenName(dayStem, monthStem),
                 hiddenStems: monthHidden,
-                phoTinh: monthHidden.map(h => getShiShenName(dayStem, h))
+                phoTinh: monthHidden.map(h => getShiShenName(dayStem, h)),
+                tinhVan: getTruongSinh(dayStem, monthBranch),
+                tuToa: getTruongSinh(monthStem, monthBranch),
+                khongVong: getKhongVong(monthStem, monthBranch)
             },
             day: {
                 title: "NGÀY",
@@ -212,7 +263,10 @@
                 nayin: toViNaYin(effEightChar.getDayNaYin()),
                 chuTinh: "NHẬT CHỦ",
                 hiddenStems: dayHidden,
-                phoTinh: dayHidden.map(h => getShiShenName(dayStem, h))
+                phoTinh: dayHidden.map(h => getShiShenName(dayStem, h)),
+                tinhVan: getTruongSinh(dayStem, dayBranch),
+                tuToa: getTruongSinh(dayStem, dayBranch),
+                khongVong: getKhongVong(dayStem, dayBranch)
             },
             time: {
                 title: "GIỜ",
@@ -225,7 +279,10 @@
                 nayin: toViNaYin(effEightChar.getTimeNaYin()),
                 chuTinh: getShiShenName(dayStem, timeStem),
                 hiddenStems: timeHidden,
-                phoTinh: timeHidden.map(h => getShiShenName(dayStem, h))
+                phoTinh: timeHidden.map(h => getShiShenName(dayStem, h)),
+                tinhVan: getTruongSinh(dayStem, timeBranch),
+                tuToa: getTruongSinh(timeStem, timeBranch),
+                khongVong: getKhongVong(timeStem, timeBranch)
             }
         };
 
@@ -326,6 +383,8 @@
                 branch: dyBranch,
                 ganZhi: dyStem + ' ' + dyBranch,
                 shiShen: dyShiShen,
+                tinhVan: getTruongSinh(dayStem, dyBranch),
+                khongVong: getKhongVong(dyStem, dyBranch),
                 stemColor: STEM_ELEMENTS[dyStem]?.color || '#8e5a2b',
                 branchColor: BRANCH_ELEMENTS[dyBranch]?.color || '#8e5a2b',
                 liuNian: lnResult
@@ -376,6 +435,8 @@
                 branch: nextBranch,
                 ganZhi: nextStem + ' ' + nextBranch,
                 shiShen: nextShiShen,
+                tinhVan: getTruongSinh(dayStem, nextBranch),
+                khongVong: getKhongVong(nextStem, nextBranch),
                 stemColor: STEM_ELEMENTS[nextStem]?.color || '#8e5a2b',
                 branchColor: BRANCH_ELEMENTS[nextBranch]?.color || '#8e5a2b',
                 liuNian: nextLiuNian
@@ -448,6 +509,8 @@
         STEM_ELEMENTS,
         BRANCH_ELEMENTS,
         getShiShenName,
+        getTruongSinh,
+        getKhongVong,
         toViGan,
         toViZhi,
         toViGanZhi

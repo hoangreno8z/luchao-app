@@ -29,11 +29,21 @@
         return map[branch] || '#1e293b';
     }
 
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function formatThanSatTag(s) {
         const thanSatModule = global.BatTuThanSat || (typeof window !== 'undefined' ? window.BatTuThanSat : null);
         const isCat = (thanSatModule && typeof thanSatModule.isCatThan === 'function') ? thanSatModule.isCatThan(s) : false;
         const cls = isCat ? "than-sat-tag than-sat-cat" : "than-sat-tag than-sat-hung";
-        return `<span class="${cls}">${s}</span>`;
+        return `<span class="${cls}">${escapeHtml(s)}</span>`;
     }
 
     function renderBatTuHtmlTable(data, is100Years = false) {
@@ -59,11 +69,11 @@
                     <div class="battu-sub-title">CẢI VẬN BỔ KHUYẾT</div>
                 </div>
                 <div class="battu-meta-col">
-                    <div class="battu-meta-row"><span>Họ và tên:</span> <strong>${data.name || 'VÔ DANH KHÁCH'}</strong></div>
-                    <div class="battu-meta-row"><span>Giới tính:</span> <strong style="color:#27ae60;">${data.genderLabel || 'Nam Mệnh'}</strong></div>
-                    <div class="battu-meta-row"><span>Dương lịch:</span> <strong style="color:#c0392b;">${data.solarStr || ''}</strong></div>
-                    <div class="battu-meta-row"><span>Âm lịch:</span> <strong style="color:#2980b9;">${data.lunarStr || ''}</strong></div>
-                    <div class="battu-meta-row"><span>Bản Mệnh:</span> <strong style="color:#8e5a2b;">${data.banMenhNaYin || ''}</strong></div>
+                    <div class="battu-meta-row"><span>Họ và tên:</span> <strong>${escapeHtml(data.name || 'VÔ DANH KHÁCH')}</strong></div>
+                    <div class="battu-meta-row"><span>Giới tính:</span> <strong style="color:#27ae60;">${escapeHtml(data.genderLabel || 'Nam Mệnh')}</strong></div>
+                    <div class="battu-meta-row"><span>Dương lịch:</span> <strong style="color:#c0392b;">${escapeHtml(data.solarStr || '')}</strong></div>
+                    <div class="battu-meta-row"><span>Âm lịch:</span> <strong style="color:#2980b9;">${escapeHtml(data.lunarStr || '')}</strong></div>
+                    <div class="battu-meta-row"><span>Bản Mệnh:</span> <strong style="color:#8e5a2b;">${escapeHtml(data.banMenhNaYin || '')}</strong></div>
                 </div>
             </div>
 
@@ -139,6 +149,24 @@
                             }).join('')}
                         </tr>
 
+                        <!-- Hàng Tinh Vận (12 Trường Sinh Nhật Chủ) -->
+                        <tr>
+                            <td class="row-label">TINH VẬN</td>
+                            ${pillars.map(p => `<td style="color:#1d4ed8; font-weight:600;">${escapeHtml(p.tinhVan || '-')}</td>`).join('')}
+                        </tr>
+
+                        <!-- Hàng Tự Tọa (12 Trường Sinh Tự Trụ) -->
+                        <tr>
+                            <td class="row-label">TỰ TỌA</td>
+                            ${pillars.map(p => `<td style="color:#475569; font-weight:500;">${escapeHtml(p.tuToa || '-')}</td>`).join('')}
+                        </tr>
+
+                        <!-- Hàng Không Vong -->
+                        <tr>
+                            <td class="row-label">KHÔNG VONG</td>
+                            ${pillars.map(p => `<td style="color:#64748b; font-weight:600;">${escapeHtml(p.khongVong || '-')}</td>`).join('')}
+                        </tr>
+
                         <!-- Hàng Thần Sát (Liệt Kê Đầy Đủ) -->
                         <tr class="row-thansat">
                             <td class="row-label">THẦN SÁT</td>
@@ -152,7 +180,7 @@
                         <!-- Hàng Nạp Âm -->
                         <tr>
                             <td class="row-label">NẠP ÂM</td>
-                            ${pillars.map(p => `<td class="cell-nayin">${p.nayin || '-'}</td>`).join('')}
+                            ${pillars.map(p => `<td class="cell-nayin">${escapeHtml(p.nayin || '-')}</td>`).join('')}
                         </tr>
                     </tbody>
                 </table>
@@ -161,7 +189,7 @@
             <!-- 3. Bảng Đại Vận & Lưu Niên -->
             <div class="battu-dayun-header">
                 <strong>ĐẠI VẬN & LƯU NIÊN</strong>
-                <span class="battu-dayun-summary">${data.yun?.summaryText || 'Khởi Đại Vận theo Tiết Khí'}</span>
+                <span class="battu-dayun-summary">${escapeHtml(data.yun?.summaryText || 'Khởi Đại Vận theo Tiết Khí')}</span>
             </div>
         `;
 

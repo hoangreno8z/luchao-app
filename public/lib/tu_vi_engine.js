@@ -667,9 +667,9 @@ export class TuViEngine {
                 const hasGood = palaces[p].goodStars.some(s => s.name === starName);
                 if (hasMain || hasGood) {
                     if (idx === 3) {
-                        palaces[p].badStars.push({ name: hoaName, mieuHam: "", element: tuHoaElements[idx] });
+                        palaces[p].badStars.unshift({ name: hoaName, mieuHam: "", element: tuHoaElements[idx], isTuHoa: true });
                     } else {
-                        palaces[p].goodStars.push({ name: hoaName, mieuHam: "", element: tuHoaElements[idx] });
+                        palaces[p].goodStars.unshift({ name: hoaName, mieuHam: "", element: tuHoaElements[idx], isTuHoa: true });
                     }
                     break;
                 }
