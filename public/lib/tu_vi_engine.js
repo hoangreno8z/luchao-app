@@ -285,7 +285,7 @@ export class TuViEngine {
         const tieuHanList = new Array(12);
         for (let i = 0; i < 12; i++) {
             const pos = (tieuHanStartChi + i * tieuHanDir + 120) % 12;
-            tieuHanList[pos] = CHI_NAMES[i];
+            tieuHanList[pos] = CHI_NAMES[(yearChiIdx + i) % 12];
         }
 
         // 7. KHỞI NGUYỆT HẠN (12 THÁNG)
@@ -466,10 +466,9 @@ export class TuViEngine {
         palaces[thienDieuPos].badStars.push({ name: "Thiên Diêu", mieuHam: thienDieuMieu, element: "Thủy" });
         palaces[thienYPos].goodStars.push({ name: "Thiên Y", mieuHam: "", element: "Thủy" });
 
-        // Thiên Giải, Địa Giải, Nguyệt Giải
-        const thienGiaiTable = [8, 8, 9, 9, 10, 10, 11, 11, 0, 0, 1, 1];
-        const thienGiaiPos = thienGiaiTable[calcMonth - 1];
-        const diaGiaiPos = (7 + (calcMonth - 1)) % 12; // Khởi Mùi
+        // Thiên Giải (khởi Thân thuận theo tháng sinh), Địa Giải (khởi Mùi thuận theo tháng sinh)
+        const thienGiaiPos = (8 + (calcMonth - 1)) % 12; // Khởi Thân
+        const diaGiaiPos = (7 + (calcMonth - 1)) % 12;   // Khởi Mùi
         palaces[thienGiaiPos].goodStars.push({ name: "Thiên Giải", mieuHam: "", element: "Hỏa" });
         palaces[diaGiaiPos].goodStars.push({ name: "Địa Giải", mieuHam: "", element: "Thổ" });
 
@@ -515,10 +514,10 @@ export class TuViEngine {
         palaces[thienQuyPos].goodStars.push({ name: "Thiên Quý", mieuHam: "", element: "Thổ" });
 
         // 17. AN SAO THEO CAN NĂM
-        // Thiên Khôi, Thiên Việt
-        // Giáp/Mậu -> Sửu/Mùi; Ất/Kỷ -> Tý/Thân; Bính/Đinh -> Hợi/Dậu; Canh/Tân -> Ngọ/Dần; Nhâm/Quý -> Mão/Tị
-        const khoiTable = [1, 0, 11, 11, 1, 0, 6, 6, 3, 3];
-        const vietTable = [7, 8, 9, 9, 7, 8, 2, 2, 5, 5];
+        // Thiên Khôi, Thiên Việt (Chuẩn Toàn Thư / iztro / lasotuvi:
+        // Giáp/Mậu/Canh -> Sửu/Mùi; Ất/Kỷ -> Tý/Thân; Bính/Đinh -> Hợi/Dậu; Tân -> Ngọ/Dần; Nhâm/Quý -> Mão/Tị)
+        const khoiTable = [1, 0, 11, 11, 1, 0, 1, 6, 3, 3];
+        const vietTable = [7, 8, 9, 9, 7, 8, 7, 2, 5, 5];
         palaces[khoiTable[yearCanIdx]].goodStars.push({ name: "Thiên Khôi", mieuHam: "", element: "Hỏa" });
         palaces[vietTable[yearCanIdx]].goodStars.push({ name: "Thiên Việt", mieuHam: "", element: "Hỏa" });
 
@@ -650,7 +649,7 @@ export class TuViEngine {
             ["Thái Âm", "Thiên Đồng", "Thiên Cơ", "Cự Môn"],       // Đinh
             ["Tham Lang", "Thái Âm", "Hữu Bật", "Thiên Cơ"],       // Mậu
             ["Vũ Khúc", "Tham Lang", "Thiên Lương", "Văn Khúc"],   // Kỷ
-            ["Thái Dương", "Vũ Khúc", "Thiên Đồng", "Thái Âm"],    // Canh
+            ["Thái Dương", "Vũ Khúc", "Thái Âm", "Thiên Đồng"],    // Canh (Chuẩn Toàn Thư / iztro / lasotuvi)
             ["Cự Môn", "Thái Dương", "Văn Khúc", "Văn Xương"],     // Tân
             ["Thiên Lương", "Tử Vi", "Tả Phù", "Vũ Khúc"],         // Nhâm
             ["Phá Quân", "Cự Môn", "Thái Âm", "Tham Lang"]         // Quý
@@ -668,9 +667,9 @@ export class TuViEngine {
                 const hasGood = palaces[p].goodStars.some(s => s.name === starName);
                 if (hasMain || hasGood) {
                     if (idx === 3) {
-                        palaces[p].badStars.push({ name: `${hoaName}(Đ)`, mieuHam: "", element: tuHoaElements[idx] });
+                        palaces[p].badStars.push({ name: hoaName, mieuHam: "", element: tuHoaElements[idx] });
                     } else {
-                        palaces[p].goodStars.push({ name: `${hoaName}(V)`, mieuHam: "", element: tuHoaElements[idx] });
+                        palaces[p].goodStars.push({ name: hoaName, mieuHam: "", element: tuHoaElements[idx] });
                     }
                     break;
                 }
@@ -755,10 +754,10 @@ export class TuViEngine {
             palaces[viewDaoHoaPos].goodStars.push({ name: "L.Đào Hoa", mieuHam: "", element: "Mộc" });
         }
 
-        // 23. CHỦ MỆNH & CHỦ THÂN
+        // 23. CHỦ MỆNH (tra theo Địa Chi Cung Mệnh) & CHỦ THÂN (tra theo Địa Chi Năm Sinh)
         const chuMenhTable = ["Tham Lang", "Cự Môn", "Lộc Tồn", "Văn Khúc", "Liêm Trinh", "Vũ Khúc", "Phá Quân", "Vũ Khúc", "Liêm Trinh", "Văn Khúc", "Lộc Tồn", "Cự Môn"];
         const chuThanTable = ["Linh Tinh", "Thiên Tướng", "Thiên Lương", "Thiên Đồng", "Văn Xương", "Thiên Cơ", "Hỏa Tinh", "Thiên Cơ", "Văn Xương", "Thiên Đồng", "Thiên Lương", "Thiên Tướng"];
-        const chuMenh = chuMenhTable[yearChiIdx];
+        const chuMenh = chuMenhTable[menhPos];
         const chuThan = chuThanTable[yearChiIdx];
 
         // 24. ĐÁNH GIÁ TỔNG QUAN
@@ -767,24 +766,16 @@ export class TuViEngine {
         const isMenhDuongCung = (menhPos % 2 === 0);
         const amDuongLy = (isDuongYear === isMenhDuongCung) ? "Âm Dương thuận lý" : "Âm Dương nghịch lý";
 
-        // Cục & Mệnh sinh khắc:
+        // Cục & Mệnh sinh khắc (đủ cả 5 quan hệ Ngũ Hành)
         const cucElement = cucInfo.element;
+        const SINH_MAP = { "Thủy": "Mộc", "Mộc": "Hỏa", "Hỏa": "Thổ", "Thổ": "Kim", "Kim": "Thủy" };
+        const KHAC_MAP = { "Thủy": "Hỏa", "Hỏa": "Kim", "Kim": "Mộc", "Mộc": "Thổ", "Thổ": "Thủy" };
         let cucMenhTuongTac = "Cục Mệnh Tương Hòa";
         if (cucElement === banMenhElement) cucMenhTuongTac = "Cục Mệnh Tương Hòa";
-        else if (
-            (cucElement === "Thủy" && banMenhElement === "Mộc") ||
-            (cucElement === "Mộc" && banMenhElement === "Hỏa") ||
-            (cucElement === "Hỏa" && banMenhElement === "Thổ") ||
-            (cucElement === "Thổ" && banMenhElement === "Kim") ||
-            (cucElement === "Kim" && banMenhElement === "Thủy")
-        ) cucMenhTuongTac = "Cục sinh Mệnh";
-        else if (
-            (banMenhElement === "Thủy" && cucElement === "Mộc") ||
-            (banMenhElement === "Mộc" && cucElement === "Hỏa") ||
-            (banMenhElement === "Hỏa" && cucElement === "Thổ") ||
-            (banMenhElement === "Thổ" && cucElement === "Kim") ||
-            (banMenhElement === "Kim" && cucElement === "Thủy")
-        ) cucMenhTuongTac = "Mệnh sinh Cục";
+        else if (SINH_MAP[cucElement] === banMenhElement) cucMenhTuongTac = "Cục sinh Mệnh";
+        else if (SINH_MAP[banMenhElement] === cucElement) cucMenhTuongTac = "Mệnh sinh Cục";
+        else if (KHAC_MAP[cucElement] === banMenhElement) cucMenhTuongTac = "Cục khắc Mệnh";
+        else if (KHAC_MAP[banMenhElement] === cucElement) cucMenhTuongTac = "Mệnh khắc Cục";
         // 25. BẮC PHÁI (LƯƠNG THỊ) - CHỈ HIỂN THỊ 14 CHÍNH TINH + TẢ, HỮU, XƯƠNG, KHÚC, TỨ HÓA
         if (luongThiMode) {
             const allowedPhuLuongThi = new Set([

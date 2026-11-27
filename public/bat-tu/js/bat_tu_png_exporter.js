@@ -105,7 +105,7 @@
 
             ctx.font = "700 31px 'Inter', sans-serif";
             ctx.fillStyle = row.color;
-            ctx.fillText(row.val, valX, mY);
+            ctx.fillText(row.val, valX, mY, gridW - (valX - margin) - 24);
 
             mY += mStep;
         });
@@ -157,7 +157,9 @@
                 name: 'Ngày',
                 gan: pDay.stem || 'Đinh',
                 zhi: pDay.branch || 'Dậu',
-                solar: (data.solarDay < 10 ? '0' + data.solarDay : String(data.solarDay || '01')),
+                solar: data.isLateZi && data.effectiveSolarDay
+                    ? `${data.solarDay < 10 ? '0' + data.solarDay : data.solarDay}→${data.effectiveSolarDay < 10 ? '0' + data.effectiveSolarDay : data.effectiveSolarDay}`
+                    : (data.solarDay < 10 ? '0' + data.solarDay : String(data.solarDay || '01')),
                 mainGod: 'NHẬT CHỦ',
                 hidden: pDay.hiddenStems || ['Tân'],
                 hiddenGods: pDay.phoTinh || ['T.Tài'],
@@ -315,7 +317,7 @@
         ctx.fillStyle = "#475569";
         ctx.font = "500 24px 'Inter', sans-serif";
         const summaryText = data.yun?.summaryText || (data.yun?.startAgeFormatted ? `Khởi vận sau sinh: ${data.yun.startAgeFormatted}. ${data.solarTermInfo || ''}` : "Khởi Đại Vận theo Tiết Khí");
-        ctx.fillText(summaryText, tblX + 260, curY + infoBarH / 2 + 10);
+        ctx.fillText(summaryText, tblX + 260, curY + infoBarH / 2 + 10, tblW - 280);
 
         curY += infoBarH + (!is100Years ? 30 : 18);
 

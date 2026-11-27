@@ -213,7 +213,7 @@ export class TuViPngExporter {
         const starLineHeight = 50;
 
         palace.goodStars.forEach(star => {
-            if (starYLeft < y + h - 65) {
+            if (starYLeft < y + h - 82) {
                 ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#15803D';
                 ctx.textAlign = 'left';
@@ -224,7 +224,7 @@ export class TuViPngExporter {
         });
 
         palace.badStars.forEach(star => {
-            if (starYRight < y + h - 65) {
+            if (starYRight < y + h - 82) {
                 ctx.font = '400 38px "Inter", "Be Vietnam Pro", sans-serif';
                 ctx.fillStyle = ELEMENT_COLORS[star.element] || '#DC2626';
                 ctx.textAlign = 'right';
@@ -234,7 +234,14 @@ export class TuViPngExporter {
             }
         });
 
-        // 6. Bottom Bar (Chi Cung, Tràng Sinh, Nguyệt Hạn)
+        // 6. Bottom Bar (Chi Cung, Tiểu Hạn, Tràng Sinh, Nguyệt Hạn)
+        if (palace.tieuHan) {
+            ctx.font = '600 24px "Inter", "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = '#1D4ED8';
+            ctx.textAlign = 'left';
+            ctx.fillText(`TH: ${palace.tieuHan}`, x + padding, y + h - 54);
+        }
+
         ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
         ctx.fillStyle = '#000000';
 
@@ -389,12 +396,16 @@ export class TuViPngExporter {
         let curY = y + 165;
         const stepY = 70;
 
+        const dayDisp = (meta.isLateZi && meta.effectiveSolarDate)
+            ? `${meta.solarDate.split('/')[0]}→${meta.effectiveSolarDate.split('/')[0]}`
+            : meta.solarDate.split('/')[0];
+
         const infoList = [
             { label: 'Họ tên:', value: meta.name, color: '#1D4ED8' },
             { label: 'Âm Dương:', value: `${meta.amDuongNamNu} (${meta.amDuongLy})`, color: '#1D4ED8' },
             { label: 'Năm sinh:', value: `${meta.solarDate.split('/')[2]} (${meta.lunarYearCanChi})`, color: '#1D4ED8' },
             { label: 'Tháng sinh:', value: `${meta.solarDate.split('/')[1]} (${meta.lunarMonthCanChi})`, color: '#1D4ED8' },
-            { label: 'Ngày sinh:', value: `${meta.solarDate.split('/')[0]} (Ngày ${meta.lunarDay} ${meta.lunarDayCanChi})`, color: '#1D4ED8' },
+            { label: 'Ngày sinh:', value: `${dayDisp} (Ngày ${meta.lunarDay} ${meta.lunarDayCanChi})`, color: '#1D4ED8' },
             { label: 'Giờ sinh:', value: `Giờ ${meta.hourName} (${meta.lunarHourCanChi})`, color: '#1D4ED8' },
             { label: 'Bản Mệnh:', value: meta.banMenh, color: ELEMENT_COLORS[meta.banMenhElement] || '#CB9E2B' },
             { label: 'Cục:', value: `${meta.cucInfo.name} (${meta.cucMenhTuongTac})`, color: ELEMENT_COLORS[meta.cucInfo.element] || '#1D4ED8' },
@@ -404,6 +415,7 @@ export class TuViPngExporter {
             { label: 'Năm xem:', value: `${meta.viewYear} (${meta.viewYearCanChi}) — ${meta.age} tuổi`, color: '#1D4ED8' }
         ];
 
+        const maxValW = w - (valX - x) - 36;
         infoList.forEach(item => {
             // Label: Đen Bold
             ctx.font = '700 32px "Inter", "Be Vietnam Pro", sans-serif';
@@ -411,10 +423,10 @@ export class TuViPngExporter {
             ctx.textAlign = 'left';
             ctx.fillText(item.label, labelX, curY);
 
-            // Value: Xanh Dương / Ngũ Hành
+            // Value: Xanh Dương / Ngũ Hành (có maxWidth chống tràn mép phải Trung Cung)
             ctx.font = '600 32px "Inter", "Be Vietnam Pro", sans-serif';
             ctx.fillStyle = item.color;
-            ctx.fillText(item.value, valX, curY);
+            ctx.fillText(item.value, valX, curY, maxValW);
 
             // Không vẽ đường kẻ đứt ngang - giữ nền thoáng đãng như tuvivietnam.vn
 
